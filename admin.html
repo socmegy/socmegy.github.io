@@ -6,6 +6,7 @@
     <title>Socmegy - Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="icon" href="logo.png" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -122,8 +123,18 @@
             transform: scale(1.02);
             box-shadow: 0 4px 30px rgba(212,167,67,0.15);
         }
+        .login-right .login-box button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
         .login-error {
             color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 12px;
+        }
+        .login-loading {
+            color: #8a8a8a;
             font-size: 0.8rem;
             margin-top: 12px;
         }
@@ -681,8 +692,9 @@
             <div class="login-box">
                 <p class="sub">Sign In</p>
                 <input type="password" id="adminPassword" placeholder="Enter password" />
-                <button onclick="login()">Unlock Dashboard</button>
+                <button onclick="login()" id="loginBtn">Unlock Dashboard</button>
                 <div id="loginError" class="login-error"></div>
+                <div id="loginLoading" class="login-loading" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Verifying...</div>
             </div>
         </div>
     </div>
@@ -773,8 +785,6 @@
         // CONFIG
         // ============================================================
         const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
-        const ADMIN_PASSWORD = 'socmegy2026';
-        const AUTH_TOKEN = 'Bearer socmegy2026';
 
         // ============================================================
         // STATE
@@ -784,6 +794,7 @@
         let testimonials = [];
         let gallery = [];
         let editingProductId = null;
+        let authToken = null; // Store token after login
 
         // ============================================================
         // CATEGORY STORAGE (localStorage)
@@ -823,25 +834,61 @@
         }
 
         // ============================================================
-        // LOGIN
+        // LOGIN - Call worker to verify password (from KV)
         // ============================================================
-        function login() {
+        async function login() {
             const pwd = document.getElementById('adminPassword').value;
-            if (pwd === ADMIN_PASSWORD) {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                document.getElementById('loginError').textContent = '';
-                loadAll();
-            } else {
-                document.getElementById('loginError').textContent = 'Wrong password!';
-                showToast('❌ Wrong password!', true);
+            const loginBtn = document.getElementById('loginBtn');
+            const loginLoading = document.getElementById('loginLoading');
+            const loginError = document.getElementById('loginError');
+            
+            if (!pwd) {
+                loginError.textContent = 'Please enter password!';
+                return;
             }
+
+            // Show loading state
+            loginBtn.disabled = true;
+            loginLoading.style.display = 'block';
+            loginError.textContent = '';
+
+            try {
+                const response = await fetch(`${WORKER_URL}/api/admin/auth`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pwd })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Store token for subsequent API calls
+                    authToken = `Bearer ${pwd}`;
+                    
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                    loginError.textContent = '';
+                    loadAll();
+                } else {
+                    loginError.textContent = 'Wrong password!';
+                    showToast('❌ Wrong password!', true);
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.textContent = 'Connection error! Please try again.';
+                showToast('❌ Connection error!', true);
+            }
+
+            // Reset loading state
+            loginBtn.disabled = false;
+            loginLoading.style.display = 'none';
         }
 
         function logout() {
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('adminPanel').style.display = 'none';
             document.getElementById('adminPassword').value = '';
+            authToken = null;
         }
 
         document.getElementById('adminPassword').addEventListener('keydown', (e) => {
@@ -964,7 +1011,7 @@
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'Authorization': AUTH_TOKEN 
+                        'Authorization': authToken || 'Bearer socmegy2026'
                     },
                     body: JSON.stringify(updatedProduct)
                 });
@@ -985,7 +1032,7 @@
             try {
                 const response = await fetch(`${WORKER_URL}/api/admin/product?id=${id}`, {
                     method: 'DELETE',
-                    headers: { 'Authorization': AUTH_TOKEN }
+                    headers: { 'Authorization': authToken || 'Bearer socmegy2026' }
                 });
                 
                 if (!response.ok) throw new Error('Delete failed');
@@ -1127,7 +1174,7 @@
         async function loadOrders() {
             try {
                 const res = await fetch(`${WORKER_URL}/api/admin/orders`, {
-                    headers: { 'Authorization': AUTH_TOKEN }
+                    headers: { 'Authorization': authToken || 'Bearer socmegy2026' }
                 });
                 if (!res.ok) throw new Error('Unauthorized');
                 orders = await res.json();
@@ -1192,7 +1239,7 @@
             try {
                 await fetch(`${WORKER_URL}/api/admin/order/status`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': AUTH_TOKEN },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': authToken || 'Bearer socmegy2026' },
                     body: JSON.stringify({ orderId, status })
                 });
                 await loadOrders();
@@ -1551,16 +1598,16 @@
                     const maxId = products.reduce((max, p) => p.id > max ? p.id : max, 0);
                     const id = editingProductId || maxId + 1;
                     
-const productData = { 
-    id, 
-    name, 
-    desc, 
-    price, 
-    icon: 'fa-solid fa-box', 
-    status, 
-    stock: 999,
-    category: category  // <--- TAMBAH INI
-};
+                    const productData = { 
+                        id, 
+                        name, 
+                        desc, 
+                        price, 
+                        icon: 'fa-solid fa-box', 
+                        status, 
+                        stock: 999,
+                        category: category
+                    };
                     
                     console.log('📦 Saving product:', productData);
                     
@@ -1568,7 +1615,7 @@ const productData = {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': AUTH_TOKEN 
+                            'Authorization': authToken || 'Bearer socmegy2026'
                         },
                         body: JSON.stringify(productData)
                     });
@@ -1636,10 +1683,10 @@ const productData = {
         // INIT
         // ============================================================
         console.log('✨ Socmegy Admin');
-        console.log('🔑 Password: socmegy2026');
+        console.log('🔑 Password stored in Cloudflare KV');
         console.log('📌 Products: FULL FUNCTION');
         console.log('   - Add, Edit, Delete, Toggle Status');
-        console.log('   - Category saved in localStorage');
+        console.log('   - Category saved in localStorage & worker');
     </script>
 </body>
 </html>
