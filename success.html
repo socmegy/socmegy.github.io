@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>Pembayaran Berjaya - Socmegy</title>
+    <link rel="icon" href="logo.png" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
@@ -103,16 +104,12 @@
             margin-bottom: 24px;
         }
 
-        .header .logo-box {
+        .header .logo-img {
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #d4a743, #b8922f);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            color: #0a0a0a;
+            object-fit: cover;
+            border: 2px solid rgba(212, 167, 67, 0.15);
             flex-shrink: 0;
         }
 
@@ -131,8 +128,8 @@
         .header .brand-group .tagline {
             color: #888;
             font-size: 0.6rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-transform: none;
         }
 
         /* ===== STATUS BADGE ===== */
@@ -381,7 +378,7 @@
             .row-2 { grid-template-columns: 1fr; gap: 8px; }
             .header { flex-direction: column; text-align: center; }
             .header .brand-group .brand { font-size: 1.2rem; }
-            .header .logo-box { width: 44px; height: 44px; font-size: 1.1rem; }
+            .header .logo-img { width: 44px; height: 44px; }
             .button-group { flex-direction: column; gap: 8px; }
             .btn { padding: 10px 16px; font-size: 0.8rem; }
             h1 { font-size: 1.5rem; }
@@ -394,7 +391,7 @@
         @media (max-width: 400px) {
             .container { padding: 20px 14px; }
             .header .brand-group .brand { font-size: 1rem; }
-            .header .logo-box { width: 36px; height: 36px; font-size: 0.9rem; }
+            .header .logo-img { width: 36px; height: 36px; }
             .field .value { font-size: 0.75rem; }
         }
     </style>
@@ -405,7 +402,7 @@
 
         <!-- ===== HEADER ===== -->
         <div class="header">
-            <div class="logo-box"><i class="fas fa-bolt"></i></div>
+            <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.outerHTML='<div style=\\'width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#d4a743,#b8922f);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#0a0a0a;flex-shrink:0;\\'><i class=\\'fas fa-bolt\\'></i></div>'" />
             <div class="brand-group">
                 <div class="brand">Socmegy</div>
                 <div class="tagline">Your Social Media Booster</div>
@@ -488,15 +485,15 @@
             <button class="btn btn-pdf" onclick="downloadPDF()">
                 <i class="fas fa-file-pdf"></i> Download Resit
             </button>
-            <button class="btn btn-primary" onclick="window.location.href='/'">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/" class="btn btn-primary">
                 <i class="fas fa-home"></i> Halaman Utama
-            </button>
+            </a>
         </div>
 
         <div class="button-group" style="margin-top:8px;">
-            <button class="btn btn-secondary" onclick="window.location.href='/#services'" style="flex:1;">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/#services" class="btn btn-secondary" style="flex:1;">
                 <i class="fas fa-shopping-bag"></i> Beli Lagi
-            </button>
+            </a>
         </div>
 
     </div>
@@ -647,16 +644,12 @@
                                 border-bottom: 2px solid #d4a743;
                                 margin-bottom: 18px;
                             }
-                            .header .logo-box {
+                            .header .logo-img {
                                 width: 48px;
                                 height: 48px;
                                 border-radius: 50%;
-                                background: linear-gradient(135deg, #d4a743, #b8922f);
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                font-size: 1.2rem;
-                                color: #0a0a0a;
+                                object-fit: cover;
+                                border: 2px solid rgba(212,167,67,0.15);
                                 flex-shrink: 0;
                             }
                             .header .brand-group {
@@ -790,7 +783,7 @@
                     <body>
                         <div class="invoice">
                             <div class="header">
-                                <div class="logo-box"><i class="fas fa-bolt"></i></div>
+                                <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.style.display='none'" />
                                 <div class="brand-group">
                                     <div class="brand">Socmegy</div>
                                     <div class="tagline">Your Social Media Booster</div>
