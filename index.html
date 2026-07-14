@@ -1239,7 +1239,8 @@
         .required {
             color: var(--text-danger);
         }
-        .form-group input {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 12px 14px;
             background: rgba(255, 255, 255, 0.05);
@@ -1249,14 +1250,17 @@
             font-family: inherit;
             font-size: 0.95rem;
             transition: all 0.3s;
+            resize: vertical;
         }
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             background: rgba(255, 255, 255, 0.08);
             border-color: rgba(212, 167, 67, 0.3);
             box-shadow: 0 0 12px rgba(212, 167, 67, 0.1);
         }
-        .form-group input::placeholder {
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
             color: rgba(255, 255, 255, 0.3);
         }
         .form-group small {
@@ -1349,7 +1353,7 @@
             <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
         </div>
         <ul class="mobile-menu-links">
-            <li><a href="#catalog" id="mobileLinkCatalog">Katalog</a></li>
+            <li><a href="#services" id="mobileLinkCatalog">Services</a></li>
             <li><a href="#testimonials" id="mobileLinkTestimonials">Testimoni</a></li>
             <li><a href="#gallery" id="mobileLinkGallery">Gallery</a></li>
         </ul>
@@ -1372,7 +1376,12 @@
         <div class="section-title">
             <i class="fas fa-store"></i> All Services
         </div>
-        <div class="catalog-grid" id="catalogGrid"></div>
+        <div class="catalog-grid" id="catalogGrid">
+            <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.5;"></i>
+                Memuatkan servis...
+            </div>
+        </div>
     </section>
 
     <div class="section-spacer"></div>
@@ -1476,6 +1485,17 @@
                 <small>10-11 digit tanpa simbol</small>
             </div>
 
+            <div class="form-group">
+                <label for="checkoutNote">Nota (Link Akaun / Video / Post)</label>
+                <textarea 
+                    id="checkoutNote" 
+                    name="note" 
+                    placeholder="Contoh: https://instagram.com/username"
+                    rows="3"
+                ></textarea>
+                <small>Masukkan link akaun, video, atau post yang hendak diboost</small>
+            </div>
+
             <div class="order-summary">
                 <h3>Ringkasan Pesanan</h3>
                 <div id="checkoutItems"></div>
@@ -1492,68 +1512,17 @@
     </div>
 
     <script>
+        // ============================================================
+        // KONFIGURASI
+        // ============================================================
         const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
+        const API_PRODUCTS_URL = `${WORKER_URL}/api/products`;
 
-        const products = [{
-            id: 1,
-            name: 'Starter Boost',
-            desc: '100 Followers • Real & Aktif',
-            price: 15.00,
-            icon: 'fa-solid fa-user-plus',
-            stock: 5
-        }, {
-            id: 2,
-            name: 'Pro Surge',
-            desc: '500 Followers • Targeted',
-            price: 49.00,
-            icon: 'fa-solid fa-rocket',
-            stock: 0
-        }, {
-            id: 3,
-            name: 'Viral Elite',
-            desc: '1,000 Followers • High Retention',
-            price: 89.00,
-            icon: 'fa-solid fa-fire',
-            stock: 10
-        }, {
-            id: 4,
-            name: 'Mega Influence',
-            desc: '2,500 Followers • Premium Quality',
-            price: 179.00,
-            icon: 'fa-solid fa-crown',
-            stock: 3
-        }];
-
-        const testimonials = [{
-            name: 'Aina R.',
-            text: 'Perkhidmatan sangat cepat! Followers masuk dalam masa 2 jam. Puas hati!',
-            stars: 5
-        }, {
-            name: 'Farid Z.',
-            text: 'Quality followers, engagement meningkat. Recommended!',
-            stars: 5
-        }, {
-            name: 'Sarah H.',
-            text: 'Harga berpatutan dan servis customer service terbaik.',
-            stars: 4
-        }];
-
-        const galleryImages = [
-            'https://picsum.photos/seed/g1/400/400',
-            'https://picsum.photos/seed/g2/400/400',
-            'https://picsum.photos/seed/g3/400/400',
-            'https://picsum.photos/seed/g4/400/400',
-            'https://picsum.photos/seed/g5/400/400',
-            'https://picsum.photos/seed/g6/400/400',
-            'https://picsum.photos/seed/g7/400/400',
-            'https://picsum.photos/seed/g8/400/400',
-            'https://picsum.photos/seed/g9/400/400',
-            'https://picsum.photos/seed/g10/400/400',
-            'https://picsum.photos/seed/g11/400/400',
-            'https://picsum.photos/seed/g12/400/400'
-        ];
-
+        // ============================================================
+        // STATE
+        // ============================================================
         let cart = [];
+        let products = [];
         let isProcessing = false;
         const STORAGE_KEY = 'socmegy_cart';
 
@@ -1565,6 +1534,9 @@
         let lightboxIndex = 0;
         let lightboxImages = [];
 
+        // ============================================================
+        // DOM REFS
+        // ============================================================
         const catalogGrid = document.getElementById('catalogGrid');
         const testimonialGrid = document.getElementById('testimonialGrid');
         const galleryGrid = document.getElementById('galleryGrid');
@@ -1597,6 +1569,9 @@
         const lightboxNext = document.getElementById('lightboxNext');
         const lightboxCounter = document.getElementById('lightboxCounter');
 
+        // ============================================================
+        // MOBILE MENU
+        // ============================================================
         function openMobileMenu() {
             mobileMenu.classList.add('active');
             mobileMenuOverlay.classList.add('active');
@@ -1619,10 +1594,16 @@
             });
         });
 
+        // ============================================================
+        // FALLBACK ICON
+        // ============================================================
         logoIcon.onerror = function() {
             this.style.display = 'none';
         };
 
+        // ============================================================
+        // DOCK SCROLL
+        // ============================================================
         dockHeader.classList.remove('scrolled');
 
         window.addEventListener('scroll', () => {
@@ -1633,60 +1614,84 @@
             }
         });
 
-        function renderProducts() {
-            if (products.length === 0) {
+        // ============================================================
+        // RENDER FUNCTIONS
+        // ============================================================
+        async function renderProducts() {
+            try {
+                const response = await fetch(API_PRODUCTS_URL);
+                if (!response.ok) throw new Error('Failed to fetch products');
+                
+                products = await response.json();
+                
+                if (products.length === 0) {
+                    catalogGrid.innerHTML = `
+                        <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
+                            <i class="fas fa-box" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>
+                            Tiada produk buat masa ini.
+                        </div>
+                    `;
+                    return;
+                }
+
+                catalogGrid.innerHTML = products.map(p => {
+                    const isOutOfStock = p.stock !== undefined && p.stock <= 0;
+                    const isNotAvailable = p.status === 'not_available';
+                    const disabled = isOutOfStock || isNotAvailable;
+                    const statusText = isNotAvailable ? 'Servis Tidak Tersedia' : 
+                                       (isOutOfStock ? 'Habis Stok' : '');
+                    const stockText = p.stock !== undefined ? 
+                        (isOutOfStock ? '<span class="out-of-stock-text">Habis Stok</span>' : 
+                        `<span class="in-stock">${p.stock} unit tersedia</span>`) : '';
+
+                    return `
+                        <div class="product-card glass ${disabled ? 'out-of-stock' : ''}">
+                            ${disabled ? '<div class="out-of-stock-badge">' + statusText + '</div>' : ''}
+                            <div class="product-icon"><i class="${p.icon}"></i></div>
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-desc">${p.desc}</div>
+                            <div class="product-price">RM${p.price.toFixed(2)}</div>
+                            ${p.stock !== undefined ? `<div class="product-stock">${stockText}</div>` : ''}
+                            <button class="btn-gold" data-id="${p.id}" ${disabled ? 'disabled' : ''}>
+                                <i class="fas fa-cart-plus"></i> ${disabled ? statusText : 'Tambah'}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                catalogGrid.querySelectorAll('.btn-gold:not([disabled])').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        const product = products.find(p => p.id === id);
+                        if (product) addToCart(product);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
                 catalogGrid.innerHTML = `
                     <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
-                        <i class="fas fa-box" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>
-                        Tiada produk buat masa ini.
+                        <i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>
+                        Gagal memuatkan produk. Sila refresh.
                     </div>
                 `;
-                return;
             }
-
-            catalogGrid.innerHTML = products.map(p => {
-                const isOutOfStock = p.stock !== undefined && p.stock <= 0;
-                const stockText = p.stock !== undefined ?
-                    (isOutOfStock ?
-                        `<span class="out-of-stock-text">Habis Stok</span>` :
-                        `<span class="in-stock">${p.stock} unit tersedia</span>`) :
-                    '';
-
-                return `
-                    <div class="product-card glass ${isOutOfStock ? 'out-of-stock' : ''}">
-                        ${isOutOfStock ? '<div class="out-of-stock-badge">Habis</div>' : ''}
-                        <div class="product-icon"><i class="${p.icon}"></i></div>
-                        <div class="product-name">${p.name}</div>
-                        <div class="product-desc">${p.desc}</div>
-                        <div class="product-price">RM${p.price.toFixed(2)}</div>
-                        ${p.stock !== undefined ? `<div class="product-stock">${stockText}</div>` : ''}
-                        <button class="btn-gold" data-id="${p.id}" ${isOutOfStock ? 'disabled' : ''}>
-                            <i class="fas fa-cart-plus"></i> ${isOutOfStock ? 'Habis Stok' : 'Tambah'}
-                        </button>
-                    </div>
-                `;
-            }).join('');
-
-            catalogGrid.querySelectorAll('.btn-gold:not([disabled])').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const id = parseInt(btn.dataset.id);
-                    const product = products.find(p => p.id === id);
-                    if (product) addToCart(product);
-                });
-            });
         }
 
         function renderTestimonials() {
-            if (testimonials.length === 0) {
-                testimonialGrid.innerHTML = `
-                    <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">
-                        <i class="fas fa-comment" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>
-                        Tiada testimoni buat masa ini.
-                    </div>
-                `;
-                return;
-            }
+            const testimonials = [{
+                name: 'Aina R.',
+                text: 'Perkhidmatan sangat cepat! Followers masuk dalam masa 2 jam. Puas hati!',
+                stars: 5
+            }, {
+                name: 'Farid Z.',
+                text: 'Quality followers, engagement meningkat. Recommended!',
+                stars: 5
+            }, {
+                name: 'Sarah H.',
+                text: 'Harga berpatutan dan servis customer service terbaik.',
+                stars: 4
+            }];
 
             testimonialGrid.innerHTML = testimonials.map(t => `
                 <div class="testimonial-card glass">
@@ -1698,6 +1703,21 @@
         }
 
         function renderGallery() {
+            const galleryImages = [
+                'https://picsum.photos/seed/g1/400/400',
+                'https://picsum.photos/seed/g2/400/400',
+                'https://picsum.photos/seed/g3/400/400',
+                'https://picsum.photos/seed/g4/400/400',
+                'https://picsum.photos/seed/g5/400/400',
+                'https://picsum.photos/seed/g6/400/400',
+                'https://picsum.photos/seed/g7/400/400',
+                'https://picsum.photos/seed/g8/400/400',
+                'https://picsum.photos/seed/g9/400/400',
+                'https://picsum.photos/seed/g10/400/400',
+                'https://picsum.photos/seed/g11/400/400',
+                'https://picsum.photos/seed/g12/400/400'
+            ];
+
             if (galleryImages.length === 0) {
                 galleryGrid.innerHTML = `
                     <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
@@ -1772,6 +1792,9 @@
             });
         }
 
+        // ============================================================
+        // LIGHTBOX
+        // ============================================================
         function openLightbox(index) {
             if (lightboxImages.length === 0) return;
             lightboxIndex = index;
@@ -1805,7 +1828,14 @@
             updateLightbox();
         }
 
+        // ============================================================
+        // CART ACTIONS
+        // ============================================================
         function addToCart(product) {
+            if (product.status === 'not_available') {
+                showToast('❌ Servis ini tidak tersedia!');
+                return;
+            }
             if (product.stock !== undefined && product.stock <= 0) {
                 showToast('❌ Produk ini sudah habis stok!');
                 return;
@@ -1847,6 +1877,9 @@
             document.body.style.overflow = '';
         }
 
+        // ============================================================
+        // TOAST
+        // ============================================================
         let toastTimer = null;
 
         function showToast(msg) {
@@ -1858,13 +1891,14 @@
             }, 2400);
         }
 
-        // ✅ FIX: Proper checkout form (no prompts)
-        async function handleCheckout() {
+        // ============================================================
+        // CHECKOUT
+        // ============================================================
+        function handleCheckout() {
             if (cart.length === 0) {
                 showToast('Troli kosong!');
                 return;
             }
-
             openCheckoutModal();
         }
 
@@ -1924,6 +1958,7 @@
             const email = document.getElementById('checkoutEmail').value.trim();
             const name = document.getElementById('checkoutName').value.trim();
             const phone = document.getElementById('checkoutPhone').value.trim();
+            const note = document.getElementById('checkoutNote').value.trim() || '';
 
             if (!email || !name || !phone) {
                 showToast('❌ Sila isi semua maklumat!');
@@ -1938,7 +1973,6 @@
             submitBtn.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
-                // ✅ FIX: Amount auto-calculate (no RM0.00)
                 const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
                 if (total <= 0) {
@@ -1950,7 +1984,9 @@
                     email: email,
                     name: name,
                     phone: phone,
+                    note: note,
                     items: cart.map(item => ({
+                        id: item.id,
                         name: item.name,
                         qty: item.qty,
                         price: item.price
@@ -1974,7 +2010,6 @@
                 }
 
                 if (data.billCode) {
-                    // ✅ FIX: Redirect to payment
                     window.location.href = `https://toyyibpay.com/${data.billCode}`;
                 } else {
                     throw new Error('Bill code tidak diterima');
@@ -1989,6 +2024,9 @@
             }
         }
 
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
         cartToggle.addEventListener('click', openCart);
         cartClose.addEventListener('click', closeCart);
         cartOverlay.addEventListener('click', closeCart);
@@ -2056,12 +2094,15 @@
             });
         });
 
+        // ============================================================
+        // INIT
+        // ============================================================
         renderProducts();
         renderTestimonials();
         renderGallery();
         renderCart();
 
-        console.log('✨ SocMegy - All 4 issues fixed!');
+        console.log('✨ SocMegy - Dynamic with KV!');
     </script>
 </body>
 </html>
