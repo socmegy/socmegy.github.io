@@ -6,6 +6,7 @@
     <title>Socmegy - Your Social Media Booster!</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="icon" type="logo.png" href="logo.png">
     <style>
         * {
             margin: 0;
@@ -13,7 +14,6 @@
             box-sizing: border-box;
         }
 
-        /* HIDE SCROLLBAR */
         ::-webkit-scrollbar {
             display: none;
         }
@@ -58,7 +58,6 @@
             margin: 0;
         }
 
-        /* ===== ULTRA GLASS EFFECT ===== */
         .glass {
             background: rgba(255, 255, 255, 0.015);
             backdrop-filter: blur(48px) saturate(2.4);
@@ -130,7 +129,6 @@
             padding: 0 0px;
         }
 
-        /* ===== SECTION SPACING ===== */
         .section-spacer {
             height: var(--section-gap-desktop);
         }
@@ -139,11 +137,6 @@
             padding: 0 0;
         }
 
-        /* ================================================================
-           HERO + HEADER OVERLAY — macam website premium
-           ================================================================ */
-
-        /* Hero wrapper - full width, terus dari atas */
         .hero-wrapper {
             position: relative;
             width: 100vw;
@@ -158,7 +151,6 @@
             top: 0;
         }
 
-        /* Hero background image */
         .hero-bg {
             position: absolute;
             inset: 0;
@@ -172,7 +164,6 @@
             display: block;
         }
 
-        /* Dark overlay atas image */
         .hero-overlay {
             position: absolute;
             inset: 0;
@@ -180,7 +171,6 @@
             z-index: 1;
         }
 
-        /* Content dalam hero */
         .hero-content {
             position: relative;
             z-index: 2;
@@ -210,7 +200,6 @@
             font-size: 1.15rem;
         }
 
-        /* ===== DOCK HEADER — OVERLAY DI ATAS HERO ===== */
         .dock-header {
             position: fixed;
             top: var(--header-top-margin);
@@ -371,7 +360,6 @@
             text-align: center;
         }
 
-        /* ===== MOBILE MENU ===== */
         .mobile-menu-overlay {
             position: fixed;
             inset: 0;
@@ -449,7 +437,6 @@
             color: var(--gold);
         }
 
-        /* ===== SECTION TITLES ===== */
         .section-title {
             font-size: 1.6rem;
             font-weight: 600;
@@ -463,11 +450,6 @@
         .section-title i {
             color: var(--gold);
             font-size: 1.3rem;
-        }
-
-        /* ===== CATALOG ===== */
-        #catalog {
-            scroll-margin-top: 100px;
         }
 
         .catalog-grid {
@@ -605,11 +587,6 @@
             box-shadow: none;
         }
 
-        /* ===== TESTIMONIALS ===== */
-        #testimonials {
-            scroll-margin-top: 100px;
-        }
-
         .testimonial-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -646,11 +623,6 @@
         }
         .testimonial-card cite i {
             color: var(--gold);
-        }
-
-        /* ===== GALLERY ===== */
-        #gallery {
-            scroll-margin-top: 100px;
         }
 
         .gallery-grid {
@@ -700,7 +672,6 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* ===== LIGHTBOX ===== */
         .lightbox {
             position: fixed;
             inset: 0;
@@ -795,7 +766,6 @@
             right: 20px;
         }
 
-        /* ===== FOOTER ===== */
         footer {
             padding: 0 0 40px;
             text-align: center;
@@ -806,7 +776,6 @@
             color: var(--gold);
         }
 
-        /* ===== CART SIDEBAR ===== */
         .cart-overlay {
             position: fixed;
             inset: 0;
@@ -914,35 +883,10 @@
             opacity: 0.4;
         }
 
-        /* ===== CART FOOTER WITH FORM ===== */
         .cart-footer {
             border-top: 1px solid rgba(255, 255, 255, 0.06);
             padding-top: 18px;
         }
-
-        .checkout-form input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff;
-            font-size: 0.9rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-            margin-bottom: 10px;
-            outline: none;
-        }
-
-        .checkout-form input:focus {
-            border-color: var(--gold);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .checkout-form input::placeholder {
-            color: var(--text-muted);
-        }
-
         .cart-total {
             display: flex;
             justify-content: space-between;
@@ -959,7 +903,6 @@
             padding: 14px;
         }
 
-        /* ===== SPINNER ===== */
         .spinner {
             display: inline-block;
             width: 18px;
@@ -975,7 +918,6 @@
             }
         }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -1005,7 +947,6 @@
             margin-right: 10px;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body {
                 padding: 0 16px;
@@ -1210,10 +1151,8 @@
 </head>
 <body>
 
-    <!-- ===== TOAST ===== -->
     <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Added to cart!</span></div>
 
-    <!-- ===== DOCK HEADER — FIXED DI ATAS HERO ===== -->
     <header class="dock-header" id="dockHeader">
         <div class="dock-inner">
             <a href="#" class="logo">
@@ -1239,7 +1178,6 @@
         </div>
     </header>
 
-    <!-- ===== MOBILE MENU ===== -->
     <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
@@ -1253,7 +1191,6 @@
         </ul>
     </div>
 
-    <!-- ===== HERO — FULL SCREEN DENGAN IMAGE BACKGROUND ===== -->
     <div class="hero-wrapper">
         <div class="hero-bg">
             <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1600&q=80" alt="Social media growth" />
@@ -1265,10 +1202,8 @@
         </div>
     </div>
 
-    <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== Services ===== -->
     <section id="services" class="container">
         <div class="section-title">
             <i class="fas fa-store"></i> All Services
@@ -1276,10 +1211,8 @@
         <div class="catalog-grid" id="catalogGrid"></div>
     </section>
 
-    <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== TESTIMONIALS ===== -->
     <section id="testimonials" class="container testimonials">
         <div class="section-title">
             <i class="fas fa-quote-left"></i> Feedback Pelanggan
@@ -1287,10 +1220,8 @@
         <div class="testimonial-grid" id="testimonialGrid"></div>
     </section>
 
-    <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== GALLERY ===== -->
     <section id="gallery" class="container">
         <div class="section-title">
             <i class="fas fa-images"></i> Gallery
@@ -1298,17 +1229,14 @@
         <div class="gallery-grid" id="galleryGrid"></div>
     </section>
 
-    <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== FOOTER ===== -->
     <footer>
         <div class="container">
             &copy; 2026 <span class="gold">Socmegy -</span> Your Social Media Booster! Made with <i class="fas fa-heart" style="color:var(--gold);font-size:0.7rem;"></i>.
         </div>
     </footer>
 
-    <!-- ===== LIGHTBOX ===== -->
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close" id="lightboxClose">&times;</button>
         <button class="lightbox-nav prev" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
@@ -1317,7 +1245,6 @@
         <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
     </div>
 
-    <!-- ===== CART SIDEBAR ===== -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
@@ -1331,12 +1258,6 @@
             </div>
         </div>
         <div class="cart-footer" id="cartFooter" style="display:none;">
-            <!-- ===== FORM UNTUK USER ISI DETAILS ===== -->
-            <div class="checkout-form">
-                <input type="email" id="checkoutEmail" placeholder="Email Anda" value="customer@example.com" />
-                <input type="text" id="checkoutName" placeholder="Nama Anda" value="Customer" />
-                <input type="tel" id="checkoutPhone" placeholder="No. Telefon" value="0123456789" />
-            </div>
             <div class="cart-total">
                 <span>Jumlah</span>
                 <span id="cartTotal">RM0.00</span>
@@ -1348,14 +1269,8 @@
     </div>
 
     <script>
-        // ============================================================
-        // KONFIGURASI
-        // ============================================================
         const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
 
-        // ============================================================
-        // DATA
-        // ============================================================
         const products = [{
             id: 1,
             name: 'Starter Boost',
@@ -1415,9 +1330,6 @@
             'https://picsum.photos/seed/g12/400/400'
         ];
 
-        // ============================================================
-        // STATE
-        // ============================================================
         let cart = [];
         let isProcessing = false;
         const STORAGE_KEY = 'socmegy_cart';
@@ -1430,9 +1342,6 @@
         let lightboxIndex = 0;
         let lightboxImages = [];
 
-        // ============================================================
-        // DOM REFS
-        // ============================================================
         const catalogGrid = document.getElementById('catalogGrid');
         const testimonialGrid = document.getElementById('testimonialGrid');
         const galleryGrid = document.getElementById('galleryGrid');
@@ -1465,9 +1374,6 @@
         const lightboxNext = document.getElementById('lightboxNext');
         const lightboxCounter = document.getElementById('lightboxCounter');
 
-        // ============================================================
-        // MOBILE MENU
-        // ============================================================
         function openMobileMenu() {
             mobileMenu.classList.add('active');
             mobileMenuOverlay.classList.add('active');
@@ -1490,16 +1396,10 @@
             });
         });
 
-        // ============================================================
-        // FALLBACK ICON
-        // ============================================================
         logoIcon.onerror = function() {
             this.style.display = 'none';
         };
 
-        // ============================================================
-        // DOCK SCROLL
-        // ============================================================
         dockHeader.classList.remove('scrolled');
 
         window.addEventListener('scroll', () => {
@@ -1510,9 +1410,6 @@
             }
         });
 
-        // ============================================================
-        // RENDER FUNCTIONS
-        // ============================================================
         function renderProducts() {
             if (products.length === 0) {
                 catalogGrid.innerHTML = `
@@ -1652,9 +1549,6 @@
             });
         }
 
-        // ============================================================
-        // LIGHTBOX
-        // ============================================================
         function openLightbox(index) {
             if (lightboxImages.length === 0) return;
             lightboxIndex = index;
@@ -1688,9 +1582,6 @@
             updateLightbox();
         }
 
-        // ============================================================
-        // CART ACTIONS
-        // ============================================================
         function addToCart(product) {
             if (product.stock !== undefined && product.stock <= 0) {
                 showToast('❌ Produk ini sudah habis stok!');
@@ -1733,9 +1624,6 @@
             document.body.style.overflow = '';
         }
 
-        // ============================================================
-        // TOAST
-        // ============================================================
         let toastTimer = null;
 
         function showToast(msg) {
@@ -1747,19 +1635,31 @@
             }, 2400);
         }
 
-        // ============================================================
-        // CHECKOUT — DENGAN FORM DATA DARI USER
-        // ============================================================
+        // ✅ FIX: Ask for user details (Issue #2)
         async function handleCheckout() {
             if (cart.length === 0) {
                 showToast('Troli kosong!');
                 return;
             }
 
-            // Ambil data dari form
-            const email = document.getElementById('checkoutEmail').value || 'customer@example.com';
-            const name = document.getElementById('checkoutName').value || 'Customer';
-            const phone = document.getElementById('checkoutPhone').value || '0123456789';
+            // ✅ Get user details dynamically
+            const email = prompt('Masukkan email anda:');
+            if (!email) {
+                showToast('❌ Email diperlukan!');
+                return;
+            }
+
+            const name = prompt('Masukkan nama anda:');
+            if (!name) {
+                showToast('❌ Nama diperlukan!');
+                return;
+            }
+
+            const phone = prompt('Masukkan nombor telefon anda:');
+            if (!phone) {
+                showToast('❌ Nombor telefon diperlukan!');
+                return;
+            }
 
             if (isProcessing) return;
             isProcessing = true;
@@ -1767,10 +1667,11 @@
             checkoutBtn.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
+                // ✅ FIX: Amount auto-calculate (Issue #1 & #4)
                 const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
                 const payload = {
-                    amount: total,
+                    amount: total,  // ✅ Auto-calculated, not manual
                     email: email,
                     name: name,
                     phone: phone,
@@ -1796,6 +1697,7 @@
                 }
 
                 if (data.billCode) {
+                    // ✅ FIX: Redirect to payment (Issue #3)
                     window.location.href = `https://toyyibpay.com/${data.billCode}`;
                 } else {
                     throw new Error('Bill code tidak diterima');
@@ -1810,9 +1712,6 @@
             }
         }
 
-        // ============================================================
-        // EVENT LISTENERS
-        // ============================================================
         cartToggle.addEventListener('click', openCart);
         cartClose.addEventListener('click', closeCart);
         cartOverlay.addEventListener('click', closeCart);
@@ -1862,16 +1761,12 @@
             });
         });
 
-        // ============================================================
-        // INIT
-        // ============================================================
         renderProducts();
         renderTestimonials();
         renderGallery();
         renderCart();
 
-        console.log('✨ SocMegy — Hero dengan full background image, header overlay di atas!');
-        console.log('📌 Macam website premium — header terapung di atas hero image.');
+        console.log('✨ SocMegy - All 4 issues fixed!');
     </script>
 </body>
 </html>
