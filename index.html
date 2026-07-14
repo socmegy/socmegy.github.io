@@ -1147,6 +1147,170 @@
                 display: none !important;
             }
         }
+
+        /* ===== CHECKOUT FORM ===== */
+        .checkout-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 250;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .checkout-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .checkout-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            background: rgba(14, 14, 14, 0.92);
+            backdrop-filter: blur(48px) saturate(1.8);
+            -webkit-backdrop-filter: blur(48px) saturate(1.8);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            z-index: 251;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
+            display: none;
+        }
+        .checkout-modal.active {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .checkout-modal::-webkit-scrollbar {
+            width: 6px;
+        }
+        .checkout-modal::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        .checkout-modal::-webkit-scrollbar-thumb {
+            background: rgba(212, 167, 67, 0.3);
+            border-radius: 3px;
+        }
+
+        .checkout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .checkout-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .checkout-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0;
+        }
+        .checkout-close:hover {
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .required {
+            color: var(--text-danger);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(212, 167, 67, 0.3);
+            box-shadow: 0 0 12px rgba(212, 167, 67, 0.1);
+        }
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .form-group small {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .order-summary {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 24px 0;
+        }
+        .order-summary h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .order-summary-item:last-of-type {
+            border-bottom: none;
+        }
+        .order-summary-qty {
+            color: var(--text-muted);
+        }
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .summary-total span:last-child {
+            color: var(--gold-light);
+        }
+
+        #checkoutForm {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
     </style>
 </head>
 <body>
@@ -1266,6 +1430,65 @@
                 <i class="fas fa-lock"></i> Teruskan ke Pembayaran
             </button>
         </div>
+    </div>
+
+    <!-- ===== CHECKOUT FORM MODAL ===== -->
+    <div class="checkout-overlay" id="checkoutOverlay"></div>
+    <div class="checkout-modal" id="checkoutModal">
+        <div class="checkout-header">
+            <h2>Maklumat Pelanggan</h2>
+            <button class="checkout-close" id="checkoutClose">&times;</button>
+        </div>
+        <form id="checkoutForm">
+            <div class="form-group">
+                <label for="checkoutEmail">Email <span class="required">*</span></label>
+                <input 
+                    type="email" 
+                    id="checkoutEmail" 
+                    name="email" 
+                    placeholder="example@email.com"
+                    required
+                />
+                <small>Anda akan menerima resit di sini</small>
+            </div>
+
+            <div class="form-group">
+                <label for="checkoutName">Nama Lengkap <span class="required">*</span></label>
+                <input 
+                    type="text" 
+                    id="checkoutName" 
+                    name="name" 
+                    placeholder="Muhammad Zulhelmi"
+                    required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="checkoutPhone">Nombor Telefon <span class="required">*</span></label>
+                <input 
+                    type="tel" 
+                    id="checkoutPhone" 
+                    name="phone" 
+                    placeholder="0123456789"
+                    pattern="[0-9]{10,11}"
+                    required
+                />
+                <small>10-11 digit tanpa simbol</small>
+            </div>
+
+            <div class="order-summary">
+                <h3>Ringkasan Pesanan</h3>
+                <div id="checkoutItems"></div>
+                <div class="summary-total">
+                    <span>Jumlah:</span>
+                    <span id="checkoutTotal">RM0.00</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-gold" style="width: 100%; justify-content: center; padding: 14px;">
+                <i class="fas fa-credit-card"></i> Bayar Sekarang
+            </button>
+        </form>
     </div>
 
     <script>
@@ -1635,43 +1858,95 @@
             }, 2400);
         }
 
-        // ✅ FIX: Ask for user details (Issue #2)
+        // ✅ FIX: Proper checkout form (no prompts)
         async function handleCheckout() {
             if (cart.length === 0) {
                 showToast('Troli kosong!');
                 return;
             }
 
-            // ✅ Get user details dynamically
-            const email = prompt('Masukkan email anda:');
-            if (!email) {
-                showToast('❌ Email diperlukan!');
+            openCheckoutModal();
+        }
+
+        function openCheckoutModal() {
+            const checkoutOverlay = document.getElementById('checkoutOverlay');
+            const checkoutModal = document.getElementById('checkoutModal');
+            
+            checkoutOverlay.classList.add('active');
+            checkoutModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            renderCheckoutSummary();
+        }
+
+        function closeCheckoutModal() {
+            const checkoutOverlay = document.getElementById('checkoutOverlay');
+            const checkoutModal = document.getElementById('checkoutModal');
+            
+            checkoutOverlay.classList.remove('active');
+            checkoutModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function renderCheckoutSummary() {
+            const checkoutItems = document.getElementById('checkoutItems');
+            const checkoutTotal = document.getElementById('checkoutTotal');
+            
+            let html = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                html += `
+                    <div class="order-summary-item">
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div class="order-summary-qty">x${item.qty}</div>
+                        </div>
+                        <div>RM${subtotal.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+            
+            checkoutItems.innerHTML = html;
+            checkoutTotal.textContent = `RM${total.toFixed(2)}`;
+        }
+
+        async function submitCheckoutForm(e) {
+            e.preventDefault();
+            
+            if (cart.length === 0) {
+                showToast('Troli kosong!');
                 return;
             }
 
-            const name = prompt('Masukkan nama anda:');
-            if (!name) {
-                showToast('❌ Nama diperlukan!');
-                return;
-            }
+            const email = document.getElementById('checkoutEmail').value.trim();
+            const name = document.getElementById('checkoutName').value.trim();
+            const phone = document.getElementById('checkoutPhone').value.trim();
 
-            const phone = prompt('Masukkan nombor telefon anda:');
-            if (!phone) {
-                showToast('❌ Nombor telefon diperlukan!');
+            if (!email || !name || !phone) {
+                showToast('❌ Sila isi semua maklumat!');
                 return;
             }
 
             if (isProcessing) return;
             isProcessing = true;
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerHTML = '<span class="spinner"></span> Memproses...';
+            
+            const submitBtn = document.getElementById('checkoutForm').querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
-                // ✅ FIX: Amount auto-calculate (Issue #1 & #4)
+                // ✅ FIX: Amount auto-calculate (no RM0.00)
                 const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
+                if (total <= 0) {
+                    throw new Error('Jumlah pesanan tidak sah');
+                }
+
                 const payload = {
-                    amount: total,  // ✅ Auto-calculated, not manual
+                    amount: total,
                     email: email,
                     name: name,
                     phone: phone,
@@ -1681,6 +1956,8 @@
                         price: item.price
                     }))
                 };
+
+                console.log('Submitting checkout:', payload);
 
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
@@ -1697,7 +1974,7 @@
                 }
 
                 if (data.billCode) {
-                    // ✅ FIX: Redirect to payment (Issue #3)
+                    // ✅ FIX: Redirect to payment
                     window.location.href = `https://toyyibpay.com/${data.billCode}`;
                 } else {
                     throw new Error('Bill code tidak diterima');
@@ -1706,8 +1983,8 @@
             } catch (error) {
                 console.error('Checkout error:', error);
                 showToast('❌ ' + error.message);
-                checkoutBtn.disabled = false;
-                checkoutBtn.innerHTML = '<i class="fas fa-lock"></i> Teruskan ke Pembayaran';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Bayar Sekarang';
                 isProcessing = false;
             }
         }
@@ -1721,10 +1998,28 @@
         lightboxPrev.addEventListener('click', prevImage);
         lightboxNext.addEventListener('click', nextImage);
 
+        // Checkout form events
+        const checkoutOverlay = document.getElementById('checkoutOverlay');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const checkoutClose = document.getElementById('checkoutClose');
+        const checkoutForm = document.getElementById('checkoutForm');
+
+        checkoutClose.addEventListener('click', closeCheckoutModal);
+        checkoutOverlay.addEventListener('click', (e) => {
+            if (e.target === checkoutOverlay) {
+                closeCheckoutModal();
+            }
+        });
+        checkoutForm.addEventListener('submit', submitCheckoutForm);
+
+        // Close modals on Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (lightbox.classList.contains('active')) {
                     closeLightbox();
+                }
+                if (checkoutModal.classList.contains('active')) {
+                    closeCheckoutModal();
                 }
                 closeCart();
                 closeMobileMenu();
