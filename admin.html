@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SocMegy - Cute Handling</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="icon" type="logo.png" href="logo.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0b0b;
+            color: #f5f0eb;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Login */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #e8c96e, #d4a743);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        .login-container input:focus {
+            border-color: #d4a743;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4a743, #b8922f);
+            color: #0b0b0b;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .login-container button:hover {
+            transform: scale(1.02);
+        }
+        .login-error {
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        /* Admin Panel */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 24px;
+        }
+        .admin-header h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #e8c96e, #d4a743);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .admin-header .logout {
+            background: none;
+            border: none;
+            color: #a09888;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+        .admin-header .logout:hover { color: #ff6b6b; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #d4a743;
+        }
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: #a09888;
+            margin-top: 4px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 12px;
+        }
+        .tabs button {
+            background: none;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #a09888;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .tabs button.active {
+            background: rgba(212,167,67,0.15);
+            color: #d4a743;
+        }
+        .tabs button:hover {
+            color: #fff;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Product Cards */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .product-card-admin {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .product-card-admin:hover {
+            border-color: rgba(212,167,67,0.2);
+        }
+        .product-card-admin .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .status-badge.available {
+            background: rgba(81,207,102,0.15);
+            color: #51cf66;
+        }
+        .status-badge.not_available {
+            background: rgba(255,107,107,0.15);
+            color: #ff6b6b;
+        }
+        .product-card-admin .name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        .product-card-admin .desc {
+            font-size: 0.85rem;
+            color: #a09888;
+            margin-bottom: 8px;
+        }
+        .product-card-admin .price {
+            font-size: 1.2rem;
+            color: #d4a743;
+            font-weight: 600;
+        }
+        .product-card-admin .stock {
+            font-size: 0.8rem;
+            color: #a09888;
+        }
+        .product-card-admin .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .product-card-admin .actions button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-weight: 500;
+        }
+        .btn-edit {
+            background: rgba(212,167,67,0.15);
+            color: #d4a743;
+        }
+        .btn-edit:hover { background: rgba(212,167,67,0.25); }
+        .btn-toggle {
+            background: rgba(81,207,102,0.15);
+            color: #51cf66;
+        }
+        .btn-toggle:hover { background: rgba(81,207,102,0.25); }
+        .btn-delete {
+            background: rgba(255,107,107,0.15);
+            color: #ff6b6b;
+        }
+        .btn-delete:hover { background: rgba(255,107,107,0.25); }
+
+        .btn-add {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #d4a743, #b8922f);
+            color: #0b0b0b;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+        .btn-add:hover { transform: scale(1.02); }
+
+        /* Order Table */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .order-table th {
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            color: #a09888;
+            font-weight: 500;
+        }
+        .order-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+        }
+        .order-table .status-select {
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.8rem;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        .order-table .status-select option {
+            background: #1a1a1a;
+        }
+        .order-table .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge.pending { background: rgba(255,193,7,0.15); color: #ffc107; }
+        .badge.completed { background: rgba(81,207,102,0.15); color: #51cf66; }
+        .badge.failed { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: rgba(20,20,20,0.95);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal h2 {
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            color: #d4a743;
+        }
+        .modal .form-group {
+            margin-bottom: 16px;
+        }
+        .modal .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #a09888;
+            margin-bottom: 4px;
+        }
+        .modal .form-group input,
+        .modal .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+        }
+        .modal .form-group input:focus,
+        .modal .form-group select:focus {
+            border-color: #d4a743;
+        }
+        .modal .form-group select option {
+            background: #1a1a1a;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .modal-actions button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #d4a743, #b8922f);
+            color: #0b0b0b;
+            flex: 1;
+        }
+        .btn-save:hover { transform: scale(1.02); }
+        .btn-cancel {
+            background: rgba(255,255,255,0.05);
+            color: #a09888;
+        }
+        .btn-cancel:hover { background: rgba(255,255,255,0.1); }
+
+        .loading {
+            text-align: center;
+            color: #a09888;
+            padding: 40px 0;
+        }
+        .loading i { font-size: 2rem; display: block; margin-bottom: 12px; opacity: 0.3; }
+
+        @media (max-width: 768px) {
+            .product-grid { grid-template-columns: 1fr; }
+            .order-table { font-size: 0.75rem; }
+            .order-table th, .order-table td { padding: 8px 4px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="app">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <h1><i class="fas fa-crown"></i> SocMegy Admin</h1>
+        <input type="password" id="adminPassword" placeholder="Masukkan password" />
+        <button onclick="login()">Login</button>
+        <div id="loginError" class="login-error"></div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" style="display:none;">
+        <div class="admin-header">
+            <h1><i class="fas fa-crown"></i> Socmegy Owner</h1>
+            <button class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="number" id="totalProducts">0</div><div class="label">Total Products</div></div>
+            <div class="stat-card"><div class="number" id="totalOrders">0</div><div class="label">Total Orders</div></div>
+            <div class="stat-card"><div class="number" id="pendingOrders">0</div><div class="label">Pending</div></div>
+            <div class="stat-card"><div class="number" id="completedOrders">0</div><div class="label">Completed</div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="active" data-tab="products" onclick="switchTab('products')"><i class="fas fa-box"></i> Products</button>
+            <button data-tab="orders" onclick="switchTab('orders')"><i class="fas fa-list"></i> Orders</button>
+        </div>
+
+        <!-- Products Tab -->
+        <div id="tabProducts" class="tab-content active">
+            <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i> Add New Product</button>
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="tabOrders" class="tab-content">
+            <div id="orderList"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 id="modalTitle">Add Product</h2>
+        <form id="productForm" onsubmit="saveProduct(event)">
+            <input type="hidden" id="editId" />
+            <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" id="fName" placeholder="e.g. Ultra Growth" required />
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="fDesc" placeholder="e.g. 5,000 Followers" required />
+            </div>
+            <div class="form-group">
+                <label>Price (RM)</label>
+                <input type="number" id="fPrice" placeholder="349" step="0.01" required />
+            </div>
+            <div class="form-group">
+                <label>Icon (FontAwesome class)</label>
+                <input type="text" id="fIcon" placeholder="fa-solid fa-star" value="fa-solid fa-box" />
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="fStatus">
+                    <option value="available">Available</option>
+                    <option value="not_available">Not Available</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input type="number" id="fStock" placeholder="999" value="999" />
+            </div>
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">Save</button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
+    const ADMIN_PASSWORD = 'socmegy2026';
+    const AUTH_TOKEN = 'Bearer socmegy2026';
+
+    let products = [];
+    let orders = [];
+    let isLoggedIn = false;
+
+    // ============================================================
+    // LOGIN
+    // ============================================================
+    function login() {
+        const password = document.getElementById('adminPassword').value;
+        if (password === ADMIN_PASSWORD) {
+            isLoggedIn = true;
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('loginError').textContent = '';
+            loadAll();
+        } else {
+            document.getElementById('loginError').textContent = 'Password salah!';
+        }
+    }
+
+    function logout() {
+        isLoggedIn = false;
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('adminPanel').style.display = 'none';
+        document.getElementById('adminPassword').value = '';
+    }
+
+    // Enter key untuk login
+    document.getElementById('adminPassword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') login();
+    });
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+        
+        if (tab === 'products') {
+            document.getElementById('tabProducts').classList.add('active');
+        } else {
+            document.getElementById('tabOrders').classList.add('active');
+        }
+        document.querySelector(`.tabs button[data-tab="${tab}"]`).classList.add('active');
+    }
+
+    // ============================================================
+    // LOAD DATA
+    // ============================================================
+    async function loadAll() {
+        await Promise.all([loadProducts(), loadOrders()]);
+        updateStats();
+    }
+
+    async function loadProducts() {
+        try {
+            const response = await fetch(`${WORKER_URL}/api/products`);
+            products = await response.json();
+            renderProducts();
+        } catch (error) {
+            console.error('Error loading products:', error);
+            document.getElementById('productGrid').innerHTML = '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Gagal memuatkan produk</div>';
+        }
+    }
+
+    async function loadOrders() {
+        try {
+            const response = await fetch(`${WORKER_URL}/api/admin/orders`, {
+                headers: { 'Authorization': AUTH_TOKEN }
+            });
+            if (!response.ok) throw new Error('Unauthorized');
+            orders = await response.json();
+            renderOrders();
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            document.getElementById('orderList').innerHTML = '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Gagal memuatkan order</div>';
+        }
+    }
+
+    // ============================================================
+    // RENDER PRODUCTS
+    // ============================================================
+    function renderProducts() {
+        const grid = document.getElementById('productGrid');
+        if (products.length === 0) {
+            grid.innerHTML = '<div class="loading"><i class="fas fa-box-open"></i> Tiada produk</div>';
+            return;
+        }
+        
+        grid.innerHTML = products.map(p => `
+            <div class="product-card-admin">
+                <span class="status-badge ${p.status || 'available'}">${p.status || 'available'}</span>
+                <div class="name"><i class="${p.icon || 'fa-solid fa-box'}"></i> ${p.name}</div>
+                <div class="desc">${p.desc}</div>
+                <div class="price">RM${p.price.toFixed(2)}</div>
+                <div class="stock">Stok: ${p.stock !== undefined ? p.stock : '∞'}</div>
+                <div class="actions">
+                    <button class="btn-edit" onclick="openEditModal(${p.id})"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="btn-toggle" onclick="toggleStatus(${p.id})">
+                        <i class="fas fa-${p.status === 'available' ? 'pause' : 'play'}"></i> 
+                        ${p.status === 'available' ? 'Set Not Available' : 'Set Available'}
+                    </button>
+                    <button class="btn-delete" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ============================================================
+    // RENDER ORDERS
+    // ============================================================
+    function renderOrders() {
+        const container = document.getElementById('orderList');
+        if (orders.length === 0) {
+            container.innerHTML = '<div class="loading"><i class="fas fa-box-open"></i> Tiada order</div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Note</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orders.map(o => `
+                        <tr>
+                            <td><small>${o.orderId}</small></td>
+                            <td>
+                                <strong>${o.customer.name}</strong><br/>
+                                <small style="color:#a09888;">${o.customer.email}</small><br/>
+                                <small style="color:#a09888;">${o.customer.phone}</small>
+                            </td>
+                            <td>${o.items.map(i => `${i.name} x${i.qty}`).join('<br/>')}</td>
+                            <td><strong>RM${o.total.toFixed(2)}</strong></td>
+                            <td><span class="badge ${o.status}">${o.status}</span></td>
+                            <td><small style="color:#a09888;">${o.note || '-'}</small></td>
+                            <td>
+                                <select class="status-select" onchange="updateOrderStatus('${o.orderId}', this.value)">
+                                    <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="completed" ${o.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="failed" ${o.status === 'failed' ? 'selected' : ''}>Failed</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    // ============================================================
+    // UPDATE STATS
+    // ============================================================
+    function updateStats() {
+        document.getElementById('totalProducts').textContent = products.length;
+        document.getElementById('totalOrders').textContent = orders.length;
+        document.getElementById('pendingOrders').textContent = orders.filter(o => o.status === 'pending').length;
+        document.getElementById('completedOrders').textContent = orders.filter(o => o.status === 'completed').length;
+    }
+
+    // ============================================================
+    // PRODUCT CRUD
+    // ============================================================
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = 'Add New Product';
+        document.getElementById('editId').value = '';
+        document.getElementById('fName').value = '';
+        document.getElementById('fDesc').value = '';
+        document.getElementById('fPrice').value = '';
+        document.getElementById('fIcon').value = 'fa-solid fa-box';
+        document.getElementById('fStatus').value = 'available';
+        document.getElementById('fStock').value = '999';
+        document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function openEditModal(id) {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+        
+        document.getElementById('modalTitle').textContent = 'Edit Product';
+        document.getElementById('editId').value = product.id;
+        document.getElementById('fName').value = product.name;
+        document.getElementById('fDesc').value = product.desc;
+        document.getElementById('fPrice').value = product.price;
+        document.getElementById('fIcon').value = product.icon || 'fa-solid fa-box';
+        document.getElementById('fStatus').value = product.status || 'available';
+        document.getElementById('fStock').value = product.stock || 999;
+        document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    async function saveProduct(e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('editId').value;
+        const name = document.getElementById('fName').value.trim();
+        const desc = document.getElementById('fDesc').value.trim();
+        const price = parseFloat(document.getElementById('fPrice').value);
+        const icon = document.getElementById('fIcon').value.trim() || 'fa-solid fa-box';
+        const status = document.getElementById('fStatus').value;
+        const stock = parseInt(document.getElementById('fStock').value) || 999;
+        
+        if (!name || !desc || isNaN(price)) {
+            alert('Sila isi semua maklumat!');
+            return;
+        }
+        
+        const newId = id ? parseInt(id) : Math.max(...products.map(p => p.id), 0) + 1;
+        
+        try {
+            const response = await fetch(`${WORKER_URL}/api/admin/product`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTH_TOKEN
+                },
+                body: JSON.stringify({ id: newId, name, desc, price, icon, status, stock })
+            });
+            
+            if (!response.ok) throw new Error('Failed to save');
+            
+            closeModal();
+            await loadProducts();
+            updateStats();
+        } catch (error) {
+            alert('Gagal menyimpan produk: ' + error.message);
+        }
+    }
+
+    async function toggleStatus(id) {
+        const product = products.find(p => p.id === id);
+        if (!product) return;
+        
+        const newStatus = product.status === 'available' ? 'not_available' : 'available';
+        
+        try {
+            const response = await fetch(`${WORKER_URL}/api/admin/product`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTH_TOKEN
+                },
+                body: JSON.stringify({ 
+                    id: product.id, 
+                    name: product.name,
+                    desc: product.desc,
+                    price: product.price,
+                    icon: product.icon,
+                    status: newStatus,
+                    stock: product.stock || 999
+                })
+            });
+            
+            if (!response.ok) throw new Error('Failed to update');
+            
+            await loadProducts();
+            updateStats();
+        } catch (error) {
+            alert('Gagal tukar status: ' + error.message);
+        }
+    }
+
+    async function deleteProduct(id) {
+        if (!confirm('Confirm delete this product?')) return;
+        
+        try {
+            const response = await fetch(`${WORKER_URL}/api/admin/product?id=${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': AUTH_TOKEN }
+            });
+            
+            if (!response.ok) throw new Error('Failed to delete');
+            
+            await loadProducts();
+            updateStats();
+        } catch (error) {
+            alert('Gagal delete produk: ' + error.message);
+        }
+    }
+
+    // ============================================================
+    // ORDER MANAGEMENT
+    // ============================================================
+    async function updateOrderStatus(orderId, status) {
+        try {
+            const response = await fetch(`${WORKER_URL}/api/admin/order/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTH_TOKEN
+                },
+                body: JSON.stringify({ orderId, status })
+            });
+            
+            if (!response.ok) throw new Error('Failed to update');
+            
+            await loadOrders();
+            updateStats();
+        } catch (error) {
+            alert('Gagal update status: ' + error.message);
+        }
+    }
+
+    // ============================================================
+    // KEYBOARD SHORTCUTS
+    // ============================================================
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    // Check if already logged in (session)
+    if (isLoggedIn) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAll();
+    }
+
+    console.log('🔐 SocMegy Admin Panel loaded');
+    console.log('🔑 Password: socmegy2026');
+</script>
+</body>
+</html>
