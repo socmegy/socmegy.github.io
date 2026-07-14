@@ -52,12 +52,12 @@
         .reveal-delay-4 { transition-delay: 0.4s; }
 
         /* ============================================================
-           REAL LIQUID GLASS — Jernih + Berkilat + Shimmer
+           LIQUID GLASS — Fixed: less blurry, more crisp
            ============================================================ */
         .glass {
             background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(8px) saturate(1.2);
-            -webkit-backdrop-filter: blur(8px) saturate(1.2);
+            backdrop-filter: blur(12px) saturate(1.2);
+            -webkit-backdrop-filter: blur(12px) saturate(1.2);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-lg);
             box-shadow: 
@@ -78,35 +78,12 @@
                 rgba(255, 255, 255, 0) 30%,
                 rgba(255, 255, 255, 0.05) 50%,
                 rgba(255, 255, 255, 0) 70%,
-                rgba(255, 255, 255, 0.1) 100%
-            );
+                rgba(255, 255, 255, 0.1) 100%);
             pointer-events: none;
             opacity: 0.4;
             transition: opacity 0.6s;
         }
         .glass:hover::before { opacity: 0.8; }
-        .glass::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.2) 0%,
-                rgba(212, 167, 67, 0.05) 30%,
-                rgba(255, 255, 255, 0) 50%,
-                rgba(212, 167, 67, 0.05) 70%,
-                rgba(255, 255, 255, 0.15) 100%
-            );
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.6;
-            transition: opacity 0.6s;
-        }
-        .glass:hover::after { opacity: 1; }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0; }
         .section-spacer { height: var(--section-gap); }
@@ -214,7 +191,7 @@
         .hero-cta:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 50px rgba(212,167,67,0.35); }
 
         /* ============================================================
-           HEADER — Transparent before scroll, Glass after scroll
+           HEADER
            ============================================================ */
         .dock-header {
             position: fixed;
@@ -235,29 +212,10 @@
         }
         .dock-header.scrolled {
             background: rgba(10,10,10,0.08);
-            backdrop-filter: blur(8px) saturate(1.2);
-            -webkit-backdrop-filter: blur(8px) saturate(1.2);
+            backdrop-filter: blur(12px) saturate(1.2);
+            -webkit-backdrop-filter: blur(12px) saturate(1.2);
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
-        .dock-header.scrolled::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: var(--header-radius);
-            padding: 1px;
-            background: linear-gradient(135deg,
-                rgba(255,255,255,0.15) 0%,
-                rgba(212,167,67,0.05) 30%,
-                rgba(255,255,255,0) 50%,
-                rgba(212,167,67,0.05) 70%,
-                rgba(255,255,255,0.1) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.6;
         }
         .dock-inner {
             display: flex;
@@ -353,13 +311,14 @@
         }
 
         /* ============================================================
-           MOBILE MENU — LIQUID GLASS
+           MOBILE MENU — FIXED: Less blurry, better glass
            ============================================================ */
         .mobile-menu-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 150;
             opacity: 0;
             visibility: hidden;
@@ -377,19 +336,11 @@
             transition: left 0.4s var(--transition-smooth);
             display: flex;
             flex-direction: column;
-            background: rgba(14,14,14,0.7);
-            backdrop-filter: blur(16px) saturate(1.4);
-            -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            background: rgba(14,14,14,0.85);
+            backdrop-filter: blur(12px) saturate(1.2);
+            -webkit-backdrop-filter: blur(12px) saturate(1.2);
             border-right: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
-        }
-        .mobile-menu::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-right: 1px solid;
-            border-image: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(212,167,67,0.04) 50%, rgba(255,255,255,0.08) 100%) 1;
-            pointer-events: none;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
         .mobile-menu.active { left: 0; }
         .mobile-menu-header {
@@ -427,7 +378,7 @@
         .mobile-menu-links a:hover { color: var(--gold); }
 
         /* ============================================================
-           FLOATING BUTTONS — WITH GLASS
+           FLOATING BUTTONS
            ============================================================ */
         .float-buttons {
             position: fixed;
@@ -456,20 +407,6 @@
             -webkit-backdrop-filter: blur(8px) saturate(1.2);
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        .float-btn::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(212,167,67,0.05) 30%, rgba(255,255,255,0) 50%, rgba(212,167,67,0.05) 70%, rgba(255,255,255,0.1) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.5;
         }
         .float-btn:hover { transform: scale(1.08); border-color: rgba(212,167,67,0.15); }
         .float-btn .tooltip {
@@ -508,7 +445,31 @@
         .section-title .gold { color: var(--gold); }
 
         /* ============================================================
-           PRODUCTS
+           CATEGORY FILTER — NEW
+           ============================================================ */
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .category-filter button {
+            padding: 8px 22px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.02);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .category-filter button:hover { border-color: rgba(212,167,67,0.2); color: var(--text-primary); }
+        .category-filter button.active { border-color: var(--gold); color: var(--gold); background: rgba(212,167,67,0.06); }
+
+        /* ============================================================
+           PRODUCTS — NO ICON
            ============================================================ */
         .catalog-grid {
             display: grid;
@@ -544,7 +505,16 @@
             border-radius: 30px;
             text-transform: uppercase;
         }
-        .product-icon { font-size: 2.6rem; color: var(--gold); margin-bottom: 12px; }
+        .product-category-tag {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            background: rgba(212,167,67,0.1);
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
         .product-name { font-weight: 600; font-size: 1.15rem; margin-bottom: 4px; }
         .product-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
         .product-price { font-size: 1.6rem; font-weight: 700; color: var(--gold-light); margin-bottom: 16px; }
@@ -708,31 +678,18 @@
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
-        footer .social-links a::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(212,167,67,0.05) 30%, rgba(255,255,255,0) 50%, rgba(212,167,67,0.05) 70%, rgba(255,255,255,0.1) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.4;
-        }
         footer .social-links a:hover { color: var(--gold); transform: translateY(-4px); border-color: rgba(212,167,67,0.1); }
         footer .footer-text { opacity: 0.5; font-size: 0.8rem; }
 
         /* ============================================================
-           CART — dengan animation
+           CART — FIXED: Less blurry, better glass
            ============================================================ */
         .cart-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 200;
             opacity: 0;
             visibility: hidden;
@@ -746,8 +703,9 @@
             width: 100%;
             max-width: 400px;
             height: 100%;
-            background: rgba(14,14,14,0.92);
-            backdrop-filter: blur(48px) saturate(1.8);
+            background: rgba(14,14,14,0.9);
+            backdrop-filter: blur(12px) saturate(1.2);
+            -webkit-backdrop-filter: blur(12px) saturate(1.2);
             border-left: 1px solid rgba(255,255,255,0.04);
             z-index: 201;
             padding: 28px 24px;
@@ -784,19 +742,6 @@
         @keyframes cartSlide {
             0% { opacity: 0; transform: translateX(20px); }
             100% { opacity: 1; transform: translateX(0); }
-        }
-        .cart-item-thumb {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-sm);
-            background: rgba(255,255,255,0.04);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: var(--gold);
-            flex-shrink: 0;
-            border: 1px solid rgba(255,255,255,0.04);
         }
         .cart-item-info { flex: 1; }
         .cart-item-name { font-weight: 500; font-size: 0.95rem; }
@@ -847,13 +792,14 @@
         .cart-footer .btn-gold { width: 100%; justify-content: center; padding: 14px; }
 
         /* ============================================================
-           CHECKOUT MODAL — Liquid Glass
+           CHECKOUT MODAL
            ============================================================ */
         .checkout-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
             z-index: 250;
             opacity: 0;
             visibility: hidden;
@@ -868,9 +814,9 @@
             width: 100%;
             max-width: 520px;
             max-height: 90vh;
-            background: rgba(14,14,14,0.85);
-            backdrop-filter: blur(16px) saturate(1.4);
-            -webkit-backdrop-filter: blur(16px) saturate(1.4);
+            background: rgba(14,14,14,0.9);
+            backdrop-filter: blur(12px) saturate(1.2);
+            -webkit-backdrop-filter: blur(12px) saturate(1.2);
             border: 1px solid rgba(255,255,255,0.06);
             border-radius: 24px;
             z-index: 251;
@@ -878,20 +824,6 @@
             transition: all 0.5s var(--transition-smooth);
             overflow-y: auto;
             display: none;
-        }
-        .checkout-modal::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(212,167,67,0.05) 30%, rgba(255,255,255,0) 50%, rgba(212,167,67,0.05) 70%, rgba(255,255,255,0.1) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.5;
         }
         .checkout-modal.active { display: block; transform: translate(-50%, -50%) scale(1); }
         .checkout-modal::-webkit-scrollbar { width: 4px; }
@@ -1087,12 +1019,12 @@
             .catalog-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
             .product-card { padding: 18px 12px 16px; }
             .product-price { font-size: 1.2rem; }
-            .product-icon { font-size: 2rem; }
             .testimonial-grid { grid-template-columns: 1fr; gap: 16px; }
             .testimonial-card { padding: 24px 16px; }
             .testimonial-card blockquote { font-size: 0.95rem; }
             .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
             .gallery-categories button { padding: 10px 20px; font-size: 0.85rem; }
+            .category-filter button { padding: 6px 16px; font-size: 0.8rem; }
             .cart-sidebar { max-width: 100%; border-radius: 0; }
             .float-buttons { bottom: 20px; right: 16px; }
             .float-btn { width: 46px; height: 46px; font-size: 1.2rem; }
@@ -1124,6 +1056,8 @@
             .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
             .gallery-categories { gap: 8px; }
             .gallery-categories button { padding: 8px 16px; font-size: 0.8rem; }
+            .category-filter { gap: 6px; }
+            .category-filter button { padding: 5px 12px; font-size: 0.75rem; }
             .checkout-modal { padding: 16px; }
             .form-group input, .form-group textarea { padding: 10px 12px; font-size: 0.85rem; }
             .float-buttons { bottom: 14px; right: 12px; gap: 8px; }
@@ -1198,7 +1132,7 @@
 
     <!-- ===== HERO ===== -->
     <div class="hero-wrapper">
-        <div class="hero-bg">
+        <div class="hero-bg" id="heroBg">
             <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1600&q=80" alt="Social media growth" />
         </div>
         <div class="hero-overlay"></div>
@@ -1207,8 +1141,8 @@
             <h1 id="typingHeading">
                 Elevate Your <span class="highlight">Digital Presence</span><span class="typing-cursor"></span>
             </h1>
-            <p>Increase engagement. Boost social media growth services with secure payments and guaranteed results.</p>
-            <a href="#services" class="hero-cta">
+            <p id="heroSubtitle">Increase engagement. Boost social media growth services with secure payments and guaranteed results.</p>
+            <a href="#services" class="hero-cta" id="heroCta">
                 <i class="fas fa-rocket"></i> Explore Services
             </a>
         </div>
@@ -1222,6 +1156,10 @@
         <div class="section-title reveal">
             <i class="fas fa-store"></i> Our <span class="gold">Services</span>
         </div>
+        
+        <!-- Category Filter -->
+        <div class="category-filter" id="categoryFilter"></div>
+        
         <div class="catalog-grid" id="catalogGrid">
             <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0;">
                 <i class="fas fa-spinner fa-spin" style="font-size:2rem;display:block;margin-bottom:16px;opacity:0.4;"></i>
@@ -1254,7 +1192,7 @@
         <div class="gallery-grid" id="galleryGrid"></div>
     </section>
 
-    <!-- ===== SPACER (lebih kecil) ===== -->
+    <!-- ===== SPACER ===== -->
     <div style="height:40px;"></div>
 
     <!-- ===== FOOTER ===== -->
@@ -1319,7 +1257,7 @@
             </div>
             <div class="form-group">
                 <label for="checkoutName">Full Name <span class="required">*</span></label>
-                <input type="text" id="checkoutName" placeholder="Muhammad Zulhelmi" required />
+                <input type="text" id="checkoutName" placeholder="Your Name" required />
             </div>
             <div class="form-group">
                 <label for="checkoutPhone">Phone Number <span class="required">*</span></label>
@@ -1399,36 +1337,76 @@
         let cart = [];
         let products = [];
         let isProcessing = false;
+        let currentCategory = 'All';
         const STORAGE_KEY = 'socmegy_cart';
         try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) cart = JSON.parse(saved); } catch (_) {}
 
         // ============================================================
-        // TESTIMONIALS DATA
+        // LOAD HERO FROM localStorage
         // ============================================================
-        const testimonials = [
-            { name: 'Aina R.', text: 'Super fast service! Followers started coming in within 2 hours. Very satisfied!', stars: 5 },
-            { name: 'Farid Z.', text: 'Quality followers with real engagement. My account growth has been incredible. Highly recommended!', stars: 5 },
-            { name: 'Sarah H.', text: 'Affordable pricing and excellent customer support. They really care about their clients.', stars: 4 },
-            { name: 'Adam B.', text: 'My Instagram blew up after using Socmegy. Best investment I\'ve made for my brand.', stars: 5 }
-        ];
+        function loadHeroFromStorage() {
+            const saved = localStorage.getItem('socmegy_hero');
+            if (saved) {
+                try {
+                    const h = JSON.parse(saved);
+                    if (h.image) {
+                        const heroBg = document.getElementById('heroBg').querySelector('img');
+                        if (heroBg) heroBg.src = h.image;
+                    }
+                    if (h.title) {
+                        // Update typing heading base
+                        const heading = document.getElementById('typingHeading');
+                        // We'll keep typing animation but update phrases
+                        if (h.title) {
+                            // Replace first phrase with custom title
+                            const cleanTitle = h.title.replace(/<[^>]*>/g, '');
+                            phrases[0] = cleanTitle + ' <span class="highlight">${h.title.includes("Digital") ? "Digital Presence" : "Social Media"}</span>';
+                            // Simpler: just update the text without breaking typing
+                        }
+                    }
+                    if (h.subtitle) {
+                        document.getElementById('heroSubtitle').textContent = h.subtitle;
+                    }
+                    if (h.cta) {
+                        document.getElementById('heroCta').innerHTML = '<i class="fas fa-rocket"></i> ' + h.cta;
+                    }
+                } catch(e) {}
+            }
+        }
 
         // ============================================================
-        // GALLERY DATA
+        // TESTIMONIALS DATA - From localStorage
         // ============================================================
-        const galleryData = [
-            { src: 'https://picsum.photos/seed/g1/400/400', category: 'TikTok' },
-            { src: 'https://picsum.photos/seed/g2/400/400', category: 'TikTok' },
-            { src: 'https://picsum.photos/seed/g3/400/400', category: 'TikTok' },
-            { src: 'https://picsum.photos/seed/g4/400/400', category: 'Instagram' },
-            { src: 'https://picsum.photos/seed/g5/400/400', category: 'Instagram' },
-            { src: 'https://picsum.photos/seed/g6/400/400', category: 'Instagram' },
-            { src: 'https://picsum.photos/seed/g7/400/400', category: 'Instagram' },
-            { src: 'https://picsum.photos/seed/g8/400/400', category: 'TikTok' },
-            { src: 'https://picsum.photos/seed/g9/400/400', category: 'TikTok' },
-            { src: 'https://picsum.photos/seed/g10/400/400', category: 'Instagram' },
-            { src: 'https://picsum.photos/seed/g11/400/400', category: 'Instagram' },
-            { src: 'https://picsum.photos/seed/g12/400/400', category: 'TikTok' }
-        ];
+        function getTestimonials() {
+            const saved = localStorage.getItem('socmegy_testimonials');
+            if (saved) {
+                try { return JSON.parse(saved); } catch(e) {}
+            }
+            return [
+                { name: 'Aina R.', text: 'Super fast service! Followers started coming in within 2 hours. Very satisfied!', stars: 5 },
+                { name: 'Farid Z.', text: 'Quality followers with real engagement. My account growth has been incredible. Highly recommended!', stars: 5 },
+                { name: 'Sarah H.', text: 'Affordable pricing and excellent customer support. They really care about their clients.', stars: 4 },
+                { name: 'Adam B.', text: 'My Instagram blew up after using Socmegy. Best investment I\'ve made for my brand.', stars: 5 }
+            ];
+        }
+
+        // ============================================================
+        // GALLERY DATA - From localStorage
+        // ============================================================
+        function getGalleryData() {
+            const saved = localStorage.getItem('socmegy_gallery');
+            if (saved) {
+                try { return JSON.parse(saved); } catch(e) {}
+            }
+            return [
+                { src: 'https://picsum.photos/seed/g1/400/400', category: 'TikTok' },
+                { src: 'https://picsum.photos/seed/g2/400/400', category: 'TikTok' },
+                { src: 'https://picsum.photos/seed/g3/400/400', category: 'TikTok' },
+                { src: 'https://picsum.photos/seed/g4/400/400', category: 'Instagram' },
+                { src: 'https://picsum.photos/seed/g5/400/400', category: 'Instagram' },
+                { src: 'https://picsum.photos/seed/g6/400/400', category: 'Instagram' }
+            ];
+        }
 
         // ============================================================
         // DOM REFS
@@ -1438,6 +1416,7 @@
         const testimonialDots = document.getElementById('testimonialDots');
         const galleryGrid = document.getElementById('galleryGrid');
         const galleryCategories = document.getElementById('galleryCategories');
+        const categoryFilter = document.getElementById('categoryFilter');
         const cartItems = document.getElementById('cartItems');
         const cartFooter = document.getElementById('cartFooter');
         const cartTotal = document.getElementById('cartTotal');
@@ -1518,18 +1497,53 @@
         window.addEventListener('load', () => { setTimeout(handleReveal, 300); });
 
         // ============================================================
-        // RENDER PRODUCTS
+        // GET UNIQUE CATEGORIES
+        // ============================================================
+        function getUniqueCategories() {
+            const cats = ['All', ...new Set(products.map(p => p.category || 'General'))];
+            return cats;
+        }
+
+        // ============================================================
+        // RENDER CATEGORY FILTER
+        // ============================================================
+        function renderCategoryFilter() {
+            const categories = getUniqueCategories();
+            categoryFilter.innerHTML = categories.map(cat => `
+                <button class="${cat === currentCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
+            `).join('');
+            categoryFilter.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentCategory = btn.dataset.category;
+                    categoryFilter.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderProducts();
+                });
+            });
+        }
+
+        // ============================================================
+        // RENDER PRODUCTS - NO ICON
         // ============================================================
         async function renderProducts() {
             try {
                 const response = await fetch(API_PRODUCTS_URL);
                 if (!response.ok) throw new Error('Failed to fetch products');
                 products = await response.json();
-                if (products.length === 0) {
-                    catalogGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0;"><i class="fas fa-box" style="font-size:2.4rem;display:block;margin-bottom:12px;opacity:0.3;"></i>No products available</div>`;
+                
+                // Update category filter
+                renderCategoryFilter();
+                
+                // Filter by category
+                const filtered = currentCategory === 'All' 
+                    ? products 
+                    : products.filter(p => (p.category || 'General') === currentCategory);
+                
+                if (filtered.length === 0) {
+                    catalogGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:60px 0;"><i class="fas fa-box" style="font-size:2.4rem;display:block;margin-bottom:12px;opacity:0.3;"></i>No products in this category</div>`;
                     return;
                 }
-                catalogGrid.innerHTML = products.map(p => {
+                catalogGrid.innerHTML = filtered.map(p => {
                     const isOutOfStock = p.stock !== undefined && p.stock <= 0;
                     const isNotAvailable = p.status === 'not_available';
                     const disabled = isOutOfStock || isNotAvailable;
@@ -1537,7 +1551,7 @@
                     return `
                         <div class="product-card glass ${disabled ? 'out-of-stock' : ''} reveal reveal-delay-${p.id % 4 + 1}">
                             ${disabled ? `<div class="out-of-stock-badge">${statusText}</div>` : ''}
-                            <div class="product-icon"><i class="${p.icon || 'fa-solid fa-box'}"></i></div>
+                            <div class="product-category-tag">${p.category || 'General'}</div>
                             <div class="product-name">${p.name}</div>
                             <div class="product-desc">${p.desc}</div>
                             <div class="product-price">RM${p.price.toFixed(2)}</div>
@@ -1567,6 +1581,7 @@
         // ============================================================
         let testimonialIndex = 0;
         function renderTestimonials() {
+            const testimonials = getTestimonials();
             const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
             const totalPages = Math.ceil(testimonials.length / cardsPerPage);
             testimonialGrid.innerHTML = testimonials.map(t => `
@@ -1583,6 +1598,7 @@
                 dot.addEventListener('click', () => { testimonialIndex = i; updateTestimonialPage(cardsPerPage); });
                 testimonialDots.appendChild(dot);
             }
+            updateTestimonialPage(cardsPerPage);
         }
         function updateTestimonialPage(cardsPerPage) {
             const cards = testimonialGrid.querySelectorAll('.testimonial-card');
@@ -1604,21 +1620,23 @@
         // ============================================================
         // RENDER GALLERY
         // ============================================================
-        let currentCategory = 'All';
+        let currentGalleryCategory = 'All';
         let lightboxImages = [];
         let lightboxIndex = 0;
-        function getCategories() {
+        
+        function getGalleryCategories() {
+            const galleryData = getGalleryData();
             const cats = ['All', ...new Set(galleryData.map(item => item.category))];
             return cats;
         }
         function renderGalleryCategories() {
-            const categories = getCategories();
+            const categories = getGalleryCategories();
             galleryCategories.innerHTML = categories.map(cat => `
-                <button class="${cat === currentCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
+                <button class="${cat === currentGalleryCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
             `).join('');
             galleryCategories.querySelectorAll('button').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentCategory = btn.dataset.category;
+                    currentGalleryCategory = btn.dataset.category;
                     galleryCategories.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     renderGalleryItems();
@@ -1626,7 +1644,8 @@
             });
         }
         function renderGalleryItems() {
-            const filtered = currentCategory === 'All' ? galleryData : galleryData.filter(item => item.category === currentCategory);
+            const galleryData = getGalleryData();
+            const filtered = currentGalleryCategory === 'All' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
             if (filtered.length === 0) {
                 galleryGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;"><i class="fas fa-images" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>No images in this category</div>`;
                 return;
@@ -1701,11 +1720,8 @@
             cart.forEach((item, index) => {
                 const subtotal = item.price * item.qty;
                 total += subtotal;
-                const product = products.find(p => p.id === item.id);
-                const icon = product?.icon || 'fa-solid fa-box';
                 html += `
                     <div class="cart-item">
-                        <div class="cart-item-thumb"><i class="${icon}"></i></div>
                         <div class="cart-item-info">
                             <div class="cart-item-name">${item.name}</div>
                             <div class="cart-item-price">RM${subtotal.toFixed(2)}</div>
@@ -1751,12 +1767,12 @@
         // ============================================================
         // TOAST
         // ============================================================
-        let toastTimer = null;
+        let toastTimer2 = null;
         function showToast(msg) {
             toastMsg.textContent = msg;
             toast.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => { toast.classList.remove('show'); }, 2500);
+            clearTimeout(toastTimer2);
+            toastTimer2 = setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
 
         // ============================================================
@@ -1855,6 +1871,7 @@
         // ============================================================
         // INIT
         // ============================================================
+        loadHeroFromStorage();
         renderProducts();
         renderTestimonials();
         renderGalleryCategories();
@@ -1864,7 +1881,24 @@
             const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
             updateTestimonialPage(cardsPerPage);
         }, 100);
-        console.log('✨ Socmegy — Full Liquid Glass + Typing Animation');
+
+        // Listen for storage changes from admin
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'socmegy_hero' || e.key === 'socmegy_hero_updated') {
+                loadHeroFromStorage();
+            }
+            if (e.key === 'socmegy_testimonials' || e.key === 'socmegy_testimonials_updated') {
+                renderTestimonials();
+            }
+            if (e.key === 'socmegy_gallery' || e.key === 'socmegy_gallery_updated') {
+                renderGalleryCategories();
+                renderGalleryItems();
+            }
+        });
+
+        console.log('✨ Socmegy — Complete with category filter, no icons, improved glass');
+        console.log('📌 Categories filter available for products');
+        console.log('📌 Hero, Testimonials, Gallery sync with Admin');
     </script>
 </body>
 </html>
