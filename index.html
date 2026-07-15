@@ -724,116 +724,146 @@
             font-size: 0.6rem;
         }
 
-        /* ============================================================
-           QUICK LINK MODAL - LIQUID GLASS
-           ============================================================ */
-        .modal-quick {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            z-index: 500;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: modalFade 0.3s ease;
-        }
-        .modal-quick.active { display: flex; }
-        
-        @keyframes modalFade {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-quick .modal-box {
-            background: rgba(20,20,20,0.92);
-            backdrop-filter: blur(32px) saturate(1.6);
-            -webkit-backdrop-filter: blur(32px) saturate(1.6);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 24px;
-            padding: 32px 36px;
-            max-width: 560px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
-            animation: modalSlide 0.3s ease;
-        }
-        .modal-quick .modal-box::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(212,167,67,0.04) 30%, rgba(255,255,255,0) 50%, rgba(212,167,67,0.04) 70%, rgba(255,255,255,0.06) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-        
-        @keyframes modalSlide {
-            from { opacity: 0; transform: translateY(20px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        .modal-quick .modal-box h2 {
-            color: #d4a743;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            padding-right: 40px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .modal-quick .modal-box h2 i {
-            color: #d4a743;
-            font-size: 1rem;
-            opacity: 0.6;
-        }
-        .modal-quick .modal-box .close-modal {
-            position: absolute;
-            top: 18px;
-            right: 20px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-quick .modal-box .close-modal:hover { 
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(212,167,67,0.2);
-            color: var(--text-primary);
-        }
-        .modal-quick .modal-box .content {
-            color: #b0b0b0;
-            font-size: 0.9rem;
-            line-height: 1.9;
-            white-space: pre-wrap;
-            max-height: 50vh;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-        .modal-quick .modal-box .content::-webkit-scrollbar {
-            width: 3px;
-        }
-        .modal-quick .modal-box .content::-webkit-scrollbar-thumb {
-            background: rgba(212,167,67,0.2);
-            border-radius: 4px;
-        }
+/* ============================================================
+   QUICK LINK MODAL - LIQUID GLASS BETUL
+   ============================================================ */
+.modal-quick {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: modalFade 0.3s ease;
+}
+.modal-quick.active { display: flex; }
+
+@keyframes modalFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-quick .modal-box {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    box-shadow: 
+        0 8px 48px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    padding: 32px 36px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlide 0.3s ease;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modal-quick .modal-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0) 30%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 70%,
+        rgba(255, 255, 255, 0.1) 100%);
+    pointer-events: none;
+    opacity: 0.4;
+    transition: opacity 0.6s;
+}
+
+.modal-quick .modal-box::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(212, 167, 67, 0.05) 30%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(212, 167, 67, 0.05) 70%,
+        rgba(255, 255, 255, 0.15) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.6;
+    transition: opacity 0.6s;
+}
+
+.modal-quick .modal-box:hover::after { opacity: 1; }
+
+@keyframes modalSlide {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-quick .modal-box h2 {
+    color: #d4a743;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-quick .modal-box h2 i {
+    color: #d4a743;
+    font-size: 1rem;
+    opacity: 0.6;
+}
+.modal-quick .modal-box .close-modal {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-quick .modal-box .close-modal:hover { 
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(212,167,67,0.2);
+    color: var(--text-primary);
+}
+.modal-quick .modal-box .content {
+    color: #b0b0b0;
+    font-size: 0.9rem;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+.modal-quick .modal-box .content::-webkit-scrollbar {
+    width: 3px;
+}
+.modal-quick .modal-box .content::-webkit-scrollbar-thumb {
+    background: rgba(212,167,67,0.2);
+    border-radius: 4px;
+}
 
         /* ============================================================
            CART
