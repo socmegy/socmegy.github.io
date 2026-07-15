@@ -113,14 +113,15 @@
             flex-shrink: 0;
         }
 
-        .header .brand-group {
-            flex: 1;
-        }
+        .header .brand-group { flex: 1; }
 
         .header .brand-group .brand {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #d4a743;
+            background: linear-gradient(135deg, #e8c96e, #d4a743);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             letter-spacing: -0.5px;
             line-height: 1.1;
         }
@@ -135,18 +136,33 @@
         /* ===== STATUS BADGE ===== */
         .status-badge {
             display: inline-block;
-            background: rgba(81, 207, 102, 0.15);
-            border: 1px solid rgba(81, 207, 102, 0.25);
-            color: #51cf66;
-            padding: 6px 20px;
+            padding: 4px 16px;
             border-radius: 30px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
+            letter-spacing: 0.5px;
         }
 
+        .status-badge.completed {
+            background: rgba(81, 207, 102, 0.15);
+            color: #51cf66;
+            border: 1px solid rgba(81, 207, 102, 0.25);
+        }
+
+        .status-badge.pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.25);
+        }
+
+        .status-badge.failed {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.25);
+        }
+
+        /* ===== SUCCESS ICON & TITLE ===== */
         .success-icon {
             font-size: 3.6rem;
             color: #51cf66;
@@ -194,17 +210,6 @@
             margin-top: 2px;
             font-weight: 500;
             word-break: break-all;
-        }
-
-        .field .value .status-badge-small {
-            display: inline-block;
-            padding: 2px 14px;
-            border-radius: 30px;
-            font-size: 0.6rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            background: rgba(81, 207, 102, 0.15);
-            color: #51cf66;
         }
 
         /* ===== ROW 2 ===== */
@@ -411,18 +416,15 @@
         </div>
 
         <!-- ===== STATUS ===== -->
-        <div class="status-badge">
-            <i class="fas fa-check-circle"></i> Pembayaran Berjaya
+        <div style="text-align:center;">
+            <span class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </span>
+            <h1>Terima Kasih!</h1>
+            <p class="subtitle">Pesanan anda telah diterima dan sedang diproses.</p>
         </div>
 
-        <span class="success-icon">
-            <i class="fas fa-check-circle"></i>
-        </span>
-
-        <h1>Terima Kasih!</h1>
-        <p class="subtitle">Pesanan anda telah diterima dan sedang diproses.</p>
-
-        <!-- ===== ORDER DETAILS ===== -->
+        <!-- ===== ORDER DETAILS - ROW 3 ===== -->
         <div class="row-3">
             <div class="field">
                 <label>Order ID</label>
@@ -434,11 +436,11 @@
             </div>
             <div class="field">
                 <label>Status</label>
-                <div class="value"><span class="status-badge-small">Completed</span></div>
+                <div class="value"><span class="status-badge completed" id="orderStatus">Completed</span></div>
             </div>
         </div>
 
-        <!-- ===== CUSTOMER & NOTE ===== -->
+        <!-- ===== CUSTOMER & NOTE - ROW 2 ===== -->
         <div class="row-2">
             <div class="field">
                 <label>Customer</label>
@@ -486,13 +488,13 @@
             <button class="btn btn-pdf" onclick="downloadPDF()">
                 <i class="fas fa-file-pdf"></i> Download Resit
             </button>
-            <a href="https://socmegy.github.io/" class="btn btn-primary">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/" class="btn btn-primary">
                 <i class="fas fa-home"></i> Halaman Utama
             </a>
         </div>
 
         <div class="button-group" style="margin-top:8px;">
-            <a href="https://socmegy.github.io/#services" class="btn btn-secondary" style="flex:1;">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/#services" class="btn btn-secondary" style="flex:1;">
                 <i class="fas fa-shopping-bag"></i> Beli Lagi
             </a>
         </div>
@@ -505,7 +507,6 @@
         // ============================================================
         const urlParams = new URLSearchParams(window.location.search);
         
-        // Try to get order data from URL
         let orderData = null;
         const orderDataParam = urlParams.get('data');
         
@@ -517,7 +518,6 @@
             }
         }
 
-        // If no order data in URL, try localStorage
         if (!orderData) {
             try {
                 const savedOrder = localStorage.getItem('socmegy_last_order');
@@ -548,7 +548,6 @@
             note: '-'
         };
 
-        // Merge with default
         const order = orderData ? { ...defaultOrder, ...orderData } : defaultOrder;
         if (order.customer) {
             order.customer = { ...defaultOrder.customer, ...order.customer };
@@ -559,6 +558,8 @@
         // ============================================================
         document.getElementById('orderId').textContent = order.orderId || '--';
         document.getElementById('orderDate').textContent = order.date || now.toLocaleDateString('ms-MY', options);
+        document.getElementById('orderStatus').textContent = 'Completed';
+        document.getElementById('orderStatus').className = 'status-badge completed';
         document.getElementById('customerName').textContent = order.customer?.name || '--';
         document.getElementById('customerEmail').textContent = order.customer?.email || '--';
         document.getElementById('customerPhone').textContent = order.customer?.phone || '--';
@@ -589,7 +590,7 @@
             document.getElementById('noteText').textContent = order.note;
         }
 
-        // Clear cart after successful payment
+        // Clear cart
         try {
             localStorage.removeItem('socmegy_cart');
         } catch (_) {}
@@ -597,7 +598,7 @@
         console.log('✨ Payment successful! Order ID:', order.orderId);
 
         // ============================================================
-        // DOWNLOAD PDF FUNCTION - Same as admin
+        // DOWNLOAD PDF FUNCTION - Standard layout
         // ============================================================
         function downloadPDF() {
             const printWindow = window.open('', '_blank', 'width=900,height=700');
@@ -610,7 +611,6 @@
                 </tr>
             `).join('');
 
-            const statusClass = 'completed';
             const statusDisplay = 'COMPLETED';
 
             printWindow.document.write(`
@@ -657,7 +657,10 @@
                             .header .brand-group .brand {
                                 font-size: 1.4rem;
                                 font-weight: 700;
-                                color: #d4a743;
+                                background: linear-gradient(135deg, #e8c96e, #d4a743);
+                                -webkit-background-clip: text;
+                                -webkit-text-fill-color: transparent;
+                                background-clip: text;
                                 letter-spacing: -0.5px;
                                 line-height: 1.1;
                             }
@@ -705,8 +708,9 @@
                                 font-size: 0.6rem;
                                 font-weight: 700;
                                 text-transform: uppercase;
-                                background: #d4edda;
-                                color: #155724;
+                                background: rgba(81, 207, 102, 0.15);
+                                color: #51cf66;
+                                border: 1px solid rgba(81, 207, 102, 0.25);
                             }
                             .field .sub-text { color: #666; font-size: 0.78rem; }
                             table {
@@ -819,7 +823,7 @@
         }
 
         // ============================================================
-        // SAVE ORDER TO LOCALSTORAGE FOR PDF
+        // SAVE ORDER TO LOCALSTORAGE
         // ============================================================
         try {
             localStorage.setItem('socmegy_last_order', JSON.stringify(order));
