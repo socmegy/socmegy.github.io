@@ -24,7 +24,6 @@
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
 
-        /* ===== LIQUID GLASS ===== */
         .glass {
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(12px) saturate(1.2);
@@ -81,7 +80,6 @@
 
         .glass:hover::after { opacity: 1; }
 
-        /* ===== CONTAINER ===== */
         .container {
             max-width: 600px;
             width: 100%;
@@ -146,19 +144,6 @@
             border: 1px solid rgba(81, 207, 102, 0.25);
         }
 
-        .status-badge.pending {
-            background: rgba(255, 193, 7, 0.15);
-            color: #ffc107;
-            border: 1px solid rgba(255, 193, 7, 0.25);
-        }
-
-        .status-badge.failed {
-            background: rgba(255, 107, 107, 0.15);
-            color: #ff6b6b;
-            border: 1px solid rgba(255, 107, 107, 0.25);
-        }
-
-        /* ===== SUCCESS ===== */
         .success-icon {
             font-size: 3.2rem;
             color: #51cf66;
@@ -553,7 +538,6 @@
         document.getElementById('orderId').textContent = order.orderId || '--';
         document.getElementById('orderDate').textContent = order.date || now.toLocaleDateString('ms-MY', options);
         document.getElementById('orderStatus').textContent = 'Completed';
-        document.getElementById('orderStatus').className = 'status-badge';
         document.getElementById('customerName').textContent = order.customer?.name || '--';
         document.getElementById('customerEmail').textContent = order.customer?.email || '--';
         document.getElementById('customerPhone').textContent = order.customer?.phone || '--';
@@ -584,10 +568,11 @@
         console.log('✅ Success page loaded. Order:', order.orderId);
 
         // ============================================================
-        // PDF
+        // PDF - SAMA MACAM ADMIN
         // ============================================================
         function downloadPDF() {
             const printWindow = window.open('', '_blank', 'width=900,height=700');
+            
             const itemsHtml = (order.items || []).map(i => `
                 <tr>
                     <td style="padding:6px 10px;border-bottom:1px solid #eee;">${i.name}</td>
@@ -596,39 +581,172 @@
                 </tr>
             `).join('');
 
+            const statusDisplay = 'COMPLETED';
+
             printWindow.document.write(`
                 <html>
                     <head>
                         <title>Invoice ${order.orderId}</title>
                         <style>
                             * { margin:0; padding:0; box-sizing:border-box; }
-                            body { font-family: 'Inter', sans-serif; background: #f5f2ed; color: #111; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
-                            .invoice { max-width: 700px; width: 100%; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 24px 28px; }
-                            .header { display: flex; align-items: center; gap: 14px; padding-bottom: 14px; border-bottom: 2px solid #d4a743; margin-bottom: 18px; }
-                            .header .logo-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(212,167,67,0.15); flex-shrink: 0; }
-                            .header .brand-group .brand { font-size: 1.4rem; font-weight: 700; background: linear-gradient(135deg, #e8c96e, #d4a743); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.5px; line-height: 1.1; }
-                            .header .brand-group .tagline { color: #999; font-size: 0.6rem; letter-spacing: 0.5px; text-transform: none; }
-                            .order-row { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
-                            .order-row .label { font-weight: 600; color: #aaa; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.8px; display: block; }
-                            .order-row .value { font-size: 0.9rem; font-weight: 600; }
-                            .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
-                            .field label { font-weight: 600; color: #aaa; font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.8px; display: block; }
+                            body { 
+                                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+                                background: #f5f2ed; 
+                                color: #111; 
+                                padding: 20px; 
+                                display: flex;
+                                justify-content: center;
+                                min-height: 100vh;
+                            }
+                            .invoice { 
+                                max-width: 700px; 
+                                width: 100%;
+                                margin: 0 auto; 
+                                background: #ffffff; 
+                                border-radius: 12px; 
+                                box-shadow: 0 2px 40px rgba(0,0,0,0.06); 
+                                padding: 24px 28px; 
+                            }
+                            /* ===== HEADER ===== */
+                            .header {
+                                display: flex;
+                                align-items: center;
+                                gap: 14px;
+                                padding-bottom: 14px;
+                                border-bottom: 2px solid #d4a743;
+                                margin-bottom: 18px;
+                            }
+                            .header .logo-img {
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 50%;
+                                object-fit: cover;
+                                border: 2px solid rgba(212,167,67,0.15);
+                                flex-shrink: 0;
+                            }
+                            .header .brand-group { flex: 1; }
+                            .header .brand-group .brand {
+                                font-size: 1.4rem;
+                                font-weight: 700;
+                                background: linear-gradient(135deg, #e8c96e, #d4a743);
+                                -webkit-background-clip: text;
+                                -webkit-text-fill-color: transparent;
+                                background-clip: text;
+                                letter-spacing: -0.5px;
+                                line-height: 1.1;
+                            }
+                            .header .brand-group .tagline {
+                                color: #999;
+                                font-size: 0.6rem;
+                                letter-spacing: 0.5px;
+                                text-transform: none;
+                            }
+                            /* ===== ORDER ROW ===== */
+                            .order-row {
+                                margin-bottom: 12px;
+                                padding-bottom: 12px;
+                                border-bottom: 1px solid #eee;
+                            }
+                            .order-row .label {
+                                font-weight: 600;
+                                color: #aaa;
+                                font-size: 0.55rem;
+                                text-transform: uppercase;
+                                letter-spacing: 0.8px;
+                                display: block;
+                            }
+                            .order-row .value { font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
+                            /* ===== ROW 2 ===== */
+                            .row-2 {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                gap: 12px;
+                                margin-bottom: 12px;
+                                padding-bottom: 12px;
+                                border-bottom: 1px solid #eee;
+                            }
+                            .field label {
+                                font-weight: 600;
+                                color: #aaa;
+                                font-size: 0.55rem;
+                                text-transform: uppercase;
+                                letter-spacing: 0.8px;
+                                display: block;
+                            }
                             .field .value { font-size: 0.85rem; margin-top: 2px; }
-                            .field .value .status-badge { display: inline-block; padding: 2px 14px; border-radius: 30px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; background: rgba(81,207,102,0.15); color: #51cf66; border: 1px solid rgba(81,207,102,0.25); }
+                            .field .value .status-badge {
+                                display: inline-block;
+                                padding: 2px 14px;
+                                border-radius: 30px;
+                                font-size: 0.6rem;
+                                font-weight: 700;
+                                text-transform: uppercase;
+                                background: rgba(81,207,102,0.15);
+                                color: #51cf66;
+                                border: 1px solid rgba(81,207,102,0.25);
+                            }
                             .field .sub-text { color: #666; font-size: 0.78rem; }
-                            table { width: 100%; border-collapse: collapse; margin: 4px 0 2px; }
-                            th { padding: 6px 8px; text-align: left; font-weight: 600; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.5px; color: #888; border-bottom: 1px solid #eee; }
+                            /* ===== TABLE ===== */
+                            table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin: 4px 0 2px;
+                            }
+                            th {
+                                padding: 6px 8px;
+                                text-align: left;
+                                font-weight: 600;
+                                font-size: 0.6rem;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                                color: #888;
+                                border-bottom: 1px solid #eee;
+                            }
                             th:last-child, td:last-child { text-align: right; }
-                            td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; font-size: 0.8rem; }
-                            .total-row { text-align: right; font-size: 1.1rem; font-weight: 700; color: #d4a743; padding-top: 10px; border-top: 2px solid #d4a743; margin-top: 4px; }
-                            .footer { text-align: center; color: #bbb; font-size: 0.65rem; margin-top: 18px; padding-top: 14px; border-top: 1px solid #eee; }
-                            .footer .gold { color: #d4a743; }
-                            @media (max-width:600px){ .invoice { padding: 16px; } .row-2 { grid-template-columns:1fr; gap:6px; } .header { flex-direction:column; text-align:center; } .header .brand-group .brand { font-size:1.1rem; } th, td { padding:4px 6px; font-size:0.7rem; } .total-row { font-size:0.95rem; } }
-                            @media print { body { background:#fff; padding:10px; } .invoice { box-shadow:none; padding:14px; } }
+                            td {
+                                padding: 4px 8px;
+                                border-bottom: 1px solid #f0f0f0;
+                                font-size: 0.8rem;
+                            }
+                            /* ===== TOTAL ===== */
+                            .total-row {
+                                text-align: right;
+                                font-size: 1.1rem;
+                                font-weight: 700;
+                                color: #d4a743;
+                                padding-top: 10px;
+                                border-top: 2px solid #d4a743;
+                                margin-top: 4px;
+                            }
+                            /* ===== FOOTER ===== */
+                            .footer {
+                                text-align: center;
+                                color: #bbb;
+                                font-size: 0.65rem;
+                                margin-top: 18px;
+                                padding-top: 14px;
+                                border-top: 1px solid #eee;
+                            }
+                            .footer .gold { color: #d4a743; font-weight: 600; }
+                            .footer .sub-footer { font-size: 0.55rem; color: #ccc; margin-top: 2px; }
+                            @media (max-width: 600px) {
+                                body { padding: 12px; }
+                                .invoice { padding: 16px; }
+                                .row-2 { grid-template-columns: 1fr; gap: 6px; }
+                                .header { flex-direction: column; text-align: center; }
+                                .header .brand-group .brand { font-size: 1.1rem; }
+                                th, td { padding: 4px 6px; font-size: 0.7rem; }
+                                .total-row { font-size: 0.95rem; }
+                            }
+                            @media print {
+                                body { background: #fff; padding: 10px; }
+                                .invoice { box-shadow: none; padding: 14px; }
+                            }
                         </style>
                     </head>
                     <body>
                         <div class="invoice">
+                            <!-- ===== HEADER ===== -->
                             <div class="header">
                                 <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.style.display='none'" />
                                 <div class="brand-group">
@@ -636,20 +754,26 @@
                                     <div class="tagline">Your Social Media Booster</div>
                                 </div>
                             </div>
+
+                            <!-- ===== ORDER ROW ===== -->
                             <div class="order-row">
                                 <span class="label">Order</span>
                                 <span class="value">${order.orderId}</span>
                             </div>
+
+                            <!-- ===== ROW 2: DATE | STATUS ===== -->
                             <div class="row-2">
                                 <div class="field">
                                     <label>Date</label>
-                                    <div class="value">${order.date || now.toLocaleDateString('ms-MY', { day:'numeric', month:'long', year:'numeric' })}</div>
+                                    <div class="value">${order.date || new Date().toLocaleDateString('ms-MY', { day:'numeric', month:'long', year:'numeric' })}</div>
                                 </div>
                                 <div class="field">
                                     <label>Status</label>
-                                    <div class="value"><span class="status-badge">COMPLETED</span></div>
+                                    <div class="value"><span class="status-badge">${statusDisplay}</span></div>
                                 </div>
                             </div>
+
+                            <!-- ===== ROW 2: CUSTOMER | NOTE ===== -->
                             <div class="row-2">
                                 <div class="field">
                                     <label>Customer</label>
@@ -662,17 +786,24 @@
                                     <div class="value" style="color:#666;font-size:0.78rem;word-break:break-all;">${order.note || '-'}</div>
                                 </div>
                             </div>
+
+                            <!-- ===== TABLE ===== -->
                             <table>
                                 <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th>Price</th></tr></thead>
                                 <tbody>${itemsHtml}</tbody>
                             </table>
+
                             <div class="total-row">Total: RM${(order.total || 0).toFixed(2)}</div>
+
+                            <!-- ===== FOOTER ===== -->
                             <div class="footer">
                                 <div>Thank you for choosing <span class="gold">Socmegy</span>!</div>
                                 <div class="sub-footer">This is a system-generated invoice.</div>
                             </div>
                         </div>
-                        <script>setTimeout(() => { window.print(); }, 500);<\/script>
+                        <script>
+                            setTimeout(() => { window.print(); }, 500);
+                        <\/script>
                     </body>
                 </html>
             `);
