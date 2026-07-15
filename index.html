@@ -52,7 +52,7 @@
         .reveal-delay-4 { transition-delay: 0.4s; }
 
         /* ============================================================
-           LIQUID GLASS — Fixed: less blurry, more crisp
+           LIQUID GLASS
            ============================================================ */
         .glass {
             background: rgba(255, 255, 255, 0.04);
@@ -311,7 +311,7 @@
         }
 
         /* ============================================================
-           MOBILE MENU — FIXED: Less blurry, better glass
+           MOBILE MENU
            ============================================================ */
         .mobile-menu-overlay {
             position: fixed;
@@ -445,7 +445,7 @@
         .section-title .gold { color: var(--gold); }
 
         /* ============================================================
-           CATEGORY FILTER — NEW
+           CATEGORY FILTER
            ============================================================ */
         .category-filter {
             display: flex;
@@ -469,7 +469,7 @@
         .category-filter button.active { border-color: var(--gold); color: var(--gold); background: rgba(212,167,67,0.06); }
 
         /* ============================================================
-           PRODUCTS — NO ICON
+           PRODUCTS
            ============================================================ */
         .catalog-grid {
             display: grid;
@@ -682,7 +682,7 @@
         footer .footer-text { opacity: 0.5; font-size: 0.8rem; }
 
         /* ============================================================
-           CART — FIXED: Less blurry, better glass
+           CART
            ============================================================ */
         .cart-overlay {
             position: fixed;
@@ -1285,14 +1285,102 @@
 
     <script>
         // ============================================================
-        // TYPING ANIMATION
+        // CONFIG
         // ============================================================
-        const phrases = [
+        const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let cart = [];
+        let products = [];
+        let isProcessing = false;
+        let currentCategory = 'All';
+        const STORAGE_KEY = 'socmegy_cart';
+        try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) cart = JSON.parse(saved); } catch (_) {}
+
+        // ============================================================
+        // LOAD HERO FROM WORKER
+        // ============================================================
+        async function loadHeroFromWorker() {
+            try {
+                const response = await fetch(`${WORKER_URL}/api/hero`);
+                if (response.ok) {
+                    const hero = await response.json();
+                    
+                    // Update hero background
+                    const heroBg = document.getElementById('heroBg').querySelector('img');
+                    if (heroBg && hero.image) heroBg.src = hero.image;
+                    
+                    // Update hero title (keep typing animation)
+                    if (hero.title) {
+                        // Update the first phrase for typing animation
+                        const cleanTitle = hero.title.replace(/<[^>]*>/g, '');
+                        // We'll keep the typing animation with custom title
+                        // The typing animation will use the first phrase from phrases array
+                        // We'll update it below
+                    }
+                    
+                    // Update subtitle
+                    if (hero.subtitle) {
+                        document.getElementById('heroSubtitle').textContent = hero.subtitle;
+                    }
+                    
+                    // Update CTA
+                    if (hero.cta) {
+                        document.getElementById('heroCta').innerHTML = '<i class="fas fa-rocket"></i> ' + hero.cta;
+                    }
+                    
+                    return hero;
+                }
+            } catch (e) {
+                console.log('Hero fetch error, using localStorage:', e);
+            }
+            return null;
+        }
+
+        // ============================================================
+        // LOAD TESTIMONIALS FROM WORKER
+        // ============================================================
+        async function loadTestimonialsFromWorker() {
+            try {
+                const response = await fetch(`${WORKER_URL}/api/testimonials`);
+                if (response.ok) {
+                    const testimonials = await response.json();
+                    return testimonials;
+                }
+            } catch (e) {
+                console.log('Testimonials fetch error, using default:', e);
+            }
+            return null;
+        }
+
+        // ============================================================
+        // LOAD GALLERY FROM WORKER
+        // ============================================================
+        async function loadGalleryFromWorker() {
+            try {
+                const response = await fetch(`${WORKER_URL}/api/gallery`);
+                if (response.ok) {
+                    const gallery = await response.json();
+                    return gallery;
+                }
+            } catch (e) {
+                console.log('Gallery fetch error, using default:', e);
+            }
+            return null;
+        }
+
+        // ============================================================
+        // TYPING ANIMATION - Updated with dynamic title
+        // ============================================================
+        let typingPhrases = [
             'Elevate Your <span class="highlight">Digital Presence</span>',
             'Grow Your <span class="highlight">Audience</span>',
             'Boost Your <span class="highlight">Brand</span>',
             'Dominate <span class="highlight">Social Media</span>'
         ];
+        
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
@@ -1300,7 +1388,7 @@
         const cursor = typingElement.querySelector('.typing-cursor');
 
         function typeEffect() {
-            const currentPhrase = phrases[phraseIndex];
+            const currentPhrase = typingPhrases[phraseIndex];
             let displayText = currentPhrase.substring(0, charIndex);
             if (!isDeleting) {
                 if (charIndex <= currentPhrase.length) {
@@ -1318,70 +1406,27 @@
                     setTimeout(typeEffect, 40);
                 } else {
                     isDeleting = false;
-                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    phraseIndex = (phraseIndex + 1) % typingPhrases.length;
                     setTimeout(typeEffect, 300);
                 }
             }
         }
-        setTimeout(typeEffect, 800);
 
-        // ============================================================
-        // CONFIG
-        // ============================================================
-        const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
-        const API_PRODUCTS_URL = `${WORKER_URL}/api/products`;
-
-        // ============================================================
-        // STATE
-        // ============================================================
-        let cart = [];
-        let products = [];
-        let isProcessing = false;
-        let currentCategory = 'All';
-        const STORAGE_KEY = 'socmegy_cart';
-        try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) cart = JSON.parse(saved); } catch (_) {}
-
-        // ============================================================
-        // LOAD HERO FROM localStorage
-        // ============================================================
-        function loadHeroFromStorage() {
-            const saved = localStorage.getItem('socmegy_hero');
-            if (saved) {
-                try {
-                    const h = JSON.parse(saved);
-                    if (h.image) {
-                        const heroBg = document.getElementById('heroBg').querySelector('img');
-                        if (heroBg) heroBg.src = h.image;
-                    }
-                    if (h.title) {
-                        // Update typing heading base
-                        const heading = document.getElementById('typingHeading');
-                        // We'll keep typing animation but update phrases
-                        if (h.title) {
-                            // Replace first phrase with custom title
-                            const cleanTitle = h.title.replace(/<[^>]*>/g, '');
-                            phrases[0] = cleanTitle + ' <span class="highlight">${h.title.includes("Digital") ? "Digital Presence" : "Social Media"}</span>';
-                            // Simpler: just update the text without breaking typing
-                        }
-                    }
-                    if (h.subtitle) {
-                        document.getElementById('heroSubtitle').textContent = h.subtitle;
-                    }
-                    if (h.cta) {
-                        document.getElementById('heroCta').innerHTML = '<i class="fas fa-rocket"></i> ' + h.cta;
-                    }
-                } catch(e) {}
+        function updateTypingPhrases(title) {
+            if (title) {
+                const cleanTitle = title.replace(/<[^>]*>/g, '');
+                typingPhrases[0] = cleanTitle + ' <span class="highlight">Digital Presence</span>';
+                // Reset typing
+                phraseIndex = 0;
+                charIndex = 0;
+                isDeleting = false;
             }
         }
 
         // ============================================================
-        // TESTIMONIALS DATA - From localStorage
+        // TESTIMONIALS - From worker
         // ============================================================
-        function getTestimonials() {
-            const saved = localStorage.getItem('socmegy_testimonials');
-            if (saved) {
-                try { return JSON.parse(saved); } catch(e) {}
-            }
+        function getDefaultTestimonials() {
             return [
                 { name: 'Aina R.', text: 'Super fast service! Followers started coming in within 2 hours. Very satisfied!', stars: 5 },
                 { name: 'Farid Z.', text: 'Quality followers with real engagement. My account growth has been incredible. Highly recommended!', stars: 5 },
@@ -1391,13 +1436,9 @@
         }
 
         // ============================================================
-        // GALLERY DATA - From localStorage
+        // GALLERY - From worker
         // ============================================================
-        function getGalleryData() {
-            const saved = localStorage.getItem('socmegy_gallery');
-            if (saved) {
-                try { return JSON.parse(saved); } catch(e) {}
-            }
+        function getDefaultGallery() {
             return [
                 { src: 'https://picsum.photos/seed/g1/400/400', category: 'TikTok' },
                 { src: 'https://picsum.photos/seed/g2/400/400', category: 'TikTok' },
@@ -1523,18 +1564,16 @@
         }
 
         // ============================================================
-        // RENDER PRODUCTS - NO ICON
+        // RENDER PRODUCTS
         // ============================================================
         async function renderProducts() {
             try {
-                const response = await fetch(API_PRODUCTS_URL);
+                const response = await fetch(`${WORKER_URL}/api/products`);
                 if (!response.ok) throw new Error('Failed to fetch products');
                 products = await response.json();
                 
-                // Update category filter
                 renderCategoryFilter();
                 
-                // Filter by category
                 const filtered = currentCategory === 'All' 
                     ? products 
                     : products.filter(p => (p.category || 'General') === currentCategory);
@@ -1580,12 +1619,16 @@
         // RENDER TESTIMONIALS
         // ============================================================
         let testimonialIndex = 0;
-        function renderTestimonials() {
-            const testimonials = getTestimonials();
+        let testimonialsData = [];
+
+        async function renderTestimonials() {
+            const data = await loadTestimonialsFromWorker();
+            testimonialsData = data || getDefaultTestimonials();
+            
             const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
-            const totalPages = Math.ceil(testimonials.length / cardsPerPage);
-            testimonialGrid.innerHTML = testimonials.map(t => `
-                <div class="testimonial-card glass reveal reveal-delay-${testimonials.indexOf(t) % 4 + 1}">
+            const totalPages = Math.ceil(testimonialsData.length / cardsPerPage);
+            testimonialGrid.innerHTML = testimonialsData.map((t, i) => `
+                <div class="testimonial-card glass reveal reveal-delay-${i % 4 + 1}">
                     <div class="stars">${'★'.repeat(t.stars)}${'☆'.repeat(5 - t.stars)}</div>
                     <blockquote>"${t.text}"</blockquote>
                     <cite><i class="fas fa-user-circle"></i> ${t.name}</cite>
@@ -1600,6 +1643,7 @@
             }
             updateTestimonialPage(cardsPerPage);
         }
+
         function updateTestimonialPage(cardsPerPage) {
             const cards = testimonialGrid.querySelectorAll('.testimonial-card');
             const dots = testimonialDots.querySelectorAll('span');
@@ -1608,6 +1652,7 @@
             cards.forEach((card, index) => { card.style.display = (index >= start && index < end) ? 'block' : 'none'; });
             dots.forEach((dot, index) => { dot.classList.toggle('active', index === testimonialIndex); });
         }
+
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
@@ -1623,15 +1668,11 @@
         let currentGalleryCategory = 'All';
         let lightboxImages = [];
         let lightboxIndex = 0;
-        
-        function getGalleryCategories() {
-            const galleryData = getGalleryData();
-            const cats = ['All', ...new Set(galleryData.map(item => item.category))];
-            return cats;
-        }
+        let galleryData = [];
+
         function renderGalleryCategories() {
-            const categories = getGalleryCategories();
-            galleryCategories.innerHTML = categories.map(cat => `
+            const cats = ['All', ...new Set(galleryData.map(item => item.category))];
+            galleryCategories.innerHTML = cats.map(cat => `
                 <button class="${cat === currentGalleryCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
             `).join('');
             galleryCategories.querySelectorAll('button').forEach(btn => {
@@ -1643,8 +1684,13 @@
                 });
             });
         }
-        function renderGalleryItems() {
-            const galleryData = getGalleryData();
+
+        async function renderGalleryItems() {
+            const data = await loadGalleryFromWorker();
+            galleryData = data || getDefaultGallery();
+            
+            renderGalleryCategories();
+            
             const filtered = currentGalleryCategory === 'All' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
             if (filtered.length === 0) {
                 galleryGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;"><i class="fas fa-images" style="font-size:2rem;display:block;margin-bottom:12px;opacity:0.3;"></i>No images in this category</div>`;
@@ -1832,7 +1878,19 @@
                 const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Failed to create bill');
-                if (data.billCode) { window.location.href = `https://toyyibpay.com/${data.billCode}`; } else { throw new Error('Bill code not received'); }
+                if (data.billCode) { 
+                    // Save order data to localStorage for success page
+                    const orderData = {
+                        orderId: `ORDER-${Date.now()}`,
+                        date: new Date().toLocaleDateString('ms-MY', { day: 'numeric', month: 'long', year: 'numeric' }),
+                        customer: { name, email, phone },
+                        items: cart.map(item => ({ name: item.name, qty: item.qty, price: item.price })),
+                        total: total,
+                        note: note
+                    };
+                    localStorage.setItem('socmegy_last_order', JSON.stringify(orderData));
+                    window.location.href = `https://muhdzulhelmibinsaidan.github.io/socmegy/success.html?data=${encodeURIComponent(JSON.stringify(orderData))}`;
+                } else { throw new Error('Bill code not received'); }
             } catch (error) {
                 console.error('Checkout error:', error);
                 showToast('❌ ' + error.message);
@@ -1871,34 +1929,39 @@
         // ============================================================
         // INIT
         // ============================================================
-        loadHeroFromStorage();
-        renderProducts();
-        renderTestimonials();
-        renderGalleryCategories();
-        renderGalleryItems();
-        renderCart();
-        setTimeout(() => {
-            const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
-            updateTestimonialPage(cardsPerPage);
-        }, 100);
+        async function init() {
+            // Load hero from worker
+            const hero = await loadHeroFromWorker();
+            if (hero && hero.title) {
+                updateTypingPhrases(hero.title);
+            }
+            
+            // Start typing animation
+            setTimeout(typeEffect, 800);
+            
+            // Load testimonials from worker
+            await renderTestimonials();
+            
+            // Load gallery from worker
+            await renderGalleryItems();
+            
+            // Load products
+            await renderProducts();
+            
+            // Render cart
+            renderCart();
+            
+            // Setup testimonial pagination
+            setTimeout(() => {
+                const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
+                updateTestimonialPage(cardsPerPage);
+            }, 100);
 
-        // Listen for storage changes from admin
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'socmegy_hero' || e.key === 'socmegy_hero_updated') {
-                loadHeroFromStorage();
-            }
-            if (e.key === 'socmegy_testimonials' || e.key === 'socmegy_testimonials_updated') {
-                renderTestimonials();
-            }
-            if (e.key === 'socmegy_gallery' || e.key === 'socmegy_gallery_updated') {
-                renderGalleryCategories();
-                renderGalleryItems();
-            }
-        });
+            console.log('✨ Socmegy — All data from Worker (sync with admin)');
+            console.log('📌 Hero, Testimonials, Gallery - SYNC from worker');
+        }
 
-        console.log('✨ Socmegy — Complete with category filter, no icons, improved glass');
-        console.log('📌 Categories filter available for products');
-        console.log('📌 Hero, Testimonials, Gallery sync with Admin');
+        init();
     </script>
 </body>
 </html>
