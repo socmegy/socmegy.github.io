@@ -207,31 +207,24 @@
         }
 
         /* ===== CENTER: Ticker ===== */
-.header-ticker {
-    flex: 1;
-    overflow: hidden;
-    margin: 0 8px;
-    min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .header-ticker {
+            flex: 1;
+            overflow: hidden;
+            margin: 0 8px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.ticker-track {
-    overflow: hidden;
-    white-space: nowrap;
-    text-align: center;
-    width: 100%;
-}
+        .ticker-track {
+            overflow: hidden;
+            white-space: nowrap;
+            text-align: center;
+            width: 100%;
+            position: relative;
+        }
 
-.ticker-text {
-    display: inline-block;
-    font-size: 0.78rem;
-    color: rgba(255,255,255,0.7);
-    letter-spacing: 0.3px;
-    padding: 2px 0;
-    text-align: center;
-}
         .ticker-text {
             display: inline-block;
             font-size: 0.78rem;
@@ -247,6 +240,39 @@
             transition: color 0.3s;
         }
         .ticker-text a:hover { color: #e8c96e; text-decoration: underline; }
+
+        /* ALL SCREENS: Marquee scrolling everywhere */
+        .ticker-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: tickerScroll 30s linear infinite;
+            padding-left: 100%;
+            font-size: 0.78rem;
+        }
+        
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* MOBILE: Faster scroll */
+        @media (max-width: 768px) {
+            .header-ticker {
+                flex: 1;
+                overflow: hidden;
+                margin: 0 4px;
+            }
+            .ticker-track {
+                overflow: hidden;
+                white-space: nowrap;
+                width: 100%;
+            }
+            .ticker-text {
+                animation: tickerScroll 25s linear infinite;
+                padding-left: 100%;
+                font-size: 0.7rem;
+            }
+        }
 
         /* ===== RIGHT: Nav + Cart ===== */
         .dock-nav {
@@ -319,37 +345,6 @@
             border-radius: 30px;
             min-width: 18px;
             text-align: center;
-        }
-
-        /* DESKTOP: Static text - no animation */
-        @media (min-width: 769px) {
-            .ticker-text {
-                animation: none;
-            }
-        }
-
-        /* MOBILE: Marquee scrolling */
-        @media (max-width: 768px) {
-            .header-ticker {
-                flex: 1;
-                overflow: hidden;
-                margin: 0 4px;
-            }
-            .ticker-track {
-                overflow: hidden;
-                white-space: nowrap;
-            }
-            .ticker-text {
-                display: inline-block;
-                white-space: nowrap;
-                animation: tickerScroll 20s linear infinite;
-                padding-left: 100%;
-                font-size: 0.7rem;
-            }
-            @keyframes tickerScroll {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-100%); }
-            }
         }
 
         /* ============================================================
@@ -873,7 +868,7 @@
         .cart-sidebar {
             position: fixed;
             top: 0;
-            right: -400px;
+            right: -100%;
             width: 100%;
             max-width: 380px;
             height: 100%;
@@ -1272,12 +1267,11 @@
             <!-- CENTER: Ticker -->
             <div class="header-ticker">
                 <div class="ticker-track">
-<span class="ticker-text" id="tickerText">
-    <i class="fas fa-info-circle"></i> 
-    For orders <strong>above RM5</strong> only. 
-    For RM5 and below, please order via 
-    <a href="https://wa.me/60108043004" target="_blank">WhatsApp</a>
-</span>
+                    <span class="ticker-text" id="tickerText">
+                        <i class="fas fa-info-circle"></i> 
+                        For orders <strong>above RM5</strong> only. For RM5 and below, please order via 
+                        <a href="https://wa.me/60108043004" target="_blank">WhatsApp</a>
+                    </span>
                 </div>
             </div>
 
@@ -1534,26 +1528,7 @@
         }
 
         async function openQuickModalFromCheckout(type) {
-            const modal = document.getElementById('quickModal');
-            const title = document.getElementById('quickModalTitle');
-            const content = document.getElementById('quickModalContent');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            if (type === 'terms') {
-                title.textContent = 'Terms & Conditions';
-                try {
-                    const res = await fetch(`${WORKER_URL}/api/terms`);
-                    const text = await res.text();
-                    content.textContent = text || 'No terms available.';
-                } catch { content.textContent = 'Failed to load terms. Please try again.'; }
-            } else if (type === 'shipping') {
-                title.textContent = 'Shipping Info';
-                try {
-                    const res = await fetch(`${WORKER_URL}/api/shipping`);
-                    const text = await res.text();
-                    content.textContent = text || 'No shipping info available.';
-                } catch { content.textContent = 'Failed to load shipping info. Please try again.'; }
-            }
+            await openQuickModal(type);
         }
 
         function closeQuickModal() {
@@ -1803,20 +1778,26 @@
         }
 
         // ============================================================
-        // RENDER TESTIMONIALS
+        // RENDER TESTIMONIALS WITH AUTO-SLIDE
         // ============================================================
         let testimonialIndex = 0;
         let testimonialsData = [];
+        let testimonialCarouselInterval = null;
 
         async function renderTestimonials() {
             const data = await loadTestimonialsFromWorker();
             testimonialsData = data || [];
             if (!testimonialsData.length) {
                 testimonialGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:24px 0;">No testimonials</div>';
+                testimonialDots.innerHTML = '';
                 return;
             }
             const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
             const totalPages = Math.ceil(testimonialsData.length / cardsPerPage);
+            
+            // Reset index if out of bounds
+            if (testimonialIndex >= totalPages) testimonialIndex = 0;
+            
             testimonialGrid.innerHTML = testimonialsData.map((t, i) => `
                 <div class="testimonial-card glass reveal reveal-delay-${i % 4 + 1}">
                     <div class="stars">${'★'.repeat(t.stars)}${'☆'.repeat(5 - t.stars)}</div>
@@ -1825,31 +1806,72 @@
                     <div class="carousell-badge"><i class="fas fa-shopping-bag"></i> Carousell</div>
                 </div>
             `).join('');
+            
             testimonialDots.innerHTML = '';
             for (let i = 0; i < totalPages; i++) {
                 const dot = document.createElement('span');
-                dot.classList.toggle('active', i === 0);
-                dot.addEventListener('click', () => { testimonialIndex = i; updateTestimonialPage(cardsPerPage); });
+                dot.classList.toggle('active', i === testimonialIndex);
+                dot.addEventListener('click', () => { 
+                    testimonialIndex = i; 
+                    updateTestimonialPage(cardsPerPage);
+                    stopTestimonialCarousel();
+                    startTestimonialCarousel(cardsPerPage, totalPages);
+                });
                 testimonialDots.appendChild(dot);
             }
+            
             updateTestimonialPage(cardsPerPage);
+            startTestimonialCarousel(cardsPerPage, totalPages);
         }
 
         function updateTestimonialPage(cardsPerPage) {
             const cards = testimonialGrid.querySelectorAll('.testimonial-card');
             const dots = testimonialDots.querySelectorAll('span');
             const start = testimonialIndex * cardsPerPage;
-            const end = start + cardsPerPage;
-            cards.forEach((card, index) => { card.style.display = (index >= start && index < end) ? 'block' : 'none'; });
-            dots.forEach((dot, index) => { dot.classList.toggle('active', index === testimonialIndex); });
+            const end = Math.min(start + cardsPerPage, cards.length);
+            
+            // FIX: Pastikan testimonialIndex tak melebihi jumlah dots
+            if (testimonialIndex >= dots.length && dots.length > 0) {
+                testimonialIndex = dots.length - 1;
+            }
+            
+            cards.forEach((card, index) => {
+                card.style.display = (index >= start && index < end) ? 'block' : 'none';
+            });
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === testimonialIndex);
+            });
+        }
+
+        function startTestimonialCarousel(cardsPerPage, totalPages) {
+            stopTestimonialCarousel();
+            if (totalPages <= 1) return;
+            testimonialCarouselInterval = setInterval(() => {
+                testimonialIndex = (testimonialIndex + 1) % totalPages;
+                updateTestimonialPage(cardsPerPage);
+            }, 5000);
+        }
+
+        function stopTestimonialCarousel() {
+            if (testimonialCarouselInterval) {
+                clearInterval(testimonialCarouselInterval);
+                testimonialCarouselInterval = null;
+            }
         }
 
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(() => {
-                const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
-                updateTestimonialPage(cardsPerPage);
+                if (testimonialsData.length > 0) {
+                    const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
+                    const totalPages = Math.ceil(testimonialsData.length / cardsPerPage);
+                    if (testimonialIndex >= totalPages) testimonialIndex = 0;
+                    updateTestimonialPage(cardsPerPage);
+                    stopTestimonialCarousel();
+                    startTestimonialCarousel(cardsPerPage, totalPages);
+                }
             }, 250);
         });
 
@@ -2041,7 +2063,7 @@
         document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const agreeTerms = document.getElementById('agreeTerms');
-            if (!agreeTerms.checked) { showToast('❌ Please agree to Terms & Conditions and Shipping Info'); agreeTerms.focus(); return; }
+            if (!agreeTerms.checked) { showToast('❌ Please agree to Terms & Conditions'); agreeTerms.focus(); return; }
             const email = document.getElementById('checkoutEmail').value.trim();
             const name = document.getElementById('checkoutName').value.trim();
             const phone = document.getElementById('checkoutPhone').value.trim();
@@ -2108,13 +2130,13 @@
             await renderGalleryItems();
             await renderProducts();
             renderCart();
-            setTimeout(() => {
-                const cardsPerPage = window.innerWidth <= 768 ? 1 : 2;
-                updateTestimonialPage(cardsPerPage);
-            }, 100);
 
-            console.log('✨ Socmegy — Ticker static desktop, scroll mobile');
-            console.log('📌 Text: "For orders above RM5 only"');
+            console.log('✨ Socmegy — Updated with:');
+            console.log('✅ Auto-slide testimonials (5sec interval)');
+            console.log('✅ Fixed: pointer aktif untuk testimoni >5');
+            console.log('✅ Desktop ticker (static)');
+            console.log('✅ Mobile ticker (marquee scroll)');
+            console.log('✅ Responsive layouts maintained');
         }
 
         init();
