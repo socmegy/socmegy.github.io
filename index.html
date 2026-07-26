@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>Socmegy - Your Social Media Booster</title>
+    <title>Socmegy - Peningkat Media Sosial Anda</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="icon" href="logo.png" />
     <style>
+        /* ===== RESET & ASAS ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
@@ -38,17 +39,14 @@
             padding: 0 16px;
         }
 
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.9s var(--transition-smooth); }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
-        .reveal-delay-4 { transition-delay: 0.4s; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0; }
+        .section-spacer { height: var(--section-gap); }
 
+        /* ===== LIQUID GLASS — BLUR MINIMUM ===== */
         .glass {
             background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(12px) saturate(1.2);
-            -webkit-backdrop-filter: blur(12px) saturate(1.2);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-lg);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
@@ -68,12 +66,7 @@
         }
         .glass:hover::before { opacity: 0.8; }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0; }
-        .section-spacer { height: var(--section-gap); }
-
-        /* ============================================================
-           HERO
-           ============================================================ */
+        /* ===== HERO ===== */
         .hero-wrapper {
             position: relative;
             width: 100vw;
@@ -89,15 +82,6 @@
         .hero-bg { position: absolute; inset: 0; z-index: 0; }
         .hero-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .hero-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 1; }
-        .hero-gradient {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            background: radial-gradient(circle at 30% 50%, rgba(212, 167, 67, 0.08), transparent 60%),
-                        radial-gradient(circle at 70% 80%, rgba(212, 167, 67, 0.05), transparent 50%);
-            animation: heroGlow 8s ease-in-out infinite alternate;
-        }
-        @keyframes heroGlow { 0% { opacity: 0.6; transform: scale(1); } 100% { opacity: 1; transform: scale(1.05); } }
         .hero-content {
             position: relative;
             z-index: 2;
@@ -120,19 +104,8 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .hero-content h1 .typing-cursor {
-            display: inline-block;
-            width: 3px;
-            height: 1.1em;
-            background: var(--gold);
-            margin-left: 4px;
-            vertical-align: text-bottom;
-            animation: blink 0.7s step-end infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
         .hero-content p { max-width: 540px; margin: 14px auto 0; color: rgba(255,255,255,0.6); font-size: 0.95rem; }
 
-        /* HERO CTA - LIQUID GLASS */
         .hero-cta {
             display: inline-flex;
             align-items: center;
@@ -140,58 +113,32 @@
             margin-top: 28px;
             padding: 14px 38px;
             background: rgba(212, 167, 67, 0.08);
-            backdrop-filter: blur(6px) saturate(1.1);
-            -webkit-backdrop-filter: blur(6px) saturate(1.1);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(212, 167, 67, 0.2);
             border-radius: 60px;
             color: var(--gold-light);
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.5s var(--transition-smooth);
+            transition: all 0.3s;
             font-family: inherit;
             text-decoration: none;
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 40px rgba(212, 167, 67, 0.06), inset 0 1px 0 rgba(212, 167, 67, 0.1);
         }
-        .hero-cta::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(212, 167, 67, 0.08) 0%, rgba(212, 167, 67, 0.01) 40%, rgba(212, 167, 67, 0.03) 60%, rgba(212, 167, 67, 0.06) 100%);
-            pointer-events: none;
-            opacity: 0.5;
-            transition: opacity 0.6s;
-        }
-        .hero-cta::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(212, 167, 67, 0.25) 0%, transparent 35%, transparent 65%, rgba(212, 167, 67, 0.15) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.6;
-            transition: opacity 0.6s;
-        }
         .hero-cta:hover {
-            transform: translateY(-3px) scale(1.02);
+            transform: translateY(-2px);
             background: rgba(212, 167, 67, 0.12);
             border-color: rgba(212, 167, 67, 0.35);
-            box-shadow: 0 8px 60px rgba(212, 167, 67, 0.12), inset 0 1px 0 rgba(212, 167, 67, 0.15);
+            box-shadow: 0 8px 60px rgba(212, 167, 67, 0.12);
             color: #fff;
         }
         .hero-cta:hover i { transform: translateX(4px); color: var(--gold-light); }
-        .hero-cta i { color: var(--gold); transition: all 0.4s; }
+        .hero-cta i { color: var(--gold); transition: all 0.3s; }
 
-        /* ============================================================
-           HEADER - ORIGINAL STYLE
-           ============================================================ */
+        /* ===== HEADER ===== */
         .dock-header {
             position: fixed;
             top: var(--header-top-margin);
@@ -211,12 +158,11 @@
         }
         .dock-header.scrolled {
             background: rgba(10,10,10,0.08);
-            backdrop-filter: blur(12px) saturate(1.2);
-            -webkit-backdrop-filter: blur(12px) saturate(1.2);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
         }
-
         .dock-inner {
             display: flex;
             align-items: center;
@@ -224,7 +170,6 @@
             position: relative;
             z-index: 1;
         }
-
         .logo {
             display: flex;
             align-items: center;
@@ -272,10 +217,6 @@
         .ticker-text a { color: #d4a743; text-decoration: none; font-weight: 600; transition: color 0.3s; }
         .ticker-text a:hover { color: #e8c96e; text-decoration: underline; }
         @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-        @media (max-width: 768px) {
-            .ticker-text { animation: tickerScroll 25s linear infinite; font-size: 0.7rem; }
-            .header-ticker { margin: 0 4px; }
-        }
 
         .dock-nav {
             display: flex;
@@ -349,19 +290,17 @@
             text-align: center;
         }
 
-        /* ============================================================
-           MOBILE MENU - LIQUID GLASS
-           ============================================================ */
+        /* ===== MENU MUDAH ALIH ===== */
         .mobile-menu-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             z-index: 150;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.4s;
+            transition: all 0.3s;
         }
         .mobile-menu-overlay.active { opacity: 1; visibility: visible; }
         .mobile-menu {
@@ -372,12 +311,12 @@
             height: 100%;
             z-index: 151;
             padding: 24px 20px;
-            transition: left 0.4s var(--transition-smooth);
+            transition: left 0.3s var(--transition-smooth);
             display: flex;
             flex-direction: column;
             background: rgba(14,14,14,0.85);
-            backdrop-filter: blur(12px) saturate(1.2);
-            -webkit-backdrop-filter: blur(12px) saturate(1.2);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border-right: 1px solid rgba(255,255,255,0.06);
             box-shadow: 0 0 40px rgba(0,0,0,0.5);
         }
@@ -390,9 +329,7 @@
         .mobile-menu-links a { color: var(--text-muted); text-decoration: none; font-size: 1rem; font-weight: 500; transition: color 0.3s; padding: 6px 0; }
         .mobile-menu-links a:hover { color: var(--gold); }
 
-        /* ============================================================
-           FLOATING BUTTONS - LIQUID GLASS
-           ============================================================ */
+        /* ===== BUTANG TERAPUNG ===== */
         .float-buttons {
             position: fixed;
             bottom: 24px;
@@ -412,21 +349,21 @@
             color: #fff;
             font-size: 1.2rem;
             text-decoration: none;
-            transition: all 0.4s var(--transition-smooth);
+            transition: all 0.3s;
             cursor: pointer;
             position: relative;
             background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(8px) saturate(1.2);
-            -webkit-backdrop-filter: blur(8px) saturate(1.2);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        .float-btn:hover { transform: scale(1.08); border-color: rgba(212,167,67,0.15); }
+        .float-btn:hover { transform: scale(1.05); border-color: rgba(212,167,67,0.15); }
         .float-btn .tooltip {
             position: absolute;
             right: 60px;
             background: rgba(10,10,10,0.9);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(0.5px);
             padding: 4px 14px;
             border-radius: 8px;
             font-size: 0.7rem;
@@ -441,9 +378,7 @@
         .float-btn.whatsapp i { color: #25D366; }
         .float-btn.telegram i { color: #0088cc; }
 
-        /* ============================================================
-           SECTION TITLES
-           ============================================================ */
+        /* ===== TAJUK BAHAGIAN ===== */
         .section-title {
             font-size: 1.6rem;
             font-weight: 600;
@@ -470,9 +405,7 @@
         }
         .section-subtitle i { color: var(--gold); margin: 0 4px; }
 
-        /* ============================================================
-           CATEGORY FILTER - LIQUID GLASS
-           ============================================================ */
+        /* ===== DROPDOWN KATEGORI ===== */
         .category-filter {
             display: flex;
             gap: 8px;
@@ -490,149 +423,51 @@
             cursor: pointer;
             transition: all 0.3s;
             font-family: inherit;
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
         }
         .category-filter button:hover { border-color: rgba(212,167,67,0.2); color: var(--text-primary); }
         .category-filter button.active { border-color: var(--gold); color: var(--gold); background: rgba(212,167,67,0.06); }
 
-        /* ============================================================
-           PRODUCTS - LIQUID GLASS
-           ============================================================ */
+        /* ===== PRODUK / PAKEJ ===== */
         .catalog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
         }
 
-        .spotlight-section {
-            grid-column: 1 / -1;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: var(--radius-lg);
-            padding: 20px 16px 16px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-        }
-        .spotlight-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.04) 100%);
-            pointer-events: none;
-            opacity: 0.4;
-        }
-        .spotlight-section::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(212, 167, 67, 0.04) 30%, rgba(255, 255, 255, 0) 50%, rgba(212, 167, 67, 0.04) 70%, rgba(255, 255, 255, 0.08) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .spotlight-title {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: var(--gold-light);
-            position: relative;
-            z-index: 1;
-        }
-        .spotlight-title i {
-            color: var(--gold);
-            animation: pulseStar 2s ease-in-out infinite;
-        }
-        @keyframes pulseStar {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.15) rotate(10deg); opacity: 0.7; }
-        }
-        .spotlight-title .badge {
-            font-size: 0.5rem;
-            background: rgba(212, 167, 67, 0.08);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(212, 167, 67, 0.10);
-            padding: 2px 12px;
-            border-radius: 30px;
-            color: var(--gold);
-            letter-spacing: 0.5px;
-            font-weight: 400;
-        }
-        .spotlight-title .badge i { animation: none; font-size: 0.45rem; margin-right: 4px; }
-
-        .spotlight-grid {
+        .pakej-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 14px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 24px;
         }
 
         .product-card {
             padding: 24px 16px 20px;
             text-align: center;
             cursor: default;
-            transition: all 0.5s var(--transition-smooth);
+            transition: all 0.3s;
             position: relative;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: var(--radius-lg);
             box-shadow: 0 4px 20px rgba(0,0,0,0.12);
         }
-        .product-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.04) 100%);
-            pointer-events: none;
-            opacity: 0.3;
-        }
-        .product-card::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(212, 167, 67, 0.03) 30%, rgba(255, 255, 255, 0) 50%, rgba(212, 167, 67, 0.03) 70%, rgba(255, 255, 255, 0.06) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.3;
-        }
         .product-card:hover {
-            transform: translateY(-8px) scale(1.01);
+            transform: translateY(-4px);
             border-color: rgba(212,167,67,0.10);
-            box-shadow: 0 16px 60px rgba(0,0,0,0.3), 0 0 60px rgba(212,167,67,0.03);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
         }
-        .product-card:hover::after { opacity: 0.8; }
 
-        .product-card.spotlight-card {
+        .product-card.pakej-card {
             border-color: rgba(212, 167, 67, 0.10);
             background: rgba(255, 255, 255, 0.03);
         }
-        .product-card.spotlight-card::before {
-            background: radial-gradient(circle at 50% 0%, rgba(212, 167, 67, 0.04), transparent 60%);
-        }
-        .product-card.spotlight-card .spotlight-badge {
+        .product-card.pakej-card .pakej-badge {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -649,7 +484,7 @@
             align-items: center;
             gap: 4px;
         }
-        .product-card.spotlight-card .spotlight-badge i { font-size: 0.4rem; }
+        .product-card.pakej-card .pakej-badge i { font-size: 0.4rem; }
 
         .product-card.out-of-stock { opacity: 0.5; cursor: not-allowed; }
         .product-card.out-of-stock:hover { transform: none; }
@@ -660,7 +495,7 @@
             top: 10px;
             right: 10px;
             background: rgba(255, 107, 107, 0.8);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             color: #fff;
             font-size: 0.5rem;
             font-weight: 600;
@@ -669,8 +504,7 @@
             text-transform: uppercase;
             border: 1px solid rgba(255,255,255,0.1);
         }
-        
-        /* SERVICE CATEGORY TAG - WARNA EMAS (ASAL) */
+
         .product-category-tag {
             display: inline-block;
             padding: 2px 10px;
@@ -688,14 +522,13 @@
         .product-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; }
         .product-price { font-size: 1.4rem; font-weight: 700; color: var(--gold-light); margin-bottom: 14px; }
 
-        /* BUTTONS - LIQUID GLASS */
         .btn-gold {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             background: rgba(212, 167, 67, 0.10);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             border: 1px solid rgba(212, 167, 67, 0.15);
             color: var(--gold-light);
             font-weight: 600;
@@ -705,34 +538,12 @@
             cursor: pointer;
             transition: all 0.3s;
             font-family: inherit;
-            box-shadow: 0 4px 20px rgba(212, 167, 67, 0.04), inset 0 1px 0 rgba(212, 167, 67, 0.05);
+            box-shadow: 0 4px 20px rgba(212, 167, 67, 0.04);
             position: relative;
             overflow: hidden;
         }
-        .btn-gold::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(212, 167, 67, 0.06) 0%, rgba(212, 167, 67, 0.01) 40%, rgba(212, 167, 67, 0.03) 60%, rgba(212, 167, 67, 0.05) 100%);
-            pointer-events: none;
-            opacity: 0.5;
-        }
-        .btn-gold::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(212, 167, 67, 0.20) 0%, transparent 35%, transparent 65%, rgba(212, 167, 67, 0.12) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.4;
-        }
         .btn-gold:hover {
-            transform: translateY(-2px) scale(1.02);
+            transform: translateY(-2px);
             background: rgba(212, 167, 67, 0.15);
             border-color: rgba(212, 167, 67, 0.25);
             box-shadow: 0 8px 30px rgba(212, 167, 67, 0.08);
@@ -747,9 +558,85 @@
             color: #555;
         }
 
-        /* ============================================================
-           TESTIMONIALS - LIQUID GLASS
-           ============================================================ */
+        /* ===== SENARAI PERKHIDMATAN ===== */
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 4px 0;
+        }
+        .service-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255,255,255,0.01);
+            transition: all 0.3s ease;
+            flex-wrap: wrap;
+            gap: 8px;
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
+        }
+        .service-list-item:hover {
+            border-color: rgba(212,167,67,0.10);
+            background: rgba(255,255,255,0.02);
+        }
+        .service-list-item .service-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+            min-width: 100px;
+        }
+        .service-list-item .service-info .service-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .service-list-item .service-info .service-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .service-list-item .service-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .service-list-item .service-price {
+            font-weight: 700;
+            color: var(--gold-light);
+            font-size: 1rem;
+        }
+        .service-list-item .btn-gold {
+            padding: 5px 14px;
+            font-size: 0.7rem;
+        }
+        @media (max-width: 480px) {
+            .service-list-item {
+                padding: 8px 10px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+            .service-list-item .service-info {
+                min-width: auto;
+            }
+            .service-list-item .service-actions {
+                justify-content: space-between;
+                width: 100%;
+            }
+            .service-list-item .service-price {
+                font-size: 0.9rem;
+            }
+            .service-list-item .btn-gold {
+                padding: 4px 12px;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ===== TESTIMONI ===== */
         .testimonial-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -758,45 +645,21 @@
         .testimonial-card {
             padding: 28px 24px;
             text-align: center;
-            transition: all 0.4s;
+            transition: all 0.3s;
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: var(--radius-lg);
             box-shadow: 0 4px 20px rgba(0,0,0,0.10);
             position: relative;
             overflow: hidden;
         }
-        .testimonial-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.04) 100%);
-            pointer-events: none;
-            opacity: 0.3;
-        }
-        .testimonial-card::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(212, 167, 67, 0.03) 30%, rgba(255, 255, 255, 0) 50%, rgba(212, 167, 67, 0.03) 70%, rgba(255, 255, 255, 0.06) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.3;
-        }
         .testimonial-card:hover { 
             transform: translateY(-4px); 
             border-color: rgba(212,167,67,0.08);
             box-shadow: 0 12px 40px rgba(0,0,0,0.2);
         }
-        .testimonial-card:hover::after { opacity: 0.8; }
         .testimonial-card .stars { color: var(--gold); font-size: 1.1rem; letter-spacing: 3px; margin-bottom: 10px; }
         .testimonial-card blockquote { font-size: 1rem; font-style: italic; color: var(--text-primary); margin-bottom: 10px; line-height: 1.7; }
         .testimonial-card blockquote::before { content: '"'; color: var(--gold); opacity: 0.3; }
@@ -811,7 +674,7 @@
             opacity: 0.5;
             letter-spacing: 0.5px;
             background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             padding: 2px 12px;
             border-radius: 20px;
             border: 1px solid rgba(255,255,255,0.03);
@@ -833,9 +696,7 @@
         }
         .testimonial-dots span.active { background: var(--gold); width: 24px; border-radius: 4px; border-color: var(--gold); }
 
-        /* ============================================================
-           GALLERY - LIQUID GLASS
-           ============================================================ */
+        /* ===== GALERI (KARUSEL IMEJ) ===== */
         .gallery-categories {
             display: flex;
             gap: 8px;
@@ -847,8 +708,8 @@
             padding: 8px 18px;
             border-radius: 30px;
             background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.05);
             color: var(--text-muted);
             font-size: 0.8rem;
@@ -866,64 +727,88 @@
             color: var(--gold); 
             background: rgba(212,167,67,0.04);
         }
-        
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px;
+
+        .gallery-carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px 0;
+            margin: 0 auto;
         }
-        .gallery-item {
+        .gallery-carousel-track {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            transition: transform 0.5s ease;
+            will-change: transform;
+        }
+        .gallery-carousel-item {
+            flex: 0 0 33.333%;
+            padding: 0 4px;
+            transition: all 0.5s ease;
+            opacity: 0.6;
+            transform: scale(0.85);
+            filter: blur(0.5px);
             aspect-ratio: 1/1;
             border-radius: var(--radius-sm);
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.5s var(--transition-smooth);
-            position: relative;
-            background: rgba(22,22,22,0.6);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.04);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
         }
-        .gallery-item::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.03) 100%);
+        .gallery-carousel-item.active {
+            flex: 0 0 33.333%;
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+            z-index: 2;
+        }
+        .gallery-carousel-item.prev,
+        .gallery-carousel-item.next {
+            opacity: 0.8;
+            transform: scale(0.8) translateX(0);
+            filter: blur(0px);
+            flex: 0 0 33.333%;
+        }
+        .gallery-carousel-item.prev {
+            opacity: 0.8;
+            transform: scale(0.8) translateX(10%) perspective(500px) rotateY(4deg);
+            flex: 0 0 25%;
+            margin-right: -4%;
+            z-index: 1;
+        }
+        .gallery-carousel-item.next {
+            opacity: 0.8;
+            transform: scale(0.8) translateX(-10%) perspective(500px) rotateY(-4deg);
+            flex: 0 0 25%;
+            margin-left: -4%;
+            z-index: 1;
+        }
+        .gallery-carousel-item.hidden {
+            flex: 0 0 0;
+            opacity: 0;
+            transform: scale(0.5);
+            padding: 0;
+            margin: 0;
+            width: 0;
+            overflow: hidden;
             pointer-events: none;
-            opacity: 0.3;
         }
-        .gallery-item:hover {
-            transform: scale(1.04);
-            border-color: rgba(212,167,67,0.12);
-            box-shadow: 0 12px 48px rgba(0,0,0,0.3);
-        }
-        .gallery-item img {
+        .gallery-carousel-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.6s;
+            border-radius: var(--radius-sm);
+            transition: transform 0.5s ease;
         }
-        .gallery-item:hover img { transform: scale(1.06); }
-        .gallery-item .placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            background: rgba(255,255,255,0.02);
-        }
-        /* GALLERY CATEGORY TAG - WARNA PUTIH */
-        .gallery-item .category-tag {
+        .gallery-carousel-item .category-tag {
             position: absolute;
             bottom: 8px;
             left: 8px;
             background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(0.5px);
             padding: 3px 10px;
             border-radius: 20px;
             font-size: 0.5rem;
@@ -932,48 +817,37 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        .gallery-carousel-item { position: relative; }
 
-        .load-more-wrap {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .load-more-btn {
-            padding: 12px 32px;
-            border-radius: 60px;
-            background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            font-size: 0.85rem;
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(0.5px);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            padding: 8px 14px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.4s;
-            font-family: inherit;
+            transition: all 0.3s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
         }
-        .load-more-btn:hover {
-            border-color: rgba(212,167,67,0.15);
-            background: rgba(212,167,67,0.04);
+        .carousel-btn:hover {
+            background: rgba(212,167,67,0.10);
+            border-color: rgba(212,167,67,0.12);
             color: var(--gold);
-            transform: translateY(-2px);
         }
-        .load-more-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .load-more-btn i { margin-right: 8px; transition: transform 0.3s; }
-        .load-more-btn:hover:not(:disabled) i { transform: translateY(-2px); }
-        .load-more-info {
-            margin-top: 8px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            opacity: 0.4;
-        }
+        .carousel-btn.prev { left: 4px; }
+        .carousel-btn.next { right: 4px; }
 
-        /* ============================================================
-           FOOTER - LIQUID GLASS
-           ============================================================ */
+        /* ===== KAKI ===== */
         footer {
             padding: 24px 0 20px;
             text-align: center;
@@ -999,8 +873,8 @@
             transition: all 0.3s;
             text-decoration: none;
             background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(8px) saturate(1.2);
-            -webkit-backdrop-filter: blur(8px) saturate(1.2);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
@@ -1025,73 +899,42 @@
             letter-spacing: 0.3px;
             position: relative;
             padding: 4px 0;
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
         }
         .quick-links button::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--gold); transition: width 0.3s; }
         .quick-links button:hover { color: var(--text-primary); }
         .quick-links button:hover::after { width: 100%; }
         .quick-links .divider { color: rgba(255,255,255,0.1); font-size: 0.55rem; }
 
-        /* ============================================================
-           QUICK LINK MODAL - LIQUID GLASS
-           ============================================================ */
+        /* ===== MODAL ===== */
         .modal-quick {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             z-index: 500;
             display: none;
             align-items: center;
             justify-content: center;
             padding: 16px;
-            animation: modalFade 0.3s ease;
         }
         .modal-quick.active { display: flex; }
-        @keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
         .modal-quick .modal-box {
             background: rgba(10, 10, 10, 0.85);
-            backdrop-filter: blur(8px) saturate(1.1);
-            -webkit-backdrop-filter: blur(8px) saturate(1.1);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
-            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.3);
             padding: 28px 28px;
             max-width: 560px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
-            animation: modalSlide 0.3s ease;
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .modal-quick .modal-box::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.03) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.06) 100%);
-            pointer-events: none;
-            opacity: 0.4;
-            transition: opacity 0.6s;
-        }
-        .modal-quick .modal-box::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.10) 0%, rgba(212, 167, 67, 0.04) 30%, rgba(255, 255, 255, 0) 50%, rgba(212, 167, 67, 0.04) 70%, rgba(255, 255, 255, 0.08) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.4;
-            transition: opacity 0.6s;
-        }
-        .modal-quick .modal-box:hover::after { opacity: 1; }
-        @keyframes modalSlide { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .modal-quick .modal-box h2 {
             color: #d4a743;
             font-size: 1.1rem;
@@ -1119,6 +962,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
         }
         .modal-quick .modal-box .close-modal:hover { background: rgba(255,255,255,0.08); border-color: rgba(212,167,67,0.2); color: var(--text-primary); }
         .modal-quick .modal-box .content {
@@ -1130,22 +975,18 @@
             overflow-y: auto;
             padding-right: 4px;
         }
-        .modal-quick .modal-box .content::-webkit-scrollbar { width: 3px; }
-        .modal-quick .modal-box .content::-webkit-scrollbar-thumb { background: rgba(212,167,67,0.2); border-radius: 4px; }
 
-        /* ============================================================
-           CART - LIQUID GLASS
-           ============================================================ */
+        /* ===== TROLI ===== */
         .cart-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             z-index: 200;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.4s;
+            transition: all 0.3s;
         }
         .cart-overlay.active { opacity: 1; visibility: visible; }
         .cart-sidebar {
@@ -1156,30 +997,22 @@
             max-width: 380px;
             height: 100%;
             background: rgba(10, 10, 10, 0.88);
-            backdrop-filter: blur(8px) saturate(1.1);
-            -webkit-backdrop-filter: blur(8px) saturate(1.1);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border-left: 1px solid rgba(255,255,255,0.04);
             z-index: 201;
             padding: 24px 20px;
-            transition: right 0.5s var(--transition-smooth);
+            transition: right 0.3s var(--transition-smooth);
             display: flex;
             flex-direction: column;
             box-shadow: -8px 0 40px rgba(0,0,0,0.3);
-        }
-        .cart-sidebar::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.03) 100%);
-            pointer-events: none;
-            opacity: 0.3;
         }
         .cart-sidebar.active { right: 0; }
         .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .cart-header h2 { font-size: 1.2rem; font-weight: 600; }
         .cart-close {
             background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 50%;
             width: 36px;
@@ -1200,9 +1033,7 @@
             gap: 12px;
             padding: 12px 0;
             border-bottom: 1px solid rgba(255,255,255,0.04);
-            animation: cartSlide 0.4s var(--transition-smooth);
         }
-        @keyframes cartSlide { 0% { opacity: 0; transform: translateX(20px); } 100% { opacity: 1; transform: translateX(0); } }
         .cart-item-info { flex: 1; }
         .cart-item-name { font-weight: 500; font-size: 0.9rem; }
         .cart-item-price { color: var(--gold-light); font-weight: 600; font-size: 0.85rem; }
@@ -1215,7 +1046,7 @@
         }
         .cart-item-qty button {
             background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 4px;
             color: var(--text-primary);
@@ -1228,7 +1059,7 @@
         .cart-item-qty button:hover { background: rgba(212,167,67,0.06); border-color: rgba(212,167,67,0.12); }
         .cart-item-remove { 
             background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.03);
             border-radius: 50%;
             width: 28px;
@@ -1249,19 +1080,17 @@
         .cart-total span:last-child { color: var(--gold-light); }
         .cart-footer .btn-gold { width: 100%; justify-content: center; padding: 12px; font-size: 0.85rem; }
 
-        /* ============================================================
-           CHECKOUT MODAL - LIQUID GLASS
-           ============================================================ */
+        /* ===== TEMPAHAN ===== */
         .checkout-overlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
+            -webkit-backdrop-filter: blur(0.5px);
             z-index: 250;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.4s;
+            transition: all 0.3s;
         }
         .checkout-overlay.active { opacity: 1; visibility: visible; }
         .checkout-modal {
@@ -1273,8 +1102,8 @@
             max-width: 500px;
             max-height: 90vh;
             background: rgba(10, 10, 10, 0.88);
-            backdrop-filter: blur(8px) saturate(1.1);
-            -webkit-backdrop-filter: blur(8px) saturate(1.1);
+            backdrop-filter: blur(0.5px) saturate(1.02);
+            -webkit-backdrop-filter: blur(0.5px) saturate(1.02);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 20px;
             z-index: 251;
@@ -1284,23 +1113,12 @@
             display: none;
             box-shadow: 0 8px 48px rgba(0,0,0,0.3);
         }
-        .checkout-modal::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.03) 100%);
-            pointer-events: none;
-            opacity: 0.3;
-        }
         .checkout-modal.active { display: block; transform: translate(-50%, -50%) scale(1); }
-        .checkout-modal::-webkit-scrollbar { width: 4px; }
-        .checkout-modal::-webkit-scrollbar-thumb { background: rgba(212,167,67,0.15); border-radius: 4px; }
         .checkout-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
         .checkout-header h2 { font-size: 1.2rem; font-weight: 600; }
         .checkout-close {
             background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 50%;
             width: 36px;
@@ -1321,7 +1139,7 @@
             width: 100%;
             padding: 10px 12px;
             background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.06);
             border-radius: 8px;
             color: var(--text-primary);
@@ -1334,18 +1152,15 @@
             outline: none; 
             background: rgba(255,255,255,0.05); 
             border-color: rgba(212,167,67,0.20);
-            box-shadow: 0 0 20px rgba(212,167,67,0.02);
         }
         .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.20); }
         .form-group small { display: block; margin-top: 3px; font-size: 0.65rem; color: var(--text-muted); }
-
         .form-group input[type="checkbox"] { accent-color: #d4a743; width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
         .terms-link { color: #d4a743; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: rgba(212,167,67,0.3); transition: color 0.3s; }
         .terms-link:hover { color: #e8c96e; }
-
         .order-summary {
             background: rgba(255,255,255,0.02);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(255,255,255,0.04);
             border-radius: 10px;
             padding: 14px;
@@ -1357,16 +1172,14 @@
         .summary-total { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 8px; font-size: 1rem; font-weight: 600; }
         .summary-total span:last-child { color: var(--gold-light); }
 
-        /* ============================================================
-           TOAST
-           ============================================================ */
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 80px;
             left: 50%;
             transform: translateX(-50%) translateY(80px);
             background: rgba(10,10,10,0.88);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(0.5px);
             border: 1px solid rgba(212,167,67,0.10);
             padding: 10px 20px;
             border-radius: 60px;
@@ -1392,80 +1205,7 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ============================================================
-           LIGHTBOX
-           ============================================================ */
-        .lightbox {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.88);
-            backdrop-filter: blur(16px);
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s;
-            padding: 16px;
-        }
-        .lightbox.active { opacity: 1; visibility: visible; }
-        .lightbox img { max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: var(--radius-md); }
-        .lightbox-close {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            color: var(--text-primary);
-            font-size: 1.4rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .lightbox-close:hover { color: var(--gold); border-color: rgba(212,167,67,0.12); }
-        .lightbox-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.06);
-            color: var(--text-primary);
-            font-size: 1.2rem;
-            padding: 10px 14px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 1000;
-        }
-        .lightbox-nav:hover { background: rgba(212,167,67,0.10); border-color: rgba(212,167,67,0.12); color: var(--gold); }
-        .lightbox-nav.prev { left: 8px; }
-        .lightbox-nav.next { right: 8px; }
-        .lightbox-counter {
-            position: absolute;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
-            padding: 4px 14px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.04);
-        }
-
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
+        /* ===== RESPONSIF ===== */
         @media (max-width: 768px) {
             body { padding: 0 12px; }
             :root { --section-gap: 40px; --header-top-margin: 10px; }
@@ -1485,18 +1225,19 @@
             .logo img { height: 26px; }
             .header-actions { gap: 10px; }
 
-            .catalog-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .spotlight-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .spotlight-section { padding: 16px 12px; }
-            .product-card { padding: 16px 12px 14px; }
-            .product-price { font-size: 1.1rem; }
-
+            .pakej-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
             .testimonial-grid { grid-template-columns: 1fr; gap: 14px; }
             .testimonial-card { padding: 20px 16px; }
             .testimonial-card blockquote { font-size: 0.9rem; }
 
-            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-            .gallery-categories button { padding: 8px 16px; font-size: 0.75rem; }
+            .gallery-carousel-item { flex: 0 0 33.333%; }
+            .gallery-carousel-item.prev,
+            .gallery-carousel-item.next {
+                flex: 0 0 20%;
+                margin-left: -4%;
+                margin-right: -4%;
+            }
+            .gallery-carousel-item.active { flex: 0 0 60%; }
             .category-filter button { padding: 6px 14px; font-size: 0.75rem; }
 
             .section-title { font-size: 1.3rem; }
@@ -1515,12 +1256,6 @@
             .quick-links button { font-size: 0.6rem; }
 
             .toast { bottom: 70px; font-size: 0.75rem; padding: 8px 16px; white-space: normal; max-width: 90%; }
-
-            .lightbox-nav { padding: 10px 12px; font-size: 1rem; }
-            .lightbox-nav.prev { left: 4px; }
-            .lightbox-nav.next { right: 4px; }
-            .lightbox-close { top: 12px; right: 16px; font-size: 1.4rem; width: 40px; height: 40px; }
-            .lightbox { padding: 12px; }
         }
 
         @media (max-width: 480px) {
@@ -1539,8 +1274,7 @@
             .logo { font-size: 0.8rem; gap: 6px; }
             .logo img { height: 22px; }
 
-            .catalog-grid { grid-template-columns: 1fr; gap: 10px; }
-            .spotlight-grid { grid-template-columns: 1fr; gap: 10px; }
+            .pakej-grid { grid-template-columns: 1fr; gap: 10px; }
             .product-card { padding: 14px 12px 12px; }
             .product-name { font-size: 0.95rem; }
             .product-price { font-size: 1rem; }
@@ -1550,9 +1284,14 @@
             .testimonial-card { padding: 16px 14px; }
             .testimonial-card blockquote { font-size: 0.85rem; }
 
-            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-            .gallery-categories button { padding: 6px 14px; font-size: 0.7rem; }
-            .category-filter button { padding: 5px 12px; font-size: 0.7rem; }
+            .gallery-carousel-item.active { flex: 0 0 70%; }
+            .gallery-carousel-item.prev,
+            .gallery-carousel-item.next {
+                flex: 0 0 15%;
+                margin-left: -6%;
+                margin-right: -6%;
+            }
+            .carousel-btn { width: 32px; height: 32px; font-size: 0.8rem; padding: 4px 8px; }
 
             .section-title { font-size: 1.1rem; gap: 8px; }
             .section-subtitle { font-size: 0.75rem; }
@@ -1578,11 +1317,6 @@
             .cart-item-price { font-size: 0.75rem; }
 
             .toast { bottom: 60px; font-size: 0.7rem; padding: 6px 14px; }
-
-            .lightbox-nav { padding: 8px 10px; font-size: 0.9rem; }
-            .lightbox-nav.prev { left: 4px; }
-            .lightbox-nav.next { right: 4px; }
-            .lightbox-close { width: 36px; height: 36px; font-size: 1.2rem; }
         }
 
         @media (min-width: 769px) {
@@ -1595,26 +1329,26 @@
 </head>
 <body>
     <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Added to cart!</span></div>
+    <div id="toast" class="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Ditambahkan ke troli!</span></div>
 
-    <!-- ===== QUICK LINK MODAL ===== -->
+    <!-- ===== MODAL PAUTAN PANTAS ===== -->
     <div class="modal-quick" id="quickModal">
         <div class="modal-box">
             <button class="close-modal" onclick="closeQuickModal()">&times;</button>
-            <h2><i class="fas fa-file-contract"></i> <span id="quickModalTitle">Terms & Conditions</span></h2>
-            <div class="content" id="quickModalContent">Loading...</div>
+            <h2><i class="fas fa-file-contract"></i> <span id="quickModalTitle">Syarat &amp; Ketentuan</span></h2>
+            <div class="content" id="quickModalContent">Memuatkan...</div>
         </div>
     </div>
 
-    <!-- ===== FLOATING BUTTONS ===== -->
+    <!-- ===== BUTANG TERAPUNG ===== -->
     <div class="float-buttons">
         <a href="https://wa.me/60108043004" target="_blank" class="float-btn whatsapp" aria-label="WhatsApp">
             <i class="fab fa-whatsapp"></i>
-            <span class="tooltip">WhatsApp Support</span>
+            <span class="tooltip">Sokongan WhatsApp</span>
         </a>
         <a href="https://telegram.me/socmegymalaysia" target="_blank" class="float-btn telegram" aria-label="Telegram">
             <i class="fab fa-telegram-plane"></i>
-            <span class="tooltip">Telegram Channel</span>
+            <span class="tooltip">Saluran Telegram</span>
         </a>
     </div>
 
@@ -1629,56 +1363,58 @@
                 <div class="ticker-track">
                     <span class="ticker-text" id="tickerText">
                         <i class="fas fa-info-circle"></i> 
-                        For orders <strong>above RM5</strong> only. For RM5 and below, please order via 
+                        Untuk tempahan <strong>melebihi RM5</strong> sahaja. Untuk RM5 dan ke bawah, sila tempah melalui 
                         <a href="https://wa.me/60108043004" target="_blank">WhatsApp</a>
                     </span>
                 </div>
             </div>
             <ul class="dock-nav" id="desktopNav">
-                <li><a href="#services">Services</a></li>
-                <li><a href="#testimonials">Testimonials</a></li>
-                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#services">Perkhidmatan</a></li>
+                <li><a href="#testimonials">Testimoni</a></li>
+                <li><a href="#gallery">Hasil Kami</a></li>
             </ul>
             <div class="header-actions">
-                <button class="cart-icon" id="cartToggle" aria-label="Open cart">
+                <button class="cart-icon" id="cartToggle" aria-label="Buka troli">
                     <i class="fas fa-shopping-bag"></i>
                     <span class="cart-badge" id="cartBadge">0</span>
                 </button>
-                <button class="hamburger" id="hamburgerToggle" aria-label="Open menu">
+                <button class="hamburger" id="hamburgerToggle" aria-label="Buka menu">
                     <i class="fas fa-bars"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- ===== MOBILE MENU ===== -->
+    <!-- ===== MENU MUDAH ALIH ===== -->
     <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-menu-header">
-            <span class="logo"><span class="logo-text">Socmegy</span></span>
+            <span class="logo">
+                <img src="logo.png" alt="Socmegy" style="height:24px; width:auto; display:inline-block; border-radius:8px; margin-right:6px;" />
+                <span class="logo-text">Socmegy</span>
+            </span>
             <button class="mobile-menu-close" id="mobileMenuClose">&times;</button>
         </div>
         <ul class="mobile-menu-links">
-            <li><a href="#services" id="mobileLinkServices">Services</a></li>
-            <li><a href="#testimonials" id="mobileLinkTestimonials">Testimonials</a></li>
-            <li><a href="#gallery" id="mobileLinkGallery">Gallery</a></li>
+            <li><a href="#services" id="mobileLinkServices">Perkhidmatan</a></li>
+            <li><a href="#testimonials" id="mobileLinkTestimonials">Testimoni</a></li>
+            <li><a href="#gallery" id="mobileLinkGallery">Hasil Kami</a></li>
         </ul>
     </div>
 
     <!-- ===== HERO ===== -->
     <div class="hero-wrapper">
         <div class="hero-bg" id="heroBg">
-            <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1600&q=80" alt="Social media growth" loading="eager" />
+            <img src="bg.png" alt="Pertumbuhan media sosial" loading="eager" />
         </div>
         <div class="hero-overlay"></div>
-        <div class="hero-gradient"></div>
-        <div class="hero-content reveal">
-            <h1 id="typingHeading">
-                Elevate Your <span class="highlight">Digital Presence</span><span class="typing-cursor"></span>
+        <div class="hero-content">
+            <h1 id="heroHeading">
+                Tingkatkan <span class="highlight">Kehadiran Digital</span> Anda
             </h1>
-            <p id="heroSubtitle">Increase engagement. Boost social media growth services with secure payments and guaranteed results.</p>
+            <p id="heroSubtitle">Tingkatkan penglibatan. Perkhidmatan pertumbuhan media sosial dengan pembayaran selamat dan hasil yang terjamin.</p>
             <a href="#services" class="hero-cta" id="heroCta">
-                <i class="fas fa-rocket"></i> Explore Services
+                <i class="fas fa-rocket"></i> Teroka Perkhidmatan
             </a>
         </div>
     </div>
@@ -1686,16 +1422,23 @@
     <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== SERVICES ===== -->
+    <!-- ===== PERKHIDMATAN ===== -->
     <section id="services" class="container">
-        <div class="section-title reveal">
-            <i class="fas fa-store"></i> Our <span class="gold">Services</span>
+        <div class="section-title">
+            <i class="fas fa-store"></i> <span class="gold">Perkhidmatan</span> Kami
         </div>
+
+        <!-- PAKEJ KAMI — 3 PAKEJ SAHAJA -->
+        <div id="pakejContainer" style="margin-bottom: 20px;"></div>
+
+        <!-- KATEGORI (dropdown) — di bawah pakej -->
         <div class="category-filter" id="categoryFilter"></div>
+
+        <!-- SENARAI PERKHIDMATAN -->
         <div class="catalog-grid" id="catalogGrid">
             <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
                 <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;display:block;margin-bottom:12px;opacity:0.4;"></i>
-                Loading services...
+                Memuatkan perkhidmatan...
             </div>
         </div>
     </section>
@@ -1703,14 +1446,14 @@
     <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== TESTIMONIALS ===== -->
+    <!-- ===== TESTIMONI ===== -->
     <section id="testimonials" class="container">
-        <div class="section-title reveal">
-            <i class="fas fa-quote-left"></i> What Our <span class="gold">Clients Say</span>
+        <div class="section-title">
+            <i class="fas fa-quote-left"></i> Kata <span class="gold">Pelanggan</span> Kami
         </div>
-        <p class="section-subtitle reveal">
+        <p class="section-subtitle">
             <i class="fas fa-star" style="color:var(--gold);"></i> 
-            Fresh reviews from our customers on Carousell — real people, real results.
+            Ulasan terkini daripada pelanggan kami di Carousell — orang sebenar, hasil nyata.
             <i class="fas fa-star" style="color:var(--gold);"></i>
         </p>
         <div class="testimonial-grid" id="testimonialGrid"></div>
@@ -1720,24 +1463,25 @@
     <!-- ===== SPACER ===== -->
     <div class="section-spacer"></div>
 
-    <!-- ===== GALLERY ===== -->
+    <!-- ===== GALERI (HASIL KAMI) ===== -->
     <section id="gallery" class="container">
-        <div class="section-title reveal">
-            <i class="fas fa-images"></i> <span class="gold">Gallery</span>
+        <div class="section-title">
+            <i class="fas fa-images"></i> <span class="gold">Hasil Kami</span>
         </div>
         <div class="gallery-categories" id="galleryCategories"></div>
-        <div class="gallery-grid" id="galleryGrid">
-            <div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">
-                <i class="fas fa-spinner fa-spin" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.4;"></i>
-                Loading gallery...
+        <div class="gallery-carousel-wrapper" id="galleryCarouselWrapper">
+            <div class="gallery-carousel-track" id="galleryCarouselTrack">
+                <!-- Diisi oleh JS -->
             </div>
+            <button class="carousel-btn prev" id="carouselPrev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-btn next" id="carouselNext"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
 
     <!-- ===== SPACER ===== -->
     <div style="height:30px;"></div>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- ===== KAKI ===== -->
     <footer>
         <div class="container">
             <div class="social-links">
@@ -1746,81 +1490,72 @@
                 <a href="https://facebook.com/socmegy" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
             </div>
             <div class="quick-links">
-                <button onclick="openQuickModal('terms')">Terms &amp; Conditions</button>
+                <button onclick="openQuickModal('terms')">Syarat &amp; Ketentuan</button>
                 <span class="divider">•</span>
-                <button onclick="openQuickModal('shipping')">Shipping Info</button>
+                <button onclick="openQuickModal('shipping')">Maklumat Penghantaran</button>
             </div>
             <div class="footer-text">
-                &copy;2026 <span class="gold">Socmegy.</span> All rights reserved.
+                &copy;2026 <span class="gold">Socmegy.</span> Hak cipta terpelihara.
             </div>
         </div>
     </footer>
 
-    <!-- ===== LIGHTBOX ===== -->
-    <div class="lightbox" id="lightbox">
-        <button class="lightbox-close" id="lightboxClose">&times;</button>
-        <button class="lightbox-nav prev" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
-        <button class="lightbox-nav next" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
-        <img src="" alt="Gallery" id="lightboxImg" />
-        <div class="lightbox-counter" id="lightboxCounter">1 / 1</div>
-    </div>
-
-    <!-- ===== CART ===== -->
+    <!-- ===== TROLI ===== -->
     <div class="cart-overlay" id="cartOverlay"></div>
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
-            <h2><i class="fas fa-shopping-bag" style="color:var(--gold);margin-right:6px;"></i> Cart</h2>
+            <h2><i class="fas fa-shopping-bag" style="color:var(--gold);margin-right:6px;"></i> Troli</h2>
             <button class="cart-close" id="cartClose">&times;</button>
         </div>
         <div class="cart-items" id="cartItems">
             <div class="cart-empty">
                 <i class="fas fa-box-open"></i>
-                <p>Your cart is empty</p>
+                <p>Troli anda kosong</p>
             </div>
         </div>
         <div class="cart-footer" id="cartFooter" style="display:none;">
             <div class="cart-total">
-                <span>Total</span>
+                <span>Jumlah</span>
                 <span id="cartTotal">RM0.00</span>
             </div>
             <button class="btn-gold" id="checkoutBtn">
-                <i class="fas fa-lock"></i> Proceed to Checkout
+                <i class="fas fa-lock"></i> Teruskan ke Tempahan
             </button>
         </div>
     </div>
 
-    <!-- ===== CHECKOUT ===== -->
+    <!-- ===== TEMPAHAN ===== -->
     <div class="checkout-overlay" id="checkoutOverlay"></div>
     <div class="checkout-modal" id="checkoutModal">
         <div class="checkout-header">
-            <h2>Customer Details</h2>
+            <h2>Maklumat Pelanggan</h2>
             <button class="checkout-close" id="checkoutClose">&times;</button>
         </div>
         <form id="checkoutForm">
             <div class="form-group">
-                <label for="checkoutEmail">Email <span class="required">*</span></label>
-                <input type="email" id="checkoutEmail" placeholder="your@email.com" required />
-                <small>You'll receive the receipt here</small>
+                <label for="checkoutEmail">E-mel <span class="required">*</span></label>
+                <input type="email" id="checkoutEmail" placeholder="anda@email.com" required />
+                <small>Anda akan menerima resit di sini</small>
             </div>
             <div class="form-group">
-                <label for="checkoutName">Full Name <span class="required">*</span></label>
-                <input type="text" id="checkoutName" placeholder="Your Name" required />
+                <label for="checkoutName">Nama Penuh <span class="required">*</span></label>
+                <input type="text" id="checkoutName" placeholder="Nama Anda" required />
             </div>
             <div class="form-group">
-                <label for="checkoutPhone">Phone Number <span class="required">*</span></label>
+                <label for="checkoutPhone">Nombor Telefon <span class="required">*</span></label>
                 <input type="tel" id="checkoutPhone" placeholder="0123456789" pattern="[0-9]{10,11}" required />
-                <small>10-11 digits without symbols</small>
+                <small>10-11 digit tanpa simbol</small>
             </div>
             <div class="form-group">
-                <label for="checkoutNote">Notes (Link / Username) <span class="required">*</span></label>
-                <textarea id="checkoutNote" placeholder="e.g. https://instagram.com/username" rows="2" required></textarea>
-                <small>Please provide the link to your account, video, or post</small>
+                <label for="checkoutNote">Catatan (Pautan / Nama Pengguna) <span class="required">*</span></label>
+                <textarea id="checkoutNote" placeholder="Contoh: https://instagram.com/username" rows="2" required></textarea>
+                <small>Sila berikan pautan ke akaun, video, atau siaran anda</small>
             </div>
             <div class="order-summary">
-                <h3>Order Summary</h3>
+                <h3>Ringkasan Tempahan</h3>
                 <div id="checkoutItems"></div>
                 <div class="summary-total">
-                    <span>Total:</span>
+                    <span>Jumlah:</span>
                     <span id="checkoutTotal">RM0.00</span>
                 </div>
             </div>
@@ -1828,22 +1563,22 @@
                 <div style="display:flex;align-items:flex-start;gap:10px;font-size:0.8rem;font-weight:400;color:#b0b0b0;">
                     <input type="checkbox" id="agreeTerms" required style="margin-top:2px;width:18px;height:18px;accent-color:#d4a743;flex-shrink:0;cursor:pointer;" />
                     <span style="padding-top:1px;">
-                        I agree to the 
-                        <span onclick="openQuickModalFromCheckout('terms')" class="terms-link">Terms &amp; Conditions</span>
-                        and 
-                        <span onclick="openQuickModalFromCheckout('shipping')" class="terms-link">Shipping Info</span>
+                        Saya bersetuju dengan 
+                        <span onclick="openQuickModalFromCheckout('terms')" class="terms-link">Syarat &amp; Ketentuan</span>
+                        dan 
+                        <span onclick="openQuickModalFromCheckout('shipping')" class="terms-link">Maklumat Penghantaran</span>
                     </span>
                 </div>
             </div>
             <button type="submit" class="btn-gold" style="width:100%;justify-content:center;padding:12px;">
-                <i class="fas fa-credit-card"></i> Pay Now
+                <i class="fas fa-credit-card"></i> Bayar Sekarang
             </button>
         </form>
     </div>
 
     <script>
         // ============================================================
-        // CONFIG
+        // KONFIGURASI
         // ============================================================
         const WORKER_URL = 'https://socmegy-worker.socmegy.workers.dev';
 
@@ -1853,12 +1588,12 @@
         let cart = [];
         let products = [];
         let isProcessing = false;
-        let currentCategory = 'All';
+        let currentCategory = 'Semua';
         const STORAGE_KEY = 'socmegy_cart';
         try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) cart = JSON.parse(saved); } catch (_) {}
 
         // ============================================================
-        // QUICK MODAL
+        // MODAL PAUTAN PANTAS
         // ============================================================
         async function openQuickModal(type) {
             const modal = document.getElementById('quickModal');
@@ -1867,19 +1602,19 @@
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
             if (type === 'terms') {
-                title.textContent = 'Terms & Conditions';
+                title.textContent = 'Syarat & Ketentuan';
                 try {
                     const res = await fetch(`${WORKER_URL}/api/terms`);
                     const text = await res.text();
-                    content.textContent = text || 'No terms available.';
-                } catch { content.textContent = 'Failed to load terms. Please try again.'; }
+                    content.textContent = text || 'Tiada syarat tersedia.';
+                } catch { content.textContent = 'Gagal memuatkan syarat. Sila cuba lagi.'; }
             } else if (type === 'shipping') {
-                title.textContent = 'Shipping Info';
+                title.textContent = 'Maklumat Penghantaran';
                 try {
                     const res = await fetch(`${WORKER_URL}/api/shipping`);
                     const text = await res.text();
-                    content.textContent = text || 'No shipping info available.';
-                } catch { content.textContent = 'Failed to load shipping info. Please try again.'; }
+                    content.textContent = text || 'Tiada maklumat penghantaran tersedia.';
+                } catch { content.textContent = 'Gagal memuatkan maklumat penghantaran. Sila cuba lagi.'; }
             }
         }
 
@@ -1899,15 +1634,14 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeQuickModal();
-                closeLightbox();
-                closeCheckoutModal();
                 closeCart();
+                closeCheckoutModal();
                 closeMobileMenu();
             }
         });
 
         // ============================================================
-        // LOAD HERO
+        // MUAT HERO
         // ============================================================
         async function loadHeroFromWorker() {
             try {
@@ -1918,8 +1652,7 @@
                     if (heroBg && hero.image) heroBg.src = hero.image;
                     if (hero.title) {
                         const cleanTitle = hero.title.replace(/<[^>]*>/g, '');
-                        typingPhrases[0] = cleanTitle + ' <span class="highlight">Digital Presence</span>';
-                        phraseIndex = 0; charIndex = 0; isDeleting = false;
+                        document.getElementById('heroHeading').innerHTML = cleanTitle + ' <span class="highlight">Kehadiran Digital</span>';
                     }
                     if (hero.subtitle) document.getElementById('heroSubtitle').textContent = hero.subtitle;
                     if (hero.cta) document.getElementById('heroCta').innerHTML = '<i class="fas fa-rocket"></i> ' + hero.cta;
@@ -1930,7 +1663,7 @@
         }
 
         // ============================================================
-        // LOAD TESTIMONIALS & GALLERY
+        // MUAT TESTIMONI & GALERI
         // ============================================================
         async function loadTestimonialsFromWorker() {
             try {
@@ -1938,10 +1671,10 @@
                 if (response.ok) return await response.json();
             } catch (e) { console.log('Testimonials fetch error:', e); }
             return [
-                { name: 'Aina R.', text: 'Super fast service! Followers started coming in within 2 hours. Very satisfied!', stars: 5 },
-                { name: 'Farid Z.', text: 'Quality followers with real engagement. My account growth has been incredible. Highly recommended!', stars: 5 },
-                { name: 'Sarah H.', text: 'Affordable pricing and excellent customer support. They really care about their clients.', stars: 4 },
-                { name: 'Adam B.', text: 'My Instagram blew up after using Socmegy. Best investment I\'ve made for my brand.', stars: 5 }
+                { name: 'Aina R.', text: 'Perkhidmatan yang sangat pantas! Pengikut mula datang dalam masa 2 jam. Sangat berpuas hati!', stars: 5 },
+                { name: 'Farid Z.', text: 'Pengikut berkualiti dengan penglibatan sebenar. Pertumbuhan akaun saya sangat luar biasa. Sangat disyorkan!', stars: 5 },
+                { name: 'Sarah H.', text: 'Harga berpatutan dan sokongan pelanggan yang sangat baik. Mereka benar-benar mengambil berat tentang pelanggan.', stars: 4 },
+                { name: 'Adam B.', text: 'Instagram saya melonjak selepas menggunakan Socmegy. Pelaburan terbaik untuk jenama saya.', stars: 5 }
             ];
         }
 
@@ -1956,51 +1689,17 @@
                 { src: 'https://picsum.photos/seed/g3/400/400', category: 'TikTok' },
                 { src: 'https://picsum.photos/seed/g4/400/400', category: 'Instagram' },
                 { src: 'https://picsum.photos/seed/g5/400/400', category: 'Instagram' },
-                { src: 'https://picsum.photos/seed/g6/400/400', category: 'Instagram' },
-                { src: 'https://picsum.photos/seed/g7/400/400', category: 'Facebook' },
-                { src: 'https://picsum.photos/seed/g8/400/400', category: 'Facebook' },
-                { src: 'https://picsum.photos/seed/g9/400/400', category: 'YouTube' },
-                { src: 'https://picsum.photos/seed/g10/400/400', category: 'YouTube' }
+                { src: 'https://picsum.photos/seed/g6/400/400', category: 'Instagram' }
             ];
-        }
-
-        // ============================================================
-        // TYPING ANIMATION
-        // ============================================================
-        let typingPhrases = [
-            'Elevate Your <span class="highlight">Digital Presence</span>',
-            'Grow Your <span class="highlight">Audience</span>',
-            'Boost Your <span class="highlight">Brand</span>',
-            'Dominate <span class="highlight">Social Media</span>'
-        ];
-        let phraseIndex = 0, charIndex = 0, isDeleting = false;
-        const typingElement = document.getElementById('typingHeading');
-
-        function typeEffect() {
-            const currentPhrase = typingPhrases[phraseIndex];
-            let displayText = currentPhrase.substring(0, charIndex);
-            if (!isDeleting) {
-                if (charIndex <= currentPhrase.length) {
-                    typingElement.innerHTML = displayText + '<span class="typing-cursor"></span>';
-                    charIndex++;
-                    setTimeout(typeEffect, 80);
-                } else { isDeleting = true; setTimeout(typeEffect, 2500); }
-            } else {
-                if (charIndex > 0) {
-                    typingElement.innerHTML = currentPhrase.substring(0, charIndex - 1) + '<span class="typing-cursor"></span>';
-                    charIndex--;
-                    setTimeout(typeEffect, 40);
-                } else { isDeleting = false; phraseIndex = (phraseIndex + 1) % typingPhrases.length; setTimeout(typeEffect, 300); }
-            }
         }
 
         // ============================================================
         // DOM REFS
         // ============================================================
         const catalogGrid = document.getElementById('catalogGrid');
+        const pakejContainer = document.getElementById('pakejContainer');
         const testimonialGrid = document.getElementById('testimonialGrid');
         const testimonialDots = document.getElementById('testimonialDots');
-        const galleryGrid = document.getElementById('galleryGrid');
         const galleryCategories = document.getElementById('galleryCategories');
         const categoryFilter = document.getElementById('categoryFilter');
         const cartItems = document.getElementById('cartItems');
@@ -2023,15 +1722,9 @@
         const mobileLinkServices = document.getElementById('mobileLinkServices');
         const mobileLinkTestimonials = document.getElementById('mobileLinkTestimonials');
         const mobileLinkGallery = document.getElementById('mobileLinkGallery');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxClose = document.getElementById('lightboxClose');
-        const lightboxPrev = document.getElementById('lightboxPrev');
-        const lightboxNext = document.getElementById('lightboxNext');
-        const lightboxCounter = document.getElementById('lightboxCounter');
 
         // ============================================================
-        // MOBILE MENU
+        // MENU MUDAH ALIH
         // ============================================================
         function openMobileMenu() { mobileMenu.classList.add('active'); mobileMenuOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
         function closeMobileMenu() { mobileMenu.classList.remove('active'); mobileMenuOverlay.classList.remove('active'); document.body.style.overflow = ''; }
@@ -2041,7 +1734,7 @@
         [mobileLinkServices, mobileLinkTestimonials, mobileLinkGallery].forEach(link => { link.addEventListener('click', closeMobileMenu); });
 
         // ============================================================
-        // FALLBACK ICON
+        // FALLBACK IKON
         // ============================================================
         logoIcon.onerror = function() { this.style.display = 'none'; };
 
@@ -2055,23 +1748,10 @@
         });
 
         // ============================================================
-        // REVEAL ON SCROLL
-        // ============================================================
-        function handleReveal() {
-            const reveals = document.querySelectorAll('.reveal:not(.visible)');
-            reveals.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.85) { el.classList.add('visible'); }
-            });
-        }
-        window.addEventListener('scroll', handleReveal);
-        window.addEventListener('load', () => { setTimeout(handleReveal, 300); });
-
-        // ============================================================
-        // CATEGORIES
+        // KATEGORI
         // ============================================================
         function getUniqueCategories() {
-            const cats = ['All', ...new Set(products.map(p => p.category || 'General'))];
+            const cats = ['Semua', ...new Set(products.map(p => p.category || 'Umum'))];
             return cats;
         }
 
@@ -2091,98 +1771,95 @@
         }
 
         // ============================================================
-        // RENDER PRODUCTS - SPOTLIGHT
+        // RENDER PRODUK — PAKEJ (3) + SENARAI PERKHIDMATAN
         // ============================================================
-        const SPOTLIGHT_COUNT = 4;
+        const PAKEJ_COUNT = 3;
 
         async function renderProducts() {
             try {
                 const response = await fetch(`${WORKER_URL}/api/products`);
-                if (!response.ok) throw new Error('Failed to fetch products');
+                if (!response.ok) throw new Error('Gagal memuatkan produk');
                 products = await response.json();
                 renderCategoryFilter();
                 
-                const filtered = currentCategory === 'All' ? products : products.filter(p => (p.category || 'General') === currentCategory);
+                const filtered = currentCategory === 'Semua' ? products : products.filter(p => (p.category || 'Umum') === currentCategory);
                 
-                if (filtered.length === 0) {
+                // ===== PAKEJ (3) — ambil dari featured atau harga tertinggi =====
+                let pakejItems = [];
+                const featured = products.filter(p => p.featured === true);
+                
+                if (featured.length >= PAKEJ_COUNT) {
+                    pakejItems = featured.slice(0, PAKEJ_COUNT);
+                } else {
+                    const sorted = [...products].sort((a, b) => b.price - a.price);
+                    pakejItems = sorted.slice(0, Math.min(PAKEJ_COUNT, sorted.length));
+                }
+
+                let pakejHtml = '';
+                if (pakejItems.length > 0) {
+                    pakejHtml += `
+                        <div class="section-title" style="font-size:1.2rem; margin-bottom:16px;">
+                            <i class="fas fa-crown"></i> <span class="gold">Pakej</span> Kami
+                        </div>
+                        <div class="pakej-grid">
+                    `;
+                    pakejItems.forEach((p, idx) => {
+                        const disabled = (p.stock !== undefined && p.stock <= 0) || p.status === 'not_available';
+                        const statusText = p.status === 'not_available' ? 'Tidak Tersedia' : (p.stock !== undefined && p.stock <= 0 ? 'Kehabisan Stok' : '');
+                        pakejHtml += `
+                            <div class="product-card pakej-card ${disabled ? 'out-of-stock' : ''}">
+                                <div class="pakej-badge"><i class="fas fa-crown"></i> Pakej</div>
+                                ${disabled ? `<div class="out-of-stock-badge">${statusText}</div>` : ''}
+                                <div class="product-category-tag">${p.category || 'Umum'}</div>
+                                <div class="product-name">${p.name}</div>
+                                <div class="product-desc">${p.desc}</div>
+                                <div class="product-price">RM${p.price.toFixed(2)}</div>
+                                <button class="btn-gold" data-id="${p.id}" ${disabled ? 'disabled' : ''}>
+                                    <i class="fas fa-cart-plus"></i> ${disabled ? statusText : 'Tambah ke Troli'}
+                                </button>
+                            </div>
+                        `;
+                    });
+                    pakejHtml += `</div>`;
+                }
+                pakejContainer.innerHTML = pakejHtml;
+
+                // ===== SENARAI PERKHIDMATAN (filtered) =====
+                const listItems = filtered;
+
+                if (listItems.length === 0) {
                     catalogGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
                         <i class="fas fa-box" style="font-size:1.8rem;display:block;margin-bottom:10px;opacity:0.3;"></i>
-                        No products in this category
+                        Tiada perkhidmatan dalam kategori ini
                     </div>`;
                     return;
                 }
 
-                // SPOTLIGHT: featured products OR top price
-                let spotlightItems = [];
-                const featured = filtered.filter(p => p.featured === true);
-                
-                if (featured.length >= 2) {
-                    spotlightItems = featured.slice(0, SPOTLIGHT_COUNT);
-                    const nonFeatured = filtered.filter(p => !spotlightItems.includes(p));
-                    const shuffled = [...nonFeatured].sort(() => Math.random() - 0.5);
-                    const add = shuffled.slice(0, SPOTLIGHT_COUNT - spotlightItems.length);
-                    spotlightItems = [...spotlightItems, ...add];
-                } else {
-                    const sorted = [...filtered].sort((a, b) => b.price - a.price);
-                    spotlightItems = sorted.slice(0, Math.min(SPOTLIGHT_COUNT, sorted.length));
-                }
-                
-                const remaining = filtered.filter(p => !spotlightItems.includes(p));
-
-                let html = '';
-
-                // Spotlight Section
-                if (spotlightItems.length > 0) {
+                let html = `<div class="service-list" style="grid-column:1/-1;">`;
+                listItems.forEach((p, idx) => {
+                    const disabled = (p.stock !== undefined && p.stock <= 0) || p.status === 'not_available';
+                    const statusText = p.status === 'not_available' ? 'Tidak Tersedia' : (p.stock !== undefined && p.stock <= 0 ? 'Kehabisan Stok' : '');
                     html += `
-                        <div class="spotlight-section">
-                            <div class="spotlight-title reveal">
-                                <i class="fas fa-star"></i> Editor's Pick <span class="badge"><i class="fas fa-crown"></i> Premium</span>
+                        <div class="service-list-item">
+                            <div class="service-info">
+                                <span class="product-category-tag" style="margin-bottom:2px;">${p.category || 'Umum'}</span>
+                                <span class="service-name">${p.name}</span>
+                                <span class="service-desc">${p.desc}</span>
                             </div>
-                            <div class="spotlight-grid">
+                            <div class="service-actions">
+                                <span class="service-price">RM${p.price.toFixed(2)}</span>
+                                <button class="btn-gold" data-id="${p.id}" ${disabled ? 'disabled' : ''}>
+                                    <i class="fas fa-cart-plus"></i> ${disabled ? statusText : 'Tambah'}
+                                </button>
+                            </div>
+                        </div>
                     `;
-                    spotlightItems.forEach((p, idx) => {
-                        const disabled = (p.stock !== undefined && p.stock <= 0) || p.status === 'not_available';
-                        const statusText = p.status === 'not_available' ? 'Not Available' : (p.stock !== undefined && p.stock <= 0 ? 'Out of Stock' : '');
-                        html += `
-                            <div class="product-card spotlight-card reveal reveal-delay-${idx % 4 + 1} ${disabled ? 'out-of-stock' : ''}">
-                                <div class="spotlight-badge"><i class="fas fa-star"></i> Spotlight</div>
-                                ${disabled ? `<div class="out-of-stock-badge">${statusText}</div>` : ''}
-                                <div class="product-category-tag">${p.category || 'General'}</div>
-                                <div class="product-name">${p.name}</div>
-                                <div class="product-desc">${p.desc}</div>
-                                <div class="product-price">RM${p.price.toFixed(2)}</div>
-                                <button class="btn-gold" data-id="${p.id}" ${disabled ? 'disabled' : ''}>
-                                    <i class="fas fa-cart-plus"></i> ${disabled ? statusText : 'Add to Cart'}
-                                </button>
-                            </div>
-                        `;
-                    });
-                    html += `</div></div>`;
-                }
-
-                // Remaining Products
-                if (remaining.length > 0) {
-                    remaining.forEach((p, idx) => {
-                        const disabled = (p.stock !== undefined && p.stock <= 0) || p.status === 'not_available';
-                        const statusText = p.status === 'not_available' ? 'Not Available' : (p.stock !== undefined && p.stock <= 0 ? 'Out of Stock' : '');
-                        html += `
-                            <div class="product-card reveal reveal-delay-${(idx + spotlightItems.length) % 4 + 1} ${disabled ? 'out-of-stock' : ''}">
-                                ${disabled ? `<div class="out-of-stock-badge">${statusText}</div>` : ''}
-                                <div class="product-category-tag">${p.category || 'General'}</div>
-                                <div class="product-name">${p.name}</div>
-                                <div class="product-desc">${p.desc}</div>
-                                <div class="product-price">RM${p.price.toFixed(2)}</div>
-                                <button class="btn-gold" data-id="${p.id}" ${disabled ? 'disabled' : ''}>
-                                    <i class="fas fa-cart-plus"></i> ${disabled ? statusText : 'Add to Cart'}
-                                </button>
-                            </div>
-                        `;
-                    });
-                }
-
+                });
+                html += `</div>`;
                 catalogGrid.innerHTML = html;
 
-                catalogGrid.querySelectorAll('.btn-gold:not([disabled])').forEach(btn => {
+                // Event listeners untuk semua butang
+                document.querySelectorAll('.btn-gold:not([disabled])').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         const id = parseInt(btn.dataset.id);
@@ -2191,18 +1868,27 @@
                     });
                 });
 
-                setTimeout(handleReveal, 100);
+                // Event listeners untuk butang pakej
+                pakejContainer.querySelectorAll('.btn-gold:not([disabled])').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = parseInt(btn.dataset.id);
+                        const product = products.find(p => p.id === id);
+                        if (product) addToCart(product);
+                    });
+                });
+
             } catch (error) {
                 console.error('Error loading products:', error);
                 catalogGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:40px 0;">
                     <i class="fas fa-exclamation-triangle" style="font-size:1.5rem;display:block;margin-bottom:10px;opacity:0.3;"></i>
-                    Failed to load products. Please refresh.
+                    Gagal memuatkan perkhidmatan. Sila muat semula.
                 </div>`;
             }
         }
 
         // ============================================================
-        // RENDER TESTIMONIALS
+        // RENDER TESTIMONI
         // ============================================================
         let testimonialIndex = 0;
         let testimonialsData = [];
@@ -2212,7 +1898,7 @@
             const data = await loadTestimonialsFromWorker();
             testimonialsData = data || [];
             if (!testimonialsData.length) {
-                testimonialGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:24px 0;">No testimonials</div>';
+                testimonialGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:24px 0;">Tiada testimoni</div>';
                 testimonialDots.innerHTML = '';
                 return;
             }
@@ -2221,7 +1907,7 @@
             if (testimonialIndex >= totalPages) testimonialIndex = 0;
             
             testimonialGrid.innerHTML = testimonialsData.map((t, i) => `
-                <div class="testimonial-card reveal reveal-delay-${i % 4 + 1}">
+                <div class="testimonial-card">
                     <div class="stars">${'★'.repeat(t.stars)}${'☆'.repeat(5 - t.stars)}</div>
                     <blockquote>${t.text}</blockquote>
                     <cite><i class="fas fa-user-circle"></i> ${t.name}</cite>
@@ -2276,15 +1962,14 @@
         }
 
         // ============================================================
-        // RENDER GALLERY - ORIGINAL STYLE + LOAD MORE
+        // RENDER GALERI - KARUSEL 3 IMEJ SEBARIS
         // ============================================================
-        let currentGalleryCategory = 'All';
-        let lightboxImages = [], lightboxIndex = 0, galleryData = [];
-        let galleryPage = 1;
-        const GALLERY_PER_PAGE = 6;
+        let currentGalleryCategory = 'Semua';
+        let galleryData = [];
+        let carouselIndex = 0;
 
         function renderGalleryCategories() {
-            const cats = ['All', ...new Set(galleryData.map(item => item.category))];
+            const cats = ['Semua', ...new Set(galleryData.map(item => item.category))];
             galleryCategories.innerHTML = cats.map(cat => `
                 <button class="${cat === currentGalleryCategory ? 'active' : ''}" data-category="${cat}">${cat}</button>
             `).join('');
@@ -2293,114 +1978,96 @@
                     currentGalleryCategory = btn.dataset.category;
                     galleryCategories.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    galleryPage = 1;
-                    renderGalleryItems();
+                    carouselIndex = 0;
+                    renderGalleryCarousel();
                 });
             });
         }
 
-        async function renderGalleryItems() {
-            const data = await loadGalleryFromWorker();
-            galleryData = data || [];
-            renderGalleryCategories();
-            
-            const filtered = currentGalleryCategory === 'All' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
+        function renderGalleryCarousel() {
+            const track = document.getElementById('galleryCarouselTrack');
+            const filtered = currentGalleryCategory === 'Semua' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
             
             if (filtered.length === 0) {
-                galleryGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;">
+                track.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:30px 0;width:100%;">
                     <i class="fas fa-images" style="font-size:1.5rem;display:block;margin-bottom:8px;opacity:0.3;"></i>
-                    No images in this category
+                    Tiada imej dalam kategori ini
                 </div>`;
                 return;
             }
 
-            const totalPages = Math.ceil(filtered.length / GALLERY_PER_PAGE);
-            const end = Math.min(galleryPage * GALLERY_PER_PAGE, filtered.length);
-            const visibleItems = filtered.slice(0, end);
-            lightboxImages = filtered.map(item => item.src);
+            const total = filtered.length;
+            if (carouselIndex >= total) carouselIndex = 0;
+            if (carouselIndex < 0) carouselIndex = total - 1;
 
-            galleryGrid.innerHTML = visibleItems.map((item, index) => `
-                <div class="gallery-item" data-index="${index}">
-                    <img src="${item.src}" alt="${item.category}" loading="lazy" 
+            const prevIdx = (carouselIndex - 1 + total) % total;
+            const nextIdx = (carouselIndex + 1) % total;
+            const activeIdx = carouselIndex;
+
+            const items = [
+                { index: prevIdx, data: filtered[prevIdx], class: 'prev' },
+                { index: activeIdx, data: filtered[activeIdx], class: 'active' },
+                { index: nextIdx, data: filtered[nextIdx], class: 'next' }
+            ];
+
+            const hiddenItems = [];
+            for (let i = 0; i < total; i++) {
+                if (i !== prevIdx && i !== activeIdx && i !== nextIdx) {
+                    hiddenItems.push({ index: i, data: filtered[i], class: 'hidden' });
+                }
+            }
+
+            const allItems = [...items, ...hiddenItems];
+
+            track.innerHTML = allItems.map((item, idx) => `
+                <div class="gallery-carousel-item ${item.class}" data-index="${item.index}" style="position:relative;">
+                    <img src="${item.data.src}" alt="${item.data.category}" loading="lazy" 
                          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
-                    <div class="placeholder" style="display:none;"><i class="fas fa-image"></i> ${item.category}</div>
-                    <span class="category-tag">${item.category}</span>
+                    <div class="placeholder" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;background:rgba(22,22,22,0.6);border-radius:var(--radius-sm);">
+                        <i class="fas fa-image"></i> ${item.data.category}
+                    </div>
+                    <span class="category-tag">${item.data.category}</span>
                 </div>
             `).join('');
 
-            const hasMore = end < filtered.length;
-            const loadMoreHtml = `
-                <div class="load-more-wrap">
-                    <button class="load-more-btn" id="loadMoreGallery" ${!hasMore ? 'disabled' : ''}>
-                        <i class="fas fa-images"></i> 
-                        ${hasMore ? `Load More Images (${Math.ceil(end / GALLERY_PER_PAGE)}/${totalPages})` : '✨ All Images Loaded'}
-                    </button>
-                    <div class="load-more-info">Showing ${end} of ${filtered.length} images</div>
-                </div>
-            `;
-            galleryGrid.insertAdjacentHTML('beforeend', loadMoreHtml);
-
-            const loadMoreBtn = document.getElementById('loadMoreGallery');
-            if (loadMoreBtn) {
-                loadMoreBtn.addEventListener('click', function() {
-                    galleryPage++;
-                    renderGalleryItems();
-                    setTimeout(() => {
-                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                });
-            }
-
-            galleryGrid.querySelectorAll('.gallery-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const index = parseInt(this.dataset.index);
-                    openLightbox(index);
+            track.querySelectorAll('.gallery-carousel-item.active').forEach(el => {
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    const filteredNow = currentGalleryCategory === 'Semua' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
+                    const src = filteredNow[idx].src;
+                    const lb = document.createElement('div');
+                    lb.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:pointer;';
+                    lb.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:12px;" />`;
+                    lb.addEventListener('click', function() { this.remove(); });
+                    document.body.appendChild(lb);
                 });
             });
         }
 
-        // ============================================================
-        // LIGHTBOX
-        // ============================================================
-        function openLightbox(index) {
-            if (lightboxImages.length === 0) return;
-            lightboxIndex = index;
-            updateLightbox();
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
-        function updateLightbox() {
-            if (lightboxImages.length === 0) return;
-            lightboxImg.src = lightboxImages[lightboxIndex];
-            lightboxCounter.textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
-            lightboxPrev.style.display = lightboxImages.length > 1 ? 'flex' : 'none';
-            lightboxNext.style.display = lightboxImages.length > 1 ? 'flex' : 'none';
-        }
-        function prevImage() {
-            if (lightboxImages.length === 0) return;
-            lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
-            updateLightbox();
-        }
-        function nextImage() {
-            if (lightboxImages.length === 0) return;
-            lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
-            updateLightbox();
-        }
-        lightboxClose.addEventListener('click', closeLightbox);
-        lightboxPrev.addEventListener('click', prevImage);
-        lightboxNext.addEventListener('click', nextImage);
-        lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+        document.getElementById('carouselPrev').addEventListener('click', function() {
+            const filtered = currentGalleryCategory === 'Semua' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
+            if (filtered.length === 0) return;
+            carouselIndex = (carouselIndex - 1 + filtered.length) % filtered.length;
+            renderGalleryCarousel();
+        });
+
+        document.getElementById('carouselNext').addEventListener('click', function() {
+            const filtered = currentGalleryCategory === 'Semua' ? galleryData : galleryData.filter(item => item.category === currentGalleryCategory);
+            if (filtered.length === 0) return;
+            carouselIndex = (carouselIndex + 1) % filtered.length;
+            renderGalleryCarousel();
+        });
 
         // ============================================================
-        // CART
+        // TROLI
         // ============================================================
         function renderCart() {
             const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
             cartBadge.textContent = totalItems;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
             if (cart.length === 0) {
-                cartItems.innerHTML = `<div class="cart-empty"><i class="fas fa-box-open"></i><p>Your cart is empty</p></div>`;
+                cartItems.innerHTML = `<div class="cart-empty"><i class="fas fa-box-open"></i><p>Troli anda kosong</p></div>`;
                 cartFooter.style.display = 'none';
                 return;
             }
@@ -2434,17 +2101,17 @@
             if (newQty <= 0) { cart.splice(index, 1); } else { item.qty = newQty; }
             renderCart();
         }
-        function removeItem(index) { cart.splice(index, 1); renderCart(); showToast('Item removed'); }
+        function removeItem(index) { cart.splice(index, 1); renderCart(); showToast('Item dibuang'); }
 
         function addToCart(product) {
-            if (product.status === 'not_available') { showToast('❌ This service is not available'); return; }
-            if (product.stock !== undefined && product.stock <= 0) { showToast('❌ This product is out of stock'); return; }
+            if (product.status === 'not_available') { showToast('❌ Perkhidmatan ini tidak tersedia'); return; }
+            if (product.stock !== undefined && product.stock <= 0) { showToast('❌ Perkhidmatan ini kehabisan stok'); return; }
             const existing = cart.find(item => item.id === product.id);
             const currentQty = existing ? existing.qty : 0;
-            if (product.stock !== undefined && currentQty >= product.stock) { showToast(`❌ Only ${product.stock} units available`); return; }
+            if (product.stock !== undefined && currentQty >= product.stock) { showToast(`❌ Hanya ${product.stock} unit tersedia`); return; }
             if (existing) { existing.qty += 1; } else { cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 }); }
             renderCart();
-            showToast(`${product.name} added to cart!`);
+            showToast(`${product.name} ditambahkan ke troli!`);
             openCart();
         }
         function openCart() { cartSidebar.classList.add('active'); cartOverlay.classList.add('active'); document.body.style.overflow = 'hidden'; closeMobileMenu(); }
@@ -2460,10 +2127,10 @@
         function showToast(msg) { toastMsg.textContent = msg; toast.classList.add('show'); clearTimeout(toastTimer2); toastTimer2 = setTimeout(() => { toast.classList.remove('show'); }, 2500); }
 
         // ============================================================
-        // CHECKOUT
+        // TEMPAHAN
         // ============================================================
         checkoutBtn.addEventListener('click', () => {
-            if (cart.length === 0) { showToast('Your cart is empty!'); return; }
+            if (cart.length === 0) { showToast('Troli anda kosong!'); return; }
             openCheckoutModal();
         });
         function openCheckoutModal() {
@@ -2500,25 +2167,25 @@
         document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const agreeTerms = document.getElementById('agreeTerms');
-            if (!agreeTerms.checked) { showToast('❌ Please agree to Terms & Conditions'); agreeTerms.focus(); return; }
+            if (!agreeTerms.checked) { showToast('❌ Sila setuju dengan Syarat & Ketentuan'); agreeTerms.focus(); return; }
             const email = document.getElementById('checkoutEmail').value.trim();
             const name = document.getElementById('checkoutName').value.trim();
             const phone = document.getElementById('checkoutPhone').value.trim();
             const note = document.getElementById('checkoutNote').value.trim();
-            if (!email || !name || !phone) { showToast('❌ Please fill in all required fields'); return; }
-            if (!note) { showToast('❌ Please provide your link / username'); document.getElementById('checkoutNote').focus(); return; }
+            if (!email || !name || !phone) { showToast('❌ Sila isi semua maklumat yang diperlukan'); return; }
+            if (!note) { showToast('❌ Sila berikan pautan / nama pengguna anda'); document.getElementById('checkoutNote').focus(); return; }
             if (isProcessing) return;
             isProcessing = true;
             const submitBtn = this.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner"></span> Processing...';
+            submitBtn.innerHTML = '<span class="spinner"></span> Memproses...';
             try {
                 const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-                if (total <= 0) throw new Error('Invalid order total');
+                if (total <= 0) throw new Error('Jumlah tempahan tidak sah');
                 const payload = { amount: total, email, name, phone, note, items: cart.map(item => ({ id: item.id, name: item.name, qty: item.qty, price: item.price })) };
                 const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Failed to create bill');
+                if (!response.ok) throw new Error(data.error || 'Gagal mencipta bil');
                 if (data.billCode) {
                     const orderData = {
                         orderId: `ORDER-${Date.now()}`,
@@ -2530,12 +2197,12 @@
                     };
                     localStorage.setItem('socmegy_last_order', JSON.stringify(orderData));
                     window.location.href = `https://muhdzulhelmibinsaidan.github.io/socmegy/success.html?data=${encodeURIComponent(JSON.stringify(orderData))}`;
-                } else { throw new Error('Bill code not received'); }
+                } else { throw new Error('Kod bil tidak diterima'); }
             } catch (error) {
                 console.error('Checkout error:', error);
                 showToast('❌ ' + error.message);
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay Now';
+                submitBtn.innerHTML = '<i class="fas fa-credit-card"></i> Bayar Sekarang';
                 isProcessing = false;
             }
         });
@@ -2562,16 +2229,20 @@
         // ============================================================
         async function init() {
             await loadHeroFromWorker();
-            setTimeout(typeEffect, 800);
             await renderTestimonials();
-            await renderGalleryItems();
+            
+            galleryData = await loadGalleryFromWorker();
+            renderGalleryCategories();
+            renderGalleryCarousel();
+            
             await renderProducts();
             renderCart();
-            console.log('✨ Socmegy — Updated:');
-            console.log('✅ Header & Nav = style asal');
-            console.log('✅ Service category tag = warna emas (asal)');
-            console.log('✅ Gallery category tag = warna PUTIH');
-            console.log('✅ Liquid Glass pada elemen lain');
+            console.log('✨ Socmegy — Dikemas kini:');
+            console.log('✅ Semua animasi dibuang kecuali scrolling text header');
+            console.log('✅ Diselaraskan dengan API Worker terkini (category support)');
+            console.log('✅ Pakej 3 tanpa box');
+            console.log('✅ Kategori di bawah pakej');
+            console.log('✅ Liquid glass blur minimum (0.5px)');
         }
 
         init();
