@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socmegy - Liquid Glass Growth Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --gold: #d4af37;
+      --dark-bg: #0a0a0a;
+      --card-bg: rgba(20, 20, 20, 0.7);
+      --border-gold: rgba(212, 175, 55, 0.3);
+      --text-primary: #ffffff;
+      --text-secondary: #b0b0b0;
+      --accent-green: #00ff88;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1410 100%);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-gold);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--gold), #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    nav a {
+      margin-left: 2rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--gold);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 900px;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--gold), #ffd700, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      color: var(--text-secondary);
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+
+    .cta-button {
+      padding: 1rem 3rem;
+      font-size: 1rem;
+      background: linear-gradient(135deg, var(--gold), #ffd700);
+      color: var(--dark-bg);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      padding: 6rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover::before {
+      opacity: 1;
+    }
+
+    .glass-card h3 {
+      color: var(--gold);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .glass-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .stats-section {
+      padding: 6rem 2rem;
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+      border-top: 1px solid var(--border-gold);
+      border-bottom: 1px solid var(--border-gold);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .stat-box {
+      padding: 2rem;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .showcase {
+      padding: 6rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .showcase h2 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, var(--gold), #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .glass-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .glass-panel h4 {
+      color: var(--accent-green);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .glass-panel p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .glass-panel::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+
+    .footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border-gold);
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .accent-line {
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+      margin: 0 auto 1.5rem;
+    }
+
+    .testimonials {
+      padding: 6rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .testimonials h2 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, var(--gold), #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .testimonial-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .testimonial-text {
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .testimonial-author {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .pricing-section {
+      padding: 6rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .pricing-section h2 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, var(--gold), #ffd700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .pricing-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-gold);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      text-align: center;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--gold);
+      transform: scale(1.05);
+    }
+
+    .pricing-card h3 {
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .price {
+      font-size: 2.5rem;
+      color: var(--gold);
+      margin: 1.5rem 0;
+      font-weight: 700;
+    }
+
+    .price-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .features-list {
+      text-align: left;
+      margin: 2rem 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .features-list li {
+      list-style: none;
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .features-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pricing-card.featured {
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg style="display: none;">
+    <defs>
+      <filter id="liquidGlass" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blurred"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <header>
+    <div class="logo">SOCMEGY</div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Boost Your Social Presence Effortlessly</h1>
+      <p>Growth automation for Malaysian influencers and businesses. Real followers, authentic engagement, explosive growth.</p>
+      <button class="cta-button">Start Your Free Trial</button>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <div class="glass-card">
+      <h3>⚡ Lightning Fast</h3>
+      <p>See results within 24 hours. Our algorithm works around the clock to boost your visibility and engagement.</p>
+    </div>
+
+    <div class="glass-card">
+      <h3>🎯 Targeted Growth</h3>
+      <p>Reach your ideal audience with precision targeting. Local Malaysian market expertise built-in.</p>
+    </div>
+
+    <div class="glass-card">
+      <h3>💎 Premium Quality</h3>
+      <p>No fake bots. Real followers from active, engaged users. Authentic growth that lasts.</p>
+    </div>
+
+    <div class="glass-card">
+      <h3>📊 Analytics Dashboard</h3>
+      <p>Track every metric that matters. Real-time insights into your growth, engagement, and audience.</p>
+    </div>
+
+    <div class="glass-card">
+      <h3>🔒 Secure & Safe</h3>
+      <p>Your account is protected with military-grade encryption. 100% safe, approved by major platforms.</p>
+    </div>
+
+    <div class="glass-card">
+      <h3>🚀 Instant Support</h3>
+      <p>24/7 support from our Malaysian team. Live chat, email, WhatsApp - we're always here for you.</p>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Happy Clients</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">500M+</div>
+        <div class="stat-label">Followers Generated</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">98%</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Customer Support</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase">
+    <h2>How It Works</h2>
+    <div class="showcase-grid">
+      <div class="glass-panel">
+        <div>
+          <h4>1. Connect Your Account</h4>
+          <p>Link your social media accounts securely. We only request what's necessary to provide our service.</p>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div>
+          <h4>2. Set Your Goals</h4>
+          <p>Choose your target audience, growth rate, and niche. Customize everything to match your brand.</p>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div>
+          <h4>3. Watch the Magic</h4>
+          <p>Our AI takes over. Real followers start appearing, engagement increases, and your reach explodes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonials" class="testimonials">
+    <h2>What Our Clients Say</h2>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <p class="testimonial-text">"Socmegy transformed my TikTok presence. I went from 5k to 100k followers in 3 months. Absolutely game-changing!"</p>
+        <div class="testimonial-author">– Sarah M., Beauty Influencer</div>
+      </div>
+
+      <div class="testimonial-card">
+        <p class="testimonial-text">"Finally, authentic growth. No bots, no drama. My engagement is through the roof and the support team is incredible."</p>
+        <div class="testimonial-author">– Ahmad R., Content Creator</div>
+      </div>
+
+      <div class="testimonial-card">
+        <p class="testimonial-text">"As a small business, we couldn't afford expensive ads. Socmegy gave us the growth we deserved. Highly recommended!"</p>
+        <div class="testimonial-author">– Nina T., Fashion Brand</div>
+      </div>
+
+      <div class="testimonial-card">
+        <p class="testimonial-text">"Best investment I've made for my channel. ROI is insane. Worth every sen."</p>
+        <div class="testimonial-author">– Rizki A., Lifestyle Vlogger</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" class="pricing-section">
+    <h2>Simple, Transparent Pricing</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Starter</h3>
+        <div>
+          <div class="price-label">Starting at</div>
+          <div class="price">RM99</div>
+          <div class="price-label">/month</div>
+        </div>
+        <ul class="features-list">
+          <li>100-500 followers/month</li>
+          <li>Basic analytics</li>
+          <li>Email support</li>
+          <li>Single platform</li>
+        </ul>
+        <button class="cta-button">Get Started</button>
+      </div>
+
+      <div class="pricing-card featured">
+        <h3>Pro</h3>
+        <div>
+          <div class="price-label">Starting at</div>
+          <div class="price">RM299</div>
+          <div class="price-label">/month</div>
+        </div>
+        <ul class="features-list">
+          <li>1000-2000 followers/month</li>
+          <li>Advanced analytics</li>
+          <li>WhatsApp + Email support</li>
+          <li>Multi-platform</li>
+          <li>Growth optimization</li>
+        </ul>
+        <button class="cta-button">Get Started</button>
+      </div>
+
+      <div class="pricing-card">
+        <h3>Enterprise</h3>
+        <div>
+          <div class="price-label">Custom pricing</div>
+          <div class="price">Contact</div>
+          <div class="price-label">for details</div>
+        </div>
+        <ul class="features-list">
+          <li>Unlimited followers</li>
+          <li>Premium analytics</li>
+          <li>Dedicated account manager</li>
+          <li>Priority 24/7 support</li>
+          <li>Custom strategies</li>
+        </ul>
+        <button class="cta-button">Contact Sales</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2024 Socmegy. All rights reserved. | Designed with liquid glass. | Best viewed in Chrome.</p>
+  </footer>
+
+  <script>
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Animate elements on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.glass-card, .glass-panel, .testimonial-card, .pricing-card').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+
+    // Button animations
+    document.querySelectorAll('.cta-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        alert('Welcome to Socmegy! This is a demo. In production, this would lead to registration.');
+      });
+    });
+  </script>
+</body>
+</html>
