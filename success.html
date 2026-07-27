@@ -12,78 +12,38 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0a;
-            color: #f5f0eb;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            background-image: url('bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 0;
         }
 
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; -ms-overflow-style: none; }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(12px) saturate(1.2);
-            -webkit-backdrop-filter: blur(12px) saturate(1.2);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            box-shadow: 
-                0 8px 48px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15),
-                inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .glass::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.15) 0%,
-                rgba(255, 255, 255, 0) 30%,
-                rgba(255, 255, 255, 0.05) 50%,
-                rgba(255, 255, 255, 0) 70%,
-                rgba(255, 255, 255, 0.1) 100%);
-            pointer-events: none;
-            opacity: 0.4;
-            transition: opacity 0.6s;
-        }
-
-        .glass:hover::before { opacity: 0.8; }
-
-        .glass::after {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.2) 0%,
-                rgba(212, 167, 67, 0.05) 30%,
-                rgba(255, 255, 255, 0) 50%,
-                rgba(212, 167, 67, 0.05) 70%,
-                rgba(255, 255, 255, 0.15) 100%);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0.6;
-            transition: opacity 0.6s;
-        }
-
-        .glass:hover::after { opacity: 1; }
-
         .container {
-            max-width: 600px;
+            position: relative;
+            z-index: 1;
+            max-width: 460px;
             width: 100%;
-            padding: 36px 32px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px 24px 20px;
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.12);
             animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
         }
 
@@ -92,236 +52,304 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== HEADER ===== */
+        /* ============================================================
+                   HEADER
+                   ============================================================ */
         .header {
             display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: space-between;
             padding-bottom: 16px;
-            border-bottom: 2px solid rgba(212, 167, 67, 0.3);
-            margin-bottom: 20px;
+            border-bottom: 1px solid #eef0f2;
+            margin-bottom: 18px;
+        }
+
+        .header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .header .logo-img {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(212, 167, 67, 0.15);
             flex-shrink: 0;
+            background: #f5f6f8;
         }
 
-        .header .brand-group { flex: 1; }
-
-        .header .brand-group .brand {
-            font-size: 1.4rem;
+        .header .brand-name {
+            font-size: 1.1rem;
             font-weight: 700;
-            color: #d4a743;
-            letter-spacing: -0.5px;
-            line-height: 1.1;
+            color: #d4a84c;
+            letter-spacing: -0.3px;
         }
 
-        .header .brand-group .tagline {
-            color: #888;
-            font-size: 0.6rem;
-            letter-spacing: 0.5px;
-            text-transform: none;
+        .header .header-right {
+            text-align: right;
         }
 
-        /* ===== STATUS BADGE ===== */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 16px;
-            border-radius: 30px;
-            font-size: 0.65rem;
-            font-weight: 700;
+        .header .header-right .label {
+            font-size: 0.5rem;
             text-transform: uppercase;
-            background: rgba(81, 207, 102, 0.15);
-            color: #51cf66;
-            border: 1px solid rgba(81, 207, 102, 0.25);
+            letter-spacing: 1.5px;
+            color: #9aa4b0;
+            font-weight: 600;
+        }
+
+        .header .header-right .number {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a2634;
+            letter-spacing: 0.3px;
+        }
+
+        /* ============================================================
+                   SUCCESS ICON
+                   ============================================================ */
+        .success-section {
+            text-align: center;
+            margin-bottom: 18px;
         }
 
         .success-icon {
-            font-size: 3.2rem;
-            color: #51cf66;
-            margin-bottom: 6px;
+            font-size: 2.8rem;
+            color: #2e9c5e;
             display: block;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #d4a743;
             margin-bottom: 4px;
-            text-align: center;
         }
 
-        .subtitle {
-            color: #8a8a8a;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            text-align: center;
+        .success-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a2634;
         }
 
-        /* ===== ORDER ROW ===== */
+        .success-sub {
+            font-size: 0.75rem;
+            color: #9aa4b0;
+            margin-top: 2px;
+        }
+
+        /* ============================================================
+                   ORDER INFO — TIADA BOX
+                   ============================================================ */
         .order-row {
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #eef0f2;
         }
 
         .order-row .label {
-            font-weight: 600;
-            color: #666;
             font-size: 0.55rem;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            display: block;
+            color: #9aa4b0;
+            font-weight: 600;
         }
 
         .order-row .value {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-top: 2px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1a2634;
         }
 
-        /* ===== ROW 2 ===== */
-        .row-2 {
+        .order-row .value .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: rgba(46, 156, 94, 0.1);
+            color: #2e9c5e;
+        }
+
+        /* ============================================================
+                   CUSTOMER — TIADA BOX
+                   ============================================================ */
+        .customer-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            gap: 2px 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eef0f2;
+            margin-bottom: 10px;
         }
 
-        .field label {
-            font-weight: 600;
-            color: #666;
-            font-size: 0.55rem;
+        .customer-grid .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-grid .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .customer-grid .field .label {
+            font-size: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            display: block;
+            letter-spacing: 1px;
+            color: #9aa4b0;
+            font-weight: 600;
         }
 
-        .field .value {
-            font-size: 0.85rem;
-            margin-top: 2px;
-            word-break: break-all;
+        .customer-grid .field .value {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1a2634;
+            word-break: break-word;
         }
 
-        .field .sub-text {
-            color: #888;
-            font-size: 0.78rem;
+        .customer-grid .field .value.note {
+            font-weight: 400;
+            color: #6b7a8a;
+            font-size: 0.7rem;
         }
 
-        /* ===== TABLE ===== */
+        /* ============================================================
+                   ITEMS TABLE
+                   ============================================================ */
         .table-wrap {
-            margin: 4px 0 6px;
+            margin: 6px 0 4px;
             overflow-x: auto;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            padding: 6px 8px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.6rem;
+        .items-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #666;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            letter-spacing: 1.5px;
+            color: #9aa4b0;
+            font-weight: 600;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #eef0f2;
+            margin-bottom: 4px;
         }
 
-        th:last-child, td:last-child {
-            text-align: right;
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f2f4;
         }
 
-        td {
-            padding: 6px 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-left .name {
             font-size: 0.8rem;
-            color: #ddd;
+            font-weight: 500;
+            color: #1a2634;
         }
 
-        td:first-child {
-            color: #f5f0eb;
+        .item-left .meta {
+            font-size: 0.6rem;
+            color: #9aa4b0;
+            margin-top: 1px;
         }
 
-        /* ===== TOTAL ===== */
+        .item-left .meta i {
+            margin: 0 4px;
+            font-size: 0.4rem;
+            color: #c5cdd5;
+        }
+
+        .item-right {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #d4a84c;
+        }
+
+        /* ============================================================
+                   TOTAL
+                   ============================================================ */
         .total-row {
-            text-align: right;
-            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
             font-weight: 700;
-            color: #d4a743;
+            color: #1a2634;
             padding-top: 10px;
-            border-top: 2px solid rgba(212, 167, 67, 0.3);
-            margin-top: 4px;
+            border-top: 1px solid #eef0f2;
+            margin-top: 6px;
         }
 
-        /* ===== NOTE BOX ===== */
+        .total-row .amount {
+            color: #d4a84c;
+            font-size: 1.05rem;
+        }
+
+        /* ============================================================
+                   NOTE BOX
+                   ============================================================ */
         .note-box {
-            background: rgba(255,255,255,0.03);
-            padding: 10px 16px;
-            border-radius: 8px;
-            margin: 12px 0 16px;
-            font-size: 0.78rem;
-            color: #888;
-            border-left: 3px solid rgba(212, 167, 67, 0.3);
+            padding: 8px 0;
+            margin: 6px 0 10px;
+            font-size: 0.7rem;
+            color: #6b7a8a;
+            border-bottom: 1px solid #eef0f2;
         }
 
         .note-box strong {
-            color: #ddd;
+            color: #1a2634;
         }
 
-        /* ===== INFO BOX ===== */
+        /* ============================================================
+                   INFO BOX
+                   ============================================================ */
         .info-box {
-            background: rgba(212, 167, 67, 0.06);
-            border: 1px solid rgba(212, 167, 67, 0.08);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin: 14px 0 18px;
-            font-size: 0.82rem;
-            color: #a09888;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin: 12px 0 16px;
+            font-size: 0.7rem;
+            color: #6b7a8a;
             line-height: 1.6;
             display: flex;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
         }
 
         .info-box i {
-            color: #d4a743;
-            font-size: 1rem;
+            color: #d4a84c;
+            font-size: 0.9rem;
             margin-top: 2px;
             flex-shrink: 0;
         }
 
         .info-box strong {
-            color: #f5f0eb;
+            color: #1a2634;
         }
 
-        /* ===== BUTTONS ===== */
+        /* ============================================================
+                   BUTTONS
+                   ============================================================ */
         .button-group {
             display: flex;
-            gap: 12px;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .button-group + .button-group {
             margin-top: 8px;
         }
 
         .btn {
             flex: 1;
-            padding: 10px 18px;
+            padding: 10px 16px;
             border: none;
-            border-radius: 60px;
+            border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             font-family: inherit;
-            font-size: 0.82rem;
+            font-size: 0.75rem;
             text-decoration: none;
             text-align: center;
             display: inline-flex;
@@ -331,137 +359,178 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #d4a743, #b8922f);
-            color: #0a0a0a;
-            box-shadow: 0 4px 20px rgba(212, 167, 67, 0.2);
+            background: #d4a84c;
+            color: #ffffff;
         }
 
         .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 32px rgba(212, 167, 67, 0.35);
+            background: #c49a3e;
+            transform: scale(1.01);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #f5f0eb;
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            color: #6b7a8a;
         }
 
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
+            background: #eef0f2;
+            border-color: #c5cdd5;
         }
 
         .btn-pdf {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #f5f0eb;
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            color: #6b7a8a;
         }
 
         .btn-pdf:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(212, 167, 67, 0.2);
-            color: #d4a743;
+            background: #eef0f2;
+            border-color: #d4a84c;
+            color: #d4a84c;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 600px) {
+        /* ============================================================
+                   RESPONSIVE
+                   ============================================================ */
+        @media (max-width: 480px) {
             body { padding: 12px; }
-            .container { padding: 20px 16px; }
-            .row-2 { grid-template-columns: 1fr; gap: 8px; }
-            .header { flex-direction: column; text-align: center; }
-            .header .brand-group .brand { font-size: 1.2rem; }
-            .header .logo-img { width: 40px; height: 40px; }
-            .button-group { flex-direction: column; gap: 8px; }
-            .btn { padding: 10px 16px; font-size: 0.8rem; }
-            h1 { font-size: 1.5rem; }
-            .success-icon { font-size: 2.8rem; }
-            .total-row { font-size: 0.95rem; }
-            th, td { padding: 4px 6px; font-size: 0.7rem; }
-            .info-box { font-size: 0.75rem; padding: 10px 12px; flex-direction: column; align-items: center; text-align: center; }
+            .container { padding: 18px 16px 16px; border-radius: 12px; }
+            
+            .header { flex-wrap: wrap; gap: 6px; }
+            .header .brand-name { font-size: 0.95rem; }
+            .header .logo-img { width: 34px; height: 34px; }
+            .header .header-right .number { font-size: 0.7rem; }
+            
+            .customer-grid { grid-template-columns: 1fr; gap: 2px; }
+            .customer-grid .field.full { grid-column: 1; }
+            
+            .success-icon { font-size: 2.2rem; }
+            .success-title { font-size: 1.1rem; }
+            
+            .item-left .name { font-size: 0.7rem; }
+            .item-right { font-size: 0.75rem; }
+            
+            .total-row { font-size: 0.85rem; }
+            .total-row .amount { font-size: 0.95rem; }
+            
+            .btn { font-size: 0.7rem; padding: 8px 12px; }
+            .button-group { flex-direction: column; gap: 6px; }
         }
 
-        @media (max-width: 400px) {
-            .container { padding: 16px 12px; }
-            .header .brand-group .brand { font-size: 1rem; }
-            .header .logo-img { width: 34px; height: 34px; }
-            .field .value { font-size: 0.75rem; }
-            .btn { font-size: 0.7rem; padding: 8px 12px; }
+        @media (max-width: 380px) {
+            .container { padding: 14px 12px; }
+            .header .brand-name { font-size: 0.85rem; }
+            .header .logo-img { width: 30px; height: 30px; }
+            .header .header-right .number { font-size: 0.6rem; }
+            .order-row .value { font-size: 0.7rem; }
+            .customer-grid .field .value { font-size: 0.7rem; }
+        }
+
+        /* ============================================================
+                   CETAKAN
+                   ============================================================ */
+        @media print {
+            body {
+                background: #ffffff !important;
+                padding: 0;
+                display: block;
+            }
+            body::before { display: none; }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+                background: #ffffff;
+                padding: 20px;
+            }
+            .button-group { display: none; }
+            .header { border-bottom-color: #e0e0e0; }
+            .header .brand-name { color: #d4a84c; }
+            .order-row { border-bottom-color: #e0e0e0; }
+            .customer-grid { border-bottom-color: #e0e0e0; }
+            .items-header { border-bottom-color: #e0e0e0; }
+            .item-row { border-bottom-color: #eee; }
+            .item-right { color: #d4a84c; }
+            .total-row { border-top-color: #e0e0e0; }
+            .total-row .amount { color: #d4a84c; }
+            .info-box { background: #f8f9fa; border: 1px solid #eef0f2; }
+            .note-box { border-bottom-color: #e0e0e0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container glass">
+    <div class="container">
 
         <!-- ===== HEADER ===== -->
         <div class="header">
-            <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.outerHTML='<div style=\\'width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#d4a743,#b8922f);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#0a0a0a;flex-shrink:0;\\'><i class=\\'fas fa-bolt\\'></i></div>'" />
-            <div class="brand-group">
-                <div class="brand">Socmegy</div>
-                <div class="tagline">Your Social Media Booster</div>
+            <div class="brand">
+                <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.outerHTML='<div style=\\'width:40px;height:40px;border-radius:50%;background:#d4a84c;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;\\'><i class=\\'fas fa-crown\\'></i></div>'" />
+                <span class="brand-name">Socmegy</span>
+            </div>
+            <div class="header-right">
+                <div class="label">Resit</div>
+                <div class="number" id="orderId">#ORDER-0000</div>
             </div>
         </div>
 
         <!-- ===== SUCCESS ===== -->
-        <span class="success-icon">
-            <i class="fas fa-check-circle"></i>
-        </span>
-
-        <h1>Terima Kasih!</h1>
-        <p class="subtitle">Pesanan anda telah diterima dan sedang diproses.</p>
+        <div class="success-section">
+            <span class="success-icon"><i class="fas fa-check-circle"></i></span>
+            <div class="success-title">Terima Kasih!</div>
+            <div class="success-sub">Pesanan anda telah diterima dan sedang diproses.</div>
+        </div>
 
         <!-- ===== ORDER ROW ===== -->
         <div class="order-row">
-            <span class="label">Order</span>
-            <span class="value" id="orderId">--</span>
+            <span class="label">Tarikh</span>
+            <span class="value" id="orderDate">--</span>
+        </div>
+        <div class="order-row">
+            <span class="label">Status</span>
+            <span class="value"><span class="status-badge" id="orderStatus">Completed</span></span>
         </div>
 
-        <!-- ===== ROW 2: DATE | STATUS ===== -->
-        <div class="row-2">
+        <!-- ===== CUSTOMER ===== -->
+        <div class="customer-grid">
             <div class="field">
-                <label>Date</label>
-                <div class="value" id="orderDate">--</div>
+                <span class="label">Nama</span>
+                <span class="value" id="customerName">--</span>
             </div>
             <div class="field">
-                <label>Status</label>
-                <div class="value"><span class="status-badge" id="orderStatus">Completed</span></div>
+                <span class="label">Telefon</span>
+                <span class="value" id="customerPhone">--</span>
             </div>
-        </div>
-
-        <!-- ===== ROW 2: CUSTOMER | NOTE ===== -->
-        <div class="row-2">
-            <div class="field">
-                <label>Customer</label>
-                <div class="value"><strong id="customerName">--</strong></div>
-                <div class="sub-text" id="customerEmail">--</div>
-                <div class="sub-text" id="customerPhone">--</div>
+            <div class="field full">
+                <span class="label">E-mel</span>
+                <span class="value" id="customerEmail">--</span>
             </div>
-            <div class="field">
-                <label>Note / Link</label>
-                <div class="value" style="color:#888;font-size:0.78rem;word-break:break-all;" id="orderNote">-</div>
+            <div class="field full">
+                <span class="label">Catatan</span>
+                <span class="value note" id="orderNote">-</span>
             </div>
         </div>
 
-        <!-- ===== TABLE ===== -->
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th style="text-align:center;">Qty</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsTableBody"></tbody>
-            </table>
+        <!-- ===== ITEMS ===== -->
+        <div class="items-header">
+            <span>Perkhidmatan</span>
+            <span>Jumlah</span>
+        </div>
+        <div id="itemsContainer">
+            <!-- JS akan isi -->
         </div>
 
-        <div class="total-row">Total: RM<span id="orderTotal">0.00</span></div>
+        <!-- ===== TOTAL ===== -->
+        <div class="total-row">
+            <span>Jumlah</span>
+            <span class="amount">RM<span id="orderTotal">0.00</span></span>
+        </div>
 
         <!-- ===== NOTE BOX ===== -->
         <div class="note-box" id="noteBox" style="display:none;">
-            <strong>📝 Note:</strong> <span id="noteText"></span>
+            <strong>📝 Nota:</strong> <span id="noteText"></span>
         </div>
 
         <!-- ===== INFO BOX ===== -->
@@ -480,8 +549,8 @@
             </a>
         </div>
 
-        <div class="button-group" style="margin-top:8px;">
-            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/#services" class="btn btn-secondary" style="flex:1;">
+        <div class="button-group">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/#services" class="btn btn-secondary">
                 <i class="fas fa-shopping-bag"></i> Beli Lagi
             </a>
         </div>
@@ -490,7 +559,7 @@
 
     <script>
         // ============================================================
-        // GET ORDER DATA
+        // GET ORDER DATA — SAMA MACAM ASAL
         // ============================================================
         const urlParams = new URLSearchParams(window.location.search);
         let orderData = null;
@@ -527,9 +596,9 @@
         }
 
         // ============================================================
-        // RENDER
+        // RENDER — GUNA FORMAT BARU
         // ============================================================
-        document.getElementById('orderId').textContent = order.orderId || '--';
+        document.getElementById('orderId').textContent = '#' + (order.orderId || 'ORDER-0000');
         document.getElementById('orderDate').textContent = order.date || now.toLocaleDateString('ms-MY', options);
         document.getElementById('orderStatus').textContent = 'Completed';
         document.getElementById('customerName').textContent = order.customer?.name || '--';
@@ -538,17 +607,23 @@
         document.getElementById('orderNote').textContent = order.note || '-';
         document.getElementById('orderTotal').textContent = (order.total || 0).toFixed(2);
 
-        const itemsBody = document.getElementById('itemsTableBody');
+        // Items — guna format kad macam resit
+        const itemsContainer = document.getElementById('itemsContainer');
         if (order.items && order.items.length > 0) {
-            itemsBody.innerHTML = order.items.map(item => `
-                <tr>
-                    <td>${item.name}</td>
-                    <td style="text-align:center;">${item.qty}</td>
-                    <td>RM${(item.price * item.qty).toFixed(2)}</td>
-                </tr>
+            itemsContainer.innerHTML = order.items.map(item => `
+                <div class="item-row">
+                    <div class="item-left">
+                        <div class="name">${item.name}</div>
+                        <div class="meta">
+                            <i class="fas fa-times"></i> ${item.qty} unit
+                            <i class="fas fa-tag"></i> RM${(item.price || 0).toFixed(2)}
+                        </div>
+                    </div>
+                    <div class="item-right">RM${((item.price || 0) * (item.qty || 1)).toFixed(2)}</div>
+                </div>
             `).join('');
         } else {
-            itemsBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#666;padding:12px 0;">Tiada item</td></tr>`;
+            itemsContainer.innerHTML = `<div style="text-align:center;padding:16px 0;color:#9aa4b0;font-size:0.7rem;">Tiada item</div>`;
         }
 
         if (order.note && order.note !== '-') {
@@ -562,7 +637,7 @@
         console.log('✅ Success page loaded. Order:', order.orderId);
 
         // ============================================================
-        // PDF - SAMA MACAM ADMIN (solid brand color)
+        // PDF — SAMA MACAM ADMIN (solid brand color)
         // ============================================================
         function downloadPDF() {
             const printWindow = window.open('', '_blank', 'width=900,height=700');
@@ -571,7 +646,7 @@
                 <tr>
                     <td style="padding:6px 10px;border-bottom:1px solid #eee;">${i.name}</td>
                     <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:center;">${i.qty}</td>
-                    <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right;">RM${(i.price * i.qty).toFixed(2)}</td>
+                    <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right;">RM${((i.price || 0) * (i.qty || 1)).toFixed(2)}</td>
                 </tr>
             `).join('');
 
@@ -605,110 +680,139 @@
                             .header {
                                 display: flex;
                                 align-items: center;
-                                gap: 14px;
+                                justify-content: space-between;
                                 padding-bottom: 14px;
-                                border-bottom: 2px solid #d4a743;
+                                border-bottom: 2px solid #d4a84c;
                                 margin-bottom: 18px;
                             }
+                            .header .brand {
+                                display: flex;
+                                align-items: center;
+                                gap: 12px;
+                            }
                             .header .logo-img {
-                                width: 48px;
-                                height: 48px;
+                                width: 44px;
+                                height: 44px;
                                 border-radius: 50%;
                                 object-fit: cover;
-                                border: 2px solid rgba(212,167,67,0.15);
                                 flex-shrink: 0;
                             }
-                            .header .brand-group { flex: 1; }
-                            .header .brand-group .brand {
-                                font-size: 1.4rem;
+                            .header .brand-name {
+                                font-size: 1.2rem;
                                 font-weight: 700;
-                                color: #d4a743;
-                                letter-spacing: -0.5px;
-                                line-height: 1.1;
+                                color: #d4a84c;
+                                letter-spacing: -0.3px;
                             }
-                            .header .brand-group .tagline {
-                                color: #999;
-                                font-size: 0.6rem;
-                                letter-spacing: 0.5px;
-                                text-transform: none;
+                            .header .header-right .label {
+                                font-size: 0.5rem;
+                                text-transform: uppercase;
+                                letter-spacing: 1.5px;
+                                color: #aaa;
+                                font-weight: 600;
+                            }
+                            .header .header-right .number {
+                                font-size: 0.8rem;
+                                font-weight: 600;
+                                color: #111;
                             }
                             /* ===== ORDER ROW ===== */
                             .order-row {
-                                margin-bottom: 12px;
-                                padding-bottom: 12px;
+                                display: flex;
+                                justify-content: space-between;
+                                padding: 4px 0;
                                 border-bottom: 1px solid #eee;
                             }
                             .order-row .label {
-                                font-weight: 600;
-                                color: #aaa;
                                 font-size: 0.55rem;
                                 text-transform: uppercase;
                                 letter-spacing: 0.8px;
-                                display: block;
-                            }
-                            .order-row .value { font-size: 0.9rem; font-weight: 600; margin-top: 2px; }
-                            /* ===== ROW 2 ===== */
-                            .row-2 {
-                                display: grid;
-                                grid-template-columns: 1fr 1fr;
-                                gap: 12px;
-                                margin-bottom: 12px;
-                                padding-bottom: 12px;
-                                border-bottom: 1px solid #eee;
-                            }
-                            .field label {
-                                font-weight: 600;
                                 color: #aaa;
-                                font-size: 0.55rem;
-                                text-transform: uppercase;
-                                letter-spacing: 0.8px;
-                                display: block;
+                                font-weight: 600;
                             }
-                            .field .value { font-size: 0.85rem; margin-top: 2px; }
-                            .field .value .status-badge {
+                            .order-row .value { font-size: 0.8rem; font-weight: 500; color: #111; }
+                            .order-row .value .status-badge {
                                 display: inline-block;
-                                padding: 2px 14px;
+                                padding: 2px 12px;
                                 border-radius: 30px;
                                 font-size: 0.6rem;
-                                font-weight: 700;
-                                text-transform: uppercase;
-                                background: rgba(81,207,102,0.15);
-                                color: #51cf66;
-                                border: 1px solid rgba(81,207,102,0.25);
-                            }
-                            .field .sub-text { color: #666; font-size: 0.78rem; }
-                            /* ===== TABLE ===== */
-                            table {
-                                width: 100%;
-                                border-collapse: collapse;
-                                margin: 4px 0 2px;
-                            }
-                            th {
-                                padding: 6px 8px;
-                                text-align: left;
                                 font-weight: 600;
-                                font-size: 0.6rem;
                                 text-transform: uppercase;
-                                letter-spacing: 0.5px;
-                                color: #888;
-                                border-bottom: 1px solid #eee;
+                                background: rgba(46,156,94,0.1);
+                                color: #2e9c5e;
                             }
-                            th:last-child, td:last-child { text-align: right; }
-                            td {
-                                padding: 4px 8px;
-                                border-bottom: 1px solid #f0f0f0;
+                            /* ===== CUSTOMER ===== */
+                            .customer-grid {
+                                display: grid;
+                                grid-template-columns: 1fr 1fr;
+                                gap: 2px 20px;
+                                padding: 10px 0;
+                                border-bottom: 1px solid #eee;
+                                margin-bottom: 10px;
+                            }
+                            .customer-grid .field { display: flex; flex-direction: column; }
+                            .customer-grid .field.full { grid-column: 1 / -1; }
+                            .customer-grid .field .label {
+                                font-size: 0.5rem;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                                color: #aaa;
+                                font-weight: 600;
+                            }
+                            .customer-grid .field .value {
                                 font-size: 0.8rem;
+                                font-weight: 500;
+                                color: #111;
+                                word-break: break-word;
+                            }
+                            .customer-grid .field .value.note {
+                                font-weight: 400;
+                                color: #666;
+                                font-size: 0.7rem;
+                            }
+                            /* ===== TABLE ===== */
+                            .items-header {
+                                display: flex;
+                                justify-content: space-between;
+                                font-size: 0.5rem;
+                                text-transform: uppercase;
+                                letter-spacing: 1.5px;
+                                color: #aaa;
+                                font-weight: 600;
+                                padding-bottom: 6px;
+                                border-bottom: 1px solid #eee;
+                                margin-bottom: 4px;
+                            }
+                            .item-row {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 6px 0;
+                                border-bottom: 1px solid #f0f0f0;
+                            }
+                            .item-row:last-child { border-bottom: none; }
+                            .item-left .name { font-size: 0.8rem; font-weight: 500; color: #111; }
+                            .item-left .meta {
+                                font-size: 0.6rem;
+                                color: #999;
+                                margin-top: 1px;
+                            }
+                            .item-right {
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                                color: #d4a84c;
                             }
                             /* ===== TOTAL ===== */
                             .total-row {
-                                text-align: right;
-                                font-size: 1.1rem;
+                                display: flex;
+                                justify-content: space-between;
+                                font-size: 0.95rem;
                                 font-weight: 700;
-                                color: #d4a743;
+                                color: #111;
                                 padding-top: 10px;
-                                border-top: 2px solid #d4a743;
-                                margin-top: 4px;
+                                border-top: 2px solid #d4a84c;
+                                margin-top: 6px;
                             }
+                            .total-row .amount { color: #d4a84c; font-size: 1.05rem; }
                             /* ===== FOOTER ===== */
                             .footer {
                                 text-align: center;
@@ -718,16 +822,15 @@
                                 padding-top: 14px;
                                 border-top: 1px solid #eee;
                             }
-                            .footer .gold { color: #d4a743; font-weight: 600; }
+                            .footer .gold { color: #d4a84c; font-weight: 600; }
                             .footer .sub-footer { font-size: 0.55rem; color: #ccc; margin-top: 2px; }
                             @media (max-width: 600px) {
                                 body { padding: 12px; }
                                 .invoice { padding: 16px; }
-                                .row-2 { grid-template-columns: 1fr; gap: 6px; }
+                                .customer-grid { grid-template-columns: 1fr; gap: 2px; }
+                                .customer-grid .field.full { grid-column: 1; }
                                 .header { flex-direction: column; text-align: center; }
-                                .header .brand-group .brand { font-size: 1.1rem; }
-                                th, td { padding: 4px 6px; font-size: 0.7rem; }
-                                .total-row { font-size: 0.95rem; }
+                                .header .brand-name { font-size: 1rem; }
                             }
                             @media print {
                                 body { background: #fff; padding: 10px; }
@@ -739,57 +842,71 @@
                         <div class="invoice">
                             <!-- ===== HEADER ===== -->
                             <div class="header">
-                                <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.style.display='none'" />
-                                <div class="brand-group">
-                                    <div class="brand">Socmegy</div>
-                                    <div class="tagline">Your Social Media Booster</div>
+                                <div class="brand">
+                                    <img src="logo.png" alt="Socmegy" class="logo-img" onerror="this.style.display='none'" />
+                                    <span class="brand-name">Socmegy</span>
+                                </div>
+                                <div class="header-right">
+                                    <div class="label">Resit</div>
+                                    <div class="number">#${order.orderId}</div>
                                 </div>
                             </div>
 
                             <!-- ===== ORDER ROW ===== -->
                             <div class="order-row">
-                                <span class="label">Order</span>
-                                <span class="value">${order.orderId}</span>
+                                <span class="label">Tarikh</span>
+                                <span class="value">${order.date || new Date().toLocaleDateString('ms-MY', { day:'numeric', month:'long', year:'numeric' })}</span>
+                            </div>
+                            <div class="order-row">
+                                <span class="label">Status</span>
+                                <span class="value"><span class="status-badge">${statusDisplay}</span></span>
                             </div>
 
-                            <!-- ===== ROW 2: DATE | STATUS ===== -->
-                            <div class="row-2">
+                            <!-- ===== CUSTOMER ===== -->
+                            <div class="customer-grid">
                                 <div class="field">
-                                    <label>Date</label>
-                                    <div class="value">${order.date || new Date().toLocaleDateString('ms-MY', { day:'numeric', month:'long', year:'numeric' })}</div>
+                                    <span class="label">Nama</span>
+                                    <span class="value">${order.customer?.name || 'N/A'}</span>
                                 </div>
                                 <div class="field">
-                                    <label>Status</label>
-                                    <div class="value"><span class="status-badge">${statusDisplay}</span></div>
+                                    <span class="label">Telefon</span>
+                                    <span class="value">${order.customer?.phone || '--'}</span>
                                 </div>
-                            </div>
-
-                            <!-- ===== ROW 2: CUSTOMER | NOTE ===== -->
-                            <div class="row-2">
-                                <div class="field">
-                                    <label>Customer</label>
-                                    <div class="value"><strong>${order.customer?.name || 'N/A'}</strong></div>
-                                    <div class="sub-text">${order.customer?.email || ''}</div>
-                                    <div class="sub-text">${order.customer?.phone || ''}</div>
+                                <div class="field full">
+                                    <span class="label">E-mel</span>
+                                    <span class="value">${order.customer?.email || '--'}</span>
                                 </div>
-                                <div class="field">
-                                    <label>Note / Link</label>
-                                    <div class="value" style="color:#666;font-size:0.78rem;word-break:break-all;">${order.note || '-'}</div>
+                                <div class="field full">
+                                    <span class="label">Catatan</span>
+                                    <span class="value note">${order.note || '-'}</span>
                                 </div>
                             </div>
 
-                            <!-- ===== TABLE ===== -->
-                            <table>
-                                <thead><tr><th>Item</th><th style="text-align:center;">Qty</th><th>Price</th></tr></thead>
-                                <tbody>${itemsHtml}</tbody>
-                            </table>
+                            <!-- ===== ITEMS ===== -->
+                            <div class="items-header">
+                                <span>Perkhidmatan</span>
+                                <span>Jumlah</span>
+                            </div>
+                            ${(order.items || []).map(i => `
+                                <div class="item-row">
+                                    <div class="item-left">
+                                        <div class="name">${i.name}</div>
+                                        <div class="meta"><i class="fas fa-times"></i> ${i.qty} unit <i class="fas fa-tag"></i> RM${(i.price || 0).toFixed(2)}</div>
+                                    </div>
+                                    <div class="item-right">RM${((i.price || 0) * (i.qty || 1)).toFixed(2)}</div>
+                                </div>
+                            `).join('')}
 
-                            <div class="total-row">Total: RM${(order.total || 0).toFixed(2)}</div>
+                            <!-- ===== TOTAL ===== -->
+                            <div class="total-row">
+                                <span>Jumlah</span>
+                                <span class="amount">RM${(order.total || 0).toFixed(2)}</span>
+                            </div>
 
                             <!-- ===== FOOTER ===== -->
                             <div class="footer">
-                                <div>Thank you for choosing <span class="gold">Socmegy</span>!</div>
-                                <div class="sub-footer">This is a system-generated invoice.</div>
+                                <div>Terima kasih atas kepercayaan anda. <span class="gold">Socmegy</span> — Tingkatkan Kehadiran Digital Anda.</div>
+                                <div class="sub-footer">Ini adalah resit sistem yang sah.</div>
                             </div>
                         </div>
                         <script>
