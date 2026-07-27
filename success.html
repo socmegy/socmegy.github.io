@@ -17,7 +17,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            background-image: url('bg.jpg');
+            background-image: url('bg.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -53,13 +53,13 @@
         }
 
         /* ============================================================
-                   HEADER
+                   HEADER — SEBIJIK MACAM RESIT
                    ============================================================ */
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-bottom: 16px;
+            padding-bottom: 14px;
             border-bottom: 1px solid #eef0f2;
             margin-bottom: 18px;
         }
@@ -106,7 +106,7 @@
         }
 
         /* ============================================================
-                   SUCCESS ICON
+                   SUCCESS
                    ============================================================ */
         .success-section {
             text-align: center;
@@ -133,7 +133,7 @@
         }
 
         /* ============================================================
-                   ORDER INFO — TIADA BOX
+                   ORDER INFO
                    ============================================================ */
         .order-row {
             display: flex;
@@ -210,13 +210,8 @@
         }
 
         /* ============================================================
-                   ITEMS TABLE
+                   ITEMS — FORMAT KAD
                    ============================================================ */
-        .table-wrap {
-            margin: 6px 0 4px;
-            overflow-x: auto;
-        }
-
         .items-header {
             display: flex;
             justify-content: space-between;
@@ -429,7 +424,7 @@
         }
 
         /* ============================================================
-                   CETAKAN
+                   CETAKAN — SEBIJIK MACAM DESIGN ASAL
                    ============================================================ */
         @media print {
             body {
@@ -438,25 +433,55 @@
                 display: block;
             }
             body::before { display: none; }
+            
             .container {
                 box-shadow: none;
                 border-radius: 0;
                 max-width: 100%;
                 background: #ffffff;
-                padding: 20px;
+                padding: 24px 20px 20px;
+                animation: none;
             }
-            .button-group { display: none; }
-            .header { border-bottom-color: #e0e0e0; }
+            
+            /* Sembunyi butang masa print */
+            .button-group { display: none !important; }
+            
+            /* Kekal semua warna dan design sama */
+            .header { border-bottom-color: #eef0f2; }
             .header .brand-name { color: #d4a84c; }
-            .order-row { border-bottom-color: #e0e0e0; }
-            .customer-grid { border-bottom-color: #e0e0e0; }
-            .items-header { border-bottom-color: #e0e0e0; }
-            .item-row { border-bottom-color: #eee; }
+            
+            .order-row { border-bottom-color: #eef0f2; }
+            .order-row .label { color: #9aa4b0; }
+            .order-row .value { color: #1a2634; }
+            .order-row .value .status-badge {
+                background: rgba(46, 156, 94, 0.1);
+                color: #2e9c5e;
+            }
+            
+            .customer-grid { border-bottom-color: #eef0f2; }
+            .customer-grid .field .label { color: #9aa4b0; }
+            .customer-grid .field .value { color: #1a2634; }
+            .customer-grid .field .value.note { color: #6b7a8a; }
+            
+            .items-header { border-bottom-color: #eef0f2; color: #9aa4b0; }
+            .item-row { border-bottom-color: #f0f2f4; }
+            .item-left .name { color: #1a2634; }
+            .item-left .meta { color: #9aa4b0; }
             .item-right { color: #d4a84c; }
-            .total-row { border-top-color: #e0e0e0; }
+            
+            .total-row { border-top-color: #eef0f2; color: #1a2634; }
             .total-row .amount { color: #d4a84c; }
-            .info-box { background: #f8f9fa; border: 1px solid #eef0f2; }
-            .note-box { border-bottom-color: #e0e0e0; }
+            
+            .note-box { border-bottom-color: #eef0f2; color: #6b7a8a; }
+            .note-box strong { color: #1a2634; }
+            
+            .info-box { background: #f8f9fa; color: #6b7a8a; }
+            .info-box i { color: #d4a84c; }
+            .info-box strong { color: #1a2634; }
+            
+            .success-icon { color: #2e9c5e; }
+            .success-title { color: #1a2634; }
+            .success-sub { color: #9aa4b0; }
         }
     </style>
 </head>
@@ -544,13 +569,13 @@
             <button class="btn btn-pdf" onclick="downloadPDF()">
                 <i class="fas fa-file-pdf"></i> Download Resit
             </button>
-            <a href="https://socmegy.github.io/" class="btn btn-primary">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/" class="btn btn-primary">
                 <i class="fas fa-home"></i> Halaman Utama
             </a>
         </div>
 
         <div class="button-group">
-            <a href="https://socmegy.github.io/#services" class="btn btn-secondary">
+            <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/#services" class="btn btn-secondary">
                 <i class="fas fa-shopping-bag"></i> Beli Lagi
             </a>
         </div>
@@ -596,7 +621,7 @@
         }
 
         // ============================================================
-        // RENDER — GUNA FORMAT BARU
+        // RENDER
         // ============================================================
         document.getElementById('orderId').textContent = '#' + (order.orderId || 'ORDER-0000');
         document.getElementById('orderDate').textContent = order.date || now.toLocaleDateString('ms-MY', options);
@@ -607,7 +632,7 @@
         document.getElementById('orderNote').textContent = order.note || '-';
         document.getElementById('orderTotal').textContent = (order.total || 0).toFixed(2);
 
-        // Items — guna format kad macam resit
+        // Items
         const itemsContainer = document.getElementById('itemsContainer');
         if (order.items && order.items.length > 0) {
             itemsContainer.innerHTML = order.items.map(item => `
@@ -637,16 +662,16 @@
         console.log('✅ Success page loaded. Order:', order.orderId);
 
         // ============================================================
-        // PDF — SAMA MACAM ADMIN (solid brand color)
+        // PDF — SAMA MACAM ADMIN
         // ============================================================
         function downloadPDF() {
             const printWindow = window.open('', '_blank', 'width=900,height=700');
             
             const itemsHtml = (order.items || []).map(i => `
                 <tr>
-                    <td style="padding:6px 10px;border-bottom:1px solid #eee;">${i.name}</td>
-                    <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:center;">${i.qty}</td>
-                    <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right;">RM${((i.price || 0) * (i.qty || 1)).toFixed(2)}</td>
+                    <td style="padding:6px 10px;border-bottom:1px solid #eee;font-size:0.8rem;">${i.name}</td>
+                    <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:center;font-size:0.8rem;">${i.qty}</td>
+                    <td style="padding:6px 10px;border-bottom:1px solid #eee;text-align:right;font-size:0.8rem;font-weight:600;color:#d4a84c;">RM${((i.price || 0) * (i.qty || 1)).toFixed(2)}</td>
                 </tr>
             `).join('');
 
@@ -660,8 +685,8 @@
                             * { margin:0; padding:0; box-sizing:border-box; }
                             body { 
                                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-                                background: #f5f2ed; 
-                                color: #111; 
+                                background: #ffffff; 
+                                color: #1a2634; 
                                 padding: 20px; 
                                 display: flex;
                                 justify-content: center;
@@ -672,8 +697,6 @@
                                 width: 100%;
                                 margin: 0 auto; 
                                 background: #ffffff; 
-                                border-radius: 12px; 
-                                box-shadow: 0 2px 40px rgba(0,0,0,0.06); 
                                 padding: 24px 28px; 
                             }
                             /* ===== HEADER ===== */
@@ -682,23 +705,23 @@
                                 align-items: center;
                                 justify-content: space-between;
                                 padding-bottom: 14px;
-                                border-bottom: 2px solid #d4a84c;
+                                border-bottom: 1px solid #eef0f2;
                                 margin-bottom: 18px;
                             }
                             .header .brand {
                                 display: flex;
                                 align-items: center;
-                                gap: 12px;
+                                gap: 10px;
                             }
                             .header .logo-img {
-                                width: 44px;
-                                height: 44px;
+                                width: 40px;
+                                height: 40px;
                                 border-radius: 50%;
                                 object-fit: cover;
                                 flex-shrink: 0;
                             }
                             .header .brand-name {
-                                font-size: 1.2rem;
+                                font-size: 1.1rem;
                                 font-weight: 700;
                                 color: #d4a84c;
                                 letter-spacing: -0.3px;
@@ -707,29 +730,30 @@
                                 font-size: 0.5rem;
                                 text-transform: uppercase;
                                 letter-spacing: 1.5px;
-                                color: #aaa;
+                                color: #9aa4b0;
                                 font-weight: 600;
                             }
                             .header .header-right .number {
                                 font-size: 0.8rem;
                                 font-weight: 600;
-                                color: #111;
+                                color: #1a2634;
+                                letter-spacing: 0.3px;
                             }
                             /* ===== ORDER ROW ===== */
                             .order-row {
                                 display: flex;
                                 justify-content: space-between;
                                 padding: 4px 0;
-                                border-bottom: 1px solid #eee;
+                                border-bottom: 1px solid #eef0f2;
                             }
                             .order-row .label {
                                 font-size: 0.55rem;
                                 text-transform: uppercase;
                                 letter-spacing: 0.8px;
-                                color: #aaa;
+                                color: #9aa4b0;
                                 font-weight: 600;
                             }
-                            .order-row .value { font-size: 0.8rem; font-weight: 500; color: #111; }
+                            .order-row .value { font-size: 0.8rem; font-weight: 500; color: #1a2634; }
                             .order-row .value .status-badge {
                                 display: inline-block;
                                 padding: 2px 12px;
@@ -746,7 +770,7 @@
                                 grid-template-columns: 1fr 1fr;
                                 gap: 2px 20px;
                                 padding: 10px 0;
-                                border-bottom: 1px solid #eee;
+                                border-bottom: 1px solid #eef0f2;
                                 margin-bottom: 10px;
                             }
                             .customer-grid .field { display: flex; flex-direction: column; }
@@ -755,31 +779,31 @@
                                 font-size: 0.5rem;
                                 text-transform: uppercase;
                                 letter-spacing: 1px;
-                                color: #aaa;
+                                color: #9aa4b0;
                                 font-weight: 600;
                             }
                             .customer-grid .field .value {
                                 font-size: 0.8rem;
                                 font-weight: 500;
-                                color: #111;
+                                color: #1a2634;
                                 word-break: break-word;
                             }
                             .customer-grid .field .value.note {
                                 font-weight: 400;
-                                color: #666;
+                                color: #6b7a8a;
                                 font-size: 0.7rem;
                             }
-                            /* ===== TABLE ===== */
+                            /* ===== ITEMS ===== */
                             .items-header {
                                 display: flex;
                                 justify-content: space-between;
                                 font-size: 0.5rem;
                                 text-transform: uppercase;
                                 letter-spacing: 1.5px;
-                                color: #aaa;
+                                color: #9aa4b0;
                                 font-weight: 600;
                                 padding-bottom: 6px;
-                                border-bottom: 1px solid #eee;
+                                border-bottom: 1px solid #eef0f2;
                                 margin-bottom: 4px;
                             }
                             .item-row {
@@ -787,13 +811,13 @@
                                 justify-content: space-between;
                                 align-items: center;
                                 padding: 6px 0;
-                                border-bottom: 1px solid #f0f0f0;
+                                border-bottom: 1px solid #f0f2f4;
                             }
                             .item-row:last-child { border-bottom: none; }
-                            .item-left .name { font-size: 0.8rem; font-weight: 500; color: #111; }
+                            .item-left .name { font-size: 0.8rem; font-weight: 500; color: #1a2634; }
                             .item-left .meta {
                                 font-size: 0.6rem;
-                                color: #999;
+                                color: #9aa4b0;
                                 margin-top: 1px;
                             }
                             .item-right {
@@ -807,23 +831,23 @@
                                 justify-content: space-between;
                                 font-size: 0.95rem;
                                 font-weight: 700;
-                                color: #111;
+                                color: #1a2634;
                                 padding-top: 10px;
-                                border-top: 2px solid #d4a84c;
+                                border-top: 1px solid #eef0f2;
                                 margin-top: 6px;
                             }
                             .total-row .amount { color: #d4a84c; font-size: 1.05rem; }
                             /* ===== FOOTER ===== */
                             .footer {
                                 text-align: center;
-                                color: #bbb;
+                                color: #9aa4b0;
                                 font-size: 0.65rem;
                                 margin-top: 18px;
                                 padding-top: 14px;
-                                border-top: 1px solid #eee;
+                                border-top: 1px solid #eef0f2;
                             }
                             .footer .gold { color: #d4a84c; font-weight: 600; }
-                            .footer .sub-footer { font-size: 0.55rem; color: #ccc; margin-top: 2px; }
+                            .footer .sub-footer { font-size: 0.55rem; color: #c5cdd5; margin-top: 2px; }
                             @media (max-width: 600px) {
                                 body { padding: 12px; }
                                 .invoice { padding: 16px; }
@@ -833,8 +857,8 @@
                                 .header .brand-name { font-size: 1rem; }
                             }
                             @media print {
-                                body { background: #fff; padding: 10px; }
-                                .invoice { box-shadow: none; padding: 14px; }
+                                body { background: #fff; padding: 0; }
+                                .invoice { padding: 20px; }
                             }
                         </style>
                     </head>
@@ -850,6 +874,13 @@
                                     <div class="label">Resit</div>
                                     <div class="number">#${order.orderId}</div>
                                 </div>
+                            </div>
+
+                            <!-- ===== SUCCESS ===== -->
+                            <div style="text-align:center;margin-bottom:16px;">
+                                <div style="font-size:2rem;color:#2e9c5e;display:block;margin-bottom:2px;"><i class="fas fa-check-circle"></i></div>
+                                <div style="font-size:1.2rem;font-weight:700;color:#1a2634;">Terima Kasih!</div>
+                                <div style="font-size:0.7rem;color:#9aa4b0;">Pesanan anda telah diterima dan sedang diproses.</div>
                             </div>
 
                             <!-- ===== ORDER ROW ===== -->
