@@ -92,7 +92,7 @@
         .brand-name {
             font-size: 1.1rem;
             font-weight: 700;
-            color: #d4a84c;
+            color: #000000;
             letter-spacing: -0.3px;
         }
 
@@ -105,20 +105,20 @@
             font-size: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            color: #9aa4b0;
+            color: #000000;
             font-weight: 600;
         }
 
         .header-right .number {
             font-size: 0.8rem;
             font-weight: 600;
-            color: #1a2634;
+            color: #000000;
             letter-spacing: 0.3px;
         }
 
         .header-right .date {
             font-size: 0.6rem;
-            color: #9aa4b0;
+            color: #000000;
         }
 
         /* ===== BODY ===== */
@@ -139,7 +139,7 @@
         .status-text {
             font-size: 0.75rem;
             font-weight: 500;
-            color: #1a2634;
+            color: #000000;
         }
 
         .status-text i {
@@ -149,7 +149,7 @@
 
         .status-time {
             font-size: 0.6rem;
-            color: #9aa4b0;
+            color: #000000;
             font-weight: 400;
         }
 
@@ -175,20 +175,20 @@
             font-size: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #9aa4b0;
+            color: #000000;
             font-weight: 600;
         }
 
         .customer-grid .field .value {
             font-size: 0.8rem;
             font-weight: 500;
-            color: #1a2634;
+            color: #000000;
             word-break: break-word;
         }
 
         .customer-grid .field .value.note {
             font-weight: 400;
-            color: #6b7a8a;
+            color: #000000;
             font-size: 0.7rem;
         }
 
@@ -199,7 +199,7 @@
             font-size: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            color: #9aa4b0;
+            color: #000000;
             font-weight: 600;
             padding-bottom: 8px;
             border-bottom: 1px solid #eef0f2;
@@ -221,25 +221,25 @@
         .item-left .name {
             font-size: 0.8rem;
             font-weight: 500;
-            color: #1a2634;
+            color: #000000;
         }
 
         .item-left .meta {
             font-size: 0.6rem;
-            color: #9aa4b0;
+            color: #000000;
             margin-top: 1px;
         }
 
         .item-left .meta i {
             margin: 0 4px;
             font-size: 0.4rem;
-            color: #c5cdd5;
+            color: #000000;
         }
 
         .item-right {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #d4a84c;
+            color: #000000;
         }
 
         /* ===== SUMMARY ===== */
@@ -254,29 +254,29 @@
             justify-content: space-between;
             font-size: 0.7rem;
             padding: 3px 0;
-            color: #6b7a8a;
+            color: #000000;
         }
 
         .summary-row .label {
-            color: #9aa4b0;
+            color: #000000;
         }
 
         .summary-row .amount {
             font-weight: 500;
-            color: #1a2634;
+            color: #000000;
         }
 
         .summary-row.total {
             font-size: 0.95rem;
             font-weight: 700;
-            color: #1a2634;
+            color: #000000;
             padding-top: 6px;
             border-top: 1px solid #eef0f2;
             margin-top: 4px;
         }
 
         .summary-row.total .amount {
-            color: #d4a84c;
+            color: #000000;
             font-size: 1.05rem;
         }
 
@@ -289,12 +289,12 @@
 
         .footer-note {
             font-size: 0.6rem;
-            color: #9aa4b0;
+            color: #000000;
             line-height: 1.8;
         }
 
         .footer-note .gold {
-            color: #d4a84c;
+            color: #000000;
             font-weight: 500;
         }
 
@@ -311,7 +311,7 @@
             border: 1px solid #e8eaed;
             border-radius: 30px;
             padding: 6px 18px;
-            color: #6b7a8a;
+            color: #000000;
             font-size: 0.6rem;
             font-family: inherit;
             cursor: pointer;
@@ -337,7 +337,7 @@
         .footer-actions button i,
         .footer-actions a i {
             font-size: 0.5rem;
-            color: #d4a84c;
+            color: #000000;
             transition: color 0.2s;
         }
 
@@ -394,10 +394,9 @@
         }
 
         /* ============================================================
-                   PRINT STYLES — FULL PAGE, SAMA DESIGN, TAK CENTER
+                   PRINT STYLES
                    ============================================================ */
         @media print {
-            /* Reset body — full page, no center, no box */
             body {
                 background: #ffffff !important;
                 padding: 0 !important;
@@ -408,12 +407,10 @@
                 justify-content: normal !important;
             }
 
-            /* Hilangkan overlay */
             body::before {
                 display: none !important;
             }
 
-            /* Container — full width, no border, no shadow, no center */
             .container {
                 max-width: 100% !important;
                 width: 100% !important;
@@ -427,7 +424,6 @@
                 margin: 0 !important;
             }
 
-            /* Header */
             .receipt-header {
                 padding: 0 0 16px 0 !important;
                 border-bottom: 1px solid #eef0f2 !important;
@@ -445,28 +441,26 @@
             .brand-name {
                 font-size: 1.1rem !important;
                 font-weight: 700 !important;
-                color: #d4a84c !important;
+                color: #000000 !important;
             }
 
             .header-right .label {
                 font-size: 0.5rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
             .header-right .number {
                 font-size: 0.8rem !important;
-                color: #1a2634 !important;
+                color: #000000 !important;
             }
             .header-right .date {
                 font-size: 0.6rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
 
-            /* Body */
             .receipt-body {
                 padding: 16px 0 12px !important;
             }
 
-            /* Status */
             .status-bar {
                 display: flex !important;
                 align-items: center !important;
@@ -477,17 +471,16 @@
             }
             .status-text {
                 font-size: 0.75rem !important;
-                color: #1a2634 !important;
+                color: #000000 !important;
             }
             .status-text i {
                 color: #2e9c5e !important;
             }
             .status-time {
                 font-size: 0.6rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
 
-            /* Customer */
             .customer-grid {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
@@ -500,23 +493,22 @@
             }
             .customer-grid .field .label {
                 font-size: 0.5rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
             .customer-grid .field .value {
                 font-size: 0.8rem !important;
-                color: #1a2634 !important;
+                color: #000000 !important;
             }
             .customer-grid .field .value.note {
-                color: #6b7a8a !important;
+                color: #000000 !important;
                 font-size: 0.7rem !important;
             }
 
-            /* Items */
             .items-header {
                 display: flex !important;
                 justify-content: space-between !important;
                 font-size: 0.5rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
                 padding-bottom: 8px !important;
                 border-bottom: 1px solid #eef0f2 !important;
                 margin-bottom: 6px !important;
@@ -533,18 +525,17 @@
             }
             .item-left .name {
                 font-size: 0.8rem !important;
-                color: #1a2634 !important;
+                color: #000000 !important;
             }
             .item-left .meta {
                 font-size: 0.6rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
             .item-right {
                 font-size: 0.85rem !important;
-                color: #d4a84c !important;
+                color: #000000 !important;
             }
 
-            /* Summary */
             .summary-box {
                 padding: 10px 0 0 !important;
                 margin-top: 6px !important;
@@ -555,27 +546,26 @@
                 justify-content: space-between !important;
                 font-size: 0.7rem !important;
                 padding: 2px 0 !important;
-                color: #6b7a8a !important;
+                color: #000000 !important;
             }
             .summary-row .label {
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
             .summary-row .amount {
-                color: #1a2634 !important;
+                color: #000000 !important;
             }
             .summary-row.total {
                 font-size: 0.95rem !important;
-                color: #1a2634 !important;
+                color: #000000 !important;
                 padding-top: 6px !important;
                 border-top: 1px solid #eef0f2 !important;
                 margin-top: 4px !important;
             }
             .summary-row.total .amount {
-                color: #d4a84c !important;
+                color: #000000 !important;
                 font-size: 1.05rem !important;
             }
 
-            /* Footer */
             .receipt-footer {
                 padding: 12px 0 0 !important;
                 border-top: 1px solid #eef0f2 !important;
@@ -583,13 +573,12 @@
             }
             .footer-note {
                 font-size: 0.6rem !important;
-                color: #9aa4b0 !important;
+                color: #000000 !important;
             }
             .footer-note .gold {
-                color: #d4a84c !important;
+                color: #000000 !important;
             }
 
-            /* Sembunyikan butang action semasa print */
             .footer-actions {
                 display: none !important;
             }
@@ -604,7 +593,7 @@
         <div class="receipt-header">
             <div class="brand">
                 <div class="brand-icon">
-                    <img src="logo.png" alt="Socmegy" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-crown\' style=\'color:#d4a84c;font-size:18px;\'></i>';" />
+                    <img src="logo.png" alt="Socmegy" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-crown\' style=\'color:#000000;font-size:18px;\'></i>';" />
                 </div>
                 <span class="brand-name">Socmegy</span>
             </div>
@@ -678,8 +667,8 @@
             </div>
             <div class="footer-actions">
                 <button onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
-                <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/"><i class="fas fa-home"></i> Utama</a>
-                <a href="https://muhdzulhelmibinsaidan.github.io/socmegy/#services"><i class="fas fa-shopping-bag"></i> Beli Lagi</a>
+                <a href="https://socmegy.github.io/"><i class="fas fa-home"></i> Utama</a>
+                <a href="https://socmegy.github.io/#services"><i class="fas fa-shopping-bag"></i> Beli Lagi</a>
             </div>
         </div>
 
@@ -763,8 +752,8 @@
             });
         } else {
             html = `
-                <div style="text-align:center;padding:20px 0;color:#9aa4b0;font-size:0.7rem;">
-                    <i class="fas fa-box" style="display:block;margin-bottom:6px;font-size:1.2rem;color:#c5cdd5;"></i>
+                <div style="text-align:center;padding:20px 0;color:#000000;font-size:0.7rem;">
+                    <i class="fas fa-box" style="display:block;margin-bottom:6px;font-size:1.2rem;color:#000000;"></i>
                     Tiada item
                 </div>
             `;
