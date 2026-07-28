@@ -1303,14 +1303,16 @@
             }
         }
 
-        /* ===== KAKI - FOOTER TEXT BIGGER ===== */
+        /* ===== KAKI - FOOTER (HITAM PEKAT - 100% VISIBLE) ===== */
         footer {
             padding: 30px 0 24px;
             text-align: center;
-            color: var(--text-secondary);
+            color: #000000;
+            background: #ffffff;
             font-size: 0.95rem;
+            border-top: 1px solid #e8ecf2;
         }
-        footer .gold { color: var(--gold); }
+        footer .gold { color: #d4a743; }
         footer .social-links {
             display: flex;
             justify-content: center;
@@ -1324,17 +1326,21 @@
             width: 46px;
             height: 46px;
             border-radius: 50%;
-            color: var(--text-secondary);
+            color: #000000;
             font-size: 1.2rem;
             transition: all 0.3s;
             text-decoration: none;
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            box-shadow: var(--shadow-sm);
+            background: #ffffff;
+            border: 1px solid #e8ecf2;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
         }
-        footer .social-links a:hover { color: var(--gold); transform: translateY(-6px); border-color: var(--gold); }
+        footer .social-links a:hover { 
+            color: #d4a743; 
+            transform: translateY(-6px); 
+            border-color: #d4a743; 
+        }
         footer .footer-text { 
-            opacity: 0.6; 
+            color: #000000;
             font-size: 0.85rem; 
         }
 
@@ -1348,7 +1354,7 @@
         .quick-links button {
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: #000000;
             font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s;
@@ -1357,10 +1363,19 @@
             position: relative;
             padding: 4px 0;
         }
-        .quick-links button::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--gold); transition: width 0.3s; }
-        .quick-links button:hover { color: var(--text-primary); }
+        .quick-links button::after { 
+            content: ''; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 0; 
+            height: 2px; 
+            background: #d4a743; 
+            transition: width 0.3s; 
+        }
+        .quick-links button:hover { color: #d4a743; }
         .quick-links button:hover::after { width: 100%; }
-        .quick-links .divider { color: var(--border-light); font-size: 0.65rem; }
+        .quick-links .divider { color: #cccccc; font-size: 0.65rem; }
 
         /* ===== MODAL ===== */
         .modal-quick {
@@ -2758,6 +2773,7 @@
             console.log('✅ Floating buttons & social icons pulse/bounce infinite');
             console.log('✅ Sticky banner pulses infinite');
             console.log('✅ Gallery auto-slides infinite (4s interval)');
+            console.log('✅ Footer: HITAM PEKAT 100% visible — no opacity');
         }
 
         init();
