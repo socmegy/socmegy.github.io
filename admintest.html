@@ -1,0 +1,1632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Socmegy Admin</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        /* ===== LOGIN PAGE ===== */
+        #loginPage {
+            display: flex;
+            min-height: 100vh;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .login-left {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: rgba(0,0,0,0.15);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .login-left .app-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.25);
+        }
+        .login-left h1 {
+            font-size: 52px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 16px;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 16px rgba(0,0,0,0.15);
+        }
+        .login-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 56px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .login-right h2 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+        .login-right .sub {
+            color: #6e6e73;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .login-right .form-group {
+            margin-bottom: 14px;
+        }
+        .login-right .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #b8860b;
+            margin-bottom: 4px;
+        }
+        .login-right .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 12px;
+            font-size: 15px;
+            background: #f8f8fa;
+            transition: border 0.2s;
+        }
+        .login-right .form-group input:focus {
+            outline: none;
+            border-color: #b8860b;
+        }
+        .login-right .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #b8860b;
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .login-right .login-btn:hover {
+            opacity: 0.85;
+        }
+        .login-right .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .login-error {
+            color: #e74c3c;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #loginPage {
+                flex-direction: column;
+            }
+            .login-left {
+                padding: 30px 20px;
+                min-height: 180px;
+                flex: none;
+                background: rgba(0,0,0,0.2);
+            }
+            .login-left .app-logo {
+                width: 80px;
+                height: 80px;
+            }
+            .login-left h1 {
+                font-size: 32px;
+                margin-top: 8px;
+            }
+            .login-right {
+                padding: 30px 24px;
+                flex: 2;
+                background: rgba(255,255,255,0.95);
+            }
+            .login-right h2 {
+                font-size: 22px;
+            }
+        }
+
+        /* ===== ADMIN APP ===== */
+        #adminApp {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* ===== TOP HEADER ===== */
+        .admin-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding: 0 28px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .admin-topbar .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-topbar .brand img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .admin-topbar .brand span {
+            font-size: 18px;
+            font-weight: 700;
+            color: #b8860b;
+        }
+        .admin-topbar .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-topbar .topbar-right .user-badge {
+            font-size: 13px;
+            color: #6e6e73;
+        }
+        .admin-topbar .topbar-right .logout-btn {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #b8860b;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .admin-topbar .topbar-right .logout-btn:hover {
+            background: rgba(0,0,0,0.08);
+        }
+
+        /* ===== SIDEBAR ===== */
+        .admin-sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            bottom: 0;
+            width: 220px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(0,0,0,0.04);
+            padding: 16px 12px;
+            overflow-y: auto;
+            z-index: 90;
+            transition: transform 0.3s ease;
+        }
+        .admin-sidebar .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6e6e73;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            margin-bottom: 2px;
+        }
+        .admin-sidebar .nav-item:hover {
+            background: rgba(0,0,0,0.04);
+            color: #1d1d1f;
+        }
+        .admin-sidebar .nav-item.active {
+            background: #b8860b;
+            color: #ffffff;
+        }
+        .admin-sidebar .nav-item .badge {
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(0,0,0,0.06);
+            padding: 0 10px;
+            border-radius: 30px;
+            color: #6e6e73;
+            text-align: center;
+            min-width: 24px;
+        }
+        .admin-sidebar .nav-item.active .badge {
+            background: rgba(255,255,255,0.2);
+            color: #ffffff;
+        }
+        .admin-sidebar .sidebar-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.04);
+            margin: 8px 12px;
+        }
+        .admin-sidebar .sidebar-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: #8e8e93;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 14px 4px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .admin-main {
+            margin-left: 220px;
+            margin-top: 60px;
+            padding: 28px 32px 48px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* ===== CARDS ===== */
+        .admin-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.04);
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+        }
+        .admin-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .admin-card .card-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+        .admin-card .card-header .card-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .admin-card .card-header .count-badge {
+            font-size: 12px;
+            color: #8e8e93;
+            background: rgba(0,0,0,0.04);
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+
+        /* ===== LIST ===== */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            gap: 12px;
+        }
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        .list-item .item-main {
+            flex: 1;
+            min-width: 0;
+        }
+        .list-item .item-main .title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .list-item .item-main .sub {
+            font-size: 12px;
+            color: #6e6e73;
+            margin-top: 1px;
+        }
+        .list-item .item-main .meta {
+            font-size: 11px;
+            color: #8e8e93;
+            margin-top: 2px;
+        }
+        .list-item .item-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .list-item .item-actions button {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+            color: #6e6e73;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .list-item .item-actions button:hover {
+            background: rgba(0,0,0,0.08);
+        }
+        .list-item .item-actions .edit-btn:hover {
+            color: #b8860b;
+        }
+        .list-item .item-actions .delete-btn:hover {
+            color: #e74c3c;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8e8e93;
+        }
+        .empty-state .empty-icon {
+            font-size: 32px;
+            opacity: 0.2;
+            margin-bottom: 8px;
+        }
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: #b8860b;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background: #d4a017;
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: #ffffff;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-secondary {
+            background: rgba(0,0,0,0.04);
+            color: #1d1d1f;
+        }
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.08);
+        }
+        .btn-success {
+            background: #27ae60;
+            color: #ffffff;
+        }
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        /* ===== CUSTOMIZATION SETTINGS ===== */
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+        .settings-row .label {
+            font-weight: 500;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .settings-row input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+            background: #f8f8fa;
+        }
+        .settings-row input:focus {
+            outline: none;
+            border-color: #b8860b;
+        }
+        .settings-row .desc {
+            font-size: 12px;
+            color: #8e8e93;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* ===== MODAL - iOS STYLE ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 200;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: #ffffff;
+            border-radius: 20px 20px 0 0;
+            padding: 20px 24px 32px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .modal-box .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(0,0,0,0.12);
+            border-radius: 4px;
+            margin: 0 auto 16px;
+        }
+        .modal-box .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .modal-box .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+        .modal-box .modal-header .close-modal {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            color: #8e8e93;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box .modal-header .close-modal:hover {
+            background: rgba(0,0,0,0.08);
+        }
+        .modal-box .form-group {
+            margin-bottom: 14px;
+        }
+        .modal-box .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #b8860b;
+            margin-bottom: 4px;
+        }
+        .modal-box .form-group input,
+        .modal-box .form-group textarea,
+        .modal-box .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #f8f8fa;
+            transition: border 0.2s;
+        }
+        .modal-box .form-group input:focus,
+        .modal-box .form-group textarea:focus,
+        .modal-box .form-group select:focus {
+            outline: none;
+            border-color: #b8860b;
+        }
+        .modal-box .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .modal-box .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .modal-box .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .modal-box .form-actions .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 12px;
+            font-size: 14px;
+            border-radius: 12px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 300;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toast {
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast .msg {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+        .toast .close-toast {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.4);
+        }
+        .toast .close-toast:hover {
+            color: #ffffff;
+        }
+
+        /* ===== MOBILE ===== */
+        .mobile-hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #b8860b;
+            padding: 4px;
+        }
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            z-index: 85;
+        }
+        .mobile-overlay.open {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                top: 0;
+                padding-top: 60px;
+                background: rgba(255,255,255,0.98);
+                border-right: 1px solid rgba(0,0,0,0.04);
+            }
+            .admin-sidebar.open {
+                transform: translateX(0);
+            }
+            .admin-main {
+                margin-left: 0;
+                padding: 16px 16px 80px;
+                margin-top: 60px;
+            }
+            .admin-topbar {
+                padding: 0 16px;
+            }
+            .mobile-hamburger {
+                display: block;
+            }
+            .admin-topbar .topbar-right .user-badge {
+                display: none;
+            }
+            .admin-card {
+                padding: 16px;
+            }
+            .modal-box {
+                padding: 16px 18px 24px;
+                max-width: 100%;
+                margin: 0;
+                border-radius: 20px 20px 0 0;
+            }
+            .modal-box .form-row {
+                grid-template-columns: 1fr;
+            }
+            .settings-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .settings-row input {
+                width: 100%;
+            }
+            .settings-row .desc {
+                font-size: 11px;
+            }
+            .list-item {
+                flex-wrap: wrap;
+            }
+            .list-item .item-actions {
+                margin-left: auto;
+            }
+            .admin-card .card-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .admin-card .card-header .card-actions {
+                justify-content: flex-start;
+            }
+            .modal-box .form-actions .btn {
+                padding: 10px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-topbar .brand span {
+                font-size: 15px;
+            }
+            .admin-main {
+                padding: 12px 12px 80px;
+            }
+            .admin-card {
+                padding: 12px;
+                border-radius: 12px;
+            }
+            .admin-card .card-header h3 {
+                font-size: 15px;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 6px 14px;
+            }
+            .list-item .item-main .title {
+                font-size: 13px;
+            }
+            .modal-box .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== LOGIN PAGE ===== -->
+<div id="loginPage">
+    <div class="login-left">
+        <img src="logo.png" alt="Socmegy" class="app-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22140%22 height=%22140%22%3E%3Crect fill=%22%23b8860b%22 width=%22140%22 height=%22140%22 rx=%2270%22/%3E%3Ctext x=%2270%22 y=%2288%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2260%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+        <h1>Socmegy</h1>
+    </div>
+    <div class="login-right">
+        <h2>Welcome Back</h2>
+        <div class="sub">Sign in to your account</div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="admin@socmegy.com" value="admin@socmegy.com" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" />
+            </div>
+            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+            <div class="login-error" id="loginError">Invalid email or password</div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== ADMIN APP ===== -->
+<div id="adminApp">
+
+    <!-- Top Bar -->
+    <header class="admin-topbar">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="mobile-hamburger" id="hamburgerBtn">☰</button>
+            <div class="brand">
+                <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22%3E%3Crect fill=%22%23b8860b%22 width=%2232%22 height=%2232%22 rx=%2216%22/%3E%3Ctext x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2216%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+                <span>Dashboard</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span class="user-badge" id="userEmail">admin@socmegy.com</span>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </header>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-label">Management</div>
+        <button class="nav-item active" data-tab="services">Services <span class="badge" id="serviceCount">0</span></button>
+        <button class="nav-item" data-tab="categories">Categories <span class="badge" id="categoryCount">0</span></button>
+        <button class="nav-item" data-tab="reviews">Reviews <span class="badge" id="reviewCount">0</span></button>
+        <button class="nav-item" data-tab="results">Results <span class="badge" id="resultCount">0</span></button>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-label">Settings</div>
+        <button class="nav-item" data-tab="customization">Customization</button>
+        <button class="nav-item" data-tab="read">Please Read</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="admin-main" id="adminContent">
+        <!-- Rendered by JS -->
+    </main>
+</div>
+
+<!-- ===== MODAL - iOS STYLE ===== -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <h3 id="modalTitle">Add</h3>
+            <button class="close-modal" id="modalCloseBtn">✕</button>
+        </div>
+        <form id="modalForm">
+            <div id="modalBody"></div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="modalCancelBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toastContainer">
+    <div class="toast" id="toast">
+        <span class="msg" id="toastMsg">Saved</span>
+        <button class="close-toast" id="toastCloseBtn">✕</button>
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+    // ============================================================
+    // FIREBASE CONFIG
+    // ============================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNgnDAitHmMHQN2WwEd_wvJ7WKy8qAGd0",
+        authDomain: "socmegy.firebaseapp.com",
+        databaseURL: "https://socmegy-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "socmegy",
+        storageBucket: "socmegy.firebasestorage.app",
+        messagingSenderId: "743231746220",
+        appId: "1:743231746220:web:007ef2bacb2cc80caf6f09",
+        measurementId: "G-0WL8D4908E"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let categories = [];
+    let services = [];
+    let reviews = [];
+    let results = [];
+    let readContent = '';
+    let currentTab = 'services';
+    let editingType = null;
+    let editingId = null;
+
+    // ============================================================
+    // DOM READY - SETUP ALL EVENT LISTENERS
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // ---- LOGIN ----
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+        // ---- LOGOUT ----
+        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+        // ---- HAMBURGER ----
+        document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
+        document.getElementById('mobileOverlay').addEventListener('click', toggleSidebar);
+
+        // ---- SIDEBAR NAV ----
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.addEventListener('click', function() {
+                switchTab(this.dataset.tab);
+            });
+        });
+
+        // ---- MODAL BUTTONS ----
+        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+        document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        document.getElementById('modalForm').addEventListener('submit', handleModalSubmit);
+
+        // ---- TOAST CLOSE ----
+        document.getElementById('toastCloseBtn').addEventListener('click', hideToast);
+
+        // ---- INIT ----
+        initApp();
+    });
+
+    // ============================================================
+    // AUTH
+    // ============================================================
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const btn = document.getElementById('loginBtn');
+        const errorEl = document.getElementById('loginError');
+
+        if (!email || !password) {
+            errorEl.textContent = 'Please enter email and password';
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Signing in...';
+        errorEl.style.display = 'none';
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(userCredential => {
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('adminApp').style.display = 'block';
+                document.getElementById('userEmail').textContent = userCredential.user.email;
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+            })
+            .catch(error => {
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
+                errorEl.textContent = error.message;
+                errorEl.style.display = 'block';
+            });
+    }
+
+    function handleLogout() {
+        auth.signOut().then(() => {
+            document.getElementById('adminApp').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('loginPassword').value = '';
+        });
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminApp').style.display = 'block';
+            document.getElementById('userEmail').textContent = user.email;
+            initApp();
+        } else {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('adminApp').style.display = 'none';
+        }
+    });
+
+    // ============================================================
+    // TOAST
+    // ============================================================
+    let toastTimeout;
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function hideToast() {
+        document.getElementById('toast').classList.remove('show');
+    }
+
+    // ============================================================
+    // MODAL
+    // ============================================================
+    function openModal(title, bodyHtml, submitText) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = bodyHtml;
+        const submitBtn = document.getElementById('modalSubmitBtn');
+        submitBtn.textContent = submitText || 'Save';
+        submitBtn.dataset.originalText = submitText || 'Save';
+        submitBtn.disabled = false;
+        submitBtn.style.cursor = 'pointer';
+        submitBtn.style.opacity = '1';
+        document.getElementById('modalOverlay').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('open');
+        editingId = null;
+        editingType = null;
+        const btn = document.getElementById('modalSubmitBtn');
+        btn.disabled = false;
+        btn.style.cursor = 'pointer';
+        btn.style.opacity = '1';
+    }
+
+    // ============================================================
+    // SIDEBAR
+    // ============================================================
+    function toggleSidebar() {
+        document.getElementById('adminSidebar').classList.toggle('open');
+        document.getElementById('mobileOverlay').classList.toggle('open');
+    }
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.nav-item').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === tab);
+        });
+        document.getElementById('adminSidebar').classList.remove('open');
+        document.getElementById('mobileOverlay').classList.remove('open');
+        renderContent();
+    }
+
+    // ============================================================
+    // RENDER CONTENT
+    // ============================================================
+    function renderContent() {
+        const container = document.getElementById('adminContent');
+        if (currentTab === 'services') renderServices(container);
+        else if (currentTab === 'categories') renderCategories(container);
+        else if (currentTab === 'reviews') renderReviews(container);
+        else if (currentTab === 'results') renderResults(container);
+        else if (currentTab === 'customization') renderCustomization(container);
+        else if (currentTab === 'read') renderRead(container);
+    }
+
+    // ============================================================
+    // SERVICES
+    // ============================================================
+    function renderServices(container) {
+        document.getElementById('serviceCount').textContent = services.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Services</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${services.length} total</span>
+                        <button class="btn btn-primary" id="addServiceBtn">Add Service</button>
+                    </div>
+                </div>
+                ${services.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <p>No services yet. Add your first service.</p>
+                    </div>
+                ` : services.map(s => {
+                    const cat = categories.find(c => c.id === s.category);
+                    const catName = cat ? cat.name : 'Uncategorized';
+                    return `
+                        <div class="list-item">
+                            <div class="item-main">
+                                <div class="title">${s.label}</div>
+                                <div class="sub">${s.desc || ''}</div>
+                                <div class="meta">${catName} · RM${Number(s.price).toFixed(2)} ${s.discount ? '· -'+s.discount+'%' : ''} ${s.unavailable ? '· Unavailable' : ''}</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="edit-btn" data-id="${s.id}" data-type="services">✎</button>
+                                <button class="delete-btn" data-id="${s.id}" data-type="services" data-name="${s.label}">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+
+        // Attach event listeners
+        container.querySelector('#addServiceBtn')?.addEventListener('click', function() {
+            openServiceModal();
+        });
+
+        container.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                if (type === 'services') editService(id);
+                else if (type === 'categories') editCategory(id);
+                else if (type === 'reviews') editReview(id);
+                else if (type === 'results') editResult(id);
+            });
+        });
+
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                const name = this.dataset.name || 'item';
+                deleteItem(type, id, name);
+            });
+        });
+    }
+
+    function openServiceModal(data) {
+        const isEdit = !!data;
+        const cats = categories.map(c => `<option value="${c.id}" ${data && data.category === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
+        const body = `
+            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
+            <div class="form-group"><label>Label</label><input type="text" id="f_label" value="${data ? data.label : ''}" required /></div>
+            <div class="form-group"><label>Description</label><input type="text" id="f_desc" value="${data ? data.desc : ''}" /></div>
+            <div class="form-group"><label>Category</label><select id="f_category" required>${cats}</select></div>
+            <div class="form-row">
+                <div class="form-group"><label>Price (RM)</label><input type="number" id="f_price" step="0.01" value="${data ? data.price : ''}" required /></div>
+                <div class="form-group"><label>Discount (%)</label><input type="number" id="f_discount" min="0" max="100" value="${data ? data.discount : 0}" /></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Status</label><select id="f_status"><option value="available" ${data && !data.unavailable ? 'selected' : ''}>Available</option><option value="unavailable" ${data && data.unavailable ? 'selected' : ''}>Unavailable</option></select></div>
+                <div class="form-group"><label>Added Date</label><input type="date" id="f_date" value="${data ? data.addedDate : ''}" /></div>
+            </div>
+        `;
+        editingType = 'services';
+        editingId = data ? data.id : null;
+        openModal(isEdit ? 'Edit Service' : 'New Service', body, isEdit ? 'Update' : 'Create');
+    }
+
+    function editService(id) {
+        const s = services.find(x => x.id === id);
+        if (s) openServiceModal(s);
+    }
+
+    // ============================================================
+    // CATEGORIES
+    // ============================================================
+    function renderCategories(container) {
+        document.getElementById('categoryCount').textContent = categories.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Categories</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${categories.length} total</span>
+                        <button class="btn btn-primary" id="addCategoryBtn">Add Category</button>
+                    </div>
+                </div>
+                ${categories.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">🏷️</div>
+                        <p>No categories yet. Add your first category.</p>
+                    </div>
+                ` : categories.map(c => {
+                    const count = services.filter(s => s.category === c.id).length;
+                    return `
+                        <div class="list-item">
+                            <div class="item-main">
+                                <div class="title">${c.name}</div>
+                                <div class="meta">${count} service${count !== 1 ? 's' : ''}</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="edit-btn" data-id="${c.id}" data-type="categories">✎</button>
+                                <button class="delete-btn" data-id="${c.id}" data-type="categories" data-name="${c.name}">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+
+        container.querySelector('#addCategoryBtn')?.addEventListener('click', function() {
+            openCategoryModal();
+        });
+
+        container.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                if (type === 'services') editService(id);
+                else if (type === 'categories') editCategory(id);
+                else if (type === 'reviews') editReview(id);
+                else if (type === 'results') editResult(id);
+            });
+        });
+
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                const name = this.dataset.name || 'item';
+                deleteItem(type, id, name);
+            });
+        });
+    }
+
+    function openCategoryModal(data) {
+        const isEdit = !!data;
+        const body = `
+            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
+            <div class="form-group"><label>Category Name</label><input type="text" id="f_name" value="${data ? data.name : ''}" required /></div>
+        `;
+        editingType = 'categories';
+        editingId = data ? data.id : null;
+        openModal(isEdit ? 'Edit Category' : 'New Category', body, isEdit ? 'Update' : 'Create');
+    }
+
+    function editCategory(id) {
+        const c = categories.find(x => x.id === id);
+        if (c) openCategoryModal(c);
+    }
+
+    // ============================================================
+    // REVIEWS
+    // ============================================================
+    function renderReviews(container) {
+        document.getElementById('reviewCount').textContent = reviews.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Reviews</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${reviews.length} total</span>
+                        <button class="btn btn-primary" id="addReviewBtn">Add Review</button>
+                    </div>
+                </div>
+                ${reviews.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">⭐</div>
+                        <p>No reviews yet. Add your first review.</p>
+                    </div>
+                ` : reviews.map(r => {
+                    const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+                    return `
+                        <div class="list-item">
+                            <div class="item-main">
+                                <div class="title">${r.quote}</div>
+                                <div class="sub">${r.customer}</div>
+                                <div class="meta">${stars}</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="edit-btn" data-id="${r.id}" data-type="reviews">✎</button>
+                                <button class="delete-btn" data-id="${r.id}" data-type="reviews" data-name="${r.quote.substring(0,30)}...">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+
+        container.querySelector('#addReviewBtn')?.addEventListener('click', function() {
+            openReviewModal();
+        });
+
+        container.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                if (type === 'services') editService(id);
+                else if (type === 'categories') editCategory(id);
+                else if (type === 'reviews') editReview(id);
+                else if (type === 'results') editResult(id);
+            });
+        });
+
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                const name = this.dataset.name || 'item';
+                deleteItem(type, id, name);
+            });
+        });
+    }
+
+    function openReviewModal(data) {
+        const isEdit = !!data;
+        const starsOpts = [5,4,3,2,1].map(n => `<option value="${n}" ${data && data.stars === n ? 'selected' : ''}>${n} ★</option>`).join('');
+        const body = `
+            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
+            <div class="form-group"><label>Quote</label><textarea id="f_quote" required>${data ? data.quote : ''}</textarea></div>
+            <div class="form-group"><label>Customer</label><input type="text" id="f_customer" value="${data ? data.customer : ''}" required /></div>
+            <div class="form-group"><label>Stars</label><select id="f_stars">${starsOpts}</select></div>
+        `;
+        editingType = 'reviews';
+        editingId = data ? data.id : null;
+        openModal(isEdit ? 'Edit Review' : 'New Review', body, isEdit ? 'Update' : 'Create');
+    }
+
+    function editReview(id) {
+        const r = reviews.find(x => x.id === id);
+        if (r) openReviewModal(r);
+    }
+
+    // ============================================================
+    // RESULTS
+    // ============================================================
+    function renderResults(container) {
+        document.getElementById('resultCount').textContent = results.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Results</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${results.length} total</span>
+                        <button class="btn btn-primary" id="addResultBtn">Add Result</button>
+                    </div>
+                </div>
+                ${results.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">🖼️</div>
+                        <p>No results yet. Add your first result.</p>
+                    </div>
+                ` : results.map(r => {
+                    const cat = categories.find(c => c.id === r.badge);
+                    const catName = cat ? cat.name : r.badge;
+                    return `
+                        <div class="list-item">
+                            <div class="item-main">
+                                <div class="title">${r.title}</div>
+                                <div class="sub">${catName}</div>
+                                <div class="meta"><a href="${r.image}" target="_blank" style="color:#b8860b;text-decoration:none;">View Image</a></div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="edit-btn" data-id="${r.id}" data-type="results">✎</button>
+                                <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}">✕</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+
+        container.querySelector('#addResultBtn')?.addEventListener('click', function() {
+            openResultModal();
+        });
+
+        container.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                if (type === 'services') editService(id);
+                else if (type === 'categories') editCategory(id);
+                else if (type === 'reviews') editReview(id);
+                else if (type === 'results') editResult(id);
+            });
+        });
+
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                const name = this.dataset.name || 'item';
+                deleteItem(type, id, name);
+            });
+        });
+    }
+
+    function openResultModal(data) {
+        const isEdit = !!data;
+        const cats = categories.map(c => `<option value="${c.id}" ${data && data.badge === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
+        const body = `
+            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
+            <div class="form-group"><label>Image URL</label><input type="url" id="f_image" value="${data ? data.image : ''}" required /></div>
+            <div class="form-group"><label>Title</label><input type="text" id="f_title" value="${data ? data.title : ''}" required /></div>
+            <div class="form-group"><label>Badge (Category)</label><select id="f_badge" required>${cats}</select></div>
+        `;
+        editingType = 'results';
+        editingId = data ? data.id : null;
+        openModal(isEdit ? 'Edit Result' : 'New Result', body, isEdit ? 'Update' : 'Create');
+    }
+
+    function editResult(id) {
+        const r = results.find(x => x.id === id);
+        if (r) openResultModal(r);
+    }
+
+    // ============================================================
+    // CUSTOMIZATION
+    // ============================================================
+    let settings = { discountPercent: 10, minPurchase: 10 };
+
+    function renderCustomization(container) {
+        container.innerHTML = `
+            <div class="admin-card">
+                <div class="card-header"><h3>Custom Package Settings</h3></div>
+                <div class="settings-row">
+                    <span class="label">Discount Percent</span>
+                    <input type="number" id="setDiscount" min="0" max="100" value="${settings.discountPercent || 10}" />
+                    <span class="desc">% off for custom packages</span>
+                </div>
+                <div class="settings-row">
+                    <span class="label">Minimum Purchase</span>
+                    <input type="number" id="setMinPurchase" min="0" step="0.5" value="${settings.minPurchase || 10}" />
+                    <span class="desc">RM minimum to qualify for discount</span>
+                </div>
+                <div style="margin-top:16px;">
+                    <button class="btn btn-primary" id="saveCustomBtn">Save Settings</button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('saveCustomBtn')?.addEventListener('click', function() {
+            const discount = parseFloat(document.getElementById('setDiscount').value) || 0;
+            const minPurchase = parseFloat(document.getElementById('setMinPurchase').value) || 0;
+            db.ref('settings').set({ discountPercent: discount, minPurchase: minPurchase })
+                .then(() => showToast('Settings saved'))
+                .catch(() => showToast('Error saving'));
+        });
+    }
+
+    // ============================================================
+    // READ
+    // ============================================================
+    function renderRead(container) {
+        container.innerHTML = `
+            <div class="admin-card">
+                <div class="card-header"><h3>Please Read Content</h3></div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#b8860b;margin-bottom:4px;">Content (HTML supported)</label>
+                    <textarea id="readContent" style="width:100%;padding:12px;border:1px solid rgba(0,0,0,0.06);border-radius:12px;font-size:14px;font-family:inherit;background:#f8f8fa;min-height:300px;resize:vertical;">${readContent}</textarea>
+                </div>
+                <button class="btn btn-primary" id="saveReadBtn">Save Content</button>
+            </div>
+        `;
+
+        document.getElementById('saveReadBtn')?.addEventListener('click', function() {
+            const content = document.getElementById('readContent').value;
+            db.ref('read').set(content)
+                .then(() => showToast('Read content saved'))
+                .catch(() => showToast('Error saving'));
+        });
+    }
+
+    // ============================================================
+    // DELETE
+    // ============================================================
+    function deleteItem(path, id, name) {
+        if (confirm(`Delete "${name}"?`)) {
+            db.ref(path + '/' + id).remove()
+                .then(() => showToast('Deleted'))
+                .catch(() => showToast('Error deleting'));
+        }
+    }
+
+    // ============================================================
+    // MODAL SUBMIT - FIXED
+    // ============================================================
+    function handleModalSubmit(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const type = editingType;
+        const submitBtn = document.getElementById('modalSubmitBtn');
+
+        if (!type) {
+            showToast('Unknown operation');
+            return;
+        }
+
+        // Disable button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+        submitBtn.style.cursor = 'not-allowed';
+        submitBtn.style.opacity = '0.6';
+
+        let data = {};
+        let isValid = true;
+
+        try {
+            if (type === 'services') {
+                const label = document.getElementById('f_label');
+                const category = document.getElementById('f_category');
+                const price = document.getElementById('f_price');
+
+                if (!label || !label.value.trim()) { showToast('Label is required'); isValid = false; }
+                else if (!category || !category.value) { showToast('Category is required'); isValid = false; }
+                else if (!price || parseFloat(price.value) <= 0) { showToast('Price must be > 0'); isValid = false; }
+
+                if (isValid) {
+                    data = {
+                        label: label.value.trim(),
+                        desc: document.getElementById('f_desc').value.trim() || '',
+                        category: category.value,
+                        price: parseFloat(price.value) || 0,
+                        discount: parseInt(document.getElementById('f_discount').value) || 0,
+                        unavailable: document.getElementById('f_status').value === 'unavailable',
+                        addedDate: document.getElementById('f_date').value || new Date().toISOString().split('T')[0]
+                    };
+                }
+            } else if (type === 'categories') {
+                const name = document.getElementById('f_name');
+                if (!name || !name.value.trim()) { showToast('Name is required'); isValid = false; }
+                else { data = { name: name.value.trim() }; }
+            } else if (type === 'reviews') {
+                const quote = document.getElementById('f_quote');
+                const customer = document.getElementById('f_customer');
+                if (!quote || !quote.value.trim()) { showToast('Quote is required'); isValid = false; }
+                else if (!customer || !customer.value.trim()) { showToast('Customer is required'); isValid = false; }
+                else {
+                    data = {
+                        quote: quote.value.trim(),
+                        customer: customer.value.trim(),
+                        stars: parseInt(document.getElementById('f_stars').value) || 5
+                    };
+                }
+            } else if (type === 'results') {
+                const image = document.getElementById('f_image');
+                const title = document.getElementById('f_title');
+                const badge = document.getElementById('f_badge');
+                if (!image || !image.value.trim()) { showToast('Image URL is required'); isValid = false; }
+                else if (!title || !title.value.trim()) { showToast('Title is required'); isValid = false; }
+                else if (!badge || !badge.value) { showToast('Badge is required'); isValid = false; }
+                else {
+                    data = {
+                        image: image.value.trim(),
+                        title: title.value.trim(),
+                        badge: badge.value
+                    };
+                }
+            } else {
+                showToast('Unknown type');
+                isValid = false;
+            }
+        } catch (err) {
+            showToast('Error: ' + err.message);
+            isValid = false;
+        }
+
+        if (!isValid) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.dataset.originalText || 'Save';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.style.opacity = '1';
+            return;
+        }
+
+        // Get ID
+        const idEl = document.getElementById('f_id');
+        const id = idEl ? idEl.value : null;
+        const finalId = id || Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+
+        // Save to Firebase
+        db.ref(type + '/' + finalId).set(data)
+            .then(() => {
+                showToast('Saved successfully');
+                closeModal();
+                submitBtn.disabled = false;
+                submitBtn.textContent = submitBtn.dataset.originalText || 'Save';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.style.opacity = '1';
+            })
+            .catch((err) => {
+                showToast('Error: ' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = submitBtn.dataset.originalText || 'Save';
+                submitBtn.style.cursor = 'pointer';
+                submitBtn.style.opacity = '1';
+            });
+    }
+
+    // ============================================================
+    // FIREBASE LISTENERS
+    // ============================================================
+    function initApp() {
+        db.ref('categories').on('value', snap => {
+            const data = snap.val() || {};
+            categories = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (currentTab === 'categories' || currentTab === 'services' || currentTab === 'results') renderContent();
+            document.getElementById('categoryCount').textContent = categories.length;
+        });
+
+        db.ref('services').on('value', snap => {
+            const data = snap.val() || {};
+            services = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (currentTab === 'services') renderContent();
+            document.getElementById('serviceCount').textContent = services.length;
+        });
+
+        db.ref('reviews').on('value', snap => {
+            const data = snap.val() || {};
+            reviews = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (currentTab === 'reviews') renderContent();
+            document.getElementById('reviewCount').textContent = reviews.length;
+        });
+
+        db.ref('results').on('value', snap => {
+            const data = snap.val() || {};
+            results = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (currentTab === 'results') renderContent();
+            document.getElementById('resultCount').textContent = results.length;
+        });
+
+        db.ref('settings').on('value', snap => {
+            const data = snap.val() || {};
+            settings = { discountPercent: data.discountPercent || 10, minPurchase: data.minPurchase || 10 };
+            if (currentTab === 'customization') renderContent();
+        });
+
+        db.ref('read').on('value', snap => {
+            readContent = snap.val() || '';
+            if (currentTab === 'read') renderContent();
+        });
+
+        renderContent();
+    }
+
+    console.log('✅ Admin panel ready');
+    console.log('✅ Firebase Auth enabled');
+    console.log('✅ Firebase Database connected');
+</script>
+
+</body>
+</html>
