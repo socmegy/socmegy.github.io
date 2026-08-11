@@ -18,7 +18,7 @@
             min-height: 100vh;
         }
 
-        /* ===== LOGIN PAGE ===== */
+        /* ===== LOGIN PAGE - PLAIN BG ===== */
         #loginPage {
             display: flex;
             min-height: 100vh;
@@ -33,16 +33,14 @@
             justify-content: center;
             align-items: center;
             padding: 40px;
-            background: rgba(0,0,0,0.15);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.3);
         }
         .login-left .app-logo {
             width: 140px;
             height: 140px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid rgba(255,255,255,0.25);
+            border: 4px solid rgba(255,255,255,0.3);
         }
         .login-left h1 {
             font-size: 52px;
@@ -50,7 +48,7 @@
             color: #ffffff;
             margin-top: 16px;
             letter-spacing: -1px;
-            text-shadow: 0 2px 16px rgba(0,0,0,0.15);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.2);
         }
         .login-right {
             flex: 1;
@@ -58,9 +56,7 @@
             flex-direction: column;
             justify-content: center;
             padding: 40px 56px;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: rgba(255,255,255,0.95);
         }
         .login-right h2 {
             font-size: 30px;
@@ -99,7 +95,9 @@
         .login-right .login-btn {
             width: 100%;
             padding: 14px;
-            background: #b8860b;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             color: #ffffff;
             border: none;
             border-radius: 12px;
@@ -107,6 +105,7 @@
             font-weight: 700;
             cursor: pointer;
             transition: opacity 0.2s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
         .login-right .login-btn:hover {
             opacity: 0.85;
@@ -122,6 +121,12 @@
             margin-top: 10px;
             display: none;
         }
+        .login-status {
+            color: #6e6e73;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+        }
 
         @media (max-width: 768px) {
             #loginPage {
@@ -131,7 +136,7 @@
                 padding: 30px 20px;
                 min-height: 180px;
                 flex: none;
-                background: rgba(0,0,0,0.2);
+                background: rgba(0,0,0,0.3);
             }
             .login-left .app-logo {
                 width: 80px;
@@ -200,18 +205,21 @@
             color: #6e6e73;
         }
         .admin-topbar .topbar-right .logout-btn {
-            background: rgba(0,0,0,0.04);
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             border: none;
             padding: 6px 14px;
             border-radius: 30px;
             font-size: 13px;
             font-weight: 600;
-            color: #b8860b;
+            color: #ffffff;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: opacity 0.2s;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
         .admin-topbar .topbar-right .logout-btn:hover {
-            background: rgba(0,0,0,0.08);
+            opacity: 0.85;
         }
 
         /* ===== SIDEBAR ===== */
@@ -253,8 +261,11 @@
             color: #1d1d1f;
         }
         .admin-sidebar .nav-item.active {
-            background: #b8860b;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
         .admin-sidebar .nav-item .badge {
             font-size: 11px;
@@ -402,7 +413,7 @@
             font-size: 14px;
         }
 
-        /* ===== BUTTONS ===== */
+        /* ===== BUTTONS - ALL USE bg.jpg ===== */
         .btn {
             padding: 8px 18px;
             border: none;
@@ -415,34 +426,46 @@
             align-items: center;
             gap: 6px;
             font-family: inherit;
+            position: relative;
+            z-index: 1;
+            pointer-events: auto;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
         .btn-primary {
-            background: #b8860b;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             color: #ffffff;
         }
         .btn-primary:hover {
-            background: #d4a017;
+            opacity: 0.85;
         }
         .btn-danger {
-            background: #e74c3c;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             color: #ffffff;
         }
         .btn-danger:hover {
-            background: #c0392b;
+            opacity: 0.85;
         }
         .btn-secondary {
             background: rgba(0,0,0,0.04);
             color: #1d1d1f;
+            text-shadow: none;
         }
         .btn-secondary:hover {
             background: rgba(0,0,0,0.08);
         }
         .btn-success {
-            background: #27ae60;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             color: #ffffff;
         }
         .btn-success:hover {
-            background: #219a52;
+            opacity: 0.85;
         }
 
         /* ===== CUSTOMIZATION SETTINGS ===== */
@@ -493,10 +516,12 @@
             display: none;
             justify-content: center;
             align-items: flex-end;
-            z-index: 200;
+            z-index: 9998;
+            pointer-events: none;
         }
         .modal-overlay.open {
             display: flex;
+            pointer-events: auto;
         }
         .modal-box {
             background: #ffffff;
@@ -507,6 +532,10 @@
             max-height: 85vh;
             overflow-y: auto;
             animation: slideUp 0.3s ease;
+            position: relative;
+            z-index: 9999;
+            pointer-events: auto;
+            isolation: isolate;
         }
         @keyframes slideUp {
             from { transform: translateY(100%); }
@@ -542,6 +571,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
         }
         .modal-box .modal-header .close-modal:hover {
             background: rgba(0,0,0,0.08);
@@ -567,6 +599,9 @@
             font-family: inherit;
             background: #f8f8fa;
             transition: border 0.2s;
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
         }
         .modal-box .form-group input:focus,
         .modal-box .form-group textarea:focus,
@@ -587,6 +622,8 @@
             display: flex;
             gap: 10px;
             margin-top: 16px;
+            position: relative;
+            z-index: 2;
         }
         .modal-box .form-actions .btn {
             flex: 1;
@@ -594,6 +631,9 @@
             padding: 12px;
             font-size: 14px;
             border-radius: 12px;
+            position: relative;
+            z-index: 2;
+            pointer-events: auto;
         }
 
         /* ===== TOAST ===== */
@@ -605,6 +645,7 @@
             z-index: 300;
             width: 90%;
             max-width: 400px;
+            pointer-events: none;
         }
         .toast {
             background: rgba(0,0,0,0.8);
@@ -618,10 +659,12 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 0.3s ease;
+            pointer-events: none;
         }
         .toast.show {
             opacity: 1;
             transform: translateY(0);
+            pointer-events: auto;
         }
         .toast .msg {
             flex: 1;
@@ -768,18 +811,19 @@
     </div>
     <div class="login-right">
         <h2>Welcome Back</h2>
-        <div class="sub">Sign in to your account</div>
+        <div class="sub">Sign in to continue</div>
         <form id="loginForm">
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" id="loginEmail" placeholder="admin@socmegy.com" value="admin@socmegy.com" />
+                <input type="email" id="loginEmail" placeholder="Enter your email" />
             </div>
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" />
+                <input type="password" id="loginPassword" placeholder="Enter your password" />
             </div>
             <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
             <div class="login-error" id="loginError">Invalid email or password</div>
+            <div class="login-status" id="loginStatus"></div>
         </form>
     </div>
 </div>
@@ -797,7 +841,7 @@
             </div>
         </div>
         <div class="topbar-right">
-            <span class="user-badge" id="userEmail">admin@socmegy.com</span>
+            <span class="user-badge" id="userEmail"></span>
             <button class="logout-btn" id="logoutBtn">Logout</button>
         </div>
     </header>
@@ -830,7 +874,7 @@
         <div class="modal-handle"></div>
         <div class="modal-header">
             <h3 id="modalTitle">Add</h3>
-            <button class="close-modal" id="modalCloseBtn">✕</button>
+            <button type="button" class="close-modal" id="modalCloseBtn">✕</button>
         </div>
         <form id="modalForm">
             <div id="modalBody"></div>
@@ -918,6 +962,14 @@
         // ---- TOAST CLOSE ----
         document.getElementById('toastCloseBtn').addEventListener('click', hideToast);
 
+        // Check auth state on load
+        if (auth.currentUser) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminApp').style.display = 'block';
+            document.getElementById('userEmail').textContent = auth.currentUser.email;
+            initApp();
+        }
+
         // ---- INIT ----
         initApp();
     });
@@ -931,6 +983,7 @@
         const password = document.getElementById('loginPassword').value.trim();
         const btn = document.getElementById('loginBtn');
         const errorEl = document.getElementById('loginError');
+        const statusEl = document.getElementById('loginStatus');
 
         if (!email || !password) {
             errorEl.textContent = 'Please enter email and password';
@@ -941,6 +994,7 @@
         btn.disabled = true;
         btn.textContent = 'Signing in...';
         errorEl.style.display = 'none';
+        statusEl.textContent = 'Authenticating...';
 
         auth.signInWithEmailAndPassword(email, password)
             .then(userCredential => {
@@ -949,12 +1003,14 @@
                 document.getElementById('userEmail').textContent = userCredential.user.email;
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
+                statusEl.textContent = '';
             })
             .catch(error => {
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
                 errorEl.textContent = error.message;
                 errorEl.style.display = 'block';
+                statusEl.textContent = '';
             });
     }
 
@@ -963,6 +1019,7 @@
             document.getElementById('adminApp').style.display = 'none';
             document.getElementById('loginPage').style.display = 'flex';
             document.getElementById('loginPassword').value = '';
+            document.getElementById('loginEmail').value = '';
         });
     }
 
@@ -1007,6 +1064,7 @@
         submitBtn.disabled = false;
         submitBtn.style.cursor = 'pointer';
         submitBtn.style.opacity = '1';
+        submitBtn.style.pointerEvents = 'auto';
         document.getElementById('modalOverlay').classList.add('open');
     }
 
@@ -1018,6 +1076,7 @@
         btn.disabled = false;
         btn.style.cursor = 'pointer';
         btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
     }
 
     // ============================================================
@@ -1094,7 +1153,6 @@
         `;
         container.innerHTML = html;
 
-        // Attach event listeners
         container.querySelector('#addServiceBtn')?.addEventListener('click', function() {
             openServiceModal();
         });
