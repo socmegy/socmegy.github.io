@@ -1069,6 +1069,47 @@
             .quick-actions .btn { padding: 10px; font-size: 12px; }
             .result-item .result-preview { width: 32px; height: 32px; }
         }
+        /* ===== RESULT ITEM ACTIONS - FIX ===== */
+.result-item .item-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.result-item .item-actions button {
+    background: rgba(0,0,0,0.04);
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #6e6e73;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.result-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
+
+.result-item .item-actions .edit-btn {
+    background: rgba(184, 134, 11, 0.12);
+    color: #b8860b;
+    font-weight: 600;
+}
+.result-item .item-actions .edit-btn:hover {
+    background: rgba(184, 134, 11, 0.25);
+    color: #b8860b;
+}
+
+.result-item .item-actions .delete-btn {
+    background: rgba(231, 76, 60, 0.12);
+    color: #e74c3c;
+    font-weight: 600;
+}
+.result-item .item-actions .delete-btn:hover {
+    background: rgba(231, 76, 60, 0.25);
+    color: #c0392b;
+}
     </style>
 </head>
 <body>
