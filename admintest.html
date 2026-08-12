@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Socmegy Admin</title>
     <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ===== HIDE ALL SCROLLBARS ===== */
+        ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        body { overflow-y: scroll; }
+
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: #f5f5f7;
@@ -18,13 +21,44 @@
             min-height: 100vh;
         }
 
-        /* ===== LOGIN PAGE - PLAIN BG ===== */
-        #loginPage {
+        /* ===== SPLASH SCREEN ===== */
+        #splashScreen {
+            position: fixed;
+            inset: 0;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.6s ease;
+        }
+        #splashScreen.hide { opacity: 0; pointer-events: none; }
+        #splashScreen img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            animation: splashPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes splashPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* ===== LOGIN PAGE ===== */
+        #loginPage {
+            display: none;
             min-height: 100vh;
             background-image: url('bg.jpg');
             background-size: cover;
             background-position: center;
+        }
+        .login-wrap {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
         }
         .login-left {
             flex: 1.2;
@@ -33,22 +67,21 @@
             justify-content: center;
             align-items: center;
             padding: 40px;
-            background: rgba(0,0,0,0.3);
         }
         .login-left .app-logo {
-            width: 140px;
-            height: 140px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid rgba(255,255,255,0.3);
         }
         .login-left h1 {
-            font-size: 52px;
+            font-size: 44px;
             font-weight: 700;
             color: #ffffff;
-            margin-top: 16px;
+            margin-top: 12px;
             letter-spacing: -1px;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.15);
         }
         .login-right {
             flex: 1;
@@ -56,10 +89,12 @@
             flex-direction: column;
             justify-content: center;
             padding: 40px 56px;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
         .login-right h2 {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 700;
             color: #1d1d1f;
             margin-bottom: 4px;
@@ -67,7 +102,7 @@
         .login-right .sub {
             color: #6e6e73;
             font-size: 14px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
         .login-right .form-group {
             margin-bottom: 14px;
@@ -92,6 +127,26 @@
             outline: none;
             border-color: #b8860b;
         }
+        .login-right .form-group input::placeholder {
+            color: #aaa;
+        }
+        .login-right .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .login-right .remember-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #b8860b;
+            cursor: pointer;
+        }
+        .login-right .remember-row label {
+            font-size: 13px;
+            color: #6e6e73;
+            cursor: pointer;
+        }
         .login-right .login-btn {
             width: 100%;
             padding: 14px;
@@ -107,13 +162,8 @@
             transition: opacity 0.2s;
             text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
-        .login-right .login-btn:hover {
-            opacity: 0.85;
-        }
-        .login-right .login-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .login-right .login-btn:hover { opacity: 0.85; }
+        .login-right .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .login-error {
             color: #e74c3c;
             font-size: 13px;
@@ -121,46 +171,117 @@
             margin-top: 10px;
             display: none;
         }
-        .login-status {
-            color: #6e6e73;
-            font-size: 12px;
-            text-align: center;
-            margin-top: 10px;
-        }
 
+        /* ===== LOGIN MOBILE - FIXED ===== */
         @media (max-width: 768px) {
-            #loginPage {
+            #loginPage { 
+                background-image: url('bg.jpg') !important;
+                background-size: cover !important;
+                background-position: center !important;
+                display: flex !important;
+                align-items: flex-end;
+                min-height: 100vh;
+            }
+            .login-wrap {
                 flex-direction: column;
+                justify-content: flex-end;
+                min-height: 100vh;
+                width: 100%;
             }
             .login-left {
-                padding: 30px 20px;
-                min-height: 180px;
+                padding: 50px 16px 24px;
                 flex: none;
-                background: rgba(0,0,0,0.3);
+                background: none;
+                min-height: auto;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }
             .login-left .app-logo {
-                width: 80px;
-                height: 80px;
+                width: 90px;
+                height: 90px;
+                border: 3px solid rgba(255,255,255,0.25);
+                margin-bottom: 8px;
             }
             .login-left h1 {
-                font-size: 32px;
-                margin-top: 8px;
+                font-size: 30px;
+                color: #ffffff;
+                text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+                margin-top: 4px;
+                margin-bottom: 20px;
+                letter-spacing: -0.5px;
             }
             .login-right {
-                padding: 30px 24px;
-                flex: 2;
-                background: rgba(255,255,255,0.95);
+                padding: 22px 20px 30px;
+                flex: none;
+                background: rgba(255,255,255,0.92);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border-radius: 24px 24px 0 0;
+                width: 100%;
+                margin: 0;
+                box-shadow: 0 -4px 30px rgba(0,0,0,0.06);
+            }
+            .login-right .handle {
+                width: 40px;
+                height: 4px;
+                background: rgba(0,0,0,0.12);
+                border-radius: 4px;
+                margin: 0 auto 16px;
             }
             .login-right h2 {
                 font-size: 22px;
+                text-align: center;
+                color: #1d1d1f;
+            }
+            .login-right .sub { 
+                text-align: center; 
+                color: #6e6e73;
+            }
+            .login-right .remember-row { 
+                justify-content: center; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            #loginPage {
+                background-image: url('bg.jpg') !important;
+                background-size: cover !important;
+                background-position: center !important;
+            }
+            .login-left {
+                padding: 30px 16px 16px;
+            }
+            .login-left .app-logo {
+                width: 72px;
+                height: 72px;
+                border: 3px solid rgba(255,255,255,0.2);
+            }
+            .login-left h1 {
+                font-size: 24px;
+                margin-bottom: 14px;
+            }
+            .login-right {
+                padding: 18px 16px 24px;
+                border-radius: 20px 20px 0 0;
+            }
+            .login-right h2 {
+                font-size: 20px;
+            }
+            .login-right .form-group input {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+            .login-right .login-btn {
+                padding: 12px;
+                font-size: 15px;
             }
         }
 
         /* ===== ADMIN APP ===== */
-        #adminApp {
-            display: none;
-            min-height: 100vh;
-        }
+        #adminApp { display: none; min-height: 100vh; }
 
         /* ===== TOP HEADER ===== */
         .admin-topbar {
@@ -218,9 +339,7 @@
             transition: opacity 0.2s;
             text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
-        .admin-topbar .topbar-right .logout-btn:hover {
-            opacity: 0.85;
-        }
+        .admin-topbar .topbar-right .logout-btn:hover { opacity: 0.85; }
 
         /* ===== SIDEBAR ===== */
         .admin-sidebar {
@@ -233,7 +352,7 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border-right: 1px solid rgba(0,0,0,0.04);
-            padding: 16px 12px;
+            padding: 12px 10px;
             overflow-y: auto;
             z-index: 90;
             transition: transform 0.3s ease;
@@ -242,8 +361,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 14px;
-            border-radius: 12px;
+            padding: 9px 14px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 500;
             color: #6e6e73;
@@ -254,7 +373,7 @@
             width: 100%;
             text-align: left;
             font-family: inherit;
-            margin-bottom: 2px;
+            margin-bottom: 1px;
         }
         .admin-sidebar .nav-item:hover {
             background: rgba(0,0,0,0.04);
@@ -284,7 +403,7 @@
         .admin-sidebar .sidebar-divider {
             height: 1px;
             background: rgba(0,0,0,0.04);
-            margin: 8px 12px;
+            margin: 6px 12px;
         }
         .admin-sidebar .sidebar-label {
             font-size: 10px;
@@ -292,14 +411,14 @@
             color: #8e8e93;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 8px 14px 4px;
+            padding: 6px 14px 2px;
         }
 
         /* ===== MAIN CONTENT ===== */
         .admin-main {
             margin-left: 220px;
             margin-top: 60px;
-            padding: 28px 32px 48px;
+            padding: 24px 28px 48px;
             min-height: calc(100vh - 60px);
         }
 
@@ -308,17 +427,17 @@
             background: #ffffff;
             border-radius: 16px;
             border: 1px solid rgba(0,0,0,0.04);
-            padding: 20px 24px;
-            margin-bottom: 20px;
+            padding: 18px 22px;
+            margin-bottom: 18px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.02);
         }
         .admin-card .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         .admin-card .card-header h3 {
             font-size: 17px;
@@ -329,6 +448,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
         .admin-card .card-header .count-badge {
             font-size: 12px;
@@ -338,22 +458,50 @@
             border-radius: 30px;
         }
 
+        /* ===== STATS ROW ===== */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .stats-row .stat-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px 18px;
+            border: 1px solid rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        .stats-row .stat-card .num {
+            font-size: 28px;
+            font-weight: 700;
+            color: #b8860b;
+        }
+        .stats-row .stat-card .label {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 2px;
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .quick-actions .btn { width: 100%; justify-content: center; padding: 12px; }
+
         /* ===== LIST ===== */
         .list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 9px 0;
             border-bottom: 1px solid rgba(0,0,0,0.04);
-            gap: 12px;
+            gap: 10px;
         }
-        .list-item:last-child {
-            border-bottom: none;
-        }
-        .list-item .item-main {
-            flex: 1;
-            min-width: 0;
-        }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .item-main { flex: 1; min-width: 0; }
         .list-item .item-main .title {
             font-weight: 600;
             font-size: 14px;
@@ -382,38 +530,93 @@
             border-radius: 50%;
             font-size: 13px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
             color: #6e6e73;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .list-item .item-actions button:hover {
-            background: rgba(0,0,0,0.08);
+        .list-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
+        
+        .list-item .item-actions .edit-btn {
+            background: rgba(184, 134, 11, 0.12);
+            color: #b8860b;
+            font-weight: 600;
         }
         .list-item .item-actions .edit-btn:hover {
+            background: rgba(184, 134, 11, 0.25);
             color: #b8860b;
         }
-        .list-item .item-actions .delete-btn:hover {
+        .list-item .item-actions .delete-btn {
+            background: rgba(231, 76, 60, 0.12);
             color: #e74c3c;
+            font-weight: 600;
+        }
+        .list-item .item-actions .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.25);
+            color: #c0392b;
+        }
+        .list-item .item-actions .view-receipt-btn {
+            background: rgba(52, 152, 219, 0.12);
+            color: #3498db;
+        }
+        .list-item .item-actions .view-receipt-btn:hover {
+            background: rgba(52, 152, 219, 0.25);
+        }
+        .list-item .item-actions .whatsapp-btn {
+            background: rgba(37, 211, 102, 0.12);
+            color: #25d366;
+        }
+        .list-item .item-actions .whatsapp-btn:hover {
+            background: rgba(37, 211, 102, 0.25);
+        }
+
+        /* ===== NEW STAMP ===== */
+        .new-stamp {
+            display: inline-block;
+            color: #b8860b;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            border: 2px solid #b8860b;
+            padding: 0 6px;
+            border-radius: 2px;
+            line-height: 1.3;
+            background: rgba(184, 134, 11, 0.08);
+            margin-right: 3px;
+            transform: rotate(-3deg);
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .new-stamp::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent 0%, rgba(184,134,11,0.15) 30%, rgba(184,134,11,0.3) 50%, rgba(184,134,11,0.15) 70%, transparent 100%);
+            animation: stampShimmer 4s infinite ease-in-out;
+            transform: skewX(-25deg);
+        }
+        @keyframes stampShimmer {
+            0% { transform: translateX(-100%) skewX(-25deg); }
+            100% { transform: translateX(100%) skewX(-25deg); }
         }
 
         /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 36px 16px;
             color: #8e8e93;
         }
-        .empty-state .empty-icon {
-            font-size: 32px;
-            opacity: 0.2;
-            margin-bottom: 8px;
-        }
-        .empty-state p {
-            font-size: 14px;
-        }
+        .empty-state .empty-icon { font-size: 32px; opacity: 0.2; margin-bottom: 8px; }
+        .empty-state p { font-size: 14px; }
 
-        /* ===== BUTTONS - ALL USE bg.jpg ===== */
+        /* ===== BUTTONS ===== */
         .btn {
             padding: 8px 18px;
             border: none;
@@ -426,9 +629,6 @@
             align-items: center;
             gap: 6px;
             font-family: inherit;
-            position: relative;
-            z-index: 1;
-            pointer-events: auto;
             color: #ffffff;
             text-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
@@ -438,49 +638,40 @@
             background-position: center;
             color: #ffffff;
         }
-        .btn-primary:hover {
-            opacity: 0.85;
-        }
+        .btn-primary:hover { opacity: 0.85; }
         .btn-danger {
             background-image: url('bg.jpg');
             background-size: cover;
             background-position: center;
             color: #ffffff;
         }
-        .btn-danger:hover {
-            opacity: 0.85;
-        }
+        .btn-danger:hover { opacity: 0.85; }
         .btn-secondary {
             background: rgba(0,0,0,0.04);
             color: #1d1d1f;
             text-shadow: none;
         }
-        .btn-secondary:hover {
-            background: rgba(0,0,0,0.08);
-        }
+        .btn-secondary:hover { background: rgba(0,0,0,0.08); }
         .btn-success {
             background-image: url('bg.jpg');
             background-size: cover;
             background-position: center;
             color: #ffffff;
         }
-        .btn-success:hover {
-            opacity: 0.85;
-        }
+        .btn-success:hover { opacity: 0.85; }
+        .btn-sm { padding: 4px 12px; font-size: 11px; }
 
-        /* ===== CUSTOMIZATION SETTINGS ===== */
+        /* ===== SETTINGS ROW ===== */
         .settings-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(0,0,0,0.04);
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
-        .settings-row:last-child {
-            border-bottom: none;
-        }
+        .settings-row:last-child { border-bottom: none; }
         .settings-row .label {
             font-weight: 500;
             font-size: 14px;
@@ -495,18 +686,36 @@
             text-align: center;
             background: #f8f8fa;
         }
-        .settings-row input:focus {
-            outline: none;
-            border-color: #b8860b;
-        }
+        .settings-row input:focus { outline: none; border-color: #b8860b; }
         .settings-row .desc {
             font-size: 12px;
             color: #8e8e93;
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
         }
 
-        /* ===== MODAL - iOS STYLE ===== */
+        /* ===== SEARCH BAR ===== */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 12px;
+            font-size: 14px;
+            min-width: 150px;
+            background: #f8f8fa;
+            transition: border 0.2s;
+        }
+        .search-bar input:focus { outline: none; border-color: #b8860b; }
+        .search-bar input::placeholder { color: #8e8e93; }
+        .search-bar .btn { flex-shrink: 0; }
+
+        /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -519,14 +728,11 @@
             z-index: 9998;
             pointer-events: none;
         }
-        .modal-overlay.open {
-            display: flex;
-            pointer-events: auto;
-        }
+        .modal-overlay.open { display: flex; pointer-events: auto; }
         .modal-box {
             background: #ffffff;
             border-radius: 20px 20px 0 0;
-            padding: 20px 24px 32px;
+            padding: 18px 22px 28px;
             max-width: 480px;
             width: 100%;
             max-height: 85vh;
@@ -546,13 +752,13 @@
             height: 4px;
             background: rgba(0,0,0,0.12);
             border-radius: 4px;
-            margin: 0 auto 16px;
+            margin: 0 auto 14px;
         }
         .modal-box .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .modal-box .modal-header h3 {
             font-size: 18px;
@@ -571,16 +777,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            z-index: 2;
-            pointer-events: auto;
         }
-        .modal-box .modal-header .close-modal:hover {
-            background: rgba(0,0,0,0.08);
-        }
-        .modal-box .form-group {
-            margin-bottom: 14px;
-        }
+        .modal-box .modal-header .close-modal:hover { background: rgba(0,0,0,0.08); }
+        .modal-box .form-group { margin-bottom: 12px; }
         .modal-box .form-group label {
             display: block;
             font-size: 13px;
@@ -599,31 +798,20 @@
             font-family: inherit;
             background: #f8f8fa;
             transition: border 0.2s;
-            position: relative;
-            z-index: 2;
-            pointer-events: auto;
         }
         .modal-box .form-group input:focus,
         .modal-box .form-group textarea:focus,
-        .modal-box .form-group select:focus {
-            outline: none;
-            border-color: #b8860b;
-        }
-        .modal-box .form-group textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
+        .modal-box .form-group select:focus { outline: none; border-color: #b8860b; }
+        .modal-box .form-group textarea { resize: vertical; min-height: 60px; }
         .modal-box .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
         .modal-box .form-actions {
             display: flex;
             gap: 10px;
-            margin-top: 16px;
-            position: relative;
-            z-index: 2;
+            margin-top: 14px;
         }
         .modal-box .form-actions .btn {
             flex: 1;
@@ -631,9 +819,6 @@
             padding: 12px;
             font-size: 14px;
             border-radius: 12px;
-            position: relative;
-            z-index: 2;
-            pointer-events: auto;
         }
 
         /* ===== TOAST ===== */
@@ -642,7 +827,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 300;
+            z-index: 99999;
             width: 90%;
             max-width: 400px;
             pointer-events: none;
@@ -661,17 +846,8 @@
             transition: all 0.3s ease;
             pointer-events: none;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-        .toast .msg {
-            flex: 1;
-            font-size: 14px;
-            font-weight: 500;
-            color: #ffffff;
-        }
+        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .toast .msg { flex: 1; font-size: 14px; font-weight: 500; color: #ffffff; }
         .toast .close-toast {
             background: none;
             border: none;
@@ -679,8 +855,72 @@
             cursor: pointer;
             color: rgba(255,255,255,0.4);
         }
-        .toast .close-toast:hover {
-            color: #ffffff;
+        .toast .close-toast:hover { color: #ffffff; }
+
+        /* ===== RECEIPT MODAL ===== */
+        .receipt-content {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 24px;
+            background: #ffffff;
+            color: #000000;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: justify;
+            border: 1px solid #eaeaee;
+            border-radius: 8px;
+        }
+        .receipt-content .receipt-header { text-align: center; margin-bottom: 16px; }
+        .receipt-content .receipt-header img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 4px;
+        }
+        .receipt-content .receipt-header .title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 1px;
+        }
+        .receipt-content .receipt-header .sub {
+            font-size: 11px;
+            color: #555555;
+        }
+        .receipt-content .receipt-divider {
+            border: none;
+            border-top: 1px dashed #cccccc;
+            margin: 8px 0;
+        }
+        .receipt-content .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+        }
+        .receipt-content .receipt-row .label { color: #555555; }
+        .receipt-content .receipt-row .value {
+            font-weight: 600;
+            color: #000000;
+        }
+        .receipt-content .receipt-total {
+            font-size: 16px;
+            font-weight: 700;
+            color: #000000;
+            padding-top: 6px;
+            border-top: 2px solid #000000;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .receipt-content .receipt-footer {
+            text-align: center;
+            font-size: 11px;
+            color: #555555;
+            margin-top: 12px;
+            border-top: 1px dashed #cccccc;
+            padding-top: 10px;
         }
 
         /* ===== MOBILE ===== */
@@ -701,10 +941,63 @@
             backdrop-filter: blur(4px);
             z-index: 85;
         }
-        .mobile-overlay.open {
-            display: block;
+        .mobile-overlay.open { display: block; }
+
+        /* ===== IMAGE PREVIEW ===== */
+        .img-preview {
+            max-width: 100%;
+            max-height: 120px;
+            border-radius: 8px;
+            margin-top: 6px;
+            border: 1px solid rgba(0,0,0,0.06);
+            display: none;
         }
 
+        /* ===== RESULTS WITH PREVIEW ===== */
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item .result-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.06);
+            flex-shrink: 0;
+            background: #f5f5f7;
+        }
+        .result-item .result-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .result-item .result-info .title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .result-item .result-info .sub {
+            font-size: 12px;
+            color: #6e6e73;
+        }
+        .result-item .result-info .meta {
+            font-size: 11px;
+            color: #8e8e93;
+        }
+        .result-item .result-info .meta a {
+            color: #b8860b;
+            text-decoration: none;
+        }
+        .result-item .result-info .meta a:hover { text-decoration: underline; }
+        .result-item .item-actions { flex-shrink: 0; }
+
+        /* ============================================================ */
+        /* RESPONSIVE */
+        /* ============================================================ */
         @media (max-width: 768px) {
             .admin-sidebar {
                 transform: translateX(-100%);
@@ -714,117 +1007,108 @@
                 background: rgba(255,255,255,0.98);
                 border-right: 1px solid rgba(0,0,0,0.04);
             }
-            .admin-sidebar.open {
-                transform: translateX(0);
-            }
+            .admin-sidebar.open { transform: translateX(0); }
             .admin-main {
                 margin-left: 0;
-                padding: 16px 16px 80px;
+                padding: 14px 14px 80px;
                 margin-top: 60px;
             }
-            .admin-topbar {
-                padding: 0 16px;
-            }
-            .mobile-hamburger {
-                display: block;
-            }
-            .admin-topbar .topbar-right .user-badge {
-                display: none;
-            }
-            .admin-card {
-                padding: 16px;
-            }
+            .admin-topbar { padding: 0 16px; }
+            .mobile-hamburger { display: block; }
+            .admin-topbar .topbar-right .user-badge { display: none; }
+            .admin-card { padding: 14px; }
             .modal-box {
-                padding: 16px 18px 24px;
+                padding: 14px 16px 20px;
                 max-width: 100%;
                 margin: 0;
                 border-radius: 20px 20px 0 0;
             }
-            .modal-box .form-row {
-                grid-template-columns: 1fr;
-            }
+            .modal-box .form-row { grid-template-columns: 1fr; }
             .settings-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+            }
+            .settings-row input { width: 100%; }
+            .settings-row .desc { font-size: 11px; }
+            .list-item { flex-wrap: wrap; }
+            .list-item .item-actions { margin-left: auto; }
+            .admin-card .card-header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 6px;
             }
-            .settings-row input {
-                width: 100%;
+            .admin-card .card-header .card-actions { justify-content: flex-start; }
+            .modal-box .form-actions .btn { padding: 10px; font-size: 13px; }
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
-            .settings-row .desc {
-                font-size: 11px;
-            }
-            .list-item {
-                flex-wrap: wrap;
-            }
-            .list-item .item-actions {
-                margin-left: auto;
-            }
-            .admin-card .card-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            .admin-card .card-header .card-actions {
-                justify-content: flex-start;
-            }
-            .modal-box .form-actions .btn {
-                padding: 10px;
-                font-size: 13px;
-            }
+            .quick-actions { grid-template-columns: 1fr 1fr; }
+            .search-bar { flex-direction: column; }
+            .search-bar input { width: 100%; }
+            .search-bar .btn { width: 100%; justify-content: center; }
+            .result-item { flex-wrap: wrap; }
+            .result-item .result-preview { width: 40px; height: 40px; }
         }
 
         @media (max-width: 480px) {
-            .admin-topbar .brand span {
-                font-size: 15px;
+            .admin-topbar .brand span { font-size: 15px; }
+            .admin-main { padding: 10px 10px 80px; }
+            .admin-card { padding: 10px; border-radius: 12px; }
+            .admin-card .card-header h3 { font-size: 15px; }
+            .btn { font-size: 12px; padding: 6px 14px; }
+            .list-item .item-main .title { font-size: 13px; }
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
-            .admin-main {
-                padding: 12px 12px 80px;
+            .stats-row .stat-card { padding: 12px 10px; }
+            .stats-row .stat-card .num { font-size: 22px; }
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
-            .admin-card {
-                padding: 12px;
-                border-radius: 12px;
-            }
-            .admin-card .card-header h3 {
-                font-size: 15px;
-            }
-            .btn {
-                font-size: 12px;
-                padding: 6px 14px;
-            }
-            .list-item .item-main .title {
-                font-size: 13px;
-            }
-            .modal-box .form-row {
-                grid-template-columns: 1fr;
-            }
+            .quick-actions .btn { padding: 10px; font-size: 12px; }
+            .result-item .result-preview { width: 32px; height: 32px; }
         }
     </style>
 </head>
 <body>
 
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splashScreen">
+    <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23b8860b%22 width=%22100%22 height=%22100%22 rx=%2250%22/%3E%3Ctext x=%2250%22 y=%2264%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2244%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+</div>
+
 <!-- ===== LOGIN PAGE ===== -->
 <div id="loginPage">
-    <div class="login-left">
-        <img src="logo.png" alt="Socmegy" class="app-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22140%22 height=%22140%22%3E%3Crect fill=%22%23b8860b%22 width=%22140%22 height=%22140%22 rx=%2270%22/%3E%3Ctext x=%2270%22 y=%2288%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2260%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
-        <h1>Socmegy</h1>
-    </div>
-    <div class="login-right">
-        <h2>Welcome Back</h2>
-        <div class="sub">Sign in to continue</div>
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="loginEmail" placeholder="Enter your email" />
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="Enter your password" />
-            </div>
-            <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
-            <div class="login-error" id="loginError">Invalid email or password</div>
-            <div class="login-status" id="loginStatus"></div>
-        </form>
+    <div class="login-wrap">
+        <div class="login-left">
+            <img src="logo.png" alt="Socmegy" class="app-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect fill=%22%23b8860b%22 width=%22120%22 height=%22120%22 rx=%2260%22/%3E%3Ctext x=%2260%22 y=%2276%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2252%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+            <h1>Socmegy</h1>
+        </div>
+        <div class="login-right">
+            <div class="handle"></div>
+            <h2>Welcome Back</h2>
+            <div class="sub">Sign in to your account</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" />
+                </div>
+                <div class="remember-row">
+                    <input type="checkbox" id="rememberMe" />
+                    <label for="rememberMe">Remember me</label>
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+                <div class="login-error" id="loginError">Invalid email or password</div>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -851,11 +1135,25 @@
 
     <!-- Sidebar -->
     <nav class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-label">Dashboard</div>
+        <button class="nav-item active" data-tab="dashboard">Analytics</button>
+
+        <div class="sidebar-divider"></div>
         <div class="sidebar-label">Management</div>
-        <button class="nav-item active" data-tab="services">Services <span class="badge" id="serviceCount">0</span></button>
+        <button class="nav-item" data-tab="services">Services <span class="badge" id="serviceCount">0</span></button>
         <button class="nav-item" data-tab="categories">Categories <span class="badge" id="categoryCount">0</span></button>
         <button class="nav-item" data-tab="reviews">Reviews <span class="badge" id="reviewCount">0</span></button>
         <button class="nav-item" data-tab="results">Results <span class="badge" id="resultCount">0</span></button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-label">Orders</div>
+        <button class="nav-item" data-tab="orders">Orders <span class="badge" id="orderCount">0</span></button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-label">Content</div>
+        <button class="nav-item" data-tab="announcements">Announcements <span class="badge" id="announceCount">0</span></button>
+        <button class="nav-item" data-tab="popups">Popups <span class="badge" id="popupCount">0</span></button>
+
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Settings</div>
         <button class="nav-item" data-tab="customization">Customization</button>
@@ -868,7 +1166,7 @@
     </main>
 </div>
 
-<!-- ===== MODAL - iOS STYLE ===== -->
+<!-- ===== MODAL ===== -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal-box">
         <div class="modal-handle"></div>
@@ -883,6 +1181,23 @@
                 <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Save</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- ===== RECEIPT MODAL ===== -->
+<div class="modal-overlay" id="receiptModal">
+    <div class="modal-box" style="max-width:560px;">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <h3>Order Receipt</h3>
+            <button type="button" class="close-modal" onclick="document.getElementById('receiptModal').classList.remove('open')">✕</button>
+        </div>
+        <div id="receiptBody" style="overflow-y:auto;max-height:60vh;padding:10px 0;"></div>
+        <div class="form-actions" style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="downloadReceiptPDF()"><i class="fas fa-download"></i> Download PDF</button>
+            <button class="btn btn-success" onclick="shareReceipt()"><i class="fas fa-share-alt"></i> Share</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('receiptModal').classList.remove('open')">Close</button>
+        </div>
     </div>
 </div>
 
@@ -924,55 +1239,66 @@
     let services = [];
     let reviews = [];
     let results = [];
+    let orders = [];
+    let announcements = [];
+    let popups = [];
     let readContent = '';
-    let currentTab = 'services';
+    let settings = { discountPercent: 10, minPurchase: 10 };
+    let currentTab = 'dashboard';
     let editingType = null;
     let editingId = null;
+    let currentReceiptOrder = null;
+    let orderIdCounter = 0;
 
     // ============================================================
-    // DOM READY - SETUP ALL EVENT LISTENERS
+    // SPLASH SCREEN
     // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
+    function hideSplash() {
+        const splash = document.getElementById('splashScreen');
+        splash.classList.add('hide');
+        setTimeout(() => { splash.style.display = 'none'; }, 600);
+    }
 
-        // ---- LOGIN ----
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    function getCategoryName(id) {
+        const cat = categories.find(c => c.id === id);
+        return cat ? cat.name : id;
+    }
 
-        // ---- LOGOUT ----
-        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    function formatPrice(val) {
+        if (isNaN(val) || val === undefined || val === null) return 'RM0.00';
+        return 'RM' + Number(val).toFixed(2);
+    }
 
-        // ---- HAMBURGER ----
-        document.getElementById('hamburgerBtn').addEventListener('click', toggleSidebar);
-        document.getElementById('mobileOverlay').addEventListener('click', toggleSidebar);
+    function getMalaysiaTime() {
+        const now = new Date();
+        return now.toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' });
+    }
 
-        // ---- SIDEBAR NAV ----
-        document.querySelectorAll('.nav-item').forEach(btn => {
-            btn.addEventListener('click', function() {
-                switchTab(this.dataset.tab);
-            });
-        });
+    function isNew(dateStr) {
+        if (!dateStr) return false;
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
+        const d = new Date(dateStr);
+        return d >= sevenDaysAgo && d <= today;
+    }
 
-        // ---- MODAL BUTTONS ----
-        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-        document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-        document.getElementById('modalForm').addEventListener('submit', handleModalSubmit);
+    function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
 
-        // ---- TOAST CLOSE ----
-        document.getElementById('toastCloseBtn').addEventListener('click', hideToast);
-
-        // Check auth state on load
-        if (auth.currentUser) {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('adminApp').style.display = 'block';
-            document.getElementById('userEmail').textContent = auth.currentUser.email;
-            initApp();
-        }
-
-        // ---- INIT ----
-        initApp();
-    });
+    function generateOrderId() {
+        const now = new Date();
+        const datePart = now.getFullYear() +
+            String(now.getMonth() + 1).padStart(2, '0') +
+            String(now.getDate()).padStart(2, '0');
+        orderIdCounter++;
+        const numPart = String(orderIdCounter).padStart(3, '0');
+        return 'SOC-' + datePart + '-' + numPart;
+    }
 
     // ============================================================
     // AUTH
@@ -983,7 +1309,6 @@
         const password = document.getElementById('loginPassword').value.trim();
         const btn = document.getElementById('loginBtn');
         const errorEl = document.getElementById('loginError');
-        const statusEl = document.getElementById('loginStatus');
 
         if (!email || !password) {
             errorEl.textContent = 'Please enter email and password';
@@ -991,10 +1316,17 @@
             return;
         }
 
+        if (document.getElementById('rememberMe').checked) {
+            localStorage.setItem('adminEmail', email);
+            localStorage.setItem('adminPass', password);
+        } else {
+            localStorage.removeItem('adminEmail');
+            localStorage.removeItem('adminPass');
+        }
+
         btn.disabled = true;
         btn.textContent = 'Signing in...';
         errorEl.style.display = 'none';
-        statusEl.textContent = 'Authenticating...';
 
         auth.signInWithEmailAndPassword(email, password)
             .then(userCredential => {
@@ -1003,37 +1335,52 @@
                 document.getElementById('userEmail').textContent = userCredential.user.email;
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
-                statusEl.textContent = '';
+                hideSplash();
+                initApp();
             })
             .catch(error => {
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
                 errorEl.textContent = error.message;
                 errorEl.style.display = 'block';
-                statusEl.textContent = '';
             });
     }
 
     function handleLogout() {
-        auth.signOut().then(() => {
-            document.getElementById('adminApp').style.display = 'none';
-            document.getElementById('loginPage').style.display = 'flex';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginEmail').value = '';
-        });
+        if (confirm('Logout?')) {
+            auth.signOut().then(() => {
+                document.getElementById('adminApp').style.display = 'none';
+                document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('splashScreen').style.display = 'flex';
+                document.getElementById('splashScreen').classList.remove('hide');
+            });
+        }
     }
 
+    // Check auth state
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('adminApp').style.display = 'block';
             document.getElementById('userEmail').textContent = user.email;
+            hideSplash();
             initApp();
         } else {
             document.getElementById('loginPage').style.display = 'flex';
             document.getElementById('adminApp').style.display = 'none';
+            hideSplash();
         }
     });
+
+    // Check remember me
+    const savedEmail = localStorage.getItem('adminEmail');
+    const savedPass = localStorage.getItem('adminPass');
+    if (savedEmail) {
+        document.getElementById('loginEmail').value = savedEmail;
+        document.getElementById('loginPassword').value = savedPass || '';
+        document.getElementById('rememberMe').checked = true;
+    }
 
     // ============================================================
     // TOAST
@@ -1051,6 +1398,8 @@
     function hideToast() {
         document.getElementById('toast').classList.remove('show');
     }
+
+    document.getElementById('toastCloseBtn').addEventListener('click', hideToast);
 
     // ============================================================
     // MODAL
@@ -1079,17 +1428,30 @@
         btn.style.pointerEvents = 'auto';
     }
 
-    // ============================================================
-    // SIDEBAR
-    // ============================================================
-    function toggleSidebar() {
-        document.getElementById('adminSidebar').classList.toggle('open');
-        document.getElementById('mobileOverlay').classList.toggle('open');
-    }
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+    document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
 
     // ============================================================
-    // TABS
+    // SIDEBAR & TABS
     // ============================================================
+    document.getElementById('hamburgerBtn').addEventListener('click', function() {
+        document.getElementById('adminSidebar').classList.toggle('open');
+        document.getElementById('mobileOverlay').classList.toggle('open');
+    });
+    document.getElementById('mobileOverlay').addEventListener('click', function() {
+        document.getElementById('adminSidebar').classList.remove('open');
+        document.getElementById('mobileOverlay').classList.remove('open');
+    });
+
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            switchTab(this.dataset.tab);
+        });
+    });
+
     function switchTab(tab) {
         currentTab = tab;
         document.querySelectorAll('.nav-item').forEach(b => {
@@ -1105,12 +1467,86 @@
     // ============================================================
     function renderContent() {
         const container = document.getElementById('adminContent');
-        if (currentTab === 'services') renderServices(container);
+        if (currentTab === 'dashboard') renderDashboard(container);
+        else if (currentTab === 'services') renderServices(container);
         else if (currentTab === 'categories') renderCategories(container);
         else if (currentTab === 'reviews') renderReviews(container);
         else if (currentTab === 'results') renderResults(container);
+        else if (currentTab === 'orders') renderOrders(container);
+        else if (currentTab === 'announcements') renderAnnouncements(container);
+        else if (currentTab === 'popups') renderPopups(container);
         else if (currentTab === 'customization') renderCustomization(container);
         else if (currentTab === 'read') renderRead(container);
+    }
+
+    // ============================================================
+    // DASHBOARD
+    // ============================================================
+    function renderDashboard(container) {
+        const totalServices = services.length;
+        const totalCategories = categories.length;
+        const totalReviews = reviews.length;
+        const totalResults = results.length;
+        const totalOrders = orders.length;
+        const pendingOrders = orders.filter(o => o.status === 'pending').length;
+
+        let revenue = 0;
+        orders.filter(o => o.status === 'completed').forEach(o => {
+            revenue += o.total || 0;
+        });
+
+        const serviceUsage = {};
+        orders.forEach(o => {
+            if (o.services) {
+                o.services.forEach(s => {
+                    const key = s.name;
+                    serviceUsage[key] = (serviceUsage[key] || 0) + s.qty;
+                });
+            }
+        });
+        const sortedServices = Object.entries(serviceUsage)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+        let topServicesHtml = '';
+        if (sortedServices.length === 0) {
+            topServicesHtml = '<div style="text-align:center;padding:16px;color:#8e8e93;font-size:13px;">No service data yet</div>';
+        } else {
+            topServicesHtml = sortedServices.map(([name, count]) => `
+                <div class="list-item">
+                    <div class="item-main">
+                        <div class="title">${name}</div>
+                        <div class="meta">${count} orders</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        container.innerHTML = `
+            <div class="stats-row">
+                <div class="stat-card"><div class="num">${totalServices}</div><div class="label">Total Services</div></div>
+                <div class="stat-card"><div class="num">${totalCategories}</div><div class="label">Categories</div></div>
+                <div class="stat-card"><div class="num">${totalOrders}</div><div class="label">Total Orders</div></div>
+                <div class="stat-card"><div class="num">${formatPrice(revenue)}</div><div class="label">Revenue</div></div>
+                <div class="stat-card"><div class="num">${pendingOrders}</div><div class="label">Pending Orders</div></div>
+                <div class="stat-card"><div class="num">${totalReviews}</div><div class="label">Reviews</div></div>
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3>Top Services</h3></div>
+                ${topServicesHtml}
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header"><h3>Quick Actions</h3></div>
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="switchTab('services')">Manage Services</button>
+                    <button class="btn btn-primary" onclick="switchTab('orders')">View Orders</button>
+                    <button class="btn btn-primary" onclick="switchTab('announcements')">Add Announcement</button>
+                    <button class="btn btn-secondary" onclick="switchTab('popups')">Create Popup</button>
+                </div>
+            </div>
+        `;
     }
 
     // ============================================================
@@ -1135,16 +1571,17 @@
                 ` : services.map(s => {
                     const cat = categories.find(c => c.id === s.category);
                     const catName = cat ? cat.name : 'Uncategorized';
+                    const isNewItem = isNew(s.addedDate);
                     return `
                         <div class="list-item">
                             <div class="item-main">
-                                <div class="title">${s.label}</div>
+                                <div class="title">${isNewItem ? '<span class="new-stamp">NEW</span>' : ''} ${s.label}</div>
                                 <div class="sub">${s.desc || ''}</div>
                                 <div class="meta">${catName} · RM${Number(s.price).toFixed(2)} ${s.discount ? '· -'+s.discount+'%' : ''} ${s.unavailable ? '· Unavailable' : ''}</div>
                             </div>
                             <div class="item-actions">
-                                <button class="edit-btn" data-id="${s.id}" data-type="services">✎</button>
-                                <button class="delete-btn" data-id="${s.id}" data-type="services" data-name="${s.label}">✕</button>
+                                <button class="edit-btn" data-id="${s.id}" data-type="services"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${s.id}" data-type="services" data-name="${s.label}"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     `;
@@ -1153,29 +1590,8 @@
         `;
         container.innerHTML = html;
 
-        container.querySelector('#addServiceBtn')?.addEventListener('click', function() {
-            openServiceModal();
-        });
-
-        container.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                if (type === 'services') editService(id);
-                else if (type === 'categories') editCategory(id);
-                else if (type === 'reviews') editReview(id);
-                else if (type === 'results') editResult(id);
-            });
-        });
-
-        container.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                const name = this.dataset.name || 'item';
-                deleteItem(type, id, name);
-            });
-        });
+        document.getElementById('addServiceBtn')?.addEventListener('click', function() { openServiceModal(); });
+        attachListActions(container);
     }
 
     function openServiceModal(data) {
@@ -1233,8 +1649,8 @@
                                 <div class="meta">${count} service${count !== 1 ? 's' : ''}</div>
                             </div>
                             <div class="item-actions">
-                                <button class="edit-btn" data-id="${c.id}" data-type="categories">✎</button>
-                                <button class="delete-btn" data-id="${c.id}" data-type="categories" data-name="${c.name}">✕</button>
+                                <button class="edit-btn" data-id="${c.id}" data-type="categories"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${c.id}" data-type="categories" data-name="${c.name}"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     `;
@@ -1243,29 +1659,8 @@
         `;
         container.innerHTML = html;
 
-        container.querySelector('#addCategoryBtn')?.addEventListener('click', function() {
-            openCategoryModal();
-        });
-
-        container.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                if (type === 'services') editService(id);
-                else if (type === 'categories') editCategory(id);
-                else if (type === 'reviews') editReview(id);
-                else if (type === 'results') editResult(id);
-            });
-        });
-
-        container.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                const name = this.dataset.name || 'item';
-                deleteItem(type, id, name);
-            });
-        });
+        document.getElementById('addCategoryBtn')?.addEventListener('click', function() { openCategoryModal(); });
+        attachListActions(container);
     }
 
     function openCategoryModal(data) {
@@ -1313,8 +1708,8 @@
                                 <div class="meta">${stars}</div>
                             </div>
                             <div class="item-actions">
-                                <button class="edit-btn" data-id="${r.id}" data-type="reviews">✎</button>
-                                <button class="delete-btn" data-id="${r.id}" data-type="reviews" data-name="${r.quote.substring(0,30)}...">✕</button>
+                                <button class="edit-btn" data-id="${r.id}" data-type="reviews"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${r.id}" data-type="reviews" data-name="${r.quote.substring(0,30)}..."><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     `;
@@ -1323,29 +1718,8 @@
         `;
         container.innerHTML = html;
 
-        container.querySelector('#addReviewBtn')?.addEventListener('click', function() {
-            openReviewModal();
-        });
-
-        container.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                if (type === 'services') editService(id);
-                else if (type === 'categories') editCategory(id);
-                else if (type === 'reviews') editReview(id);
-                else if (type === 'results') editResult(id);
-            });
-        });
-
-        container.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                const name = this.dataset.name || 'item';
-                deleteItem(type, id, name);
-            });
-        });
+        document.getElementById('addReviewBtn')?.addEventListener('click', function() { openReviewModal(); });
+        attachListActions(container);
     }
 
     function openReviewModal(data) {
@@ -1368,7 +1742,7 @@
     }
 
     // ============================================================
-    // RESULTS
+    // RESULTS - WITH PREVIEW IMAGE
     // ============================================================
     function renderResults(container) {
         document.getElementById('resultCount').textContent = results.length;
@@ -1390,15 +1764,18 @@
                     const cat = categories.find(c => c.id === r.badge);
                     const catName = cat ? cat.name : r.badge;
                     return `
-                        <div class="list-item">
-                            <div class="item-main">
+                        <div class="result-item">
+                            <img src="${r.image}" alt="${r.title}" class="result-preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23eee%22 width=%2250%22 height=%2250%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 font-size=%2224%22%3E🖼%3C/text%3E%3C/svg%3E'" />
+                            <div class="result-info">
                                 <div class="title">${r.title}</div>
                                 <div class="sub">${catName}</div>
-                                <div class="meta"><a href="${r.image}" target="_blank" style="color:#b8860b;text-decoration:none;">View Image</a></div>
+                                <div class="meta">
+                                    <a href="${r.image}" target="_blank">View Image</a>
+                                </div>
                             </div>
                             <div class="item-actions">
-                                <button class="edit-btn" data-id="${r.id}" data-type="results">✎</button>
-                                <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}">✕</button>
+                                <button class="edit-btn" data-id="${r.id}" data-type="results"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     `;
@@ -1407,43 +1784,37 @@
         `;
         container.innerHTML = html;
 
-        container.querySelector('#addResultBtn')?.addEventListener('click', function() {
-            openResultModal();
-        });
-
-        container.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                if (type === 'services') editService(id);
-                else if (type === 'categories') editCategory(id);
-                else if (type === 'reviews') editReview(id);
-                else if (type === 'results') editResult(id);
-            });
-        });
-
-        container.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const id = this.dataset.id;
-                const type = this.dataset.type;
-                const name = this.dataset.name || 'item';
-                deleteItem(type, id, name);
-            });
-        });
+        document.getElementById('addResultBtn')?.addEventListener('click', function() { openResultModal(); });
+        attachListActions(container);
     }
 
     function openResultModal(data) {
         const isEdit = !!data;
         const cats = categories.map(c => `<option value="${c.id}" ${data && data.badge === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
+        const previewSrc = data ? data.image : '';
         const body = `
             <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
-            <div class="form-group"><label>Image URL</label><input type="url" id="f_image" value="${data ? data.image : ''}" required /></div>
+            <div class="form-group">
+                <label>Image URL</label>
+                <input type="url" id="f_image" value="${previewSrc}" required oninput="previewImage(this.value)" />
+                <img id="f_image_preview" class="img-preview" src="${previewSrc}" alt="Preview" style="${previewSrc ? 'display:block;' : ''}" />
+            </div>
             <div class="form-group"><label>Title</label><input type="text" id="f_title" value="${data ? data.title : ''}" required /></div>
             <div class="form-group"><label>Badge (Category)</label><select id="f_badge" required>${cats}</select></div>
         `;
         editingType = 'results';
         editingId = data ? data.id : null;
         openModal(isEdit ? 'Edit Result' : 'New Result', body, isEdit ? 'Update' : 'Create');
+
+        window.previewImage = function(url) {
+            const preview = document.getElementById('f_image_preview');
+            if (url && url.trim()) {
+                preview.src = url.trim();
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        };
     }
 
     function editResult(id) {
@@ -1452,10 +1823,711 @@
     }
 
     // ============================================================
+    // ORDERS - FIXED ORDER ID
+    // ============================================================
+    function renderOrders(container) {
+        document.getElementById('orderCount').textContent = orders.length;
+
+        const statusColors = {
+            pending: '#f39c12',
+            paid: '#3498db',
+            processing: '#9b59b6',
+            completed: '#27ae60',
+            cancelled: '#e74c3c'
+        };
+        const statusLabels = {
+            pending: 'Pending',
+            paid: 'Paid',
+            processing: 'Processing',
+            completed: 'Completed',
+            cancelled: 'Cancelled'
+        };
+
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Orders</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${orders.length} total</span>
+                        <button class="btn btn-secondary" id="refreshOrders">Refresh</button>
+                    </div>
+                </div>
+                <div class="search-bar">
+                    <input type="text" id="orderSearch" placeholder="Search by Order ID or Phone Number..." />
+                    <button class="btn btn-primary" id="searchOrdersBtn"><i class="fas fa-search"></i> Search</button>
+                    <button class="btn btn-secondary" id="clearSearchBtn">Clear</button>
+                </div>
+                <div id="ordersList">
+        `;
+
+        const filteredOrders = orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        if (filteredOrders.length === 0) {
+            html += `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <p>No orders found</p>
+                    </div>
+            `;
+        } else {
+            filteredOrders.forEach(order => {
+                const orderId = order.orderId || order.id || 'N/A';
+                html += `
+                    <div class="list-item" data-order-id="${orderId}" data-phone="${order.customer?.phone || ''}">
+                        <div class="item-main">
+                            <div class="title">
+                                <span style="color:#b8860b;">${orderId}</span>
+                                <span style="font-size:12px;color:#8e8e93;font-weight:400;margin-left:8px;">
+                                    ${order.date ? new Date(order.date).toLocaleDateString() : 'N/A'}
+                                </span>
+                            </div>
+                            <div class="sub">
+                                ${order.customer?.name || 'Unknown'}
+                                ${order.customer?.phone ? '· ' + order.customer.phone : ''}
+                            </div>
+                            <div class="meta">
+                                ${order.services?.length || 0} services ·
+                                <span style="font-weight:600;color:#b8860b;">RM${(order.total || 0).toFixed(2)}</span>
+                                ·
+                                <span style="color:${statusColors[order.status] || '#666'};font-weight:600;">
+                                    ${statusLabels[order.status] || order.status}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="edit-btn" onclick="viewOrder('${orderId}')"><i class="fas fa-edit"></i></button>
+                            <button class="view-receipt-btn" onclick="viewReceiptOrder('${orderId}')"><i class="fas fa-receipt"></i></button>
+                            <button class="whatsapp-btn" onclick="whatsappOrder('${orderId}')"><i class="fab fa-whatsapp"></i></button>
+                            <button class="delete-btn" onclick="deleteOrder('${orderId}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+        container.innerHTML = html;
+
+        // Search functionality
+        document.getElementById('searchOrdersBtn')?.addEventListener('click', function() {
+            const query = document.getElementById('orderSearch').value.toLowerCase().trim();
+            const items = container.querySelectorAll('.list-item');
+            let found = 0;
+            items.forEach(item => {
+                const id = item.dataset.orderId?.toLowerCase() || '';
+                const phone = item.dataset.phone?.toLowerCase() || '';
+                const match = id.includes(query) || phone.includes(query);
+                item.style.display = match ? 'flex' : 'none';
+                if (match) found++;
+            });
+            const existingMsg = container.querySelector('.search-no-results');
+            if (found === 0 && query) {
+                if (!existingMsg) {
+                    const msg = document.createElement('div');
+                    msg.className = 'empty-state search-no-results';
+                    msg.innerHTML = '<p>No orders match your search</p>';
+                    document.getElementById('ordersList').appendChild(msg);
+                }
+            } else if (existingMsg) {
+                existingMsg.remove();
+            }
+        });
+
+        document.getElementById('clearSearchBtn')?.addEventListener('click', function() {
+            document.getElementById('orderSearch').value = '';
+            const items = container.querySelectorAll('.list-item');
+            items.forEach(item => item.style.display = 'flex');
+            const msg = container.querySelector('.search-no-results');
+            if (msg) msg.remove();
+        });
+
+        document.getElementById('refreshOrders')?.addEventListener('click', function() {
+            renderOrders(container);
+            showToast('Orders refreshed');
+        });
+
+        document.getElementById('orderSearch')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('searchOrdersBtn')?.click();
+        });
+    }
+
+    // ============================================================
+    // ORDER FUNCTIONS
+    // ============================================================
+    function viewOrder(id) {
+        if (!id) {
+            showToast('Order ID is missing');
+            return;
+        }
+
+        db.ref('orders/' + id).once('value').then(snap => {
+            const order = snap.val();
+            if (!order) return showToast('Order not found');
+
+            const orderId = order.orderId || id || 'N/A';
+
+            const statusOptions = ['pending', 'paid', 'processing', 'completed', 'cancelled'];
+            const statusHtml = statusOptions.map(s =>
+                `<option value="${s}" ${order.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`
+            ).join('');
+
+            const servicesHtml = order.services?.map(s =>
+                `<li>${s.name} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}</li>`
+            ).join('') || '<li>No services</li>';
+
+            const body = `
+                <div style="background:#f8f8fa;border-radius:12px;padding:12px;margin-bottom:12px;">
+                    <p><strong>Order ID:</strong> ${orderId}</p>
+                    <p><strong>Date:</strong> ${order.date ? new Date(order.date).toLocaleString() : 'N/A'}</p>
+                </div>
+                <div style="background:#f8f8fa;border-radius:12px;padding:12px;margin-bottom:12px;">
+                    <p><strong>Customer:</strong> ${order.customer?.name || 'Unknown'}</p>
+                    <p><strong>Phone:</strong> ${order.customer?.phone || 'N/A'}</p>
+                    <p><strong>Link:</strong> ${order.link || 'N/A'}</p>
+                </div>
+                <div style="background:#f8f8fa;border-radius:12px;padding:12px;margin-bottom:12px;">
+                    <p><strong>Services:</strong></p>
+                    <ul style="padding-left:20px;color:#6e6e73;font-size:13px;">${servicesHtml}</ul>
+                    <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #eaeaee;margin-top:8px;">
+                        <span><strong>Total:</strong></span>
+                        <span style="font-weight:700;color:#b8860b;">RM${(order.total || 0).toFixed(2)}</span>
+                    </div>
+                </div>
+                <div class="form-group"><label>Status</label>
+                    <select id="orderStatus">${statusHtml}</select>
+                </div>
+                <div class="form-group"><label>Notes</label>
+                    <textarea id="orderNotes" rows="2">${order.notes || ''}</textarea>
+                </div>
+            `;
+
+            editingType = 'orders';
+            editingId = id;
+            openModal('Order Details', body, 'Update Order');
+
+            document.getElementById('modalSubmitBtn').onclick = function() {
+                const status = document.getElementById('orderStatus').value;
+                const notes = document.getElementById('orderNotes').value;
+                db.ref('orders/' + id).update({ status, notes })
+                    .then(() => {
+                        showToast('Order updated');
+                        closeModal();
+                        renderContent();
+                    })
+                    .catch(() => showToast('Error updating order'));
+            };
+        });
+    }
+
+    // ===== RECEIPT FUNCTIONS =====
+    function viewReceiptOrder(id) {
+        if (!id) {
+            showToast('Order ID is missing');
+            return;
+        }
+
+        db.ref('orders/' + id).once('value').then(snap => {
+            const order = snap.val();
+            if (!order) return showToast('Order not found');
+            order.id = order.orderId || id;
+            currentReceiptOrder = order;
+            showReceiptModal(order);
+        });
+    }
+
+    function showReceiptModal(order) {
+        const statusColors = {
+            pending: '#f39c12',
+            paid: '#3498db',
+            processing: '#9b59b6',
+            completed: '#27ae60',
+            cancelled: '#e74c3c'
+        };
+        const statusLabels = {
+            pending: 'Pending Payment',
+            paid: 'Paid',
+            processing: 'Processing',
+            completed: 'Completed',
+            cancelled: 'Cancelled'
+        };
+
+        const orderId = order.id || order.orderId || 'N/A';
+
+        let servicesHtml = '';
+        if (order.services && order.services.length > 0) {
+            order.services.forEach(s => {
+                servicesHtml += `
+                    <div class="receipt-row">
+                        <span class="label">${s.name} × ${s.qty}</span>
+                        <span class="value">RM${(s.price * s.qty).toFixed(2)}</span>
+                    </div>
+                `;
+            });
+        }
+
+        const statusColor = statusColors[order.status] || '#666';
+        const statusLabel = statusLabels[order.status] || order.status;
+        const date = order.date ? new Date(order.date).toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : 'N/A';
+
+        const receiptHtml = `
+            <div class="receipt-content" id="receiptContent">
+                <div class="receipt-header">
+                    <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+                    <div class="title">Socmegy</div>
+                    <div class="sub">Order Receipt</div>
+                </div>
+
+                <hr class="receipt-divider" />
+
+                <div class="receipt-row">
+                    <span class="label">Order ID</span>
+                    <span class="value">${orderId}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Date</span>
+                    <span class="value">${date}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Status</span>
+                    <span class="value" style="color:${statusColor};">${statusLabel}</span>
+                </div>
+
+                <hr class="receipt-divider" />
+
+                <div class="receipt-row">
+                    <span class="label">Customer</span>
+                    <span class="value">${order.customer?.name || 'Unknown'}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Phone</span>
+                    <span class="value">${order.customer?.phone || 'N/A'}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Link</span>
+                    <span class="value">${order.link || 'N/A'}</span>
+                </div>
+
+                <hr class="receipt-divider" />
+
+                <div style="font-weight:600;margin-bottom:4px;">Services</div>
+                ${servicesHtml}
+
+                <hr class="receipt-divider" />
+
+                <div class="receipt-total">
+                    <span>Total</span>
+                    <span>RM${(order.total || 0).toFixed(2)}</span>
+                </div>
+
+                ${order.notes ? `
+                    <hr class="receipt-divider" />
+                    <div style="font-size:12px;color:#555555;">
+                        <strong>Notes:</strong> ${order.notes}
+                    </div>
+                ` : ''}
+
+                <div class="receipt-footer">
+                    Thank you for your order!<br />
+                    For any inquiries, contact us on WhatsApp
+                </div>
+            </div>
+        `;
+
+        document.getElementById('receiptBody').innerHTML = receiptHtml;
+        document.getElementById('receiptModal').classList.add('open');
+    }
+
+    function downloadReceiptPDF() {
+        const order = currentReceiptOrder;
+        if (!order) return showToast('No receipt to download');
+
+        const statusColors = {
+            pending: '#f39c12',
+            paid: '#3498db',
+            processing: '#9b59b6',
+            completed: '#27ae60',
+            cancelled: '#e74c3c'
+        };
+        const statusLabels = {
+            pending: 'Pending Payment',
+            paid: 'Paid',
+            processing: 'Processing',
+            completed: 'Completed',
+            cancelled: 'Cancelled'
+        };
+
+        const orderId = order.id || order.orderId || 'N/A';
+
+        let servicesHtml = '';
+        if (order.services && order.services.length > 0) {
+            order.services.forEach(s => {
+                servicesHtml += `
+                    <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                        <span style="color:#555555;">${s.name} × ${s.qty}</span>
+                        <span style="font-weight:600;color:#000000;">RM${(s.price * s.qty).toFixed(2)}</span>
+                    </div>
+                `;
+            });
+        }
+
+        const statusColor = statusColors[order.status] || '#666';
+        const statusLabel = statusLabels[order.status] || order.status;
+        const date = order.date ? new Date(order.date).toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : 'N/A';
+
+        const receiptHTML = `
+            <div style="max-width:210mm;margin:0 auto;padding:20px 24px;background:#ffffff;color:#000000;font-family:'Courier New',monospace;font-size:13px;line-height:1.6;text-align:justify;">
+                <div style="text-align:center;margin-bottom:16px;">
+                    <img src="logo.png" alt="Socmegy" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:4px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+                    <div style="font-size:18px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div>
+                    <div style="font-size:11px;color:#555555;">Order Receipt</div>
+                </div>
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+
+                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                    <span style="color:#555555;">Order ID</span>
+                    <span style="font-weight:600;color:#000000;">${orderId}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                    <span style="color:#555555;">Date</span>
+                    <span style="font-weight:600;color:#000000;">${date}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                    <span style="color:#555555;">Status</span>
+                    <span style="font-weight:600;color:${statusColor};">${statusLabel}</span>
+                </div>
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+
+                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                    <span style="color:#555555;">Customer</span>
+                    <span style="font-weight:600;color:#000000;">${order.customer?.name || 'Unknown'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                    <span style="color:#555555;">Phone</span>
+                    <span style="font-weight:600;color:#000000;">${order.customer?.phone || 'N/A'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                    <span style="color:#555555;">Link</span>
+                    <span style="font-weight:600;color:#000000;">${order.link || 'N/A'}</span>
+                </div>
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+
+                <div style="font-weight:600;margin-bottom:4px;">Services</div>
+                ${servicesHtml}
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+
+                <div style="font-size:16px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
+                    <span>Total</span>
+                    <span>RM${(order.total || 0).toFixed(2)}</span>
+                </div>
+
+                ${order.notes ? `
+                    <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+                    <div style="font-size:12px;color:#555555;">
+                        <strong>Notes:</strong> ${order.notes}
+                    </div>
+                ` : ''}
+
+                <div style="text-align:center;font-size:11px;color:#555555;margin-top:12px;border-top:1px dashed #cccccc;padding-top:10px;">
+                    Thank you for your order!<br />
+                    For any inquiries, contact us on WhatsApp
+                </div>
+            </div>
+        `;
+
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Receipt - ${orderId}</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { background: #ffffff; padding: 20px; }
+                    @media print { body { padding: 10px; } }
+                    .no-print { text-align:center; margin-bottom:16px; padding:10px; background:#f8f8fa; border-radius:8px; }
+                    .no-print button { padding:8px 24px; background:#b8860b; color:#fff; border:none; border-radius:30px; font-weight:600; cursor:pointer; margin:0 4px; }
+                    .no-print button:hover { opacity:0.85; }
+                    @media print { .no-print { display: none; } }
+                </style>
+            </head>
+            <body>
+                <div class="no-print">
+                    <button onclick="window.print()"><i class="fas fa-print"></i> Print / Save as PDF</button>
+                    <button onclick="window.close()">Close</button>
+                </div>
+                ${receiptHTML}
+            </body>
+            </html>
+        `);
+        win.document.close();
+        showToast('Receipt ready for download');
+    }
+
+    function shareReceipt() {
+        const order = currentReceiptOrder;
+        if (!order) return showToast('No receipt to share');
+
+        const orderId = order.id || order.orderId || 'N/A';
+        const phone = order.customer?.phone || '60108043004';
+        const msg = `ORDER RECEIPT
+        ====================
+        Order ID: ${orderId}
+        Customer: ${order.customer?.name || 'Unknown'}
+        Total: RM${(order.total || 0).toFixed(2)}
+        Status: ${order.status || 'pending'}
+        ====================
+        Thank you for your order!`;
+
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        showToast('Receipt shared via WhatsApp');
+    }
+
+    function whatsappOrder(id) {
+        if (!id) {
+            showToast('Order ID is missing');
+            return;
+        }
+
+        db.ref('orders/' + id).once('value').then(snap => {
+            const order = snap.val();
+            if (!order) return showToast('Order not found');
+
+            const orderId = order.orderId || id || 'N/A';
+            const phone = order.customer?.phone || '60108043004';
+            const statusLabels = {
+                pending: 'Pending Payment',
+                paid: 'Paid - Awaiting Processing',
+                processing: 'Processing',
+                completed: 'Completed',
+                cancelled: 'Cancelled'
+            };
+
+            let servicesMsg = '';
+            if (order.services && order.services.length > 0) {
+                order.services.forEach(s => {
+                    servicesMsg += `${s.name} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
+                });
+            }
+
+            const msg = `ORDER #${orderId}
+        ====================
+        Customer: ${order.customer?.name || 'Unknown'}
+        Phone: ${order.customer?.phone || 'N/A'}
+        Link: ${order.link || 'N/A'}
+        Status: ${statusLabels[order.status] || order.status}
+
+        Services:
+        ${servicesMsg || 'No services'}
+
+        Total: RM${(order.total || 0).toFixed(2)}
+        ====================
+        ${order.notes ? 'Notes: ' + order.notes : ''}`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        });
+    }
+
+    function deleteOrder(id) {
+        if (!id) {
+            showToast('Order ID is missing');
+            return;
+        }
+
+        if (confirm('Delete this order?')) {
+            db.ref('orders/' + id).remove()
+                .then(() => showToast('Order deleted'))
+                .catch(() => showToast('Error deleting'));
+        }
+    }
+
+    // ============================================================
+    // ANNOUNCEMENTS
+    // ============================================================
+    function renderAnnouncements(container) {
+        document.getElementById('announceCount').textContent = announcements.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Announcements</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${announcements.length} total</span>
+                        <button class="btn btn-primary" id="addAnnounceBtn">Add Announcement</button>
+                    </div>
+                </div>
+                ${announcements.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">📢</div>
+                        <p>No announcements yet. Create one to show on website.</p>
+                    </div>
+                ` : announcements.sort((a,b) => new Date(b.date) - new Date(a.date)).map(a => `
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="title">${a.text}</div>
+                            <div class="sub">
+                                ${a.date || 'N/A'} ·
+                                <span style="color:${a.active !== false ? '#27ae60' : '#e74c3c'};font-weight:600;">
+                                    ${a.active !== false ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="edit-btn" onclick="editAnnounce('${a.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" onclick="deleteAnnounce('${a.id}','${a.text.substring(0,30)}...')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+
+        document.getElementById('addAnnounceBtn')?.addEventListener('click', function() { openAnnounceModal(); });
+    }
+
+    function openAnnounceModal(data) {
+        const isEdit = !!data;
+        const body = `
+            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
+            <div class="form-group">
+                <label>Announcement Text</label>
+                <textarea id="f_text" required style="min-height:80px;">${data ? data.text : ''}</textarea>
+                <div style="font-size:11px;color:#8e8e93;margin-top:4px;">This will appear on the website top bar.</div>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="f_status">
+                    <option value="active" ${data && data.active === false ? '' : 'selected'}>Active</option>
+                    <option value="inactive" ${data && data.active === false ? 'selected' : ''}>Inactive</option>
+                </select>
+            </div>
+        `;
+        editingType = 'announcements';
+        editingId = data ? data.id : null;
+        openModal(isEdit ? 'Edit Announcement' : 'New Announcement', body, isEdit ? 'Update' : 'Create');
+    }
+
+    function editAnnounce(id) {
+        db.ref('announcements/' + id).once('value').then(snap => {
+            const data = snap.val();
+            if (data) openAnnounceModal({ id, ...data });
+        });
+    }
+
+    function deleteAnnounce(id, name) {
+        if (confirm(`Delete announcement "${name}"?`)) {
+            db.ref('announcements/' + id).remove()
+                .then(() => showToast('Announcement deleted'))
+                .catch(() => showToast('Error deleting'));
+        }
+    }
+
+    // ============================================================
+    // POPUPS
+    // ============================================================
+    function renderPopups(container) {
+        document.getElementById('popupCount').textContent = popups.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Promotional Popups</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${popups.length} total</span>
+                        <button class="btn btn-primary" id="addPopupBtn">Add Popup</button>
+                    </div>
+                </div>
+                ${popups.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">🪟</div>
+                        <p>No popups yet. Create one to show on website.</p>
+                    </div>
+                ` : popups.sort((a,b) => new Date(b.date) - new Date(a.date)).map(p => `
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="title">${p.title || 'Untitled'}</div>
+                            <div class="sub">${p.text ? p.text.substring(0,60) + (p.text.length > 60 ? '...' : '') : ''}</div>
+                            <div class="meta">
+                                ${p.date || 'N/A'} ·
+                                <span style="color:${p.active !== false ? '#27ae60' : '#e74c3c'};font-weight:600;">
+                                    ${p.active !== false ? 'Active' : 'Inactive'}
+                                </span>
+                                ${p.link ? '· Has link' : ''}
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="edit-btn" onclick="editPopup('${p.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" onclick="deletePopup('${p.id}','${p.title}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+
+        document.getElementById('addPopupBtn')?.addEventListener('click', function() { openPopupModal(); });
+    }
+
+    function openPopupModal(data) {
+        const isEdit = !!data;
+        const body = `
+            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
+            <div class="form-group">
+                <label>Icon (emoji)</label>
+                <input type="text" id="f_icon" value="${data ? data.icon : '🎉'}" placeholder="e.g. 🎉" maxlength="4" />
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" id="f_title" value="${data ? data.title : ''}" placeholder="e.g. Special Offer!" required />
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="f_text" required style="min-height:80px;" placeholder="Get 20% off all services this weekend!">${data ? data.text : ''}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Button Text</label>
+                <input type="text" id="f_btn_text" value="${data ? data.btnText : 'Shop Now'}" placeholder="e.g. Shop Now" />
+            </div>
+            <div class="form-group">
+                <label>Link (optional)</label>
+                <input type="url" id="f_link" value="${data ? data.link : ''}" placeholder="https://example.com/promo" />
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="f_status">
+                    <option value="active" ${data && data.active === false ? '' : 'selected'}>Active</option>
+                    <option value="inactive" ${data && data.active === false ? 'selected' : ''}>Inactive</option>
+                </select>
+            </div>
+        `;
+        editingType = 'popups';
+        editingId = data ? data.id : null;
+        openModal(isEdit ? 'Edit Popup' : 'New Popup', body, isEdit ? 'Update' : 'Create');
+    }
+
+    function editPopup(id) {
+        db.ref('popups/' + id).once('value').then(snap => {
+            const data = snap.val();
+            if (data) openPopupModal({ id, ...data });
+        });
+    }
+
+    function deletePopup(id, name) {
+        if (confirm(`Delete popup "${name}"?`)) {
+            db.ref('popups/' + id).remove()
+                .then(() => showToast('Popup deleted'))
+                .catch(() => showToast('Error deleting'));
+        }
+    }
+
+    // ============================================================
     // CUSTOMIZATION
     // ============================================================
-    let settings = { discountPercent: 10, minPurchase: 10 };
-
     function renderCustomization(container) {
         container.innerHTML = `
             <div class="admin-card">
@@ -1509,7 +2581,7 @@
     }
 
     // ============================================================
-    // DELETE
+    // DELETE ITEM
     // ============================================================
     function deleteItem(path, id, name) {
         if (confirm(`Delete "${name}"?`)) {
@@ -1520,9 +2592,35 @@
     }
 
     // ============================================================
-    // MODAL SUBMIT - FIXED
+    // ATTACH LIST ACTIONS
     // ============================================================
-    function handleModalSubmit(e) {
+    function attachListActions(container) {
+        container.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                if (type === 'services') editService(id);
+                else if (type === 'categories') editCategory(id);
+                else if (type === 'reviews') editReview(id);
+                else if (type === 'results') editResult(id);
+            });
+        });
+
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const type = this.dataset.type;
+                const name = this.dataset.name || 'item';
+                if (type === 'orders') deleteOrder(id);
+                else deleteItem(type, id, name);
+            });
+        });
+    }
+
+    // ============================================================
+    // MODAL SUBMIT
+    // ============================================================
+    document.getElementById('modalForm').addEventListener('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -1534,7 +2632,6 @@
             return;
         }
 
-        // Disable button
         submitBtn.disabled = true;
         submitBtn.textContent = 'Saving...';
         submitBtn.style.cursor = 'not-allowed';
@@ -1594,6 +2691,32 @@
                         badge: badge.value
                     };
                 }
+            } else if (type === 'announcements') {
+                const text = document.getElementById('f_text');
+                if (!text || !text.value.trim()) { showToast('Announcement text is required'); isValid = false; }
+                else {
+                    data = {
+                        text: text.value.trim(),
+                        active: document.getElementById('f_status').value === 'active',
+                        date: getMalaysiaTime()
+                    };
+                }
+            } else if (type === 'popups') {
+                const title = document.getElementById('f_title');
+                const text = document.getElementById('f_text');
+                if (!title || !title.value.trim()) { showToast('Title is required'); isValid = false; }
+                else if (!text || !text.value.trim()) { showToast('Description is required'); isValid = false; }
+                else {
+                    data = {
+                        icon: document.getElementById('f_icon').value.trim() || '🎉',
+                        title: title.value.trim(),
+                        text: text.value.trim(),
+                        btnText: document.getElementById('f_btn_text').value.trim() || 'Shop Now',
+                        link: document.getElementById('f_link').value.trim() || '',
+                        active: document.getElementById('f_status').value === 'active',
+                        date: getMalaysiaTime()
+                    };
+                }
             } else {
                 showToast('Unknown type');
                 isValid = false;
@@ -1611,12 +2734,10 @@
             return;
         }
 
-        // Get ID
         const idEl = document.getElementById('f_id');
         const id = idEl ? idEl.value : null;
-        const finalId = id || Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        const finalId = id || generateId();
 
-        // Save to Firebase
         db.ref(type + '/' + finalId).set(data)
             .then(() => {
                 showToast('Saved successfully');
@@ -1633,38 +2754,78 @@
                 submitBtn.style.cursor = 'pointer';
                 submitBtn.style.opacity = '1';
             });
-    }
+    });
 
     // ============================================================
     // FIREBASE LISTENERS
     // ============================================================
     function initApp() {
+        db.ref('orderCounter').once('value').then(snap => {
+            orderIdCounter = snap.val() || 0;
+        });
+
         db.ref('categories').on('value', snap => {
             const data = snap.val() || {};
             categories = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            if (currentTab === 'categories' || currentTab === 'services' || currentTab === 'results') renderContent();
+            if (currentTab === 'categories' || currentTab === 'services' || currentTab === 'results' || currentTab === 'dashboard') renderContent();
             document.getElementById('categoryCount').textContent = categories.length;
         });
 
         db.ref('services').on('value', snap => {
             const data = snap.val() || {};
             services = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            if (currentTab === 'services') renderContent();
+            if (currentTab === 'services' || currentTab === 'dashboard') renderContent();
             document.getElementById('serviceCount').textContent = services.length;
         });
 
         db.ref('reviews').on('value', snap => {
             const data = snap.val() || {};
             reviews = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            if (currentTab === 'reviews') renderContent();
+            if (currentTab === 'reviews' || currentTab === 'dashboard') renderContent();
             document.getElementById('reviewCount').textContent = reviews.length;
         });
 
         db.ref('results').on('value', snap => {
             const data = snap.val() || {};
             results = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            if (currentTab === 'results') renderContent();
+            if (currentTab === 'results' || currentTab === 'dashboard') renderContent();
             document.getElementById('resultCount').textContent = results.length;
+        });
+
+        db.ref('orders').on('value', snap => {
+            const data = snap.val() || {};
+            orders = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (orders.length > 0) {
+                const maxId = orders.reduce((max, o) => {
+                    const orderId = o.orderId || o.id || '';
+                    const match = orderId.match(/SOC-\d{8}-(\d{3})/);
+                    if (match) {
+                        const num = parseInt(match[1]);
+                        return num > max ? num : max;
+                    }
+                    return max;
+                }, 0);
+                if (maxId > orderIdCounter) {
+                    orderIdCounter = maxId;
+                    db.ref('orderCounter').set(orderIdCounter);
+                }
+            }
+            if (currentTab === 'orders' || currentTab === 'dashboard') renderContent();
+            document.getElementById('orderCount').textContent = orders.length;
+        });
+
+        db.ref('announcements').on('value', snap => {
+            const data = snap.val() || {};
+            announcements = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (currentTab === 'announcements') renderContent();
+            document.getElementById('announceCount').textContent = announcements.length;
+        });
+
+        db.ref('popups').on('value', snap => {
+            const data = snap.val() || {};
+            popups = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            if (currentTab === 'popups') renderContent();
+            document.getElementById('popupCount').textContent = popups.length;
         });
 
         db.ref('settings').on('value', snap => {
@@ -1681,9 +2842,21 @@
         renderContent();
     }
 
+    // ============================================================
+    // INIT
+    // ============================================================
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+    document.getElementById('receiptModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+    });
+
     console.log('✅ Admin panel ready');
-    console.log('✅ Firebase Auth enabled');
-    console.log('✅ Firebase Database connected');
+    console.log('✅ Order ID FIXED - guna orderId dari Firebase');
+    console.log('✅ Receipt tunjuk order ID dengan betul');
+    console.log('✅ Login mobile guna bg.jpg');
+    console.log('✅ Logo mobile center dengan jarak cukup');
 </script>
 
 </body>
