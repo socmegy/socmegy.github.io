@@ -1741,49 +1741,49 @@
     // ============================================================
     // RESULTS - WITH PREVIEW IMAGE
     // ============================================================
-    function renderResults(container) {
-        document.getElementById('resultCount').textContent = results.length;
-        let html = `
-            <div class="admin-card">
-                <div class="card-header">
-                    <h3>Results</h3>
-                    <div class="card-actions">
-                        <span class="count-badge">${results.length} total</span>
-                        <button class="btn btn-primary" id="addResultBtn">Add Result</button>
-                    </div>
+function renderResults(container) {
+    document.getElementById('resultCount').textContent = results.length;
+    let html = `
+        <div class="admin-card">
+            <div class="card-header">
+                <h3>Results</h3>
+                <div class="card-actions">
+                    <span class="count-badge">${results.length} total</span>
+                    <button class="btn btn-primary" id="addResultBtn">Add Result</button>
                 </div>
-                ${results.length === 0 ? `
-                    <div class="empty-state">
-                        <div class="empty-icon">🖼️</div>
-                        <p>No results yet. Add your first result.</p>
-                    </div>
-                ` : results.map(r => {
-                    const cat = categories.find(c => c.id === r.badge);
-                    const catName = cat ? cat.name : r.badge;
-                    return `
-                        <div class="result-item">
-                            <img src="${r.image}" alt="${r.title}" class="result-preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23eee%22 width=%2250%22 height=%2250%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 font-size=%2224%22%3E🖼%3C/text%3E%3C/svg%3E'" />
-                            <div class="result-info">
-                                <div class="title">${r.title}</div>
-                                <div class="sub">${catName}</div>
-                                <div class="meta">
-                                    <a href="${r.image}" target="_blank">View Image</a>
-                                </div>
-                            </div>
-                            <div class="item-actions">
-                                <button class="edit-btn" data-id="${r.id}" data-type="results"><i class="fas fa-edit"></i></button>
-                                <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}"><i class="fas fa-trash"></i></button>
+            </div>
+            ${results.length === 0 ? `
+                <div class="empty-state">
+                    <div class="empty-icon">🖼️</div>
+                    <p>No results yet. Add your first result.</p>
+                </div>
+            ` : results.map(r => {
+                const cat = categories.find(c => c.id === r.badge);
+                const catName = cat ? cat.name : r.badge;
+                return `
+                    <div class="result-item">
+                        <img src="${r.image}" alt="${r.title}" class="result-preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23eee%22 width=%2250%22 height=%2250%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 font-size=%2224%22%3E🖼%3C/text%3E%3C/svg%3E'" />
+                        <div class="result-info">
+                            <div class="title">${r.title}</div>
+                            <div class="sub">${catName}</div>
+                            <div class="meta">
+                                <a href="${r.image}" target="_blank">View Image</a>
                             </div>
                         </div>
-                    `;
-                }).join('')}
-            </div>
-        `;
-        container.innerHTML = html;
+                        <div class="item-actions">
+                            <button class="edit-btn" data-id="${r.id}" data-type="results"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    container.innerHTML = html;
 
-        document.getElementById('addResultBtn')?.addEventListener('click', function() { openResultModal(); });
-        attachListActions(container);
-    }
+    document.getElementById('addResultBtn')?.addEventListener('click', function() { openResultModal(); });
+    attachListActions(container);
+}
 
     function openResultModal(data) {
         const isEdit = !!data;
