@@ -54,6 +54,12 @@
             background-image: url('bg.jpg');
             background-size: cover;
             background-position: center;
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+        }
+        #loginPage.active {
+            display: flex !important;
         }
         .login-wrap {
             display: flex;
@@ -178,9 +184,13 @@
                 background-image: url('bg.jpg') !important;
                 background-size: cover !important;
                 background-position: center !important;
-                display: flex !important;
-                align-items: flex-end;
+                position: fixed;
+                inset: 0;
+                z-index: 9998;
                 min-height: 100vh;
+            }
+            #loginPage.active {
+                display: flex !important;
             }
             .login-wrap {
                 flex-direction: column;
@@ -189,7 +199,7 @@
                 width: 100%;
             }
             .login-left {
-                padding: 50px 16px 24px;
+                padding: 20px 16px 10px;
                 flex: none;
                 background: none;
                 min-height: auto;
@@ -200,26 +210,26 @@
                 justify-content: center;
             }
             .login-left .app-logo {
-                width: 90px;
-                height: 90px;
+                width: 72px;
+                height: 72px;
                 border: 3px solid rgba(255,255,255,0.25);
-                margin-bottom: 8px;
+                margin-bottom: 4px;
             }
             .login-left h1 {
-                font-size: 30px;
+                font-size: 26px;
                 color: #ffffff;
                 text-shadow: 0 2px 16px rgba(0,0,0,0.35);
-                margin-top: 4px;
-                margin-bottom: 20px;
+                margin-top: 2px;
+                margin-bottom: 12px;
                 letter-spacing: -0.5px;
             }
             .login-right {
-                padding: 22px 20px 30px;
+                padding: 18px 18px 24px;
                 flex: none;
                 background: rgba(255,255,255,0.92);
                 backdrop-filter: blur(24px);
                 -webkit-backdrop-filter: blur(24px);
-                border-radius: 24px 24px 0 0;
+                border-radius: 20px 20px 0 0;
                 width: 100%;
                 margin: 0;
                 box-shadow: 0 -4px 30px rgba(0,0,0,0.06);
@@ -229,19 +239,32 @@
                 height: 4px;
                 background: rgba(0,0,0,0.12);
                 border-radius: 4px;
-                margin: 0 auto 16px;
+                margin: 0 auto 12px;
             }
             .login-right h2 {
-                font-size: 22px;
+                font-size: 20px;
                 text-align: center;
                 color: #1d1d1f;
             }
             .login-right .sub { 
                 text-align: center; 
                 color: #6e6e73;
+                margin-bottom: 16px;
+            }
+            .login-right .form-group {
+                margin-bottom: 10px;
+            }
+            .login-right .form-group input {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+            .login-right .login-btn {
+                padding: 12px;
+                font-size: 15px;
             }
             .login-right .remember-row { 
-                justify-content: center; 
+                justify-content: center;
+                margin-bottom: 10px;
             }
         }
 
@@ -252,36 +275,40 @@
                 background-position: center !important;
             }
             .login-left {
-                padding: 30px 16px 16px;
+                padding: 16px 14px 6px;
             }
             .login-left .app-logo {
-                width: 72px;
-                height: 72px;
-                border: 3px solid rgba(255,255,255,0.2);
+                width: 60px;
+                height: 60px;
             }
             .login-left h1 {
-                font-size: 24px;
-                margin-bottom: 14px;
+                font-size: 22px;
+                margin-bottom: 8px;
             }
             .login-right {
-                padding: 18px 16px 24px;
-                border-radius: 20px 20px 0 0;
+                padding: 14px 14px 20px;
+                border-radius: 16px 16px 0 0;
             }
             .login-right h2 {
-                font-size: 20px;
+                font-size: 18px;
             }
             .login-right .form-group input {
-                padding: 12px 14px;
-                font-size: 14px;
+                padding: 10px 12px;
+                font-size: 13px;
             }
             .login-right .login-btn {
-                padding: 12px;
-                font-size: 15px;
+                padding: 10px;
+                font-size: 14px;
             }
         }
 
         /* ===== ADMIN APP ===== */
-        #adminApp { display: none; min-height: 100vh; }
+        #adminApp { 
+            display: none; 
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
 
         /* ===== TOP HEADER ===== */
         .admin-topbar {
@@ -491,7 +518,7 @@
         }
         .quick-actions .btn { width: 100%; justify-content: center; padding: 12px; }
 
-        /* ===== LIST ===== */
+        /* ===== LIST ITEM ===== */
         .list-item {
             display: flex;
             justify-content: space-between;
@@ -538,10 +565,10 @@
         }
         .list-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
         
+        /* ===== EDIT & DELETE BUTTONS - SAME FOR ALL TABS ===== */
         .list-item .item-actions .edit-btn {
             background: rgba(184, 134, 11, 0.12);
             color: #b8860b;
-            font-weight: 600;
         }
         .list-item .item-actions .edit-btn:hover {
             background: rgba(184, 134, 11, 0.25);
@@ -550,7 +577,6 @@
         .list-item .item-actions .delete-btn {
             background: rgba(231, 76, 60, 0.12);
             color: #e74c3c;
-            font-weight: 600;
         }
         .list-item .item-actions .delete-btn:hover {
             background: rgba(231, 76, 60, 0.25);
@@ -569,6 +595,83 @@
         }
         .list-item .item-actions .whatsapp-btn:hover {
             background: rgba(37, 211, 102, 0.25);
+        }
+
+        /* ===== RESULT ITEM - with preview ===== */
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item .result-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.06);
+            flex-shrink: 0;
+            background: #f5f5f7;
+        }
+        .result-item .result-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .result-item .result-info .title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .result-item .result-info .sub {
+            font-size: 12px;
+            color: #6e6e73;
+        }
+        .result-item .result-info .meta {
+            font-size: 11px;
+            color: #8e8e93;
+        }
+        .result-item .result-info .meta a {
+            color: #b8860b;
+            text-decoration: none;
+        }
+        .result-item .result-info .meta a:hover { text-decoration: underline; }
+        .result-item .item-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .result-item .item-actions button {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6e6e73;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .result-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
+        .result-item .item-actions .edit-btn {
+            background: rgba(184, 134, 11, 0.12);
+            color: #b8860b;
+        }
+        .result-item .item-actions .edit-btn:hover {
+            background: rgba(184, 134, 11, 0.25);
+            color: #b8860b;
+        }
+        .result-item .item-actions .delete-btn {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+        }
+        .result-item .item-actions .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.25);
+            color: #c0392b;
         }
 
         /* ===== NEW STAMP ===== */
@@ -953,48 +1056,6 @@
             display: none;
         }
 
-        /* ===== RESULTS WITH PREVIEW ===== */
-        .result-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 9px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .result-item:last-child { border-bottom: none; }
-        .result-item .result-preview {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid rgba(0,0,0,0.06);
-            flex-shrink: 0;
-            background: #f5f5f7;
-        }
-        .result-item .result-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .result-item .result-info .title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #1d1d1f;
-        }
-        .result-item .result-info .sub {
-            font-size: 12px;
-            color: #6e6e73;
-        }
-        .result-item .result-info .meta {
-            font-size: 11px;
-            color: #8e8e93;
-        }
-        .result-item .result-info .meta a {
-            color: #b8860b;
-            text-decoration: none;
-        }
-        .result-item .result-info .meta a:hover { text-decoration: underline; }
-        .result-item .item-actions { flex-shrink: 0; }
-
         /* ============================================================ */
         /* RESPONSIVE */
         /* ============================================================ */
@@ -1033,6 +1094,8 @@
             .settings-row .desc { font-size: 11px; }
             .list-item { flex-wrap: wrap; }
             .list-item .item-actions { margin-left: auto; }
+            .result-item { flex-wrap: wrap; }
+            .result-item .result-preview { width: 40px; height: 40px; }
             .admin-card .card-header {
                 flex-direction: column;
                 align-items: stretch;
@@ -1048,8 +1111,6 @@
             .search-bar { flex-direction: column; }
             .search-bar input { width: 100%; }
             .search-bar .btn { width: 100%; justify-content: center; }
-            .result-item { flex-wrap: wrap; }
-            .result-item .result-preview { width: 40px; height: 40px; }
         }
 
         @media (max-width: 480px) {
@@ -1059,6 +1120,7 @@
             .admin-card .card-header h3 { font-size: 15px; }
             .btn { font-size: 12px; padding: 6px 14px; }
             .list-item .item-main .title { font-size: 13px; }
+            .result-item .result-preview { width: 32px; height: 32px; }
             .stats-row {
                 grid-template-columns: 1fr 1fr;
                 gap: 8px;
@@ -1070,7 +1132,6 @@
                 gap: 8px;
             }
             .quick-actions .btn { padding: 10px; font-size: 12px; }
-            .result-item .result-preview { width: 32px; height: 32px; }
         }
     </style>
 </head>
@@ -1082,7 +1143,7 @@
 </div>
 
 <!-- ===== LOGIN PAGE ===== -->
-<div id="loginPage">
+<div id="loginPage" class="active">
     <div class="login-wrap">
         <div class="login-left">
             <img src="logo.png" alt="Socmegy" class="app-logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect fill=%22%23b8860b%22 width=%22120%22 height=%22120%22 rx=%2260%22/%3E%3Ctext x=%2260%22 y=%2276%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2252%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
@@ -1290,16 +1351,6 @@
         return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     }
 
-    function generateOrderId() {
-        const now = new Date();
-        const datePart = now.getFullYear() +
-            String(now.getMonth() + 1).padStart(2, '0') +
-            String(now.getDate()).padStart(2, '0');
-        orderIdCounter++;
-        const numPart = String(orderIdCounter).padStart(3, '0');
-        return 'SOC-' + datePart + '-' + numPart;
-    }
-
     // ============================================================
     // AUTH
     // ============================================================
@@ -1330,6 +1381,8 @@
 
         auth.signInWithEmailAndPassword(email, password)
             .then(userCredential => {
+                // HIDE LOGIN
+                document.getElementById('loginPage').classList.remove('active');
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('adminApp').style.display = 'block';
                 document.getElementById('userEmail').textContent = userCredential.user.email;
@@ -1351,6 +1404,7 @@
             auth.signOut().then(() => {
                 document.getElementById('adminApp').style.display = 'none';
                 document.getElementById('loginPage').style.display = 'flex';
+                document.getElementById('loginPage').classList.add('active');
                 document.getElementById('loginPassword').value = '';
                 document.getElementById('splashScreen').style.display = 'flex';
                 document.getElementById('splashScreen').classList.remove('hide');
@@ -1361,6 +1415,7 @@
     // Check auth state
     auth.onAuthStateChanged(user => {
         if (user) {
+            document.getElementById('loginPage').classList.remove('active');
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('adminApp').style.display = 'block';
             document.getElementById('userEmail').textContent = user.email;
@@ -1368,6 +1423,7 @@
             initApp();
         } else {
             document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('loginPage').classList.add('active');
             document.getElementById('adminApp').style.display = 'none';
             hideSplash();
         }
@@ -1742,7 +1798,7 @@
     }
 
     // ============================================================
-    // RESULTS - WITH PREVIEW IMAGE
+    // RESULTS - WITH PREVIEW
     // ============================================================
     function renderResults(container) {
         document.getElementById('resultCount').textContent = results.length;
@@ -1911,7 +1967,6 @@
         `;
         container.innerHTML = html;
 
-        // Search functionality
         document.getElementById('searchOrdersBtn')?.addEventListener('click', function() {
             const query = document.getElementById('orderSearch').value.toLowerCase().trim();
             const items = container.querySelectorAll('.list-item');
@@ -2854,9 +2909,8 @@
 
     console.log('✅ Admin panel ready');
     console.log('✅ Order ID FIXED - guna orderId dari Firebase');
-    console.log('✅ Receipt tunjuk order ID dengan betul');
-    console.log('✅ Login mobile guna bg.jpg');
-    console.log('✅ Logo mobile center dengan jarak cukup');
+    console.log('✅ Login mobile fixed - no overlap, no scroll');
+    console.log('✅ Edit/Delete buttons same design all tabs');
 </script>
 
 </body>
