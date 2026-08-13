@@ -654,6 +654,22 @@
         .receipt .receipt-service.package-indent {
             padding-left: 12px;
         }
+        /* Individual service name in receipt */
+        .receipt .receipt-service.individual .service-name {
+            color: #b8860b !important;
+            font-weight: 600 !important;
+        }
+        /* Package service name in receipt - keep black */
+        .receipt .receipt-service.package-indent .service-name {
+            color: #333333 !important;
+            font-weight: 500 !important;
+        }
+        body.dark-mode .receipt .receipt-service.individual .service-name {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .receipt .receipt-service.package-indent .service-name {
+            color: #e8e8e8 !important;
+        }
         
         .receipt .receipt-total {
             font-size: 14px;
@@ -1505,6 +1521,25 @@
         document.getElementById('cartCount').textContent = totalItems;
     }
 
+    // ===== RE-NUMBER PACKAGES =====
+    function renumberPackages() {
+        let counter = 0;
+        cart.forEach(item => {
+            if (item.isCustom) {
+                counter++;
+                const newLabel = 'Package ' + counter;
+                item.label = newLabel;
+                // Update packageLabel in services
+                if (item.services) {
+                    item.services.forEach(s => {
+                        s.packageLabel = newLabel;
+                    });
+                }
+            }
+        });
+        packageCounter = counter;
+    }
+
     // ===== ANNOUNCEMENTS =====
     function loadAnnouncements() {
         db.ref('announcements').on('value', snap => {
@@ -1980,7 +2015,7 @@
         showReceiptModal(order);
     }
 
-    // ===== RECEIPT MODAL - FIXED WITH PACKAGE HEADER =====
+    // ===== RECEIPT MODAL - FIXED WITH PACKAGE HEADER & INDIVIDUAL GOLD =====
     function showReceiptModal(order) {
         const statusColors = {
             pending: '#f39c12',
@@ -2030,10 +2065,10 @@
                     `;
                     isFirstService = false;
                 } else {
-                    // Individual service
+                    // Individual service - GOLD name
                     currentPackage = null;
                     servicesHtml += `
-                        <div class="receipt-service">
+                        <div class="receipt-service individual">
                             <div class="service-left">
                                 <span class="service-name">${s.name}</span>
                                 <span class="service-qty"> × ${s.qty}</span>
@@ -2199,12 +2234,13 @@
                     `;
                     isFirstService = false;
                 } else {
+                    // Individual service - GOLD in PDF too
                     currentPackage = null;
                     servicesHtml += `
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
-                            <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
-                                <span style="font-weight:500;">${s.name}</span>
-                                <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                            <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
+                                <span>${s.name}</span>
+                                <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
                             </div>
                             <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
                         </div>
@@ -2374,7 +2410,8 @@
                     price = c.discount ? Math.round(c.price * (1 - c.discount / 100) * 100) / 100 : c.price;
                     originalTotal = c.price * c.qty;
                     itemSubtotal = price * c.qty;
-                    subtotal += itemSubtotal;
+                    // Subtotal in cart uses ORIGINAL total (fix)
+                    subtotal += originalTotal;
                     if (c.discount && c.discount > 0) {
                         totalDiscount += originalTotal - itemSubtotal;
                         originalPriceDisplay = `
@@ -2468,14 +2505,19 @@
         const c = cart[idx];
         if (!c || c.isCustom) return;
         const newQty = c.qty + delta;
-        if (newQty <= 0) { cart.splice(idx, 1); }
-        else { c.qty = newQty; }
+        if (newQty <= 0) { 
+            cart.splice(idx, 1);
+            renumberPackages(); // Re-number packages after removal
+        } else {
+            c.qty = newQty;
+        }
         updateCartUI();
         renderCartModal();
     };
 
     window.removeFromCart = function(idx) {
         cart.splice(idx, 1);
+        renumberPackages(); // Re-number packages after removal
         updateCartUI();
         renderCartModal();
     };
@@ -2918,7 +2960,9 @@
     console.log('✅ Custom package - lists all services individually with "Package X:" header');
     console.log('✅ Individual services and packages follow cart order');
     console.log('✅ packageCounter resets to 0 when cart is cleared');
-    console.log('✅ Receipt - shows Package X: header for custom packages');
+    console.log('✅ Packages re-numbered when removed (Package 1, 2, 3...)');
+    console.log('✅ Receipt - Package header gold, individual service names gold, package services black');
+    console.log('✅ Cart total - fixed subtotal calculation');
     console.log('✅ All content from Firebase Realtime Database');
 </script>
 
