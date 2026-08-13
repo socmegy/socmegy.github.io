@@ -933,7 +933,7 @@
         }
         .toast .close-toast:hover { color: #ffffff; }
 
-        /* ===== RECEIPT MODAL - FIXED 2 COLUMN + SUBTOTAL/DISCOUNT/TOTAL ===== */
+        /* ===== RECEIPT MODAL - FIXED 2 COLUMN + PACKAGE HEADER ===== */
         .receipt-content {
             max-width: 210mm;
             margin: 0 auto;
@@ -992,6 +992,19 @@
             color: #000000;
             margin-left: 10px;
             padding-top: 1px;
+        }
+        
+        /* ===== PACKAGE HEADER IN RECEIPT ===== */
+        .receipt-content .package-header {
+            font-weight: 600;
+            font-size: 11px;
+            color: #b8860b;
+            margin-top: 4px;
+            padding: 2px 0;
+            border-bottom: none;
+        }
+        .receipt-content .receipt-service.package-indent {
+            padding-left: 12px;
         }
         
         .receipt-content .receipt-total {
@@ -2085,7 +2098,7 @@
         });
     }
 
-    // ===== RECEIPT FUNCTIONS - FIXED 2 COLUMN + SUBTOTAL/DISCOUNT/TOTAL =====
+    // ===== RECEIPT FUNCTIONS - FIXED 2 COLUMN + PACKAGE HEADER =====
     function viewReceiptOrder(id) {
         if (!id) {
             showToast('Order ID is missing');
@@ -2119,38 +2132,66 @@
 
         const orderId = order.id || order.orderId || 'N/A';
 
-        // Calculate subtotal, discount, total
+        // 2 COLUMN: name + qty on left, price on right WITH PACKAGE HEADER
+        let servicesHtml = '';
+        let currentPackage = null;
+        let isFirstService = true;
         let subtotal = 0;
         let discountTotal = 0;
-        let servicesHtml = '';
 
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
-                servicesHtml += `
-                    <div class="receipt-service">
-                        <div class="service-left">
-                            <span class="service-name">${s.name}</span>
-                            <span class="service-qty"> × ${s.qty}</span>
+                
+                // Check if this service is part of a custom package
+                if (s.isCustomPackage && s.packageLabel) {
+                    // New package detected
+                    if (currentPackage !== s.packageLabel) {
+                        currentPackage = s.packageLabel;
+                        if (!isFirstService) {
+                            // Add spacing between packages
+                        }
+                        servicesHtml += `
+                            <div class="package-header">${s.packageLabel}:</div>
+                        `;
+                    }
+                    servicesHtml += `
+                        <div class="receipt-service package-indent">
+                            <div class="service-left">
+                                <span class="service-name">${s.name}</span>
+                                <span class="service-qty"> × ${s.qty}</span>
+                            </div>
+                            <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
                         </div>
-                        <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
-                    </div>
-                `;
+                    `;
+                    isFirstService = false;
+                } else {
+                    // Individual service
+                    currentPackage = null;
+                    servicesHtml += `
+                        <div class="receipt-service">
+                            <div class="service-left">
+                                <span class="service-name">${s.name}</span>
+                                <span class="service-qty"> × ${s.qty}</span>
+                            </div>
+                            <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
+                        </div>
+                    `;
+                    isFirstService = false;
+                }
             });
         }
 
-        // Get discount from order data
+        // Calculate discount
         if (order.discountAmount) {
             discountTotal = order.discountAmount;
         } else if (order.discount) {
             discountTotal = order.discount;
         }
-        // If no discount stored, try to calculate from subtotal - total
         if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
             discountTotal = order.subtotal - order.total;
         }
-        // If still 0 and we have a discount percent, calculate
         if (discountTotal === 0 && order.discountPercent) {
             discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
         }
@@ -2207,7 +2248,6 @@
 
                 <hr class="receipt-divider" />
 
-                <!-- Subtotal, Discount, Total -->
                 <div class="receipt-row" style="font-size:12px;">
                     <span class="label">Subtotal</span>
                     <span class="value">${formatPrice(displaySubtotal)}</span>
@@ -2218,7 +2258,7 @@
                     <span class="value" style="color:#e74c3c;">-${formatPrice(discountTotal)}</span>
                 </div>
                 ` : ''}
-                
+
                 <div class="receipt-total" style="margin-top:4px;">
                     <span>Total</span>
                     <span>${formatPrice(finalTotal)}</span>
@@ -2263,24 +2303,47 @@
 
         const orderId = order.id || order.orderId || 'N/A';
 
-        // Calculate subtotal, discount, total
+        let servicesHtml = '';
+        let currentPackage = null;
+        let isFirstService = true;
         let subtotal = 0;
         let discountTotal = 0;
-        let servicesHtml = '';
 
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
-                servicesHtml += `
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
-                        <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
-                            <span style="font-weight:500;">${s.name}</span>
-                            <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+
+                if (s.isCustomPackage && s.packageLabel) {
+                    if (currentPackage !== s.packageLabel) {
+                        currentPackage = s.packageLabel;
+                        servicesHtml += `
+                            <div style="font-weight:600;font-size:11px;color:#b8860b;margin-top:4px;padding:2px 0;">${s.packageLabel}:</div>
+                        `;
+                    }
+                    servicesHtml += `
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                                <span style="font-weight:500;">${s.name}</span>
+                                <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                            </div>
+                            <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
                         </div>
-                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
-                    </div>
-                `;
+                    `;
+                    isFirstService = false;
+                } else {
+                    currentPackage = null;
+                    servicesHtml += `
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                                <span style="font-weight:500;">${s.name}</span>
+                                <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                            </div>
+                            <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
+                        </div>
+                    `;
+                    isFirstService = false;
+                }
             });
         }
 
@@ -3005,8 +3068,10 @@
     });
 
     console.log('✅ Admin panel ready');
-    console.log('✅ Receipt - 2 COLUMN with Subtotal, Discount, Total');
-    console.log('✅ Order ID fixed - uses orderId from Firebase');
+    console.log('✅ Receipt - 2 COLUMN with Package Headers');
+    console.log('✅ Package X: header for custom packages');
+    console.log('✅ Individual services listed without header');
+    console.log('✅ Subtotal, Discount, Total displayed');
 </script>
 
 </body>
