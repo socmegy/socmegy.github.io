@@ -933,7 +933,7 @@
         }
         .toast .close-toast:hover { color: #ffffff; }
 
-        /* ===== RECEIPT MODAL - FIXED 2 COLUMN ===== */
+        /* ===== RECEIPT MODAL - FIXED 2 COLUMN + SUBTOTAL/DISCOUNT/TOTAL ===== */
         .receipt-content {
             max-width: 210mm;
             margin: 0 auto;
@@ -2085,7 +2085,7 @@
         });
     }
 
-    // ===== RECEIPT FUNCTIONS - FIXED 2 COLUMN =====
+    // ===== RECEIPT FUNCTIONS - FIXED 2 COLUMN + SUBTOTAL/DISCOUNT/TOTAL =====
     function viewReceiptOrder(id) {
         if (!id) {
             showToast('Order ID is missing');
@@ -2119,21 +2119,44 @@
 
         const orderId = order.id || order.orderId || 'N/A';
 
-        // 2 COLUMN: name + qty on left, price on right
+        // Calculate subtotal, discount, total
+        let subtotal = 0;
+        let discountTotal = 0;
         let servicesHtml = '';
+
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
+                const itemSubtotal = s.price * s.qty;
+                subtotal += itemSubtotal;
                 servicesHtml += `
                     <div class="receipt-service">
                         <div class="service-left">
                             <span class="service-name">${s.name}</span>
                             <span class="service-qty"> × ${s.qty}</span>
                         </div>
-                        <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
+                        <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
                     </div>
                 `;
             });
         }
+
+        // Get discount from order data
+        if (order.discountAmount) {
+            discountTotal = order.discountAmount;
+        } else if (order.discount) {
+            discountTotal = order.discount;
+        }
+        // If no discount stored, try to calculate from subtotal - total
+        if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
+            discountTotal = order.subtotal - order.total;
+        }
+        // If still 0 and we have a discount percent, calculate
+        if (discountTotal === 0 && order.discountPercent) {
+            discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
+        }
+
+        const finalTotal = order.total || (subtotal - discountTotal);
+        const displaySubtotal = order.subtotal || subtotal;
 
         const statusColor = statusColors[order.status] || '#666';
         const statusLabel = statusLabels[order.status] || order.status;
@@ -2184,9 +2207,21 @@
 
                 <hr class="receipt-divider" />
 
-                <div class="receipt-total">
+                <!-- Subtotal, Discount, Total -->
+                <div class="receipt-row" style="font-size:12px;">
+                    <span class="label">Subtotal</span>
+                    <span class="value">${formatPrice(displaySubtotal)}</span>
+                </div>
+                ${discountTotal > 0 ? `
+                <div class="receipt-row" style="font-size:12px;">
+                    <span class="label" style="color:#e74c3c;">Discount</span>
+                    <span class="value" style="color:#e74c3c;">-${formatPrice(discountTotal)}</span>
+                </div>
+                ` : ''}
+                
+                <div class="receipt-total" style="margin-top:4px;">
                     <span>Total</span>
-                    <span>RM${(order.total || 0).toFixed(2)}</span>
+                    <span>${formatPrice(finalTotal)}</span>
                 </div>
 
                 ${order.notes ? `
@@ -2228,21 +2263,41 @@
 
         const orderId = order.id || order.orderId || 'N/A';
 
-        // 2 COLUMN for PDF
+        // Calculate subtotal, discount, total
+        let subtotal = 0;
+        let discountTotal = 0;
         let servicesHtml = '';
+
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
+                const itemSubtotal = s.price * s.qty;
+                subtotal += itemSubtotal;
                 servicesHtml += `
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
                         <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                             <span style="font-weight:500;">${s.name}</span>
                             <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
                         </div>
-                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
+                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
                     </div>
                 `;
             });
         }
+
+        if (order.discountAmount) {
+            discountTotal = order.discountAmount;
+        } else if (order.discount) {
+            discountTotal = order.discount;
+        }
+        if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
+            discountTotal = order.subtotal - order.total;
+        }
+        if (discountTotal === 0 && order.discountPercent) {
+            discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
+        }
+
+        const finalTotal = order.total || (subtotal - discountTotal);
+        const displaySubtotal = order.subtotal || subtotal;
 
         const statusColor = statusColors[order.status] || '#666';
         const statusLabel = statusLabels[order.status] || order.status;
@@ -2293,9 +2348,20 @@
 
                 <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
 
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Subtotal</span>
+                    <span style="font-weight:600;color:#000000;">${formatPrice(displaySubtotal)}</span>
+                </div>
+                ${discountTotal > 0 ? `
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#e74c3c;">Discount</span>
+                    <span style="font-weight:600;color:#e74c3c;">-${formatPrice(discountTotal)}</span>
+                </div>
+                ` : ''}
+
                 <div style="font-size:14px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
                     <span>Total</span>
-                    <span>RM${(order.total || 0).toFixed(2)}</span>
+                    <span>${formatPrice(finalTotal)}</span>
                 </div>
 
                 ${order.notes ? `
@@ -2348,11 +2414,26 @@
 
         const orderId = order.id || order.orderId || 'N/A';
         const phone = order.customer?.phone || '60108043004';
+        
+        let subtotal = 0;
+        if (order.services && order.services.length > 0) {
+            order.services.forEach(s => {
+                subtotal += s.price * s.qty;
+            });
+        }
+        let discountTotal = order.discountAmount || order.discount || 0;
+        if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
+            discountTotal = order.subtotal - order.total;
+        }
+        const finalTotal = order.total || (subtotal - discountTotal);
+        
         const msg = `ORDER RECEIPT
         ====================
         Order ID: ${orderId}
         Customer: ${order.customer?.name || 'Unknown'}
-        Total: RM${(order.total || 0).toFixed(2)}
+        Subtotal: ${formatPrice(subtotal)}
+        ${discountTotal > 0 ? 'Discount: -' + formatPrice(discountTotal) : ''}
+        Total: ${formatPrice(finalTotal)}
         Status: ${order.status || 'pending'}
         ====================
         Thank you for your order!`;
@@ -2924,8 +3005,8 @@
     });
 
     console.log('✅ Admin panel ready');
-    console.log('✅ Receipt 2 COLUMN - name left, price right');
-    console.log('✅ Long names wrap to next line, stay left aligned');
+    console.log('✅ Receipt - 2 COLUMN with Subtotal, Discount, Total');
+    console.log('✅ Order ID fixed - uses orderId from Firebase');
 </script>
 
 </body>
