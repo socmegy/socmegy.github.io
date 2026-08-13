@@ -1706,10 +1706,21 @@
         });
     }
 
-    // ===== CUSTOM SUMMARY =====
+    // ===== CUSTOM SUMMARY - FIXED =====
     function updateCustomSummary() {
+        // FIX: Update desc dulu, regardless ada service ke tak
+        const desc = document.getElementById('customDesc');
+        const discountPercent = settings.discountPercent || 10;
+        const minPurchase = settings.minPurchase || 10;
+        if (discountPercent > 0 && minPurchase > 0) {
+            desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities. <strong>${discountPercent}% OFF for orders RM${minPurchase}+</strong>`;
+        } else {
+            desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities.`;
+        }
+
         const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
         const container = document.getElementById('customSummary');
+        
         if (entries.length === 0) {
             container.innerHTML = '<div class="empty">No services selected yet</div>';
             return;
@@ -1727,20 +1738,10 @@
         });
 
         let discount = 0;
-        const minPurchase = settings.minPurchase || 10;
-        const discountPercent = settings.discountPercent || 10;
         if (total >= minPurchase && discountPercent > 0) {
             discount = Math.round(total * (discountPercent / 100) * 100) / 100;
         }
         const finalTotal = total - discount;
-
-        // UPDATE CUSTOM DESC - FIXED
-        const desc = document.getElementById('customDesc');
-        if (discountPercent > 0 && minPurchase > 0) {
-            desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities. <strong>${discountPercent}% OFF for orders RM${minPurchase}+</strong>`;
-        } else {
-            desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities.`;
-        }
 
         html += `<div class="total-row"><span>Subtotal</span><span>${formatPrice(total)}</span></div>`;
         if (discount > 0) {
@@ -2635,7 +2636,7 @@
     console.log('✅ Website connected to Firebase');
     console.log('✅ Cart counter - counts number of items (cart.length)');
     console.log('✅ Receipt - 2 column layout (name left, price right)');
-    console.log('✅ Custom desc updates with settings from Firebase');
+    console.log('✅ Custom desc updates immediately when settings change');
     console.log('✅ All content from Firebase Realtime Database');
 </script>
 
