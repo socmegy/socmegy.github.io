@@ -933,7 +933,7 @@
         }
         .toast .close-toast:hover { color: #ffffff; }
 
-        /* ===== RECEIPT MODAL - FIXED 2 COLUMN + PACKAGE HEADER ===== */
+        /* ===== RECEIPT MODAL - FIXED 2 COLUMN + PACKAGE HEADER + INDIVIDUAL GOLD ===== */
         .receipt-content {
             max-width: 210mm;
             margin: 0 auto;
@@ -1005,6 +1005,25 @@
         }
         .receipt-content .receipt-service.package-indent {
             padding-left: 12px;
+        }
+        
+        /* Individual service name - GOLD */
+        .receipt-content .receipt-service.individual .service-name {
+            color: #b8860b !important;
+            font-weight: 600 !important;
+        }
+        /* Package service name - BLACK/HITAM */
+        .receipt-content .receipt-service.package-indent .service-name {
+            color: #333333 !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Dark mode support */
+        body.dark-mode .receipt-content .receipt-service.individual .service-name {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .receipt-content .receipt-service.package-indent .service-name {
+            color: #e8e8e8 !important;
         }
         
         .receipt-content .receipt-total {
@@ -2098,7 +2117,7 @@
         });
     }
 
-    // ===== RECEIPT FUNCTIONS - FIXED 2 COLUMN + PACKAGE HEADER =====
+    // ===== RECEIPT FUNCTIONS - FIXED WITH INDIVIDUAL GOLD =====
     function viewReceiptOrder(id) {
         if (!id) {
             showToast('Order ID is missing');
@@ -2143,15 +2162,12 @@
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
-                
+
                 // Check if this service is part of a custom package
                 if (s.isCustomPackage && s.packageLabel) {
                     // New package detected
                     if (currentPackage !== s.packageLabel) {
                         currentPackage = s.packageLabel;
-                        if (!isFirstService) {
-                            // Add spacing between packages
-                        }
                         servicesHtml += `
                             <div class="package-header">${s.packageLabel}:</div>
                         `;
@@ -2167,10 +2183,10 @@
                     `;
                     isFirstService = false;
                 } else {
-                    // Individual service
+                    // Individual service - GOLD name
                     currentPackage = null;
                     servicesHtml += `
-                        <div class="receipt-service">
+                        <div class="receipt-service individual">
                             <div class="service-left">
                                 <span class="service-name">${s.name}</span>
                                 <span class="service-qty"> × ${s.qty}</span>
@@ -2332,12 +2348,13 @@
                     `;
                     isFirstService = false;
                 } else {
+                    // Individual service - GOLD in PDF
                     currentPackage = null;
                     servicesHtml += `
                         <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
-                            <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
-                                <span style="font-weight:500;">${s.name}</span>
-                                <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                            <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
+                                <span>${s.name}</span>
+                                <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
                             </div>
                             <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
                         </div>
@@ -3068,9 +3085,9 @@
     });
 
     console.log('✅ Admin panel ready');
-    console.log('✅ Receipt - 2 COLUMN with Package Headers');
-    console.log('✅ Package X: header for custom packages');
-    console.log('✅ Individual services listed without header');
+    console.log('✅ Receipt - Individual services GOLD');
+    console.log('✅ Receipt - Package headers GOLD');
+    console.log('✅ Receipt - Package services BLACK (with indent)');
     console.log('✅ Subtotal, Discount, Total displayed');
 </script>
 
