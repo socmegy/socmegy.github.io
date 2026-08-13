@@ -1437,7 +1437,7 @@
         return 'SOC-' + datePart + '-' + numPart;
     }
 
-    // ===== CART COUNTER - NUMBER OF ITEMS (bukan quantity) =====
+    // ===== CART COUNTER - NUMBER OF ITEMS =====
     function getTotalCartItems() {
         return cart.length;
     }
@@ -1734,9 +1734,12 @@
         }
         const finalTotal = total - discount;
 
+        // UPDATE CUSTOM DESC - FIXED
         const desc = document.getElementById('customDesc');
         if (discountPercent > 0 && minPurchase > 0) {
             desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities. <strong>${discountPercent}% OFF for orders RM${minPurchase}+</strong>`;
+        } else {
+            desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities.`;
         }
 
         html += `<div class="total-row"><span>Subtotal</span><span>${formatPrice(total)}</span></div>`;
@@ -2613,7 +2616,7 @@
         db.ref('settings').on('value', snap => {
             const data = snap.val() || {};
             settings = { discountPercent: data.discountPercent || 10, minPurchase: data.minPurchase || 10 };
-            updateCustomSummary();
+            updateCustomSummary(); // FIX: update desc bila settings berubah
         });
 
         db.ref('read').on('value', snap => {
@@ -2632,7 +2635,7 @@
     console.log('✅ Website connected to Firebase');
     console.log('✅ Cart counter - counts number of items (cart.length)');
     console.log('✅ Receipt - 2 column layout (name left, price right)');
-    console.log('✅ Long names wrap to next line, stay left aligned');
+    console.log('✅ Custom desc updates with settings from Firebase');
     console.log('✅ All content from Firebase Realtime Database');
 </script>
 
