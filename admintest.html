@@ -488,7 +488,7 @@
         }
         .quick-actions .btn { width: 100%; justify-content: center; padding: 12px; }
 
-        /* ===== LIST ===== */
+        /* ===== LIST ITEM ===== */
         .list-item {
             display: flex;
             justify-content: space-between;
@@ -566,6 +566,85 @@
         }
         .list-item .item-actions .whatsapp-btn:hover {
             background: rgba(37, 211, 102, 0.25);
+        }
+
+        /* ===== RESULT ITEM - SAMA MACAM LIST ITEM ===== */
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item .result-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.06);
+            flex-shrink: 0;
+            background: #f5f5f7;
+        }
+        .result-item .result-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .result-item .result-info .title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+        .result-item .result-info .sub {
+            font-size: 12px;
+            color: #6e6e73;
+        }
+        .result-item .result-info .meta {
+            font-size: 11px;
+            color: #8e8e93;
+        }
+        .result-item .result-info .meta a {
+            color: #b8860b;
+            text-decoration: none;
+        }
+        .result-item .result-info .meta a:hover { text-decoration: underline; }
+        .result-item .item-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .result-item .item-actions button {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6e6e73;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .result-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
+        .result-item .item-actions .edit-btn {
+            background: rgba(184, 134, 11, 0.12);
+            color: #b8860b;
+            font-weight: 600;
+        }
+        .result-item .item-actions .edit-btn:hover {
+            background: rgba(184, 134, 11, 0.25);
+            color: #b8860b;
+        }
+        .result-item .item-actions .delete-btn {
+            background: rgba(231, 76, 60, 0.12);
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        .result-item .item-actions .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.25);
+            color: #c0392b;
         }
 
         /* ===== NEW STAMP ===== */
@@ -854,55 +933,69 @@
         }
         .toast .close-toast:hover { color: #ffffff; }
 
-        /* ===== RECEIPT MODAL ===== */
+        /* ===== RECEIPT MODAL - FIXED 2 COLUMN ===== */
         .receipt-content {
             max-width: 210mm;
             margin: 0 auto;
-            padding: 20px 24px;
+            padding: 16px 18px;
             background: #ffffff;
             color: #000000;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            text-align: justify;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: left;
             border: 1px solid #eaeaee;
             border-radius: 8px;
         }
-        .receipt-content .receipt-header { text-align: center; margin-bottom: 16px; }
-        .receipt-content .receipt-header img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 4px;
-        }
-        .receipt-content .receipt-header .title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #000000;
-            letter-spacing: 1px;
-        }
-        .receipt-content .receipt-header .sub {
-            font-size: 11px;
-            color: #555555;
-        }
-        .receipt-content .receipt-divider {
-            border: none;
-            border-top: 1px dashed #cccccc;
-            margin: 8px 0;
-        }
-        .receipt-content .receipt-row {
+        .receipt-content .receipt-header { text-align: center; margin-bottom: 12px; }
+        .receipt-content .receipt-header img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 4px; }
+        .receipt-content .receipt-header .title { font-size: 16px; font-weight: 700; color: #000000; letter-spacing: 1px; }
+        .receipt-content .receipt-header .sub { font-size: 10px; color: #555555; }
+        .receipt-content .receipt-divider { border: none; border-top: 1px dashed #cccccc; margin: 6px 0; }
+        .receipt-content .receipt-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 12px; }
+        .receipt-content .receipt-row .label { color: #555555; }
+        .receipt-content .receipt-row .value { font-weight: 600; color: #000000; }
+        
+        /* ===== RECEIPT SERVICE - 2 COLUMN ===== */
+        .receipt-content .receipt-service {
             display: flex;
             justify-content: space-between;
-            padding: 2px 0;
+            align-items: flex-start;
+            padding: 3px 0;
+            border-bottom: 1px dashed #eeeeee;
+            gap: 10px;
         }
-        .receipt-content .receipt-row .label { color: #555555; }
-        .receipt-content .receipt-row .value {
-            font-weight: 600;
+        .receipt-content .receipt-service:last-child { border-bottom: none; }
+        
+        .receipt-content .receipt-service .service-left {
+            flex: 1;
+            min-width: 0;
+            font-size: 10px;
+            color: #333333;
+            word-wrap: break-word;
+            word-break: break-word;
+            line-height: 1.4;
+            text-align: left;
+        }
+        .receipt-content .receipt-service .service-left .service-name {
+            font-weight: 500;
+        }
+        .receipt-content .receipt-service .service-left .service-qty {
+            color: #888888;
+            font-size: 9px;
+        }
+        
+        .receipt-content .receipt-service .service-price {
+            flex-shrink: 0;
+            font-size: 11px;
+            font-weight: 700;
             color: #000000;
+            margin-left: 10px;
+            padding-top: 1px;
         }
+        
         .receipt-content .receipt-total {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             color: #000000;
             padding-top: 6px;
@@ -913,11 +1006,11 @@
         }
         .receipt-content .receipt-footer {
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             color: #555555;
-            margin-top: 12px;
+            margin-top: 10px;
             border-top: 1px dashed #cccccc;
-            padding-top: 10px;
+            padding-top: 8px;
         }
 
         /* ===== MOBILE ===== */
@@ -949,48 +1042,6 @@
             border: 1px solid rgba(0,0,0,0.06);
             display: none;
         }
-
-        /* ===== RESULTS WITH PREVIEW ===== */
-        .result-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 9px 0;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-        }
-        .result-item:last-child { border-bottom: none; }
-        .result-item .result-preview {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 1px solid rgba(0,0,0,0.06);
-            flex-shrink: 0;
-            background: #f5f5f7;
-        }
-        .result-item .result-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .result-item .result-info .title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #1d1d1f;
-        }
-        .result-item .result-info .sub {
-            font-size: 12px;
-            color: #6e6e73;
-        }
-        .result-item .result-info .meta {
-            font-size: 11px;
-            color: #8e8e93;
-        }
-        .result-item .result-info .meta a {
-            color: #b8860b;
-            text-decoration: none;
-        }
-        .result-item .result-info .meta a:hover { text-decoration: underline; }
-        .result-item .item-actions { flex-shrink: 0; }
 
         /* ============================================================ */
         /* RESPONSIVE */
@@ -1047,6 +1098,12 @@
             .search-bar .btn { width: 100%; justify-content: center; }
             .result-item { flex-wrap: wrap; }
             .result-item .result-preview { width: 40px; height: 40px; }
+            /* Receipt mobile */
+            .receipt-content { padding: 12px 14px; font-size: 11px; }
+            .receipt-content .receipt-header .title { font-size: 14px; }
+            .receipt-content .receipt-service .service-left { font-size: 9px; }
+            .receipt-content .receipt-service .service-price { font-size: 10px; }
+            .receipt-content .receipt-total { font-size: 13px; }
         }
 
         @media (max-width: 480px) {
@@ -1068,48 +1125,16 @@
             }
             .quick-actions .btn { padding: 10px; font-size: 12px; }
             .result-item .result-preview { width: 32px; height: 32px; }
+            /* Receipt mobile */
+            .receipt-content { padding: 10px 12px; font-size: 10px; }
+            .receipt-content .receipt-header .title { font-size: 13px; }
+            .receipt-content .receipt-header img { width: 40px; height: 40px; }
+            .receipt-content .receipt-service .service-left { font-size: 8px; }
+            .receipt-content .receipt-service .service-price { font-size: 9px; }
+            .receipt-content .receipt-total { font-size: 12px; }
+            .receipt-content .receipt-row { font-size: 10px; }
+            .receipt-content .receipt-footer { font-size: 9px; }
         }
-        /* ===== RESULT ITEM ACTIONS - FIX ===== */
-.result-item .item-actions {
-    display: flex;
-    gap: 4px;
-    flex-shrink: 0;
-}
-.result-item .item-actions button {
-    background: rgba(0,0,0,0.04);
-    border: none;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #6e6e73;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.result-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
-
-.result-item .item-actions .edit-btn {
-    background: rgba(184, 134, 11, 0.12);
-    color: #b8860b;
-    font-weight: 600;
-}
-.result-item .item-actions .edit-btn:hover {
-    background: rgba(184, 134, 11, 0.25);
-    color: #b8860b;
-}
-
-.result-item .item-actions .delete-btn {
-    background: rgba(231, 76, 60, 0.12);
-    color: #e74c3c;
-    font-weight: 600;
-}
-.result-item .item-actions .delete-btn:hover {
-    background: rgba(231, 76, 60, 0.25);
-    color: #c0392b;
-}
     </style>
 </head>
 <body>
@@ -1560,6 +1585,52 @@
             `).join('');
         }
 
+        // Reviews section with edit/delete
+        let reviewsHtml = '';
+        if (reviews.length === 0) {
+            reviewsHtml = '<div class="empty-state"><div class="empty-icon">⭐</div><p>No reviews yet</p></div>';
+        } else {
+            reviewsHtml = reviews.slice(0, 5).map(r => {
+                const stars = '★'.repeat(r.stars) + '☆'.repeat(5 - r.stars);
+                return `
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="title">${r.quote}</div>
+                            <div class="sub">${r.customer}</div>
+                            <div class="meta">${stars}</div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="edit-btn" onclick="editReview('${r.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" onclick="deleteItem('reviews', '${r.id}', '${r.quote.substring(0,20)}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Results section with edit/delete
+        let resultsHtml = '';
+        if (results.length === 0) {
+            resultsHtml = '<div class="empty-state"><div class="empty-icon">🖼️</div><p>No results yet</p></div>';
+        } else {
+            resultsHtml = results.slice(0, 5).map(r => {
+                const catName = getCategoryName(r.badge);
+                return `
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="title">${r.title}</div>
+                            <div class="sub">${catName}</div>
+                            <div class="meta"><a href="${r.image}" target="_blank" style="color:#b8860b;text-decoration:none;">View Image</a></div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="edit-btn" onclick="editResult('${r.id}')"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn" onclick="deleteItem('results', '${r.id}', '${r.title}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         container.innerHTML = `
             <div class="stats-row">
                 <div class="stat-card"><div class="num">${totalServices}</div><div class="label">Total Services</div></div>
@@ -1573,6 +1644,28 @@
             <div class="admin-card">
                 <div class="card-header"><h3>Top Services</h3></div>
                 ${topServicesHtml}
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Reviews</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${reviews.length} total</span>
+                        <button class="btn btn-primary btn-sm" onclick="switchTab('reviews')">View All</button>
+                    </div>
+                </div>
+                ${reviewsHtml}
+            </div>
+
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Results</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${results.length} total</span>
+                        <button class="btn btn-primary btn-sm" onclick="switchTab('results')">View All</button>
+                    </div>
+                </div>
+                ${resultsHtml}
             </div>
 
             <div class="admin-card">
@@ -1782,49 +1875,49 @@
     // ============================================================
     // RESULTS - WITH PREVIEW IMAGE
     // ============================================================
-function renderResults(container) {
-    document.getElementById('resultCount').textContent = results.length;
-    let html = `
-        <div class="admin-card">
-            <div class="card-header">
-                <h3>Results</h3>
-                <div class="card-actions">
-                    <span class="count-badge">${results.length} total</span>
-                    <button class="btn btn-primary" id="addResultBtn">Add Result</button>
+    function renderResults(container) {
+        document.getElementById('resultCount').textContent = results.length;
+        let html = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Results</h3>
+                    <div class="card-actions">
+                        <span class="count-badge">${results.length} total</span>
+                        <button class="btn btn-primary" id="addResultBtn">Add Result</button>
+                    </div>
                 </div>
-            </div>
-            ${results.length === 0 ? `
-                <div class="empty-state">
-                    <div class="empty-icon">🖼️</div>
-                    <p>No results yet. Add your first result.</p>
-                </div>
-            ` : results.map(r => {
-                const cat = categories.find(c => c.id === r.badge);
-                const catName = cat ? cat.name : r.badge;
-                return `
-                    <div class="result-item">
-                        <img src="${r.image}" alt="${r.title}" class="result-preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23eee%22 width=%2250%22 height=%2250%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 font-size=%2224%22%3E🖼%3C/text%3E%3C/svg%3E'" />
-                        <div class="result-info">
-                            <div class="title">${r.title}</div>
-                            <div class="sub">${catName}</div>
-                            <div class="meta">
-                                <a href="${r.image}" target="_blank">View Image</a>
+                ${results.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">🖼️</div>
+                        <p>No results yet. Add your first result.</p>
+                    </div>
+                ` : results.map(r => {
+                    const cat = categories.find(c => c.id === r.badge);
+                    const catName = cat ? cat.name : r.badge;
+                    return `
+                        <div class="result-item">
+                            <img src="${r.image}" alt="${r.title}" class="result-preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2250%22 height=%2250%22%3E%3Crect fill=%22%23eee%22 width=%2250%22 height=%2250%22/%3E%3Ctext x=%2225%22 y=%2232%22 text-anchor=%22middle%22 font-size=%2224%22%3E🖼%3C/text%3E%3C/svg%3E'" />
+                            <div class="result-info">
+                                <div class="title">${r.title}</div>
+                                <div class="sub">${catName}</div>
+                                <div class="meta">
+                                    <a href="${r.image}" target="_blank">View Image</a>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="edit-btn" data-id="${r.id}" data-type="results"><i class="fas fa-edit"></i></button>
+                                <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
-                        <div class="item-actions">
-                            <button class="edit-btn" data-id="${r.id}" data-type="results"><i class="fas fa-edit"></i></button>
-                            <button class="delete-btn" data-id="${r.id}" data-type="results" data-name="${r.title}"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('')}
-        </div>
-    `;
-    container.innerHTML = html;
+                    `;
+                }).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
 
-    document.getElementById('addResultBtn')?.addEventListener('click', function() { openResultModal(); });
-    attachListActions(container);
-}
+        document.getElementById('addResultBtn')?.addEventListener('click', function() { openResultModal(); });
+        attachListActions(container);
+    }
 
     function openResultModal(data) {
         const isEdit = !!data;
@@ -1861,7 +1954,7 @@ function renderResults(container) {
     }
 
     // ============================================================
-    // ORDERS - FIXED ORDER ID
+    // ORDERS - FIXED ORDER ID + RECEIPT 2 COLUMN
     // ============================================================
     function renderOrders(container) {
         document.getElementById('orderCount').textContent = orders.length;
@@ -2060,7 +2153,7 @@ function renderResults(container) {
         });
     }
 
-    // ===== RECEIPT FUNCTIONS =====
+    // ===== RECEIPT FUNCTIONS - FIXED 2 COLUMN =====
     function viewReceiptOrder(id) {
         if (!id) {
             showToast('Order ID is missing');
@@ -2094,13 +2187,17 @@ function renderResults(container) {
 
         const orderId = order.id || order.orderId || 'N/A';
 
+        // 2 COLUMN: name + qty on left, price on right
         let servicesHtml = '';
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 servicesHtml += `
-                    <div class="receipt-row">
-                        <span class="label">${s.name} × ${s.qty}</span>
-                        <span class="value">RM${(s.price * s.qty).toFixed(2)}</span>
+                    <div class="receipt-service">
+                        <div class="service-left">
+                            <span class="service-name">${s.name}</span>
+                            <span class="service-qty"> × ${s.qty}</span>
+                        </div>
+                        <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
                     </div>
                 `;
             });
@@ -2150,7 +2247,7 @@ function renderResults(container) {
 
                 <hr class="receipt-divider" />
 
-                <div style="font-weight:600;margin-bottom:4px;">Services</div>
+                <div style="font-weight:600;margin-bottom:4px;font-size:12px;">Services</div>
                 ${servicesHtml}
 
                 <hr class="receipt-divider" />
@@ -2162,7 +2259,7 @@ function renderResults(container) {
 
                 ${order.notes ? `
                     <hr class="receipt-divider" />
-                    <div style="font-size:12px;color:#555555;">
+                    <div style="font-size:11px;color:#555555;">
                         <strong>Notes:</strong> ${order.notes}
                     </div>
                 ` : ''}
@@ -2199,13 +2296,17 @@ function renderResults(container) {
 
         const orderId = order.id || order.orderId || 'N/A';
 
+        // 2 COLUMN for PDF
         let servicesHtml = '';
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 servicesHtml += `
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;">
-                        <span style="color:#555555;">${s.name} × ${s.qty}</span>
-                        <span style="font-weight:600;color:#000000;">RM${(s.price * s.qty).toFixed(2)}</span>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                        <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                            <span style="font-weight:500;">${s.name}</span>
+                            <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                        </div>
+                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
                     </div>
                 `;
             });
@@ -2216,63 +2317,63 @@ function renderResults(container) {
         const date = order.date ? new Date(order.date).toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : 'N/A';
 
         const receiptHTML = `
-            <div style="max-width:210mm;margin:0 auto;padding:20px 24px;background:#ffffff;color:#000000;font-family:'Courier New',monospace;font-size:13px;line-height:1.6;text-align:justify;">
-                <div style="text-align:center;margin-bottom:16px;">
-                    <img src="logo.png" alt="Socmegy" style="width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:4px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
-                    <div style="font-size:18px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div>
-                    <div style="font-size:11px;color:#555555;">Order Receipt</div>
+            <div style="max-width:210mm;margin:0 auto;padding:16px 18px;background:#ffffff;color:#000000;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;border:1px solid #eaeaee;border-radius:8px;">
+                <div style="text-align:center;margin-bottom:12px;">
+                    <img src="logo.png" alt="Socmegy" style="width:50px;height:50px;border-radius:50%;object-fit:cover;margin-bottom:4px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+                    <div style="font-size:16px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div>
+                    <div style="font-size:10px;color:#555555;">Order Receipt</div>
                 </div>
 
-                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
 
-                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
                     <span style="color:#555555;">Order ID</span>
                     <span style="font-weight:600;color:#000000;">${orderId}</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
                     <span style="color:#555555;">Date</span>
                     <span style="font-weight:600;color:#000000;">${date}</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
                     <span style="color:#555555;">Status</span>
                     <span style="font-weight:600;color:${statusColor};">${statusLabel}</span>
                 </div>
 
-                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
 
-                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
                     <span style="color:#555555;">Customer</span>
                     <span style="font-weight:600;color:#000000;">${order.customer?.name || 'Unknown'}</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
                     <span style="color:#555555;">Phone</span>
                     <span style="font-weight:600;color:#000000;">${order.customer?.phone || 'N/A'}</span>
                 </div>
-                <div style="display:flex;justify-content:space-between;padding:2px 0;">
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
                     <span style="color:#555555;">Link</span>
                     <span style="font-weight:600;color:#000000;">${order.link || 'N/A'}</span>
                 </div>
 
-                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
 
-                <div style="font-weight:600;margin-bottom:4px;">Services</div>
+                <div style="font-weight:600;margin-bottom:4px;font-size:12px;">Services</div>
                 ${servicesHtml}
 
-                <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
 
-                <div style="font-size:16px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
+                <div style="font-size:14px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
                     <span>Total</span>
                     <span>RM${(order.total || 0).toFixed(2)}</span>
                 </div>
 
                 ${order.notes ? `
-                    <hr style="border:none;border-top:1px dashed #cccccc;margin:8px 0;" />
-                    <div style="font-size:12px;color:#555555;">
+                    <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
+                    <div style="font-size:11px;color:#555555;">
                         <strong>Notes:</strong> ${order.notes}
                     </div>
                 ` : ''}
 
-                <div style="text-align:center;font-size:11px;color:#555555;margin-top:12px;border-top:1px dashed #cccccc;padding-top:10px;">
+                <div style="text-align:center;font-size:10px;color:#555555;margin-top:10px;border-top:1px dashed #cccccc;padding-top:8px;">
                     Thank you for your order!<br />
                     For any inquiries, contact us on WhatsApp
                 </div>
@@ -2892,9 +2993,10 @@ function renderResults(container) {
 
     console.log('✅ Admin panel ready');
     console.log('✅ Order ID FIXED - guna orderId dari Firebase');
-    console.log('✅ Receipt tunjuk order ID dengan betul');
-    console.log('✅ Login mobile guna bg.jpg');
-    console.log('✅ Logo mobile center dengan jarak minimum');
+    console.log('✅ Receipt 2 COLUMN - name left, price right');
+    console.log('✅ Long names wrap to next line, stay left aligned');
+    console.log('✅ Dashboard reviews & results ada edit/delete buttons');
+    console.log('✅ Results tab buttons ada design gold/merah');
 </script>
 
 </body>
