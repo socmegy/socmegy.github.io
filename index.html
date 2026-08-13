@@ -18,7 +18,7 @@
         html, body { height: 100%; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #f5f5f7;
+            background: #ffffff;
             color: #1d1d1f;
             padding: 0;
             transition: background 0.3s, color 0.3s;
@@ -36,7 +36,8 @@
             flex-direction: column;
             flex: 1;
         }
-        .app-content { flex: 1; }
+        :root { --announcement-height: 0px; --navbar-height: 64px; }
+        .app-content { flex: 1; padding-top: calc(var(--announcement-height) + var(--navbar-height)); }
 
         /* ===== DARK MODE ===== */
         body.dark-mode {
@@ -175,97 +176,21 @@
             padding: 8px 40px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            overflow: hidden;
-            position: relative;
-            z-index: 49;
+            justify-content: center;
+            gap: 0;
+            overflow: visible;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 51;
             transition: background 0.3s;
-            cursor: pointer;
-            width: 100%;
         }
-        .announcement-bar .announce-icon { color: #b8860b; font-size: 14px; flex-shrink: 0; }
-        .announcement-bar .announce-text { 
-            flex: 1; 
-            font-size: 13px; 
-            font-weight: 500; 
-            color: #b8860b; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-        }
-        .announcement-bar .announce-close { 
-            background: none; 
-            border: none; 
-            color: #8e8e93; 
-            cursor: pointer; 
-            font-size: 16px; 
-            flex-shrink: 0; 
-            padding: 4px; 
-            position: relative;
-            z-index: 2;
-        }
+        .announcement-bar .announce-icon { position: absolute; left: 40px; color: #b8860b; font-size: 14px; }
+        .announcement-bar .announce-text { max-width: min(900px, calc(100% - 120px)); font-size: 13px; font-weight: 500; color: #b8860b; text-align: center; white-space: normal; overflow-wrap: anywhere; line-height: 1.45; }
+        .announcement-bar .announce-close { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8e8e93; cursor: pointer; font-size: 16px; padding: 4px; }
         .announcement-bar .announce-close:hover { color: #1d1d1f; }
-        .announcement-bar .announce-multiple { display: flex; gap: 4px; flex-shrink: 0; }
-        .announcement-bar .announce-dot { width: 6px; height: 6px; border-radius: 50%; background: #d2d2d7; cursor: pointer; transition: background 0.3s; }
-        .announcement-bar .announce-dot.active { background: #b8860b; }
-        .announcement-bar .click-hint { 
-            font-size: 10px; 
-            color: #b8860b; 
-            opacity: 0.5; 
-            flex-shrink: 0; 
-            display: none;
-            align-items: center;
-            gap: 2px;
-        }
-        @media (max-width: 768px) {
-            .announcement-bar .click-hint { display: flex; }
-        }
-
-        /* ===== ANNOUNCEMENT READ MODAL ===== */
-        #announceReadModal .modal {
-            max-width: 480px;
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        #announceReadModal .modal-body {
-            padding: 8px 4px 0 4px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #1d1d1f;
-        }
-        #announceReadModal .modal-body .announce-list-item {
-            padding: 8px 0;
-            font-size: 13px;
-            color: #b8860b;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        #announceReadModal .modal-body .announce-list-item:last-child {
-            border-bottom: none;
-        }
-        #announceReadModal .modal-body .announce-list-item .active-indicator {
-            color: #b8860b;
-            font-size: 12px;
-        }
-        body.dark-mode #announceReadModal .modal {
-            background: rgba(30,30,30,0.9);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        body.dark-mode #announceReadModal .modal-body {
-            color: #e8e8e8;
-        }
-        body.dark-mode #announceReadModal .modal-body .announce-list-item {
-            color: #d4a017;
-            border-bottom-color: rgba(255,255,255,0.05);
-        }
+        .announcement-bar .announce-read-more { display: none; }
 
         /* ===== PROMOTIONAL POPUP ===== */
         .popup-overlay {
@@ -313,10 +238,11 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            position: sticky;
-            top: 0;
+            position: fixed;
+            top: var(--announcement-height);
+            left: 0;
+            right: 0;
             z-index: 50;
-            width: 100%;
             transition: background 0.3s, border-color 0.3s;
         }
         .navbar .logo { display: flex; align-items: center; gap: 10px; }
@@ -420,6 +346,15 @@
         .section { padding: 0 40px 0px; margin-top: 40px; width: 100%; }
         .section-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 20px; color: #b8860b; }
         .section-title .gold { color: #b8860b; }
+        #custom .section-title,
+        #custom .section-title .gold {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
         .section-title .info-icon-gold { color: #b8860b; font-size: 20px; cursor: pointer; margin-left: 6px; transition: opacity 0.2s; display: inline-block; vertical-align: middle; line-height: 1; }
         .section-title .info-icon-gold:hover { opacity: 0.7; }
 
@@ -469,13 +404,13 @@
             position: relative;
         }
         .service-card:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); }
-        .service-card .info { flex: 1; min-width: 80px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .service-card .info { flex: 1; min-width: 100px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .service-card .info .name { font-size: 13px; font-weight: 600; color: #b8860b; }
         .service-card .info .discount-badge { background: #b8860b; color: #ffffff; font-size: 9px; font-weight: 600; padding: 1px 8px; border-radius: 30px; }
         .service-card .info .desc { font-size: 11px; color: #6e6e73; width: 100%; }
-        .service-card .price-row { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; margin-left: auto; flex-shrink: 0; }
+        .service-card .price-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto; }
         .service-card .price-row .price { font-weight: 700; font-size: 13px; background: #e8e8ed; padding: 2px 10px; border-radius: 30px; color: #b8860b; }
-        .service-card .price-row .original { font-size: 11px; color: #8e8e93; text-decoration: line-through; flex-shrink: 0; }
+        .service-card .price-row .original { font-size: 11px; color: #8e8e93; text-decoration: line-through; }
         .service-card .btn-add { background: #b8860b; color: #ffffff; border: none; padding: 5px 14px; border-radius: 30px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex-shrink: 0; white-space: nowrap; }
         .service-card .btn-add:hover { background: #d4a017; }
         .service-card .btn-add:disabled { background: #c7c7cc; color: #8e8e93; cursor: not-allowed; }
@@ -527,7 +462,7 @@
             width: 100%;
         }
         .custom-wrap .custom-card {
-            background: rgba(255, 255, 255, 0.92);
+            background: #ffffff;
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             border-radius: 16px;
@@ -637,7 +572,7 @@
 
         /* ===== TRACK ORDER ===== */
         .track-wrap { max-width: 100%; margin: 0 auto; }
-        .track-wrap .track-card { background: #f8f8fa; border-radius: 16px; padding: 24px; border: 1px solid #eaeaee; }
+        .track-wrap .track-card { background: #ffffff; border-radius: 16px; padding: 24px; border: 1px solid #eaeaee; }
         .track-wrap .search-group { display: flex; gap: 10px; margin-bottom: 12px; }
         .track-wrap .search-group input { flex: 1; padding: 12px 16px; border-radius: 12px; border: 1px solid #eaeaee; font-size: 15px; background: #ffffff; transition: border 0.2s; }
         .track-wrap .search-group input:focus { outline: none; border-color: #b8860b; }
@@ -651,7 +586,7 @@
         .track-wrap .order-item:hover { border-color: #b8860b; }
         .track-wrap .order-item .order-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
         .track-wrap .order-item .order-id { font-weight: 600; color: #b8860b; font-size: 14px; }
-        .track-wrap .order-item .order-date { font-size: 12px; color: #8e8e93; text-align: left; }
+        .track-wrap .order-item .order-date { font-size: 12px; color: #8e8e93; }
         .track-wrap .order-item .order-status { font-size: 11px; padding: 2px 12px; border-radius: 30px; font-weight: 600; color: #ffffff; }
         .track-wrap .order-item .order-meta { font-size: 12px; color: #6e6e73; }
         .track-wrap .order-item .order-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -688,10 +623,10 @@
         .receipt .receipt-row .label { color: #555555; }
         .receipt .receipt-row .value { font-weight: 600; color: #000000; }
         
-        /* ===== RECEIPT SERVICE - 2 COLUMN ===== */
+        /* ===== RECEIPT SERVICE - THREE COLUMNS ===== */
         .receipt .receipt-service {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) max-content max-content;
             align-items: flex-start;
             padding: 3px 0;
             border-bottom: 1px dashed #eeeeee;
@@ -700,12 +635,10 @@
         .receipt .receipt-service:last-child { border-bottom: none; }
         
         .receipt .receipt-service .service-left {
-            flex: 1;
             min-width: 0;
             font-size: 10px;
             color: #333333;
-            word-wrap: break-word;
-            word-break: break-word;
+            overflow-wrap: anywhere;
             line-height: 1.4;
             text-align: left;
         }
@@ -722,24 +655,25 @@
             font-size: 10px;
             color: #8e8e93;
             text-decoration: line-through;
-            margin-left: 6px;
+            white-space: nowrap;
         }
         /* Discount percentage tag */
         .receipt .receipt-service .service-discount {
             font-size: 10px;
             color: #e74c3c;
             font-weight: 600;
-            margin-left: 4px;
+            white-space: nowrap;
         }
+        .receipt .receipt-service .service-discount-info { white-space: nowrap; text-align: right; }
         
         .receipt .receipt-service .service-price {
-            flex-shrink: 0;
             font-size: 11px;
             font-weight: 700;
             color: #000000;
-            margin-left: 10px;
+            white-space: nowrap;
             padding-top: 1px;
         }
+        .receipt .receipt-service .service-price:last-child { grid-column: 3; }
         
         /* ===== PACKAGE HEADER IN RECEIPT ===== */
         .receipt .package-header {
@@ -812,7 +746,7 @@
         .footer {
             padding: 14px 40px 14px;
             margin-top: 40px;
-            background: #f8f8fa;
+            background: #ffffff;
             border-top: 1px solid #eaeaee;
             display: flex;
             justify-content: space-between;
@@ -1079,13 +1013,9 @@
             .toast-container { padding: 0 20px; }
             .service-card { flex-direction: row; flex-wrap: wrap; align-items: center; padding: 14px 20px; }
             .service-card .info { flex: 1 1 100%; min-width: 0; }
-            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; flex-wrap: nowrap; gap: 4px; }
-            .service-card .price-row .price { font-size: 12px; padding: 2px 8px; }
-            .service-card .price-row .original { font-size: 10px; }
-            .service-card .btn-add { flex-shrink: 0; margin-left: 6px; font-size: 10px; padding: 4px 10px; }
+            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; }
+            .service-card .btn-add { flex-shrink: 0; margin-left: 6px; }
             .service-card .info .desc { font-size: 11px; }
-            .service-card .info .name { font-size: 12px; }
-            .service-card .info .discount-badge { font-size: 8px; padding: 0 6px; }
             .custom-wrap { padding: 10px; }
             .custom-wrap .custom-card { padding: 10px 12px; }
             .results-scroll .result { flex: 0 0 130px; }
@@ -1108,9 +1038,12 @@
             .telegram-float i { font-size: 24px; }
             .telegram-float .tooltip { display: none; }
             .announcement-bar { padding: 6px 20px; }
-            .announcement-bar .announce-text { font-size: 12px; }
+            .announcement-bar .announce-icon { position: static; flex-shrink: 0; }
+            .announcement-bar { gap: 8px; }
+            .announcement-bar .announce-text { flex: 1; min-width: 0; max-width: none; font-size: 12px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .announcement-bar .announce-read-more { display: inline; flex-shrink: 0; border: none; background: none; color: #b8860b; font-size: 12px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
+            .announcement-bar .announce-close { position: static; transform: none; flex-shrink: 0; }
             .announcement-bar .announce-icon { font-size: 12px; }
-            .announcement-bar .click-hint { font-size: 8px; }
             .track-wrap .search-group { flex-direction: column; }
             .track-wrap .search-group button { width: 100%; }
             .track-wrap .search-group input { font-size: 14px !important; padding: 10px 14px !important; }
@@ -1127,10 +1060,7 @@
             .receipt .receipt-header .title { font-size: 14px; }
             .receipt .receipt-service .service-left { font-size: 9px; }
             .receipt .receipt-service .service-price { font-size: 10px; }
-            .receipt .receipt-service .service-original { font-size: 8px; margin-left: 3px; }
-            .receipt .receipt-service .service-discount { font-size: 8px; margin-left: 2px; }
             .receipt .receipt-total { font-size: 13px; }
-            .receipt .package-header { font-size: 10px; }
         }
 
         @media (max-width: 480px) {
@@ -1160,13 +1090,11 @@
             .dropdown-body .service-list { gap: 6px; }
             .service-card { padding: 14px 20px !important; gap: 4px; flex-direction: row; flex-wrap: wrap; align-items: center; }
             .service-card .info { flex: 1 1 100%; min-width: 0; }
-            .service-card .info .name { font-size: 11px; }
+            .service-card .info .name { font-size: 12px; }
             .service-card .info .desc { font-size: 10px; }
-            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; flex-wrap: nowrap; gap: 3px; }
-            .service-card .price-row .price { font-size: 11px; padding: 1px 7px; }
-            .service-card .price-row .original { font-size: 9px; }
+            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; }
+            .service-card .price-row .price { font-size: 12px; padding: 2px 8px; }
             .service-card .btn-add { font-size: 10px; padding: 4px 10px; flex-shrink: 0; margin-left: 4px; }
-            .service-card .info .discount-badge { font-size: 7px; padding: 0 5px; }
             .modal { padding: 16px 18px 18px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .modal .modal-body { padding: 14px 8px 0 8px; }
             .modal .modal-body .cart-modal-item { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 0; }
@@ -1213,7 +1141,6 @@
             .announcement-bar { padding: 4px 14px; }
             .announcement-bar .announce-text { font-size: 11px; }
             .announcement-bar .announce-icon { font-size: 10px; }
-            .announcement-bar .click-hint { font-size: 8px; }
             .track-wrap .track-card { padding: 16px; }
             .track-wrap .search-group input { font-size: 13px !important; padding: 10px 12px !important; }
             .track-wrap .search-group input::placeholder { font-size: 12px !important; }
@@ -1229,12 +1156,9 @@
             .receipt .receipt-header img { width: 40px; height: 40px; }
             .receipt .receipt-service .service-left { font-size: 8px; }
             .receipt .receipt-service .service-price { font-size: 9px; }
-            .receipt .receipt-service .service-original { font-size: 7px; margin-left: 3px; }
-            .receipt .receipt-service .service-discount { font-size: 7px; margin-left: 2px; }
             .receipt .receipt-total { font-size: 12px; }
             .receipt .receipt-row { font-size: 10px; }
             .receipt .receipt-footer { font-size: 9px; }
-            .receipt .package-header { font-size: 9px; }
         }
     </style>
 </head>
@@ -1242,31 +1166,15 @@
 
 <div class="app">
 
-    <!-- ===== ANNOUNCEMENT BAR - DI ATAS (SEBELUM NAVBAR) ===== -->
+    <!-- ===== ANNOUNCEMENT BAR ===== -->
     <div class="announcement-bar" id="announcementBar" style="display:none;">
         <span class="announce-icon"><i class="fas fa-bullhorn"></i></span>
         <span class="announce-text" id="announceText">Loading announcements...</span>
-        <span class="click-hint"><i class="fas fa-chevron-right"></i> tap</span>
-        <div class="announce-multiple" id="announceDots"></div>
+        <button class="announce-read-more" type="button" onclick="openAnnouncementModal()">Read more</button>
         <button class="announce-close" id="announceClose"><i class="fas fa-times"></i></button>
     </div>
 
-    <!-- ===== ANNOUNCEMENT READ MODAL ===== -->
-    <div class="modal-overlay" id="announceReadModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2><i class="fas fa-bullhorn"></i> Announcement</h2>
-                <div class="header-actions">
-                    <button class="close" id="announceReadClose">✕</button>
-                </div>
-            </div>
-            <div class="modal-body" id="announceReadBody">
-                <div style="text-align:center;padding:20px;color:#8e8e93;">Loading...</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== HEADER / NAVBAR ===== -->
+    <!-- ===== HEADER ===== -->
     <header class="navbar">
         <div class="logo">
             <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22 viewBox=%220 0 36 36%22%3E%3Crect width=%2236%22 height=%2236%22 rx=%2218%22 fill=%22%23b8860b%22/%3E%3Ctext x=%2218%22 y=%2224%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-weight=%22700%22 font-size=%2216%22 fill=%22%23ffffff%22%3ES%3C/text%3E%3C/svg%3E';" />
@@ -1351,7 +1259,7 @@
             <div class="section-title">Track <span class="gold">Order</span></div>
             <div class="track-wrap">
                 <div class="track-card">
-                    <div class="search-label">Enter your <strong>phone number</strong> or <strong>Order ID</strong></div>
+                    <div class="search-label">Enter your <strong>phone number</strong> or <strong>Order ID</strong>. Phone lookup requires your 8-digit tracking PIN.</div>
                     <div class="search-group">
                         <input type="text" id="trackInput" placeholder="e.g. 60123456789 or SOC-20260813-a7x9k2" />
                         <button onclick="trackOrder()">Track</button>
@@ -1452,6 +1360,11 @@
                         <div style="font-size:12px;color:#6e6e73;margin-top:4px;">Example: https://instagram.com/username</div>
                     </div>
                     <div style="margin-bottom:14px;">
+                        <label style="font-weight:600;display:block;margin-bottom:4px;color:#b8860b;">Tracking PIN</label>
+                        <input type="password" id="custTrackingPin" inputmode="numeric" autocomplete="new-password" maxlength="8" placeholder="Create or enter an 8-digit PIN" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);font-size:15px;font-family:inherit;background:rgba(255,255,255,0.3);" required />
+                        <div style="font-size:12px;color:#6e6e73;margin-top:4px;">Use this with your phone number to view all future receipts.</div>
+                    </div>
+                    <div style="margin-bottom:14px;">
                         <label style="font-weight:600;display:block;margin-bottom:4px;color:#b8860b;">Payment Method</label>
                         <div style="display:flex;gap:10px;flex-wrap:wrap;">
                             <label style="flex:1;background:rgba(245,245,247,0.3);border-radius:14px;padding:12px 16px;border:2px solid #b8860b;display:flex;align-items:center;gap:10px;cursor:pointer;">
@@ -1514,7 +1427,7 @@
     </div>
 
     <!-- ===== RECEIPT MODAL ===== -->
-    <div class="modal-overlay" id="receiptModal">
+<div class="modal-overlay" id="receiptModal">
         <div class="modal">
             <div class="modal-header">
                 <h2>Order Receipt</h2>
@@ -1532,6 +1445,30 @@
         </div>
     </div>
 
+</div>
+
+<div class="modal-overlay" id="trackingPinModal">
+    <div class="modal" style="max-width:400px;">
+        <div class="modal-header">
+            <h2>Enter Tracking PIN</h2>
+            <div class="header-actions"><button class="close" type="button" onclick="closeTrackingPinModal()">✕</button></div>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:13px;color:#6e6e73;margin-bottom:12px;">Enter the 8-digit PIN for <strong id="trackingPinPhone"></strong> to view all orders and receipts.</p>
+            <input type="password" id="trackingPinInput" inputmode="numeric" maxlength="8" placeholder="8-digit PIN" style="width:100%;padding:12px 14px;border-radius:12px;border:1px solid #eaeaee;font-size:15px;font-family:inherit;" />
+        </div>
+        <div class="modal-footer"><button class="btn-checkout" type="button" onclick="submitTrackingPin()">View Orders</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="announcementModal">
+    <div class="modal" style="max-width:520px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-bullhorn"></i> Announcement</h2>
+            <div class="header-actions"><button class="close" type="button" onclick="document.getElementById('announcementModal').classList.remove('open')">✕</button></div>
+        </div>
+        <div class="modal-body" id="announcementModalBody" style="font-size:14px;line-height:1.7;text-align:justify;"></div>
+    </div>
 </div>
 
 <!-- Firebase SDK -->
@@ -1599,6 +1536,43 @@
     function formatPrice(val) {
         if (isNaN(val) || val === undefined || val === null) return 'RM0.00';
         return 'RM' + Number(val).toFixed(2);
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        })[char]);
+    }
+
+    function isSafeExternalUrl(value) {
+        try {
+            const url = new URL(value);
+            return url.protocol === 'https:' || url.protocol === 'http:';
+        } catch {
+            return false;
+        }
+    }
+
+    function sanitizeReadContent(value) {
+        const template = document.createElement('template');
+        template.innerHTML = String(value ?? '');
+        template.content.querySelectorAll('script,style,iframe,object,embed,form').forEach(node => node.remove());
+        template.content.querySelectorAll('*').forEach(node => {
+            [...node.attributes].forEach(attribute => {
+                const name = attribute.name.toLowerCase();
+                const content = attribute.value.trim().toLowerCase();
+                if (name.startsWith('on') || ((name === 'href' || name === 'src') && content.startsWith('javascript:'))) {
+                    node.removeAttribute(attribute.name);
+                }
+            });
+        });
+        return template.innerHTML;
+    }
+
+    async function getTrackingAccessKey(phone, pin) {
+        const data = new TextEncoder().encode(`${phone}:${pin}`);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
     }
 
     function getFinalPrice(item) {
@@ -1696,29 +1670,16 @@
     function renderAnnouncements() {
         const bar = document.getElementById('announcementBar');
         const text = document.getElementById('announceText');
-        const dots = document.getElementById('announceDots');
-
         if (announcements.length === 0) {
             bar.style.display = 'none';
+            updateHeaderOffsets();
             return;
         }
 
         bar.style.display = 'flex';
+        updateHeaderOffsets();
         currentAnnounceIndex = 0;
         showAnnouncement(0);
-
-        dots.innerHTML = announcements.map((_, i) => 
-            `<span class="announce-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`
-        ).join('');
-
-        dots.querySelectorAll('.announce-dot').forEach(dot => {
-            dot.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const idx = parseInt(this.dataset.index);
-                showAnnouncement(idx);
-                resetAnnounceTimer();
-            });
-        });
 
         if (announceInterval) clearInterval(announceInterval);
         if (announcements.length > 1) {
@@ -1733,12 +1694,22 @@
         if (index >= announcements.length) return;
         currentAnnounceIndex = index;
         const ann = announcements[index];
-        const textEl = document.getElementById('announceText');
-        textEl.textContent = ann.text || '';
-        textEl.dataset.fullText = ann.text || '';
-        document.querySelectorAll('.announce-dot').forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
+        document.getElementById('announceText').textContent = ann.text || '';
+        updateHeaderOffsets();
+    }
+
+    function updateHeaderOffsets() {
+        const bar = document.getElementById('announcementBar');
+        const navbar = document.querySelector('.navbar');
+        document.documentElement.style.setProperty('--announcement-height', bar.style.display === 'none' ? '0px' : `${bar.offsetHeight}px`);
+        document.documentElement.style.setProperty('--navbar-height', `${navbar.offsetHeight}px`);
+    }
+
+    function openAnnouncementModal() {
+        const announcement = announcements[currentAnnounceIndex];
+        if (!announcement) return;
+        document.getElementById('announcementModalBody').textContent = announcement.text || '';
+        document.getElementById('announcementModal').classList.add('open');
     }
 
     function resetAnnounceTimer() {
@@ -1753,47 +1724,9 @@
         }
     }
 
-    // ===== ANNOUNCEMENT READ MODAL =====
-    function openAnnounceReadModal() {
-        const textEl = document.getElementById('announceText');
-        const fullText = textEl.dataset.fullText || textEl.textContent || 'No announcement';
-        
-        let listHtml = '';
-        if (announcements.length > 1) {
-            listHtml = `
-                <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.05);">
-                    <div style="font-size:12px;color:#8e8e93;margin-bottom:6px;">Other announcements:</div>
-                    ${announcements.map((a, i) => `
-                        <div class="announce-list-item" onclick="showAnnouncement(${i});document.getElementById('announceReadModal').classList.remove('open');">
-                            ${i === currentAnnounceIndex ? '<span class="active-indicator">▶</span>' : ''} 
-                            ${a.text}
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-        
-        document.getElementById('announceReadBody').innerHTML = `
-            <div style="padding:4px 0;">
-                <div style="font-size:15px;line-height:1.7;color:#1d1d1f;">${fullText}</div>
-                ${listHtml}
-            </div>
-        `;
-        document.getElementById('announceReadModal').classList.add('open');
-    }
-
-    document.getElementById('announcementBar').addEventListener('click', function(e) {
-        if (e.target.closest('.announce-close') || e.target.closest('.announce-dot')) return;
-        openAnnounceReadModal();
-    });
-
-    document.getElementById('announceReadClose').addEventListener('click', function() {
-        document.getElementById('announceReadModal').classList.remove('open');
-    });
-
-    document.getElementById('announceClose').addEventListener('click', function(e) {
-        e.stopPropagation();
+    document.getElementById('announceClose').addEventListener('click', function() {
         document.getElementById('announcementBar').style.display = 'none';
+        updateHeaderOffsets();
         if (announceInterval) clearInterval(announceInterval);
     });
 
@@ -2036,8 +1969,8 @@
         container.innerHTML = reviews.map(r => `
             <div class="review">
                 <div class="stars">${renderStars(r.stars)}</div>
-                <div class="quote">${r.quote}</div>
-                <div class="customer">${r.customer}</div>
+                <div class="quote">${escapeHtml(r.quote)}</div>
+                <div class="customer">${escapeHtml(r.customer)}</div>
             </div>
         `).join('');
     }
@@ -2052,17 +1985,20 @@
         container.innerHTML = results.map(r => {
             const catName = getCategoryName(r.badge);
             return `
-                <div class="result" onclick="openImageModal('${r.image}')">
+                <div class="result" data-image="${escapeHtml(r.image)}">
                     <div class="image-wrap">
-                        <img src="${r.image}" alt="${r.title}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23e8e8ed%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%22200%22 y=%22200%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2220%22 fill=%22%238e8e93%22%3ENo Image%3C/text%3E%3C/svg%3E'" />
+                        <img src="${isSafeExternalUrl(r.image) ? escapeHtml(r.image) : ''}" alt="${escapeHtml(r.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23e8e8ed%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%22200%22 y=%22200%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2220%22 fill=%22%238e8e93%22%3ENo Image%3C/text%3E%3C/svg%3E'" />
                     </div>
                     <div class="info">
-                        <span class="badge">${catName}</span>
-                        <div class="title">${r.title}</div>
+                        <span class="badge">${escapeHtml(catName)}</span>
+                        <div class="title">${escapeHtml(r.title)}</div>
                     </div>
                 </div>
             `;
         }).join('');
+        container.querySelectorAll('.result').forEach(result => {
+            result.addEventListener('click', () => openImageModal(result.dataset.image));
+        });
     }
 
     // ===== READ CONTENT =====
@@ -2072,16 +2008,23 @@
             container.innerHTML = '<div style="text-align:center;padding:20px;color:#8e8e93;">No content available</div>';
             return;
         }
-        container.innerHTML = readContent;
+        container.innerHTML = sanitizeReadContent(readContent);
     }
 
     // ===== TRACKING FUNCTIONS =====
-    function trackOrder() {
+    let pendingTrackingPhone = '';
+
+    function closeTrackingPinModal() {
+        document.getElementById('trackingPinModal').classList.remove('open');
+        document.getElementById('trackingPinInput').value = '';
+    }
+
+    async function trackOrder() {
         const input = document.getElementById('trackInput').value.trim();
         const results = document.getElementById('trackResults');
         
         if (!input) { 
-            showToast('Please enter your phone number or Order ID'); 
+            showToast('Please enter an Order ID, or your phone number and tracking PIN'); 
             return; 
         }
 
@@ -2104,14 +2047,37 @@
             });
         } else {
             const cleanPhone = input.replace(/[\s\-+()]/g, '');
-            db.ref('customer_orders/' + cleanPhone).once('value').then(snap => {
+            if (!/^\d{9,15}$/.test(cleanPhone)) {
+                showToast('Please enter a valid phone number');
+                return;
+            }
+            pendingTrackingPhone = cleanPhone;
+            document.getElementById('trackingPinPhone').textContent = input;
+            document.getElementById('trackingPinModal').classList.add('open');
+            setTimeout(() => document.getElementById('trackingPinInput').focus(), 100);
+        }
+    }
+
+    async function submitTrackingPin() {
+        const pin = document.getElementById('trackingPinInput').value.trim();
+        const results = document.getElementById('trackResults');
+        if (!/^\d{8}$/.test(pin)) {
+            showToast('Please enter your 8-digit tracking PIN');
+            return;
+        }
+        if (!pendingTrackingPhone) return;
+        closeTrackingPinModal();
+        results.innerHTML = '<div style="text-align:center;padding:20px;color:#8e8e93;">Searching...</div>';
+        try {
+            const accessKey = await getTrackingAccessKey(pendingTrackingPhone, pin);
+            db.ref('customer_access/' + accessKey + '/orders').once('value').then(snap => {
                 const orderIds = snap.val();
                 
                 if (!orderIds) {
                     results.innerHTML = `
                         <div style="text-align:center;padding:20px;color:#8e8e93;background:#fff;border-radius:12px;border:1px solid #eaeaee;">
-                            <p>No orders found for this phone number.</p>
-                            <p style="font-size:12px;">Make sure you entered the correct phone number.</p>
+                            <p>No orders found with this phone number and PIN.</p>
+                            <p style="font-size:12px;">If you forgot your PIN, contact us on WhatsApp for a reset.</p>
                         </div>
                     `;
                     return;
@@ -2121,18 +2087,25 @@
                 const orderPromises = orderKeys.map(id => db.ref('orders/' + id).once('value'));
                 
                 Promise.all(orderPromises).then(snapshots => {
-                    const orders = snapshots.map(snap => ({ id: snap.key, ...snap.val() })).filter(o => o.id);
+                    const orders = snapshots
+                        .filter(snap => snap.exists())
+                        .map(snap => ({ id: snap.key, ...snap.val() }));
                     orders.sort((a, b) => new Date(b.date) - new Date(a.date));
                     renderOrderList(orders, results);
                 });
             }).catch(err => {
                 results.innerHTML = `<div style="color:#e74c3c;">Error: ${err.message}</div>`;
             });
+        } catch (err) {
+            results.innerHTML = '<div style="color:#e74c3c;">Unable to verify the tracking PIN. Please try again.</div>';
         }
     }
 
     document.getElementById('trackInput').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') trackOrder();
+    });
+    document.getElementById('trackingPinInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitTrackingPin();
     });
 
     function renderOrderList(orders, container) {
@@ -2228,10 +2201,12 @@
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
                 
+                // Check if this service has discount
                 const hasDiscount = s.originalPrice && s.originalPrice > s.price;
                 const discountPercent = hasDiscount ? Math.round((1 - s.price / s.originalPrice) * 100) : 0;
 
                 if (s.isCustomPackage && s.packageLabel) {
+                    // Package header
                     if (currentPackage !== s.packageLabel) {
                         currentPackage = s.packageLabel;
                         servicesHtml += `
@@ -2240,11 +2215,14 @@
                     }
                     
                     if (hasDiscount) {
+                        // Package service with discount - show strike-through
                         servicesHtml += `
                             <div class="receipt-service package-indent">
                                 <div class="service-left">
                                     <span class="service-name">${s.name}</span>
                                     <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-discount-info">
                                     <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span class="service-discount">(-${discountPercent}%)</span>
                                 </div>
@@ -2252,6 +2230,7 @@
                             </div>
                         `;
                     } else {
+                        // Package service without discount
                         servicesHtml += `
                             <div class="receipt-service package-indent">
                                 <div class="service-left">
@@ -2264,12 +2243,16 @@
                     }
                     isFirstService = false;
                 } else {
+                    // Individual service
                     if (hasDiscount) {
+                        // Individual service with discount - gold, with strike-through
                         servicesHtml += `
                             <div class="receipt-service individual">
                                 <div class="service-left">
                                     <span class="service-name">${s.name}</span>
                                     <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-discount-info">
                                     <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span class="service-discount">(-${discountPercent}%)</span>
                                 </div>
@@ -2277,6 +2260,7 @@
                             </div>
                         `;
                     } else {
+                        // Individual service without discount
                         servicesHtml += `
                             <div class="receipt-service individual">
                                 <div class="service-left">
@@ -2292,6 +2276,7 @@
             });
         }
 
+        // Calculate discount from order
         if (order.discountAmount) {
             discountTotal = order.discountAmount;
         } else if (order.discount) {
@@ -2335,15 +2320,15 @@
 
                 <div class="receipt-row">
                     <span class="label">Customer</span>
-                    <span class="value">${order.customer?.name || 'Unknown'}</span>
+                    <span class="value">${escapeHtml(order.customer?.name || 'Unknown')}</span>
                 </div>
                 <div class="receipt-row">
                     <span class="label">Phone</span>
-                    <span class="value">${order.customer?.phone || 'N/A'}</span>
+                    <span class="value">${escapeHtml(order.customer?.phone || 'N/A')}</span>
                 </div>
                 <div class="receipt-row">
                     <span class="label">Link</span>
-                    <span class="value">${order.link || 'N/A'}</span>
+                    <span class="value">${escapeHtml(order.link || 'N/A')}</span>
                 </div>
 
                 <hr class="receipt-divider" />
@@ -2372,7 +2357,7 @@
                 ${order.notes ? `
                     <hr class="receipt-divider" />
                     <div style="font-size:11px;color:#555555;">
-                        <strong>Notes:</strong> ${order.notes}
+                        <strong>Notes:</strong> ${escapeHtml(order.notes)}
                     </div>
                 ` : ''}
 
@@ -2436,49 +2421,54 @@
                     
                     if (hasDiscount) {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                                </div>
+                                <div style="white-space:nowrap;text-align:right;">
                                     <span style="font-size:9px;color:#8e8e93;text-decoration:line-through;margin-left:4px;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     } else {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     }
                     isFirstService = false;
                 } else {
+                    // Individual service - GOLD in PDF
                     if (hasDiscount) {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
+                                </div>
+                                <div style="white-space:nowrap;text-align:right;">
                                     <span style="font-size:9px;color:#b8860b;text-decoration:line-through;margin-left:4px;font-weight:400;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     } else {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     }
@@ -2870,14 +2860,37 @@
         document.getElementById('checkoutModal').classList.add('open');
     }
 
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const name = document.getElementById('custName').value.trim();
         const phone = document.getElementById('custPhone').value.trim();
         const link = document.getElementById('custLink').value.trim();
+        const trackingPin = document.getElementById('custTrackingPin').value.trim();
 
         if (!name) { showToast('Please enter your name'); return; }
         if (!phone) { showToast('Please enter your phone number'); return; }
+        const cleanPhone = phone.replace(/[\s\-+()]/g, '');
+        if (!/^\d{9,15}$/.test(cleanPhone)) { showToast('Please enter a valid phone number'); return; }
+        if (link && !isSafeExternalUrl(link)) { showToast('Please enter a valid http(s) link'); return; }
+        if (!/^\d{8}$/.test(trackingPin)) { showToast('Create an 8-digit tracking PIN'); return; }
+        const trackingAccessKey = await getTrackingAccessKey(cleanPhone, trackingPin);
+        let existingProfile;
+        let existingOrderIds;
+        try {
+            const [profileSnap, ordersSnap] = await Promise.all([
+                db.ref('customers/' + cleanPhone).once('value'),
+                db.ref('customer_orders/' + cleanPhone).once('value')
+            ]);
+            existingProfile = profileSnap.val() || null;
+            existingOrderIds = ordersSnap.val() || {};
+        } catch (error) {
+            showToast('Unable to verify your customer details. Please try again.');
+            return;
+        }
+        if (existingProfile?.accessKey && existingProfile.accessKey !== trackingAccessKey) {
+            showToast('Use your existing tracking PIN, or contact us on WhatsApp to reset it.');
+            return;
+        }
 
         let subtotal = 0;
         let totalDiscount = 0;
@@ -2942,10 +2955,20 @@
             notes: ''
         };
 
-        db.ref('orders/' + orderId).set(orderData)
+        const allOrderIds = { ...existingOrderIds, [orderId]: true };
+        db.ref().update({
+            ['orders/' + orderId]: orderData,
+            ['customer_orders/' + cleanPhone + '/' + orderId]: true,
+            ['customer_access/' + trackingAccessKey + '/orders']: allOrderIds,
+            ['customers/' + cleanPhone]: {
+                ...existingProfile,
+                name,
+                phone,
+                accessKey: trackingAccessKey,
+                updatedAt: new Date().toISOString()
+            }
+        })
             .then(() => {
-                db.ref('customer_orders/' + phone.replace(/[\s\-+()]/g, '') + '/' + orderId).set(true);
-
                 let msg = 'ORDER SUMMARY\n==============================\n\n';
                 msg += `Order ID: ${orderId}\n\n`;
                 msg += 'CUSTOMER DETAILS\n';
@@ -3094,8 +3117,9 @@
         const target = document.querySelector(sectionId);
         if (target) {
             const navbarHeight = document.querySelector('.navbar').offsetHeight;
-            const announceHeight = document.getElementById('announcementBar').offsetHeight || 0;
-            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight - announceHeight - 20;
+            const announcementBar = document.getElementById('announcementBar');
+            const announceHeight = announcementBar.style.display === 'none' ? 0 : announcementBar.offsetHeight;
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight - announceHeight - 12;
             window.scrollTo({ top: targetPosition, behavior: 'smooth' });
         }
     }
@@ -3164,7 +3188,7 @@
 
         db.ref('settings').on('value', snap => {
             const data = snap.val() || {};
-            settings = { discountPercent: data.discountPercent || 10, minPurchase: data.minPurchase || 10 };
+            settings = { discountPercent: data.discountPercent ?? 10, minPurchase: data.minPurchase ?? 10 };
             updateCustomSummary();
         });
 
@@ -3178,6 +3202,8 @@
     // ===== INIT =====
     loadData();
     updateCartUI();
+    window.addEventListener('resize', updateHeaderOffsets);
+    updateHeaderOffsets();
 
     setTimeout(loadPopup, 3000);
 
@@ -3188,8 +3214,6 @@
     console.log('✅ Package services BLACK with indent');
     console.log('✅ Footer sticky bottom');
     console.log('✅ All content from Firebase Realtime Database');
-    console.log('✅ Announcement bar - tap to read full text in glass modal');
-    console.log('✅ Discount display fixed on mobile - no overlap');
 </script>
 
 </body>
