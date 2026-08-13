@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Socmegy Admin</title>
+    <title>Socmegy · Admin</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -567,6 +567,25 @@
         .list-item .item-actions .whatsapp-btn:hover {
             background: rgba(37, 211, 102, 0.25);
         }
+        .reset-customer-pin,
+        .btn.reset-customer-pin,
+        .btn.btn-secondary.reset-customer-pin {
+            width: auto;
+            min-width: 96px;
+            height: 34px;
+            padding: 0 13px;
+            border-radius: 10px;
+            background-image: url('bg.jpg') !important;
+            background-size: cover;
+            background-position: center;
+            color: #ffffff !important;
+            font-size: 12px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+        }
+        .reset-customer-pin:hover,
+        .btn.btn-secondary.reset-customer-pin:hover { background-image: url('bg.jpg') !important; filter: brightness(1.07); transform: translateY(-1px); }
 
         /* ===== RESULT ITEM ===== */
         .result-item {
@@ -819,6 +838,11 @@
             pointer-events: auto;
             isolation: isolate;
         }
+        .pin-reset-modal { max-width: 430px; }
+        .pin-reset-note { font-size: 13px; color: #6e6e73; line-height: 1.55; margin: 4px 0 16px; }
+        .pin-reset-value { margin: 16px 0; padding: 14px; border-radius: 12px; background: #f8f8fa; text-align: center; }
+        .pin-reset-value .label { display: block; color: #6e6e73; font-size: 12px; margin-bottom: 5px; }
+        .pin-reset-value strong { color: #b8860b; font-size: 28px; letter-spacing: 5px; }
         @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
@@ -956,10 +980,10 @@
         .receipt-content .receipt-row .label { color: #555555; }
         .receipt-content .receipt-row .value { font-weight: 600; color: #000000; }
         
-        /* ===== RECEIPT SERVICE - 2 COLUMN ===== */
+        /* ===== RECEIPT SERVICE - THREE COLUMNS ===== */
         .receipt-content .receipt-service {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) max-content max-content;
             align-items: flex-start;
             padding: 3px 0;
             border-bottom: 1px dashed #eeeeee;
@@ -968,12 +992,10 @@
         .receipt-content .receipt-service:last-child { border-bottom: none; }
         
         .receipt-content .receipt-service .service-left {
-            flex: 1;
             min-width: 0;
             font-size: 10px;
             color: #333333;
-            word-wrap: break-word;
-            word-break: break-word;
+            overflow-wrap: anywhere;
             line-height: 1.4;
             text-align: left;
         }
@@ -990,24 +1012,25 @@
             font-size: 10px;
             color: #8e8e93;
             text-decoration: line-through;
-            margin-left: 6px;
+            white-space: nowrap;
         }
         /* Discount percentage tag */
         .receipt-content .receipt-service .service-discount {
             font-size: 10px;
             color: #e74c3c;
             font-weight: 600;
-            margin-left: 4px;
+            white-space: nowrap;
         }
+        .receipt-content .receipt-service .service-discount-info { white-space: nowrap; text-align: right; }
         
         .receipt-content .receipt-service .service-price {
-            flex-shrink: 0;
             font-size: 11px;
             font-weight: 700;
             color: #000000;
-            margin-left: 10px;
+            white-space: nowrap;
             padding-top: 1px;
         }
+        .receipt-content .receipt-service .service-price:last-child { grid-column: 3; }
         
         /* ===== PACKAGE HEADER IN RECEIPT ===== */
         .receipt-content .package-header {
@@ -1160,8 +1183,6 @@
             .receipt-content .receipt-service .service-left { font-size: 9px; }
             .receipt-content .receipt-service .service-price { font-size: 10px; }
             .receipt-content .receipt-total { font-size: 13px; }
-            .receipt-content .receipt-service .service-original { font-size: 8px; }
-            .receipt-content .receipt-service .service-discount { font-size: 8px; }
         }
 
         @media (max-width: 480px) {
@@ -1192,9 +1213,6 @@
             .receipt-content .receipt-total { font-size: 12px; }
             .receipt-content .receipt-row { font-size: 10px; }
             .receipt-content .receipt-footer { font-size: 9px; }
-            .receipt-content .receipt-service .service-original { font-size: 7px; margin-left: 3px; }
-            .receipt-content .receipt-service .service-discount { font-size: 7px; margin-left: 2px; }
-            .receipt-content .package-header { font-size: 9px; }
         }
     </style>
 </head>
@@ -1227,7 +1245,7 @@
                 </div>
                 <div class="remember-row">
                     <input type="checkbox" id="rememberMe" />
-                    <label for="rememberMe">Remember me</label>
+                    <label for="rememberMe">Remember email</label>
                 </div>
                 <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
                 <div class="login-error" id="loginError">Invalid email or password</div>
@@ -1272,6 +1290,7 @@
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Orders</div>
         <button class="nav-item" data-tab="orders">Orders <span class="badge" id="orderCount">0</span></button>
+        <button class="nav-item" data-tab="customers">Customers <span class="badge" id="customerCount">0</span></button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Content</div>
@@ -1325,6 +1344,35 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="pinResetModal">
+    <div class="modal-box pin-reset-modal">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <h3>Reset Customer PIN</h3>
+            <button class="close-modal" type="button" onclick="closePinResetModal()">✕</button>
+        </div>
+        <div id="pinResetForm">
+            <p class="pin-reset-note">Only reset after verifying the customer through their WhatsApp number.</p>
+            <div class="form-group">
+                <label for="pinResetPhone">Customer phone number</label>
+                <input type="text" id="pinResetPhone" inputmode="tel" placeholder="e.g. 60123456789" />
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePinResetModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generatePinBtn" onclick="generateCustomerPin()">Generate New PIN</button>
+            </div>
+        </div>
+        <div id="pinResetResult" style="display:none;">
+            <p class="pin-reset-note">Send this new PIN to the verified customer only.</p>
+            <div class="pin-reset-value"><span class="label">New tracking PIN</span><strong id="generatedPinValue"></strong></div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePinResetModal()">Done</button>
+                <button type="button" class="btn btn-primary" onclick="copyGeneratedPin()"><i class="fas fa-copy"></i> Copy PIN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ===== TOAST ===== -->
 <div class="toast-container" id="toastContainer">
     <div class="toast" id="toast">
@@ -1364,6 +1412,8 @@
     let reviews = [];
     let results = [];
     let orders = [];
+    let customers = [];
+    let customerProfiles = [];
     let announcements = [];
     let popups = [];
     let readContent = '';
@@ -1394,6 +1444,40 @@
     function formatPrice(val) {
         if (isNaN(val) || val === undefined || val === null) return 'RM0.00';
         return 'RM' + Number(val).toFixed(2);
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, char => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        })[char]);
+    }
+
+    async function getTrackingAccessKey(phone, pin) {
+        const data = new TextEncoder().encode(`${phone}:${pin}`);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    function rebuildCustomers() {
+        const byPhone = new Map(customerProfiles.map(customer => [customer.id, customer]));
+        orders.forEach(order => {
+            const phone = order.customer?.phone?.replace(/[\s\-+()]/g, '');
+            if (!phone) return;
+            const orderName = order.customer?.name || order.customerName || order.name || order.fullName || '';
+            const existing = byPhone.get(phone);
+            if (!existing) {
+                byPhone.set(phone, { id: phone, name: orderName, phone: order.customer?.phone || phone, updatedAt: order.date || '' });
+            } else if ((!existing.name || existing.name === 'Unnamed customer') && orderName) {
+                existing.name = orderName;
+                existing.phone = existing.phone || order.customer?.phone || phone;
+            }
+        });
+        customers = Array.from(byPhone.values()).sort((a, b) =>
+            new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0)
+        );
+        const count = document.getElementById('customerCount');
+        if (count) count.textContent = customers.length;
+        if (currentTab === 'customers') renderContent();
     }
 
     function getMalaysiaTime() {
@@ -1442,11 +1526,10 @@
 
         if (document.getElementById('rememberMe').checked) {
             localStorage.setItem('adminEmail', email);
-            localStorage.setItem('adminPass', password);
         } else {
             localStorage.removeItem('adminEmail');
-            localStorage.removeItem('adminPass');
         }
+        localStorage.removeItem('adminPass');
 
         btn.disabled = true;
         btn.textContent = 'Signing in...';
@@ -1460,7 +1543,6 @@
                 btn.disabled = false;
                 btn.textContent = 'Sign In';
                 hideSplash();
-                initApp();
             })
             .catch(error => {
                 btn.disabled = false;
@@ -1499,10 +1581,8 @@
 
     // Check remember me
     const savedEmail = localStorage.getItem('adminEmail');
-    const savedPass = localStorage.getItem('adminPass');
     if (savedEmail) {
         document.getElementById('loginEmail').value = savedEmail;
-        document.getElementById('loginPassword').value = savedPass || '';
         document.getElementById('rememberMe').checked = true;
     }
 
@@ -1597,6 +1677,7 @@
         else if (currentTab === 'reviews') renderReviews(container);
         else if (currentTab === 'results') renderResults(container);
         else if (currentTab === 'orders') renderOrders(container);
+        else if (currentTab === 'customers') renderCustomers(container);
         else if (currentTab === 'announcements') renderAnnouncements(container);
         else if (currentTab === 'popups') renderPopups(container);
         else if (currentTab === 'customization') renderCustomization(container);
@@ -1997,7 +2078,7 @@
             filteredOrders.forEach(order => {
                 const orderId = order.orderId || order.id || 'N/A';
                 html += `
-                    <div class="list-item" data-order-id="${orderId}" data-phone="${order.customer?.phone || ''}">
+                    <div class="list-item" data-order-id="${escapeHtml(orderId)}" data-phone="${escapeHtml(order.customer?.phone || '')}">
                         <div class="item-main">
                             <div class="title">
                                 <span style="color:#b8860b;">${orderId}</span>
@@ -2006,8 +2087,8 @@
                                 </span>
                             </div>
                             <div class="sub">
-                                ${order.customer?.name || 'Unknown'}
-                                ${order.customer?.phone ? '· ' + order.customer.phone : ''}
+                                ${escapeHtml(order.customer?.name || 'Unknown')}
+                                ${order.customer?.phone ? '· ' + escapeHtml(order.customer.phone) : ''}
                             </div>
                             <div class="meta">
                                 ${order.services?.length || 0} services ·
@@ -2079,6 +2160,107 @@
     }
 
     // ============================================================
+    // CUSTOMER MANAGEMENT
+    // ============================================================
+    function renderCustomers(container) {
+        const rows = customers.map(customer => `
+            <div class="list-item">
+                <div class="item-main">
+                    <div class="title">${escapeHtml(customer.name || 'Customer name unavailable')}</div>
+                    <div class="sub">${escapeHtml(customer.phone || customer.id)}</div>
+                    <div class="meta">${customer.accessKey ? 'Tracking PIN enabled' : 'Legacy customer — reset PIN to enable tracking'} · Last updated ${customer.updatedAt ? new Date(customer.updatedAt).toLocaleDateString() : 'N/A'}</div>
+                </div>
+                <div class="item-actions">
+                    <button class="btn btn-secondary reset-customer-pin" data-phone="${escapeHtml(customer.id)}">Reset PIN</button>
+                </div>
+            </div>
+        `).join('');
+        container.innerHTML = `
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>Customers</h3>
+                    <div class="card-actions"><button class="btn reset-customer-pin" type="button" onclick="promptResetCustomerPin()">Reset Customer PIN</button></div>
+                </div>
+                <p style="font-size:13px;color:#6e6e73;margin-bottom:12px;">Verify the customer through their WhatsApp number before resetting their PIN. This also works for older orders.</p>
+                ${rows || '<div class="empty-state"><div class="empty-icon">👤</div><p>No customer profiles yet</p></div>'}
+            </div>
+        `;
+        container.querySelectorAll('.reset-customer-pin[data-phone]').forEach(button => {
+            button.addEventListener('click', () => openPinResetModal(button.dataset.phone));
+        });
+    }
+
+    function promptResetCustomerPin() {
+        openPinResetModal();
+    }
+
+    function openPinResetModal(phone = '') {
+        const input = document.getElementById('pinResetPhone');
+        input.value = phone;
+        input.readOnly = Boolean(phone);
+        document.getElementById('pinResetForm').style.display = 'block';
+        document.getElementById('pinResetResult').style.display = 'none';
+        document.getElementById('pinResetModal').classList.add('open');
+        setTimeout(() => input.focus(), 100);
+    }
+
+    function closePinResetModal() {
+        document.getElementById('pinResetModal').classList.remove('open');
+    }
+
+    async function generateCustomerPin() {
+        const phone = document.getElementById('pinResetPhone').value.replace(/[\s\-+()]/g, '');
+        const button = document.getElementById('generatePinBtn');
+        if (!/^\d{9,15}$/.test(phone)) return showToast('Enter a valid phone number');
+        button.disabled = true;
+        button.textContent = 'Generating...';
+        try {
+            const result = await resetCustomerPin(phone);
+            if (!result) return;
+            document.getElementById('generatedPinValue').textContent = result.pin;
+            document.getElementById('pinResetForm').style.display = 'none';
+            document.getElementById('pinResetResult').style.display = 'block';
+        } finally {
+            button.disabled = false;
+            button.textContent = 'Generate New PIN';
+        }
+    }
+
+    async function copyGeneratedPin() {
+        const pin = document.getElementById('generatedPinValue').textContent;
+        try {
+            await navigator.clipboard.writeText(pin);
+            showToast('PIN copied');
+        } catch {
+            showToast('Copy the PIN shown above');
+        }
+    }
+
+    async function resetCustomerPin(phone) {
+        if (!/^\d{9,15}$/.test(phone)) return showToast('Enter a valid phone number');
+        try {
+            const orderSnap = await db.ref('customer_orders/' + phone).once('value');
+            const orderIds = orderSnap.val();
+            if (!orderIds) return showToast('No orders found for this phone number');
+            const profileSnap = await db.ref('customers/' + phone).once('value');
+            const profile = profileSnap.val() || {};
+            const pin = String(Math.floor(Math.random() * 100000000)).padStart(8, '0');
+            const accessKey = await getTrackingAccessKey(phone, pin);
+            const updates = {
+                ['customer_access/' + accessKey + '/orders']: orderIds,
+                ['customers/' + phone]: { ...profile, phone: profile.phone || phone, accessKey, updatedAt: new Date().toISOString() }
+            };
+            if (profile.accessKey && profile.accessKey !== accessKey) updates['customer_access/' + profile.accessKey] = null;
+            await db.ref().update(updates);
+            showToast('Tracking PIN reset');
+            return { pin, phone };
+        } catch (error) {
+            showToast('Error resetting PIN: ' + error.message);
+            return null;
+        }
+    }
+
+    // ============================================================
     // ORDER FUNCTIONS
     // ============================================================
     function viewOrder(id) {
@@ -2099,7 +2281,7 @@
             ).join('');
 
             const servicesHtml = order.services?.map(s =>
-                `<li>${s.name} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}</li>`
+                `<li>${escapeHtml(s.name)} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}</li>`
             ).join('') || '<li>No services</li>';
 
             const body = `
@@ -2108,9 +2290,9 @@
                     <p><strong>Date:</strong> ${order.date ? new Date(order.date).toLocaleString() : 'N/A'}</p>
                 </div>
                 <div style="background:#f8f8fa;border-radius:12px;padding:12px;margin-bottom:12px;">
-                    <p><strong>Customer:</strong> ${order.customer?.name || 'Unknown'}</p>
-                    <p><strong>Phone:</strong> ${order.customer?.phone || 'N/A'}</p>
-                    <p><strong>Link:</strong> ${order.link || 'N/A'}</p>
+                    <p><strong>Customer:</strong> ${escapeHtml(order.customer?.name || 'Unknown')}</p>
+                    <p><strong>Phone:</strong> ${escapeHtml(order.customer?.phone || 'N/A')}</p>
+                    <p><strong>Link:</strong> ${escapeHtml(order.link || 'N/A')}</p>
                 </div>
                 <div style="background:#f8f8fa;border-radius:12px;padding:12px;margin-bottom:12px;">
                     <p><strong>Services:</strong></p>
@@ -2124,7 +2306,7 @@
                     <select id="orderStatus">${statusHtml}</select>
                 </div>
                 <div class="form-group"><label>Notes</label>
-                    <textarea id="orderNotes" rows="2">${order.notes || ''}</textarea>
+                    <textarea id="orderNotes" rows="2">${escapeHtml(order.notes || '')}</textarea>
                 </div>
             `;
 
@@ -2210,6 +2392,8 @@
                                 <div class="service-left">
                                     <span class="service-name">${s.name}</span>
                                     <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-discount-info">
                                     <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span class="service-discount">(-${discountPercent}%)</span>
                                 </div>
@@ -2237,6 +2421,8 @@
                                 <div class="service-left">
                                     <span class="service-name">${s.name}</span>
                                     <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-discount-info">
                                     <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span class="service-discount">(-${discountPercent}%)</span>
                                 </div>
@@ -2402,24 +2588,26 @@
                     }
                     if (hasDiscount) {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                                </div>
+                                <div style="white-space:nowrap;text-align:right;">
                                     <span style="font-size:9px;color:#8e8e93;text-decoration:line-through;margin-left:4px;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${itemSubtotal.toFixed(2)}</div>
                             </div>
                         `;
                     } else {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${itemSubtotal.toFixed(2)}</div>
                             </div>
                         `;
                     }
@@ -2429,24 +2617,26 @@
                     currentPackage = null;
                     if (hasDiscount) {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
+                                </div>
+                                <div style="white-space:nowrap;text-align:right;">
                                     <span style="font-size:9px;color:#b8860b;text-decoration:line-through;margin-left:4px;font-weight:400;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${itemSubtotal.toFixed(2)}</div>
                             </div>
                         `;
                     } else {
                         servicesHtml += `
-                            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
                                 </div>
-                                <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${itemSubtotal.toFixed(2)}</div>
                             </div>
                         `;
                     }
@@ -2665,7 +2855,24 @@
         }
 
         if (confirm('Delete this order?')) {
-            db.ref('orders/' + id).remove()
+            db.ref('orders/' + id).once('value').then(async snap => {
+                const order = snap.val();
+                const phone = order?.customer?.phone?.replace(/[\s\-+()]/g, '');
+                const updates = { ['orders/' + id]: null };
+                if (phone) {
+                    const [ordersSnap, profileSnap] = await Promise.all([
+                        db.ref('customer_orders/' + phone).once('value'),
+                        db.ref('customers/' + phone).once('value')
+                    ]);
+                    const remainingOrders = ordersSnap.val() || {};
+                    delete remainingOrders[id];
+                    const profile = profileSnap.val();
+                    updates['customer_orders/' + phone + '/' + id] = null;
+                    if (profile?.accessKey) updates['customer_access/' + profile.accessKey + '/orders'] = Object.keys(remainingOrders).length ? remainingOrders : null;
+                    if (Object.keys(remainingOrders).length === 0) updates['customers/' + phone] = null;
+                }
+                return db.ref().update(updates);
+            })
                 .then(() => showToast('Order deleted'))
                 .catch(() => showToast('Error deleting'));
         }
@@ -2907,6 +3114,13 @@
     // DELETE ITEM
     // ============================================================
     function deleteItem(path, id, name) {
+        if (path === 'categories') {
+            const affectedServices = services.filter(service => service.category === id).length;
+            if (affectedServices > 0) {
+                showToast(`Move or delete ${affectedServices} service${affectedServices > 1 ? 's' : ''} before deleting this category.`);
+                return;
+            }
+        }
         if (confirm(`Delete "${name}"?`)) {
             db.ref(path + '/' + id).remove()
                 .then(() => showToast('Deleted'))
@@ -3082,7 +3296,14 @@
     // ============================================================
     // FIREBASE LISTENERS
     // ============================================================
+    let appInitialized = false;
+
     function initApp() {
+        if (appInitialized) {
+            renderContent();
+            return;
+        }
+        appInitialized = true;
         db.ref('orderCounter').once('value').then(snap => {
             orderIdCounter = snap.val() || 0;
         });
@@ -3135,6 +3356,13 @@
             }
             if (currentTab === 'orders' || currentTab === 'dashboard') renderContent();
             document.getElementById('orderCount').textContent = orders.length;
+            rebuildCustomers();
+        });
+
+        db.ref('customers').on('value', snap => {
+            const data = snap.val() || {};
+            customerProfiles = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+            rebuildCustomers();
         });
 
         db.ref('announcements').on('value', snap => {
@@ -3153,7 +3381,7 @@
 
         db.ref('settings').on('value', snap => {
             const data = snap.val() || {};
-            settings = { discountPercent: data.discountPercent || 10, minPurchase: data.minPurchase || 10 };
+            settings = { discountPercent: data.discountPercent ?? 10, minPurchase: data.minPurchase ?? 10 };
             if (currentTab === 'customization') renderContent();
         });
 
