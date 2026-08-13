@@ -581,7 +581,7 @@
         .track-wrap .back-btn { margin-top: 12px; padding: 8px 16px; background: #e8e8ed; color: #1d1d1f; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; width: 100%; }
         .track-wrap .back-btn:hover { background: #d2d2d7; }
 
-        /* ===== RECEIPT - 2 COLUMN ===== */
+        /* ===== RECEIPT - 2 COLUMN + PACKAGE HEADER ===== */
         .receipt {
             max-width: 210mm;
             margin: 0 auto;
@@ -640,6 +640,19 @@
             color: #000000;
             margin-left: 10px;
             padding-top: 1px;
+        }
+        
+        /* ===== PACKAGE HEADER IN RECEIPT ===== */
+        .receipt .package-header {
+            font-weight: 600;
+            font-size: 11px;
+            color: #b8860b;
+            margin-top: 4px;
+            padding: 2px 0;
+            border-bottom: none;
+        }
+        .receipt .receipt-service.package-indent {
+            padding-left: 12px;
         }
         
         .receipt .receipt-total {
@@ -1753,7 +1766,6 @@
 
     // ===== CUSTOM SUMMARY =====
     function updateCustomSummary() {
-        // Update desc first regardless of selections
         const desc = document.getElementById('customDesc');
         const discountPercent = settings.discountPercent || 10;
         const minPurchase = settings.minPurchase || 10;
@@ -1968,6 +1980,7 @@
         showReceiptModal(order);
     }
 
+    // ===== RECEIPT MODAL - FIXED WITH PACKAGE HEADER =====
     function showReceiptModal(order) {
         const statusColors = {
             pending: '#f39c12',
@@ -1986,46 +1999,66 @@
 
         const orderId = order.id || order.orderId || 'N/A';
 
-        // 2 COLUMN: name + qty on left, price on right
         let servicesHtml = '';
+        let currentPackage = null;
+        let isFirstService = true;
         let subtotal = 0;
         let discountTotal = 0;
-        
+
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
-                // Check if this service has a discount (if original price > final price)
-                // We need to track if there's any discount applied
-                servicesHtml += `
-                    <div class="receipt-service">
-                        <div class="service-left">
-                            <span class="service-name">${s.name}</span>
-                            <span class="service-qty"> × ${s.qty}</span>
+
+                // Check if this service is part of a custom package
+                if (s.isCustomPackage && s.packageLabel) {
+                    // New package detected
+                    if (currentPackage !== s.packageLabel) {
+                        currentPackage = s.packageLabel;
+                        servicesHtml += `
+                            <div class="package-header">${s.packageLabel}:</div>
+                        `;
+                    }
+                    servicesHtml += `
+                        <div class="receipt-service package-indent">
+                            <div class="service-left">
+                                <span class="service-name">${s.name}</span>
+                                <span class="service-qty"> × ${s.qty}</span>
+                            </div>
+                            <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
                         </div>
-                        <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
-                    </div>
-                `;
+                    `;
+                    isFirstService = false;
+                } else {
+                    // Individual service
+                    currentPackage = null;
+                    servicesHtml += `
+                        <div class="receipt-service">
+                            <div class="service-left">
+                                <span class="service-name">${s.name}</span>
+                                <span class="service-qty"> × ${s.qty}</span>
+                            </div>
+                            <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
+                        </div>
+                    `;
+                    isFirstService = false;
+                }
             });
         }
-        
-        // Calculate discount from order data if available
+
+        // Calculate discount
         if (order.discountAmount) {
             discountTotal = order.discountAmount;
         } else if (order.discount) {
             discountTotal = order.discount;
         }
-        
-        // If no discount stored, try to calculate from subtotal - total
         if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
             discountTotal = order.subtotal - order.total;
         }
-        
-        // If still 0 and we have a discount percent, calculate
         if (discountTotal === 0 && order.discountPercent) {
             discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
         }
-        
+
         const finalTotal = order.total || (subtotal - discountTotal);
         const displaySubtotal = order.subtotal || subtotal;
 
@@ -2078,7 +2111,6 @@
 
                 <hr class="receipt-divider" />
 
-                <!-- Subtotal, Discount, Total -->
                 <div class="receipt-row" style="font-size:12px;">
                     <span class="label">Subtotal</span>
                     <span class="value">${formatPrice(displaySubtotal)}</span>
@@ -2089,7 +2121,7 @@
                     <span class="value" style="color:#e74c3c;">-${formatPrice(discountTotal)}</span>
                 </div>
                 ` : ''}
-                
+
                 <div class="receipt-total" style="margin-top:4px;">
                     <span>Total</span>
                     <span>${formatPrice(finalTotal)}</span>
@@ -2138,27 +2170,50 @@
 
         const orderId = order.id || order.orderId || 'N/A';
 
-        // 2 COLUMN for PDF
         let servicesHtml = '';
+        let currentPackage = null;
+        let isFirstService = true;
         let subtotal = 0;
         let discountTotal = 0;
-        
+
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
-                servicesHtml += `
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
-                        <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
-                            <span style="font-weight:500;">${s.name}</span>
-                            <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+
+                if (s.isCustomPackage && s.packageLabel) {
+                    if (currentPackage !== s.packageLabel) {
+                        currentPackage = s.packageLabel;
+                        servicesHtml += `
+                            <div style="font-weight:600;font-size:11px;color:#b8860b;margin-top:4px;padding:2px 0;">${s.packageLabel}:</div>
+                        `;
+                    }
+                    servicesHtml += `
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                                <span style="font-weight:500;">${s.name}</span>
+                                <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                            </div>
+                            <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
                         </div>
-                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
-                    </div>
-                `;
+                    `;
+                    isFirstService = false;
+                } else {
+                    currentPackage = null;
+                    servicesHtml += `
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
+                            <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                                <span style="font-weight:500;">${s.name}</span>
+                                <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                            </div>
+                            <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
+                        </div>
+                    `;
+                    isFirstService = false;
+                }
             });
         }
-        
+
         if (order.discountAmount) {
             discountTotal = order.discountAmount;
         } else if (order.discount) {
@@ -2170,7 +2225,7 @@
         if (discountTotal === 0 && order.discountPercent) {
             discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
         }
-        
+
         const finalTotal = order.total || (subtotal - discountTotal);
         const displaySubtotal = order.subtotal || subtotal;
 
@@ -2301,16 +2356,13 @@
             cart.forEach((c, idx) => {
                 let price, itemSubtotal, originalTotal;
                 let originalPriceDisplay = '';
-                let itemDiscount = 0;
                 
                 if (c.isCustom) {
                     itemSubtotal = c.finalTotal || 0;
                     subtotal += itemSubtotal;
-                    // Show original price if there's a discount
                     if (c.totalOriginal && c.totalOriginal > c.finalTotal) {
                         originalTotal = c.totalOriginal;
-                        itemDiscount = c.totalOriginal - c.finalTotal;
-                        totalDiscount += itemDiscount;
+                        totalDiscount += c.totalOriginal - c.finalTotal;
                         originalPriceDisplay = `
                             <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(c.totalOriginal)}</span>
                             <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(c.finalTotal)}</span>
@@ -2324,8 +2376,7 @@
                     itemSubtotal = price * c.qty;
                     subtotal += itemSubtotal;
                     if (c.discount && c.discount > 0) {
-                        itemDiscount = originalTotal - itemSubtotal;
-                        totalDiscount += itemDiscount;
+                        totalDiscount += originalTotal - itemSubtotal;
                         originalPriceDisplay = `
                             <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(originalTotal)}</span>
                             <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>
@@ -2397,7 +2448,6 @@
             });
         });
 
-        // Update checkout totals
         const finalTotal = subtotal - totalDiscount;
         if (hasItems) {
             document.getElementById('cartTotals').innerHTML = `
@@ -2410,7 +2460,6 @@
             document.getElementById('cartTotals').innerHTML = '';
         }
         
-        // Store for checkout
         window._cartSubtotal = subtotal;
         window._cartDiscount = totalDiscount;
     }
@@ -2502,7 +2551,7 @@
         });
     });
 
-    // ===== CHECKOUT =====
+    // ===== CHECKOUT - FIXED =====
     function openCheckout() {
         if (cart.length === 0) { showToast('Cart is empty'); return; }
         
@@ -2511,7 +2560,9 @@
         
         cart.forEach(c => {
             if (c.isCustom) {
-                subtotal += c.finalTotal || 0;
+                // For custom package, subtotal = original total before discount
+                const originalTotal = c.totalOriginal || c.finalTotal;
+                subtotal += originalTotal;
                 if (c.totalOriginal && c.totalOriginal > c.finalTotal) {
                     totalDiscount += c.totalOriginal - c.finalTotal;
                 }
@@ -2519,7 +2570,7 @@
                 const price = c.discount ? Math.round(c.price * (1 - c.discount / 100) * 100) / 100 : c.price;
                 const itemSubtotal = price * c.qty;
                 const originalTotal = c.price * c.qty;
-                subtotal += itemSubtotal;
+                subtotal += originalTotal;  // Use original total for subtotal
                 if (c.discount && c.discount > 0) {
                     totalDiscount += originalTotal - itemSubtotal;
                 }
@@ -2539,6 +2590,13 @@
         document.getElementById('checkoutModal').classList.add('open');
     }
 
+    // ===== RESET PACKAGE COUNTER WHEN CART CLEARS =====
+    function resetPackageCounterIfCartEmpty() {
+        if (cart.length === 0) {
+            packageCounter = 0;
+        }
+    }
+
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const name = document.getElementById('custName').value.trim();
@@ -2554,25 +2612,42 @@
 
         cart.forEach(c => {
             if (c.isCustom) {
-                const itemTotal = c.finalTotal || 0;
-                subtotal += itemTotal;
-                if (c.totalOriginal && c.totalOriginal > c.finalTotal) {
-                    totalDiscount += c.totalOriginal - c.finalTotal;
+                // For custom package - list all services individually
+                const originalTotal = c.totalOriginal || c.finalTotal;
+                subtotal += originalTotal;
+                const discountAmount = (c.totalOriginal && c.totalOriginal > c.finalTotal) ? (c.totalOriginal - c.finalTotal) : 0;
+                totalDiscount += discountAmount;
+                
+                // Add each service in the package individually
+                if (c.services && c.services.length > 0) {
+                    c.services.forEach(s => {
+                        const serviceItem = services.find(serv => serv.id === s.id);
+                        const discountedPrice = serviceItem ? getFinalPrice(serviceItem) : s.price;
+                        servicesList.push({ 
+                            name: s.name, 
+                            qty: s.qty, 
+                            price: discountedPrice,
+                            originalPrice: serviceItem ? serviceItem.price : s.price,
+                            isCustomPackage: true,
+                            packageLabel: c.label
+                        });
+                    });
                 }
-                servicesList.push({ 
-                    name: c.label, 
-                    qty: 1, 
-                    price: c.finalTotal / (c.services?.length || 1)
-                });
             } else {
                 const price = c.discount ? Math.round(c.price * (1 - c.discount / 100) * 100) / 100 : c.price;
                 const itemSubtotal = price * c.qty;
                 const originalTotal = c.price * c.qty;
-                subtotal += itemSubtotal;
+                subtotal += originalTotal;
                 if (c.discount && c.discount > 0) {
                     totalDiscount += originalTotal - itemSubtotal;
                 }
-                servicesList.push({ name: c.label, qty: c.qty, price: price });
+                servicesList.push({ 
+                    name: c.label, 
+                    qty: c.qty, 
+                    price: price, 
+                    originalPrice: c.price,
+                    isCustomPackage: false
+                });
             }
         });
 
@@ -2589,7 +2664,6 @@
             services: servicesList,
             subtotal: subtotal,
             discountAmount: totalDiscount,
-            discountPercent: 0,
             total: finalTotal,
             status: 'pending',
             paymentMethod: 'whatsapp',
@@ -2608,9 +2682,23 @@
                 msg += `Phone: ${phone}\n`;
                 msg += `Link: ${link || 'Not provided'}\n\n`;
                 msg += 'SERVICES\n';
-                servicesList.forEach(s => {
-                    msg += `${s.name} x ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
+                
+                // List all services - individual first, then packages in cart order
+                let currentPackage = null;
+                servicesList.forEach((s, index) => {
+                    if (s.isCustomPackage) {
+                        // Check if this is a new package
+                        if (currentPackage !== s.packageLabel) {
+                            currentPackage = s.packageLabel;
+                            if (index > 0) msg += '\n';
+                            msg += `${s.packageLabel}:\n`;
+                        }
+                        msg += `- ${s.name} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
+                    } else {
+                        msg += `${s.name} x ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
+                    }
                 });
+                
                 msg += '\n==============================\n';
                 msg += `Subtotal: RM${subtotal.toFixed(2)}\n`;
                 if (totalDiscount > 0) {
@@ -2626,6 +2714,7 @@
                 window.open('https://wa.me/60108043004?text=' + encodeURIComponent(msg), '_blank');
 
                 cart = [];
+                packageCounter = 0; // Reset package counter when cart clears
                 updateCartUI();
                 renderCartModal();
                 document.getElementById('checkoutModal').classList.remove('open');
@@ -2825,10 +2914,11 @@
 
     console.log('✅ Website connected to Firebase');
     console.log('✅ Cart counter - counts number of items');
-    console.log('✅ Receipt - 2 column layout with Subtotal, Discount, Total');
-    console.log('✅ Checkout - shows Subtotal, Discount, Total');
-    console.log('✅ Dark mode - payment method subtext gold');
-    console.log('✅ Dark mode - custom buttons grey with gold text');
+    console.log('✅ Checkout - Subtotal uses original price, Discount calculated correctly');
+    console.log('✅ Custom package - lists all services individually with "Package X:" header');
+    console.log('✅ Individual services and packages follow cart order');
+    console.log('✅ packageCounter resets to 0 when cart is cleared');
+    console.log('✅ Receipt - shows Package X: header for custom packages');
     console.log('✅ All content from Firebase Realtime Database');
 </script>
 
