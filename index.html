@@ -237,12 +237,33 @@
             line-height: 1.6;
             color: #1d1d1f;
         }
+        #announceReadModal .modal-body .announce-list-item {
+            padding: 8px 0;
+            font-size: 13px;
+            color: #b8860b;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #announceReadModal .modal-body .announce-list-item:last-child {
+            border-bottom: none;
+        }
+        #announceReadModal .modal-body .announce-list-item .active-indicator {
+            color: #b8860b;
+            font-size: 12px;
+        }
         body.dark-mode #announceReadModal .modal {
             background: rgba(30,30,30,0.9);
             border: 1px solid rgba(255,255,255,0.05);
         }
         body.dark-mode #announceReadModal .modal-body {
             color: #e8e8e8;
+        }
+        body.dark-mode #announceReadModal .modal-body .announce-list-item {
+            color: #d4a017;
+            border-bottom-color: rgba(255,255,255,0.05);
         }
 
         /* ===== PROMOTIONAL POPUP ===== */
@@ -1104,7 +1125,10 @@
             .receipt .receipt-header .title { font-size: 14px; }
             .receipt .receipt-service .service-left { font-size: 9px; }
             .receipt .receipt-service .service-price { font-size: 10px; }
+            .receipt .receipt-service .service-original { font-size: 8px; }
+            .receipt .receipt-service .service-discount { font-size: 8px; }
             .receipt .receipt-total { font-size: 13px; }
+            .receipt .package-header { font-size: 10px; }
         }
 
         @media (max-width: 480px) {
@@ -1203,9 +1227,12 @@
             .receipt .receipt-header img { width: 40px; height: 40px; }
             .receipt .receipt-service .service-left { font-size: 8px; }
             .receipt .receipt-service .service-price { font-size: 9px; }
+            .receipt .receipt-service .service-original { font-size: 7px; margin-left: 3px; }
+            .receipt .receipt-service .service-discount { font-size: 7px; margin-left: 2px; }
             .receipt .receipt-total { font-size: 12px; }
             .receipt .receipt-row { font-size: 10px; }
             .receipt .receipt-footer { font-size: 9px; }
+            .receipt .package-header { font-size: 9px; }
         }
     </style>
 </head>
@@ -1728,19 +1755,26 @@
     function openAnnounceReadModal() {
         const textEl = document.getElementById('announceText');
         const fullText = textEl.dataset.fullText || textEl.textContent || 'No announcement';
+        
+        let listHtml = '';
+        if (announcements.length > 1) {
+            listHtml = `
+                <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.05);">
+                    <div style="font-size:12px;color:#8e8e93;margin-bottom:6px;">Other announcements:</div>
+                    ${announcements.map((a, i) => `
+                        <div class="announce-list-item" onclick="showAnnouncement(${i});document.getElementById('announceReadModal').classList.remove('open');">
+                            ${i === currentAnnounceIndex ? '<span class="active-indicator">▶</span>' : ''} 
+                            ${a.text}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
         document.getElementById('announceReadBody').innerHTML = `
             <div style="padding:4px 0;">
                 <div style="font-size:15px;line-height:1.7;color:#1d1d1f;">${fullText}</div>
-                ${announcements.length > 1 ? `
-                    <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(0,0,0,0.05);">
-                        <div style="font-size:12px;color:#8e8e93;margin-bottom:6px;">Other announcements:</div>
-                        ${announcements.map((a, i) => `
-                            <div style="padding:4px 0;font-size:13px;color:#b8860b;cursor:pointer;border-bottom:1px solid rgba(0,0,0,0.03);" onclick="showAnnouncement(${i});document.getElementById('announceReadModal').classList.remove('open');">
-                                ${i === currentAnnounceIndex ? '▶ ' : ''} ${a.text}
-                            </div>
-                        `).join('')}
-                    </div>
-                ` : ''}
+                ${listHtml}
             </div>
         `;
         document.getElementById('announceReadModal').classList.add('open');
