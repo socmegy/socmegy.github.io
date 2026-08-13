@@ -396,7 +396,7 @@
         .service-card .info .name { font-size: 13px; font-weight: 600; color: #b8860b; }
         .service-card .info .discount-badge { background: #b8860b; color: #ffffff; font-size: 9px; font-weight: 600; padding: 1px 8px; border-radius: 30px; }
         .service-card .info .desc { font-size: 11px; color: #6e6e73; width: 100%; }
-        .service-card .price-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto; }
+        .service-card .price-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto; flex-shrink: 0; }
         .service-card .price-row .price { font-weight: 700; font-size: 13px; background: #e8e8ed; padding: 2px 10px; border-radius: 30px; color: #b8860b; }
         .service-card .price-row .original { font-size: 11px; color: #8e8e93; text-decoration: line-through; }
         .service-card .btn-add { background: #b8860b; color: #ffffff; border: none; padding: 5px 14px; border-radius: 30px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background 0.2s; flex-shrink: 0; white-space: nowrap; }
@@ -574,7 +574,7 @@
         .track-wrap .order-item:hover { border-color: #b8860b; }
         .track-wrap .order-item .order-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
         .track-wrap .order-item .order-id { font-weight: 600; color: #b8860b; font-size: 14px; }
-        .track-wrap .order-item .order-date { font-size: 12px; color: #8e8e93; }
+        .track-wrap .order-item .order-date { font-size: 12px; color: #8e8e93; text-align: left; }
         .track-wrap .order-item .order-status { font-size: 11px; padding: 2px 12px; border-radius: 30px; font-weight: 600; color: #ffffff; }
         .track-wrap .order-item .order-meta { font-size: 12px; color: #6e6e73; }
         .track-wrap .order-item .order-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -1002,9 +1002,13 @@
             .toast-container { padding: 0 20px; }
             .service-card { flex-direction: row; flex-wrap: wrap; align-items: center; padding: 14px 20px; }
             .service-card .info { flex: 1 1 100%; min-width: 0; }
-            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; }
-            .service-card .btn-add { flex-shrink: 0; margin-left: 6px; }
+            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; flex-wrap: nowrap; gap: 4px; }
+            .service-card .price-row .price { font-size: 12px; padding: 2px 8px; }
+            .service-card .price-row .original { font-size: 10px; }
+            .service-card .btn-add { flex-shrink: 0; margin-left: 6px; font-size: 10px; padding: 4px 10px; }
             .service-card .info .desc { font-size: 11px; }
+            .service-card .info .name { font-size: 12px; }
+            .service-card .info .discount-badge { font-size: 8px; padding: 0 6px; }
             .custom-wrap { padding: 10px; }
             .custom-wrap .custom-card { padding: 10px 12px; }
             .results-scroll .result { flex: 0 0 130px; }
@@ -1075,11 +1079,13 @@
             .dropdown-body .service-list { gap: 6px; }
             .service-card { padding: 14px 20px !important; gap: 4px; flex-direction: row; flex-wrap: wrap; align-items: center; }
             .service-card .info { flex: 1 1 100%; min-width: 0; }
-            .service-card .info .name { font-size: 12px; }
+            .service-card .info .name { font-size: 11px; }
             .service-card .info .desc { font-size: 10px; }
-            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; }
-            .service-card .price-row .price { font-size: 12px; padding: 2px 8px; }
+            .service-card .price-row { flex: 1; justify-content: flex-end; margin-left: 0; flex-wrap: nowrap; gap: 3px; }
+            .service-card .price-row .price { font-size: 11px; padding: 1px 7px; }
+            .service-card .price-row .original { font-size: 9px; }
             .service-card .btn-add { font-size: 10px; padding: 4px 10px; flex-shrink: 0; margin-left: 4px; }
+            .service-card .info .discount-badge { font-size: 7px; padding: 0 5px; }
             .modal { padding: 16px 18px 18px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .modal .modal-body { padding: 14px 8px 0 8px; }
             .modal .modal-body .cart-modal-item { flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 0; }
@@ -2079,7 +2085,7 @@
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
                 
-                // Check if this service has discount
+                // Check if this service has discount - look for originalPrice
                 const hasDiscount = s.originalPrice && s.originalPrice > s.price;
                 const discountPercent = hasDiscount ? Math.round((1 - s.price / s.originalPrice) * 100) : 0;
 
@@ -3048,6 +3054,8 @@
     console.log('✅ Package services BLACK with indent');
     console.log('✅ Footer sticky bottom');
     console.log('✅ All content from Firebase Realtime Database');
+    console.log('✅ Discount display fixed on mobile - no overlap');
+    console.log('✅ Track order shows service names from order data (not real-time)');
 </script>
 
 </body>
