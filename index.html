@@ -151,14 +151,6 @@
             color: #d4a017 !important;
         }
 
-        /* ===== DARK MODE - CART MODAL ORIGINAL PRICE ===== */
-        body.dark-mode .cart-modal-item .original-price-cross {
-            color: #8e8e93 !important;
-        }
-        body.dark-mode .cart-modal-item .discount-label {
-            color: #d4a017 !important;
-        }
-
         .app {
             max-width: 100%;
             margin: 0 auto;
@@ -1303,11 +1295,24 @@
                             </label>
                         </div>
                     </div>
-                    <div class="checkout-summary" style="display:flex;justify-content:space-between;font-weight:600;font-size:17px;padding:10px 0;border-top:1px solid rgba(0,0,0,0.05);">
-                        <span style="color:#b8860b;">Total Payment</span>
-                        <span id="checkoutTotal" style="color:#b8860b;">RM0.00</span>
+
+                    <!-- CHECKOUT SUMMARY - Subtotal, Discount, Total -->
+                    <div style="padding:10px 0;border-top:1px solid rgba(0,0,0,0.05);">
+                        <div style="display:flex;justify-content:space-between;font-size:14px;padding:3px 0;">
+                            <span style="color:#6e6e73;">Subtotal</span>
+                            <span id="checkoutSubtotal" style="color:#b8860b;">RM0.00</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-size:14px;padding:3px 0;">
+                            <span style="color:#6e6e73;">Discount</span>
+                            <span id="checkoutDiscount" style="color:#e74c3c;">-RM0.00</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;font-weight:700;font-size:17px;padding-top:6px;border-top:2px solid rgba(0,0,0,0.05);">
+                            <span style="color:#b8860b;">Total Payment</span>
+                            <span id="checkoutTotal" style="color:#b8860b;">RM0.00</span>
+                        </div>
                     </div>
-                    <button type="submit" style="width:100%;padding:12px;background:#25d366;color:#fff;border:none;border-radius:40px;font-weight:700;font-size:15px;cursor:pointer;">Send to WhatsApp</button>
+
+                    <button type="submit" style="width:100%;padding:12px;background:#25d366;color:#fff;border:none;border-radius:40px;font-weight:700;font-size:15px;cursor:pointer;margin-top:6px;">Send to WhatsApp</button>
                 </form>
             </div>
         </div>
@@ -1983,19 +1988,46 @@
 
         // 2 COLUMN: name + qty on left, price on right
         let servicesHtml = '';
+        let subtotal = 0;
+        let discountTotal = 0;
+        
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
+                const itemSubtotal = s.price * s.qty;
+                subtotal += itemSubtotal;
+                // Check if this service has a discount (if original price > final price)
+                // We need to track if there's any discount applied
                 servicesHtml += `
                     <div class="receipt-service">
                         <div class="service-left">
                             <span class="service-name">${s.name}</span>
                             <span class="service-qty"> × ${s.qty}</span>
                         </div>
-                        <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
+                        <div class="service-price">RM${itemSubtotal.toFixed(2)}</div>
                     </div>
                 `;
             });
         }
+        
+        // Calculate discount from order data if available
+        if (order.discountAmount) {
+            discountTotal = order.discountAmount;
+        } else if (order.discount) {
+            discountTotal = order.discount;
+        }
+        
+        // If no discount stored, try to calculate from subtotal - total
+        if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
+            discountTotal = order.subtotal - order.total;
+        }
+        
+        // If still 0 and we have a discount percent, calculate
+        if (discountTotal === 0 && order.discountPercent) {
+            discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
+        }
+        
+        const finalTotal = order.total || (subtotal - discountTotal);
+        const displaySubtotal = order.subtotal || subtotal;
 
         const statusColor = statusColors[order.status] || '#666';
         const statusLabel = statusLabels[order.status] || order.status;
@@ -2046,9 +2078,21 @@
 
                 <hr class="receipt-divider" />
 
-                <div class="receipt-total">
+                <!-- Subtotal, Discount, Total -->
+                <div class="receipt-row" style="font-size:12px;">
+                    <span class="label">Subtotal</span>
+                    <span class="value">${formatPrice(displaySubtotal)}</span>
+                </div>
+                ${discountTotal > 0 ? `
+                <div class="receipt-row" style="font-size:12px;">
+                    <span class="label" style="color:#e74c3c;">Discount</span>
+                    <span class="value" style="color:#e74c3c;">-${formatPrice(discountTotal)}</span>
+                </div>
+                ` : ''}
+                
+                <div class="receipt-total" style="margin-top:4px;">
                     <span>Total</span>
-                    <span>RM${(order.total || 0).toFixed(2)}</span>
+                    <span>${formatPrice(finalTotal)}</span>
                 </div>
 
                 ${order.notes ? `
@@ -2096,19 +2140,39 @@
 
         // 2 COLUMN for PDF
         let servicesHtml = '';
+        let subtotal = 0;
+        let discountTotal = 0;
+        
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
+                const itemSubtotal = s.price * s.qty;
+                subtotal += itemSubtotal;
                 servicesHtml += `
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:10px;">
                         <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                             <span style="font-weight:500;">${s.name}</span>
                             <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
                         </div>
-                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${(s.price * s.qty).toFixed(2)}</div>
+                        <div style="flex-shrink:0;font-size:11px;font-weight:700;color:#000;margin-left:10px;">RM${itemSubtotal.toFixed(2)}</div>
                     </div>
                 `;
             });
         }
+        
+        if (order.discountAmount) {
+            discountTotal = order.discountAmount;
+        } else if (order.discount) {
+            discountTotal = order.discount;
+        }
+        if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
+            discountTotal = order.subtotal - order.total;
+        }
+        if (discountTotal === 0 && order.discountPercent) {
+            discountTotal = Math.round(subtotal * (order.discountPercent / 100) * 100) / 100;
+        }
+        
+        const finalTotal = order.total || (subtotal - discountTotal);
+        const displaySubtotal = order.subtotal || subtotal;
 
         const statusColor = statusColors[order.status] || '#666';
         const statusLabel = statusLabels[order.status] || order.status;
@@ -2159,9 +2223,20 @@
 
                 <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
 
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Subtotal</span>
+                    <span style="font-weight:600;color:#000000;">${formatPrice(displaySubtotal)}</span>
+                </div>
+                ${discountTotal > 0 ? `
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#e74c3c;">Discount</span>
+                    <span style="font-weight:600;color:#e74c3c;">-${formatPrice(discountTotal)}</span>
+                </div>
+                ` : ''}
+
                 <div style="font-size:14px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
                     <span>Total</span>
-                    <span>RM${(order.total || 0).toFixed(2)}</span>
+                    <span>${formatPrice(finalTotal)}</span>
                 </div>
 
                 ${order.notes ? `
@@ -2217,40 +2292,50 @@
     function renderCartModal() {
         const hasItems = cart.length > 0;
         let html = '';
-        let total = 0;
+        let subtotal = 0;
+        let totalDiscount = 0;
 
         if (!hasItems) {
             html = '<div class="empty">Your cart is empty</div>';
         } else {
             cart.forEach((c, idx) => {
-                let price, subtotal, originalTotal;
+                let price, itemSubtotal, originalTotal;
                 let originalPriceDisplay = '';
+                let itemDiscount = 0;
                 
                 if (c.isCustom) {
-                    subtotal = c.finalTotal || 0;
-                    total += subtotal;
+                    itemSubtotal = c.finalTotal || 0;
+                    subtotal += itemSubtotal;
                     // Show original price if there's a discount
                     if (c.totalOriginal && c.totalOriginal > c.finalTotal) {
+                        originalTotal = c.totalOriginal;
+                        itemDiscount = c.totalOriginal - c.finalTotal;
+                        totalDiscount += itemDiscount;
                         originalPriceDisplay = `
-                            <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;" class="original-price-cross">${formatPrice(c.totalOriginal)}</span>
-                            <span style="font-size:11px;color:#27ae60;font-weight:600;" class="discount-label">-${formatPrice(c.totalOriginal - c.finalTotal)}</span>
+                            <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(c.totalOriginal)}</span>
+                            <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(c.finalTotal)}</span>
                         `;
+                    } else {
+                        originalPriceDisplay = `<span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>`;
                     }
                 } else {
                     price = c.discount ? Math.round(c.price * (1 - c.discount / 100) * 100) / 100 : c.price;
                     originalTotal = c.price * c.qty;
-                    subtotal = price * c.qty;
-                    total += subtotal;
+                    itemSubtotal = price * c.qty;
+                    subtotal += itemSubtotal;
                     if (c.discount && c.discount > 0) {
+                        itemDiscount = originalTotal - itemSubtotal;
+                        totalDiscount += itemDiscount;
                         originalPriceDisplay = `
-                            <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;" class="original-price-cross">${formatPrice(originalTotal)}</span>
-                            <span style="font-size:11px;color:#27ae60;font-weight:600;" class="discount-label">-${formatPrice(originalTotal - subtotal)}</span>
+                            <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(originalTotal)}</span>
+                            <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>
                         `;
+                    } else {
+                        originalPriceDisplay = `<span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>`;
                     }
                 }
                 
                 const label = c.isCustom ? c.label : c.label;
-                const hasDiscount = (c.discount && c.discount > 0) || (c.isCustom && c.totalOriginal && c.totalOriginal > c.finalTotal);
                 
                 html += `
                     <div class="cart-modal-item" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);align-items:center;gap:10px;">
@@ -2261,7 +2346,6 @@
                         <div class="item-right-col" style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
                             <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 ${originalPriceDisplay}
-                                <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(subtotal)}</span>
                             </div>
                             ${!c.isCustom ? `
                                 <button class="qty-btn" onclick="updateQty(${idx}, -1)" style="background:rgba(0,0,0,0.04);border:none;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;color:#b8860b;">−</button>
@@ -2313,11 +2397,22 @@
             });
         });
 
+        // Update checkout totals
+        const finalTotal = subtotal - totalDiscount;
         if (hasItems) {
-            document.getElementById('cartTotals').innerHTML = `<div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;padding-top:8px;border-top:2px solid rgba(0,0,0,0.05);"><span style="color:#b8860b;">Total</span><span style="color:#b8860b;">${formatPrice(total)}</span></div>`;
+            document.getElementById('cartTotals').innerHTML = `
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;padding-top:8px;border-top:2px solid rgba(0,0,0,0.05);">
+                    <span style="color:#b8860b;">Total</span>
+                    <span style="color:#b8860b;">${formatPrice(finalTotal)}</span>
+                </div>
+            `;
         } else {
             document.getElementById('cartTotals').innerHTML = '';
         }
+        
+        // Store for checkout
+        window._cartSubtotal = subtotal;
+        window._cartDiscount = totalDiscount;
     }
 
     window.updateQty = function(idx, delta) {
@@ -2410,15 +2505,37 @@
     // ===== CHECKOUT =====
     function openCheckout() {
         if (cart.length === 0) { showToast('Cart is empty'); return; }
-        let total = 0;
+        
+        let subtotal = 0;
+        let totalDiscount = 0;
+        
         cart.forEach(c => {
-            if (c.isCustom) total += c.finalTotal || 0;
-            else {
+            if (c.isCustom) {
+                subtotal += c.finalTotal || 0;
+                if (c.totalOriginal && c.totalOriginal > c.finalTotal) {
+                    totalDiscount += c.totalOriginal - c.finalTotal;
+                }
+            } else {
                 const price = c.discount ? Math.round(c.price * (1 - c.discount / 100) * 100) / 100 : c.price;
-                total += price * c.qty;
+                const itemSubtotal = price * c.qty;
+                const originalTotal = c.price * c.qty;
+                subtotal += itemSubtotal;
+                if (c.discount && c.discount > 0) {
+                    totalDiscount += originalTotal - itemSubtotal;
+                }
             }
         });
-        document.getElementById('checkoutTotal').textContent = formatPrice(total);
+        
+        const finalTotal = subtotal - totalDiscount;
+        
+        document.getElementById('checkoutSubtotal').textContent = formatPrice(subtotal);
+        if (totalDiscount > 0) {
+            document.getElementById('checkoutDiscount').textContent = '-' + formatPrice(totalDiscount);
+        } else {
+            document.getElementById('checkoutDiscount').textContent = 'RM0.00';
+        }
+        document.getElementById('checkoutTotal').textContent = formatPrice(finalTotal);
+        
         document.getElementById('checkoutModal').classList.add('open');
     }
 
@@ -2431,12 +2548,17 @@
         if (!name) { showToast('Please enter your name'); return; }
         if (!phone) { showToast('Please enter your phone number'); return; }
 
-        let total = 0;
+        let subtotal = 0;
+        let totalDiscount = 0;
         const servicesList = [];
 
         cart.forEach(c => {
             if (c.isCustom) {
-                total += c.finalTotal || 0;
+                const itemTotal = c.finalTotal || 0;
+                subtotal += itemTotal;
+                if (c.totalOriginal && c.totalOriginal > c.finalTotal) {
+                    totalDiscount += c.totalOriginal - c.finalTotal;
+                }
                 servicesList.push({ 
                     name: c.label, 
                     qty: 1, 
@@ -2444,11 +2566,17 @@
                 });
             } else {
                 const price = c.discount ? Math.round(c.price * (1 - c.discount / 100) * 100) / 100 : c.price;
-                total += price * c.qty;
+                const itemSubtotal = price * c.qty;
+                const originalTotal = c.price * c.qty;
+                subtotal += itemSubtotal;
+                if (c.discount && c.discount > 0) {
+                    totalDiscount += originalTotal - itemSubtotal;
+                }
                 servicesList.push({ name: c.label, qty: c.qty, price: price });
             }
         });
 
+        const finalTotal = subtotal - totalDiscount;
         const orderId = generateOrderId();
 
         const orderData = {
@@ -2459,9 +2587,10 @@
             },
             link: link || 'Not provided',
             services: servicesList,
-            subtotal: total,
-            discount: 0,
-            total: total,
+            subtotal: subtotal,
+            discountAmount: totalDiscount,
+            discountPercent: 0,
+            total: finalTotal,
             status: 'pending',
             paymentMethod: 'whatsapp',
             date: new Date().toISOString(),
@@ -2483,12 +2612,16 @@
                     msg += `${s.name} x ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
                 });
                 msg += '\n==============================\n';
-                msg += `Total: RM${total.toFixed(2)}\n`;
+                msg += `Subtotal: RM${subtotal.toFixed(2)}\n`;
+                if (totalDiscount > 0) {
+                    msg += `Discount: -RM${totalDiscount.toFixed(2)}\n`;
+                }
+                msg += `Total: RM${finalTotal.toFixed(2)}\n`;
                 msg += `Status: Pending Payment\n`;
                 msg += '==============================\n';
                 msg += '\nPlease send payment to confirm your order.';
 
-                showOrderConfirmation(orderId, total, name);
+                showOrderConfirmation(orderId, finalTotal, name);
 
                 window.open('https://wa.me/60108043004?text=' + encodeURIComponent(msg), '_blank');
 
@@ -2692,10 +2825,10 @@
 
     console.log('✅ Website connected to Firebase');
     console.log('✅ Cart counter - counts number of items');
-    console.log('✅ Receipt - 2 column layout');
+    console.log('✅ Receipt - 2 column layout with Subtotal, Discount, Total');
+    console.log('✅ Checkout - shows Subtotal, Discount, Total');
     console.log('✅ Dark mode - payment method subtext gold');
     console.log('✅ Dark mode - custom buttons grey with gold text');
-    console.log('✅ Cart modal - shows original price for custom packages');
     console.log('✅ All content from Firebase Realtime Database');
 </script>
 
