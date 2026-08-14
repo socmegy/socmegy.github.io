@@ -2980,38 +2980,45 @@
         });
     });
 
-    // ===== POPUP =====
-    function loadPopup() {
-        db.ref('popup').on('value', snap => {
-            const data = snap.val() || {};
-            popupData = {
-                type: data.type || 'text',
-                title: data.title || '',
-                desc: data.desc || '',
-                icon: data.icon || '',
-                buttonEnabled: data.buttonEnabled || false,
-                buttonText: data.buttonText || '',
-                buttonLink: data.buttonLink || '',
-                image: data.image || ''
-            };
+// ===== POPUP =====
+function loadPopup() {
+    db.ref('popup').on('value', snap => {
+        const data = snap.val() || {};
+        popupData = {
+            type: data.type || 'text',
+            title: data.title || '',
+            desc: data.desc || '',
+            icon: data.icon || '',
+            buttonEnabled: data.buttonEnabled || false,
+            buttonText: data.buttonText || '',
+            buttonLink: data.buttonLink || '',
+            image: data.image || ''
+        };
 
-            const trigger = document.getElementById('popupTrigger');
-            const hasContent = (popupData.type === 'text' && (popupData.title || popupData.desc)) ||
-                              (popupData.type === 'image' && popupData.image);
+        const trigger = document.getElementById('popupTrigger');
+        
+        // Check if there's actual content
+        let hasContent = false;
+        if (popupData.type === 'text') {
+            hasContent = !!(popupData.title || popupData.desc);
+        } else {
+            hasContent = !!(popupData.image && popupData.image.trim());
+        }
 
-            if (hasContent) {
-                trigger.style.display = 'flex';
-                // Update trigger text based on type
-                if (popupData.type === 'text') {
-                    trigger.innerHTML = '<i class="fas fa-gem"></i> ' + (popupData.title || 'Special Offer');
-                } else {
-                    trigger.innerHTML = '<i class="fas fa-image"></i> View Offer';
-                }
+        if (hasContent) {
+            trigger.style.display = 'flex';
+            if (popupData.type === 'text') {
+                trigger.innerHTML = '<i class="fas fa-gem"></i> ' + (popupData.title || 'Special Offer');
             } else {
-                trigger.style.display = 'none';
+                trigger.innerHTML = '<i class="fas fa-image"></i> View Offer';
             }
-        });
-    }
+            console.log('✅ Popup loaded:', popupData.type);
+        } else {
+            trigger.style.display = 'none';
+            console.log('ℹ️ No popup content — please configure in admin');
+        }
+    });
+}
 
     function renderPopup() {
         const content = document.getElementById('popupContent');
