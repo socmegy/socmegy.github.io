@@ -98,24 +98,6 @@
         body.dark-mode .track-wrap .track-card .receipt .receipt-divider { border-top-color: #333333; }
         body.dark-mode .announcement-bar { background: rgba(40, 40, 40, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); }
         body.dark-mode .announcement-bar .announce-text { color: #d4a017; }
-        body.dark-mode .popup-modal:not(.type-image):not(.type-textimage) { background: #2a2a2a; }
-        body.dark-mode .popup-modal .popup-close {
-            background: rgba(255,255,255,0.08);
-            color: #b8860b;
-        }
-        body.dark-mode .popup-modal .popup-close:hover {
-            background: rgba(255,255,255,0.15);
-            color: #d4a017;
-        }
-        body.dark-mode .popup-modal .popup-desc { color: #8e8e93; }
-        body.dark-mode .popup-modal.type-textimage .popup-desc { color: #ffffff; }
-        body.dark-mode .popup-modal.type-textimage .popup-title { color: #ffffff; }
-        body.dark-mode .popup-modal.type-textimage .popup-btn {
-            background: rgba(255,255,255,0.1);
-        }
-        body.dark-mode .popup-modal.type-textimage .popup-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
         body.dark-mode input, body.dark-mode textarea, body.dark-mode select {
             color: #e8e8e8 !important;
             background: #2a2a2a !important;
@@ -218,235 +200,6 @@
         .announcement-bar .announce-close { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8e8e93; cursor: pointer; font-size: 16px; padding: 4px; }
         .announcement-bar .announce-close:hover { color: #1d1d1f; }
         .announcement-bar .announce-read-more { display: none; }
-
-        /* ===== POPUP - FULL FIX ===== */
-        .popup-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            padding: 20px;
-            cursor: pointer;
-        }
-        .popup-overlay.open { display: flex; }
-
-        .popup-modal {
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 32px 28px 28px;
-            max-width: 480px;
-            width: 100%;
-            position: relative;
-            animation: popupIn 0.4s ease;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.2);
-            cursor: default;
-        }
-
-        /* IMAGE ONLY */
-        .popup-modal.type-image {
-            padding: 0 !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            border-radius: 16px !important;
-            overflow: hidden;
-            max-width: min(90vw, 600px);
-        }
-        .popup-modal.type-image .popup-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: rgba(0,0,0,0.5);
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: #fff;
-            z-index: 10;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .popup-modal.type-image .popup-close:hover {
-            background: rgba(0,0,0,0.75);
-        }
-        .popup-modal.type-image .popup-icon,
-        .popup-modal.type-image .popup-title,
-        .popup-modal.type-image .popup-desc,
-        .popup-modal.type-image .popup-btn {
-            display: none !important;
-        }
-        .popup-modal.type-image .popup-features-wrap {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        .popup-modal.type-image .popup-feature-img {
-            width: 100%;
-            height: auto;
-            border-radius: 16px;
-            border: none !important;
-            margin: 0 !important;
-            display: block;
-        }
-
-        /* TEXT ONLY */
-        .popup-modal.type-text .popup-features-wrap { display: none !important; }
-        .popup-modal.type-text .popup-icon { display: block; }
-        .popup-modal.type-text .popup-title { display: block; }
-        .popup-modal.type-text .popup-desc { display: block; }
-        .popup-modal.type-text .popup-btn { display: block; }
-
-        /* TEXT + IMAGE */
-        .popup-modal.type-textimage {
-            position: relative;
-            overflow: hidden;
-            padding: 32px 28px 28px !important;
-            min-height: 320px;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            background: #0a0a0a;
-            border: none !important;
-        }
-        .popup-modal.type-textimage .popup-features-wrap {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100%;
-            height: 100%;
-        }
-        .popup-modal.type-textimage .popup-feature-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border: none !important;
-            margin: 0 !important;
-        }
-        .popup-modal.type-textimage .popup-icon { display: none !important; }
-        .popup-modal.type-textimage .popup-title {
-            display: block;
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 2px 16px rgba(0,0,0,0.9);
-            position: relative;
-            z-index: 1;
-        }
-        .popup-modal.type-textimage .popup-desc {
-            display: block;
-            color: #fff;
-            font-size: 14px;
-            text-align: center;
-            text-shadow: 0 2px 12px rgba(0,0,0,0.8);
-            position: relative;
-            z-index: 1;
-            flex: 1;
-        }
-        .popup-modal.type-textimage .popup-btn {
-            display: block;
-            padding: 10px 28px;
-            background: rgba(255,255,255,0.12);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            width: 100%;
-            color: #fff;
-            position: relative;
-            z-index: 1;
-            margin-top: auto;
-            transition: all 0.3s;
-        }
-        .popup-modal.type-textimage .popup-btn:hover {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(14px);
-        }
-
-        /* DEFAULT */
-        .popup-modal .popup-close {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: rgba(0,0,0,0.06);
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #6e6e73;
-            z-index: 10;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, color 0.2s;
-        }
-        .popup-modal .popup-close:hover {
-            background: rgba(0,0,0,0.12);
-            color: #1d1d1f;
-        }
-        .popup-modal .popup-icon { font-size: 48px; text-align: center; margin-bottom: 10px; display: none; }
-        .popup-modal .popup-title { color: #b8860b; font-size: 24px; font-weight: 700; text-align: center; display: none; }
-        .popup-modal .popup-desc { color: #6e6e73; margin: 10px 0 16px; font-size: 15px; line-height: 1.6; text-align: center; display: none; }
-        .popup-modal .popup-features-wrap { display: none; }
-        .popup-modal .popup-feature-img { width: 100%; border-radius: 12px; border: 1px solid rgba(0,0,0,0.04); display: block; }
-        .popup-modal .popup-btn {
-            padding: 12px 32px;
-            background: #b8860b;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 15px;
-            width: 100%;
-            display: none;
-            transition: opacity 0.2s;
-        }
-        .popup-modal .popup-btn.visible { display: block; }
-        .popup-modal .popup-btn:hover { opacity: 0.85; }
-
-        @keyframes popupIn {
-            from { transform: scale(0.9) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        /* POPUP RESPONSIVE */
-        @media (max-width: 768px) {
-            .popup-modal { padding: 24px 20px 20px; margin: 0 10px; max-width: 100%; }
-            .popup-modal.type-image { padding: 0; margin: 0 10px; max-width: 100%; }
-            .popup-modal.type-textimage { padding: 24px 20px 20px !important; min-height: 250px; }
-            .popup-modal .popup-close { top: 12px; right: 14px; width: 30px; height: 30px; font-size: 16px; }
-            .popup-modal.type-image .popup-close { top: 10px; right: 12px; width: 32px; height: 32px; font-size: 16px; }
-            .popup-modal .popup-title { font-size: 20px; }
-            .popup-modal.type-textimage .popup-title { font-size: 20px; }
-            .popup-modal.type-textimage .popup-btn { font-size: 14px; padding: 10px 24px; }
-        }
-        @media (max-width: 480px) {
-            .popup-modal { padding: 20px 16px 16px; margin: 0 16px; max-width: 100%; }
-            .popup-modal.type-image { padding: 0; margin: 0 16px; max-width: 100%; }
-            .popup-modal.type-textimage { padding: 20px 16px 16px !important; min-height: 200px; }
-            .popup-modal .popup-close { top: 10px; right: 12px; width: 28px; height: 28px; font-size: 14px; }
-            .popup-modal.type-image .popup-close { top: 8px; right: 10px; width: 28px; height: 28px; font-size: 14px; }
-            .popup-modal .popup-title { font-size: 18px; }
-            .popup-modal .popup-desc { font-size: 14px; }
-            .popup-modal.type-textimage .popup-title { font-size: 18px; }
-            .popup-modal.type-textimage .popup-desc { font-size: 14px; }
-            .popup-modal.type-textimage .popup-btn { font-size: 13px; padding: 8px 20px; }
-        }
 
         /* ===== HEADER / NAVBAR ===== */
         .navbar {
@@ -562,21 +315,31 @@
         .hero .stats .stat .num { font-size: 26px; font-weight: 700; color: #ffffff; }
         .hero .stats .stat .label { font-size: 12px; color: #ffffff; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8; }
 
-        /* ===== SECTION ===== */
-        .section { padding: 0 40px 0px; margin-top: 40px; width: 100%; }
-        .section-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 20px; color: #b8860b; }
-        .section-title .gold { color: #b8860b; }
-        #custom .section-title,
-        #custom .section-title .gold {
-            background-image: url('bg.jpg');
-            background-size: cover;
-            background-position: center;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .section-title .info-icon-gold { color: #b8860b; font-size: 20px; cursor: pointer; margin-left: 6px; transition: opacity 0.2s; display: inline-block; vertical-align: middle; line-height: 1; }
-        .section-title .info-icon-gold:hover { opacity: 0.7; }
+/* ===== SECTION ===== */
+.section { padding: 0 40px 0px; margin-top: 40px; width: 100%; }
+.section-title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 20px; color: #b8860b; }
+.section-title .gold { color: #b8860b; }
+
+#custom .section-title,
+#custom .section-title .gold,
+#custom .section-title .gold-icon {
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#custom .section-title .gold-icon {
+    font-size: 22px;
+    display: inline-block;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.section-title .info-icon-gold { color: #b8860b; font-size: 20px; cursor: pointer; margin-left: 6px; transition: opacity 0.2s; display: inline-block; vertical-align: middle; line-height: 1; }
+.section-title .info-icon-gold:hover { opacity: 0.7; }
 
         /* ===== SERVICES ===== */
         .dropdown-wrap { display: flex; flex-direction: column; gap: 10px; }
@@ -636,7 +399,7 @@
         .service-card .btn-add:disabled { background: #c7c7cc; color: #8e8e93; cursor: not-allowed; }
         .service-card .unavailable-tag { color: #8e8e93; font-size: 10px; font-weight: 600; background: #f0f0f0; padding: 2px 10px; border-radius: 30px; display: inline-block; }
 
-        /* ===== NEW STAMP ===== */
+        /* ===== NEW STAMP WITH SHIMMER ===== */
         .new-stamp {
             display: inline-block;
             color: #b8860b;
@@ -820,7 +583,7 @@
         .track-wrap .back-btn { margin-top: 12px; padding: 8px 16px; background: #e8e8ed; color: #1d1d1f; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; width: 100%; }
         .track-wrap .back-btn:hover { background: #d2d2d7; }
 
-        /* ===== RECEIPT ===== */
+        /* ===== RECEIPT - 2 COLUMN WITH STRIKE-THROUGH ===== */
         .receipt {
             max-width: 210mm;
             margin: 0 auto;
@@ -842,6 +605,8 @@
         .receipt .receipt-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 12px; }
         .receipt .receipt-row .label { color: #555555; }
         .receipt .receipt-row .value { font-weight: 600; color: #000000; }
+
+        /* ===== RECEIPT SERVICE - THREE COLUMNS ===== */
         .receipt .receipt-service {
             display: grid;
             grid-template-columns: minmax(0, 1fr) max-content max-content;
@@ -851,6 +616,7 @@
             gap: 10px;
         }
         .receipt .receipt-service:last-child { border-bottom: none; }
+
         .receipt .receipt-service .service-left {
             min-width: 0;
             font-size: 10px;
@@ -859,26 +625,98 @@
             line-height: 1.4;
             text-align: left;
         }
-        .receipt .receipt-service .service-left .service-name { font-weight: 500; }
-        .receipt .receipt-service .service-left .service-qty { color: #888888; font-size: 9px; }
-        .receipt .receipt-service .service-original { font-size: 10px; color: #8e8e93; text-decoration: line-through; white-space: nowrap; }
-        .receipt .receipt-service .service-discount { font-size: 10px; color: #e74c3c; font-weight: 600; white-space: nowrap; }
-        .receipt .receipt-service .service-discount-info { white-space: nowrap; text-align: right; }
-        .receipt .receipt-service .service-price { font-size: 11px; font-weight: 700; color: #000000; white-space: nowrap; padding-top: 1px; }
-        .receipt .receipt-service .service-price:last-child { grid-column: 3; }
-        .receipt .package-header { font-weight: 600; font-size: 11px; color: #b8860b; margin-top: 4px; padding: 2px 0; border-bottom: none; }
-        .receipt .receipt-service.package-indent { padding-left: 12px; }
-        .receipt .receipt-service.individual .service-name { color: #b8860b !important; font-weight: 600 !important; }
-        .receipt .receipt-service.individual .service-original { color: #b8860b !important; }
-        .receipt .receipt-service.package-indent .service-name { color: #000000 !important; font-weight: 500 !important; }
-        .receipt .receipt-service.package-indent .service-original { color: #8e8e93 !important; }
-        body.dark-mode .receipt .receipt-service.individual .service-name { color: #d4a017 !important; }
-        body.dark-mode .receipt .receipt-service.individual .service-original { color: #d4a017 !important; }
-        body.dark-mode .receipt .receipt-service.package-indent .service-name { color: #000000 !important; }
-        .receipt .receipt-total { font-size: 14px; font-weight: 700; color: #000000; padding-top: 6px; border-top: 2px solid #000000; margin-top: 6px; display: flex; justify-content: space-between; }
-        .receipt .receipt-footer { text-align: center; font-size: 10px; color: #555555; margin-top: 10px; border-top: 1px dashed #cccccc; padding-top: 8px; }
+        .receipt .receipt-service .service-left .service-name {
+            font-weight: 500;
+        }
+        .receipt .receipt-service .service-left .service-qty {
+            color: #888888;
+            font-size: 9px;
+        }
 
-        /* ===== RECEIPT MODAL ===== */
+        /* Original price with strike-through */
+        .receipt .receipt-service .service-original {
+            font-size: 10px;
+            color: #8e8e93;
+            text-decoration: line-through;
+            white-space: nowrap;
+        }
+        /* Discount percentage tag */
+        .receipt .receipt-service .service-discount {
+            font-size: 10px;
+            color: #e74c3c;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .receipt .receipt-service .service-discount-info { white-space: nowrap; text-align: right; }
+
+        .receipt .receipt-service .service-price {
+            font-size: 11px;
+            font-weight: 700;
+            color: #000000;
+            white-space: nowrap;
+            padding-top: 1px;
+        }
+        .receipt .receipt-service .service-price:last-child { grid-column: 3; }
+
+        /* ===== PACKAGE HEADER IN RECEIPT ===== */
+        .receipt .package-header {
+            font-weight: 600;
+            font-size: 11px;
+            color: #b8860b;
+            margin-top: 4px;
+            padding: 2px 0;
+            border-bottom: none;
+        }
+        .receipt .receipt-service.package-indent {
+            padding-left: 12px;
+        }
+        /* Individual service - GOLD */
+        .receipt .receipt-service.individual .service-name {
+            color: #b8860b !important;
+            font-weight: 600 !important;
+        }
+        .receipt .receipt-service.individual .service-original {
+            color: #b8860b !important;
+        }
+        /* Package service - BLACK (pure black in darkmode) */
+        .receipt .receipt-service.package-indent .service-name {
+            color: #000000 !important;
+            font-weight: 500 !important;
+        }
+        .receipt .receipt-service.package-indent .service-original {
+            color: #8e8e93 !important;
+        }
+
+        body.dark-mode .receipt .receipt-service.individual .service-name {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .receipt .receipt-service.individual .service-original {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .receipt .receipt-service.package-indent .service-name {
+            color: #000000 !important;
+        }
+
+        .receipt .receipt-total {
+            font-size: 14px;
+            font-weight: 700;
+            color: #000000;
+            padding-top: 6px;
+            border-top: 2px solid #000000;
+            margin-top: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .receipt .receipt-footer {
+            text-align: center;
+            font-size: 10px;
+            color: #555555;
+            margin-top: 10px;
+            border-top: 1px dashed #cccccc;
+            padding-top: 8px;
+        }
+
+        /* ===== RECEIPT MODAL (View) ===== */
         #receiptModal .modal { max-width: 560px; max-height: 90vh; }
         #receiptModal .modal-body { overflow-y: auto; padding: 10px 0; }
         #receiptModal .modal-footer { border-top: 1px solid rgba(0,0,0,0.05); padding-top: 12px; display: flex; gap: 8px; }
@@ -887,7 +725,7 @@
         #receiptModal .modal-footer .btn-pdf { background: #b8860b; color: #ffffff; }
         #receiptModal .modal-footer .btn-close { background: #e8e8ed; color: #1d1d1f; }
 
-        /* ===== FOOTER ===== */
+        /* ===== FOOTER - STICKY ===== */
         .footer {
             padding: 14px 40px 14px;
             margin-top: 40px;
@@ -1137,7 +975,242 @@
         }
         #imageModal .modal img { width: 100%; height: auto; max-height: 85vh; object-fit: contain; border-radius: 20px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15); }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== POPUP STYLES (Glass: blur 0px, alpha 0.20, sat 1.5) ===== */
+        #popupOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            cursor: pointer;
+        }
+        #popupOverlay.active { display: flex; }
+
+        #popupBox {
+            max-width: 520px;
+            width: 100%;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            position: relative;
+            cursor: default;
+        }
+
+        /* Close button — glass: blur 0px, alpha 0.20, sat 1.5 */
+        .popup-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            background: rgba(255,255,255,0.20);
+            backdrop-filter: blur(0px) saturate(1.5);
+            -webkit-backdrop-filter: blur(0px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 40px;
+            color: #fff;
+            font-size: 20px;
+            padding: 6px 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1.6;
+            z-index: 20;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+        .popup-close:hover { background: rgba(255,255,255,0.35); }
+        body.dark-mode .popup-close {
+            color: #fff;
+            border-color: rgba(255,255,255,0.06);
+        }
+        body.dark-mode .popup-close:hover { background: rgba(255,255,255,0.15); }
+
+        /* Text popup content */
+        .popup-text-content {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(32px) saturate(1.3);
+            -webkit-backdrop-filter: blur(32px) saturate(1.3);
+            border-radius: 32px;
+            padding: 36px 30px 38px;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        body.dark-mode .popup-text-content {
+            background: rgba(42,42,44,0.82);
+            border-color: rgba(255,255,255,0.03);
+        }
+        .popup-text-content .popup-icon { font-size: 44px; color: #b8860b; display: block; margin-bottom: 8px; }
+        .popup-text-content .popup-title { font-size: 22px; font-weight: 700; color: #1d1d1f; margin-bottom: 6px; word-wrap: break-word; }
+        body.dark-mode .popup-text-content .popup-title { color: #ececec; }
+        .popup-text-content .popup-line { width: 50px; height: 2px; background: #b8860b; margin: 8px auto 12px auto; border-radius: 4px; }
+        .popup-text-content .popup-desc { font-size: 15px; color: #4a4a4d; margin-bottom: 18px; line-height: 1.7; }
+        body.dark-mode .popup-text-content .popup-desc { color: #b0b0b2; }
+
+        /* Text button — glass: blur 0px, alpha 0.20, sat 1.5 (HITAM untuk light mode) */
+        .popup-glass-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 32px;
+            background: rgba(255,255,255,0.20);
+            backdrop-filter: blur(0px) saturate(1.5);
+            -webkit-backdrop-filter: blur(0px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #1d1d1f;
+            text-decoration: none;
+            transition: 0.25s;
+            min-width: 120px;
+            text-shadow: 0 1px 4px rgba(255,255,255,0.1);
+        }
+        .popup-glass-btn:hover {
+            background: rgba(255,255,255,0.35);
+            border-color: rgba(255,255,255,0.20);
+            transform: scale(1.02);
+        }
+        body.dark-mode .popup-glass-btn {
+            color: #fff;
+            border-color: rgba(255,255,255,0.06);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+        }
+        body.dark-mode .popup-glass-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        /* Image popup — plain, no border */
+        .popup-image-wrap {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: transparent !important;
+            border-radius: 24px;
+        }
+        .popup-image-wrap .popup-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+            background-color: transparent !important;
+            border-radius: 24px;
+            border: none !important;
+            outline: none !important;
+        }
+
+        /* Image button — glass, STAY WHITE untuk kedua-dua mode */
+        .popup-img-btn {
+            position: absolute;
+            background: rgba(255,255,255,0.20);
+            backdrop-filter: blur(0px) saturate(1.5);
+            -webkit-backdrop-filter: blur(0px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 60px;
+            padding: 12px 32px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.25s;
+            white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            min-width: 120px;
+        }
+        .popup-img-btn:hover {
+            background: rgba(255,255,255,0.35);
+            border-color: rgba(255,255,255,0.20);
+            transform: scale(1.02);
+            color: #1d1d1f;
+        }
+        body.dark-mode .popup-img-btn {
+            color: #fff;
+            border-color: rgba(255,255,255,0.06);
+        }
+        body.dark-mode .popup-img-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.12);
+            color: #fff;
+        }
+
+        .popup-img-btn-center { bottom: 28px; left: 50%; transform: translateX(-50%); }
+        .popup-img-btn-left { bottom: 28px; left: 20px; }
+        .popup-img-btn-right { bottom: 28px; right: 20px; }
+        .popup-img-btn-top { top: 70px; left: 50%; transform: translateX(-50%); }
+        .popup-img-btn-none { display: none; }
+
+        /* Popup trigger button - bottom right */
+        #popupTrigger {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            background: rgba(255,255,255,0.20);
+            backdrop-filter: blur(0px) saturate(1.5);
+            -webkit-backdrop-filter: blur(0px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 60px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1d1d1f;
+            cursor: pointer;
+            transition: 0.25s;
+            z-index: 50;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+        #popupTrigger:hover {
+            background: rgba(255,255,255,0.35);
+            border-color: rgba(255,255,255,0.20);
+            transform: scale(1.02);
+        }
+        body.dark-mode #popupTrigger {
+            color: #fff;
+            border-color: rgba(255,255,255,0.06);
+        }
+        body.dark-mode #popupTrigger:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.12);
+        }
+        #popupTrigger i { color: #b8860b; font-size: 16px; }
+
+        @media (max-width: 480px) {
+            #popupTrigger {
+                bottom: 80px;
+                right: 16px;
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+            #popupTrigger i { font-size: 13px; }
+            .popup-close { font-size: 16px; padding: 4px 12px; top: 10px; right: 10px; }
+            .popup-text-content { padding: 24px 18px 26px; }
+            .popup-text-content .popup-title { font-size: 18px; }
+            .popup-glass-btn { font-size: 13px; padding: 8px 18px; min-width: 80px; }
+            .popup-img-btn { font-size: 12px; padding: 8px 18px; min-width: 80px; }
+            .popup-img-btn-center { bottom: 18px; }
+            .popup-img-btn-left { bottom: 18px; left: 12px; }
+            .popup-img-btn-right { bottom: 18px; right: 12px; }
+            .popup-img-btn-top { top: 45px; }
+        }
+
+        /* ===== RESPONSIVE (existing) ===== */
         @media (max-width: 768px) {
             .navbar .nav-links { display: none; }
             .hamburger { display: block; }
@@ -1193,14 +1266,6 @@
             .track-wrap .search-group button { width: 100%; }
             .track-wrap .search-group input { font-size: 14px !important; padding: 10px 14px !important; }
             .track-wrap .search-group input::placeholder { font-size: 13px !important; }
-            .popup-modal { padding: 24px 20px 20px; margin: 0 10px; max-width: 100%; }
-            .popup-modal.type-image { padding: 0; margin: 0 10px; max-width: 100%; }
-            .popup-modal.type-textimage { padding: 24px 20px 20px !important; min-height: 250px; }
-            .popup-modal .popup-close { top: 12px; right: 14px; width: 30px; height: 30px; font-size: 16px; }
-            .popup-modal.type-image .popup-close { top: 10px; right: 12px; width: 32px; height: 32px; font-size: 16px; }
-            .popup-modal .popup-title { font-size: 20px; }
-            .popup-modal.type-textimage .popup-title { font-size: 20px; }
-            .popup-modal.type-textimage .popup-btn { font-size: 14px; padding: 10px 24px; }
             .track-wrap .order-item .order-row { flex-direction: column; align-items: flex-start; gap: 4px; }
             .track-wrap .order-item .order-actions { width: 100%; justify-content: flex-start; }
             .track-wrap .order-item .order-actions button { flex: 1; justify-content: center; }
@@ -1211,6 +1276,7 @@
             .receipt .receipt-service .service-left { font-size: 9px; }
             .receipt .receipt-service .service-price { font-size: 10px; }
             .receipt .receipt-total { font-size: 13px; }
+            #popupBox { max-width: 400px; }
         }
 
         @media (max-width: 480px) {
@@ -1294,16 +1360,6 @@
             .track-wrap .track-card { padding: 16px; }
             .track-wrap .search-group input { font-size: 13px !important; padding: 10px 12px !important; }
             .track-wrap .search-group input::placeholder { font-size: 12px !important; }
-            .popup-modal { padding: 20px 16px 16px; margin: 0 16px; max-width: 100%; }
-            .popup-modal.type-image { padding: 0; margin: 0 16px; max-width: 100%; }
-            .popup-modal.type-textimage { padding: 20px 16px 16px !important; min-height: 200px; }
-            .popup-modal .popup-close { top: 10px; right: 12px; width: 28px; height: 28px; font-size: 14px; }
-            .popup-modal.type-image .popup-close { top: 8px; right: 10px; width: 28px; height: 28px; font-size: 14px; }
-            .popup-modal .popup-title { font-size: 18px; }
-            .popup-modal .popup-desc { font-size: 14px; }
-            .popup-modal.type-textimage .popup-title { font-size: 18px; }
-            .popup-modal.type-textimage .popup-desc { font-size: 14px; }
-            .popup-modal.type-textimage .popup-btn { font-size: 13px; padding: 8px 20px; }
             #receiptModal .modal { padding: 16px; }
             #receiptModal .modal-footer { flex-direction: column; }
             #receiptModal .modal-footer button { padding: 10px; font-size: 13px; }
@@ -1315,6 +1371,9 @@
             .receipt .receipt-total { font-size: 12px; }
             .receipt .receipt-row { font-size: 10px; }
             .receipt .receipt-footer { font-size: 9px; }
+            #popupBox { max-width: 340px; }
+            .popup-text-content .popup-title { font-size: 16px; }
+            .popup-text-content .popup-desc { font-size: 13px; }
         }
     </style>
 </head>
@@ -1338,7 +1397,7 @@
         </div>
         <div class="nav-links">
             <a href="#services">Services</a>
-            <a href="#custom" class="custom-badge">Custom</a>
+            <a href="#custom" class="custom-badge"><i class="fas fa-wand-magic-sparkles" style="margin-right:6px;"></i> Custom</a>
             <a href="#reviews">Reviews</a>
             <a href="#results">Results</a>
             <a href="#track">Track Order</a>
@@ -1359,7 +1418,7 @@
     <div class="mobile-nav" id="mobileNav">
         <button class="close-nav" id="closeNavBtn"><i class="fas fa-times"></i></button>
         <a href="#services" onclick="closeMobileNav()">Services</a>
-        <a href="#custom" onclick="closeMobileNav()" class="custom-mobile">Custom</a>
+        <a href="#custom" onclick="closeMobileNav()" class="custom-mobile"><i class="fas fa-wand-magic-sparkles" style="margin-right:6px;"></i> Custom</a>
         <a href="#reviews" onclick="closeMobileNav()">Reviews</a>
         <a href="#results" onclick="closeMobileNav()">Results</a>
         <a href="#track" onclick="closeMobileNav()">Track Order</a>
@@ -1383,20 +1442,20 @@
             <div class="dropdown-wrap" id="servicesDropdown"></div>
         </section>
 
-        <section class="section" id="custom">
-            <div class="section-title">Package <span class="gold">Customization</span></div>
-            <div class="custom-wrap">
-                <div class="custom-card">
-                    <div class="desc" id="customDesc">Decide your own package, it's all yours. Select services and quantities. <strong>10% OFF for orders RM10+</strong></div>
-                    <div class="picker" id="customPicker"></div>
-                    <div class="summary" id="customSummary"><div class="empty">No services selected yet</div></div>
-                    <div class="actions">
-                        <button class="btn btn-secondary" id="clearCustom">Clear All</button>
-                        <button class="btn btn-primary" id="addCustomCart">Add to Cart</button>
-                    </div>
-                </div>
+<section class="section" id="custom">
+    <div class="section-title">Package <span class="gold">Customization</span> <i class="fas fa-wand-magic-sparkles gold-icon"></i></div>
+    <div class="custom-wrap">
+        <div class="custom-card">
+            <div class="desc" id="customDesc">Decide your own package, it's all yours. Select services and quantities. <strong>10% OFF for orders RM10+</strong></div>
+            <div class="picker" id="customPicker"></div>
+            <div class="summary" id="customSummary"><div class="empty">No services selected yet</div></div>
+            <div class="actions">
+                <button class="btn btn-secondary" id="clearCustom">Clear All</button>
+                <button class="btn btn-primary" id="addCustomCart">Add to Cart</button>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
 
         <section class="section" id="reviews">
             <div class="section-title">
@@ -1427,7 +1486,7 @@
 
     </div>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- ===== FOOTER - STICKY BOTTOM ===== -->
     <footer class="footer">
         <div class="payment">
             <span style="font-weight:500;">Payment:</span>
@@ -1448,15 +1507,14 @@
         <span class="tooltip">Join us on Telegram</span>
     </a>
 
-    <!-- ===== POPUP ===== -->
-    <div class="popup-overlay" id="promoPopup">
-        <div class="popup-modal">
-            <button class="popup-close" onclick="closePopup()"><i class="fas fa-times"></i></button>
-            <div class="popup-icon" id="popupIcon"></div>
-            <div class="popup-title" id="popupTitle"></div>
-            <div class="popup-desc" id="popupDesc"></div>
-            <div class="popup-features-wrap" id="popupFeatures"></div>
-            <button class="popup-btn" id="popupBtn"></button>
+    <!-- ===== POPUP TRIGGER BUTTON ===== -->
+    <button id="popupTrigger"><i class="fas fa-gem"></i> Special Offer</button>
+
+    <!-- ===== POPUP MODAL ===== -->
+    <div id="popupOverlay">
+        <div id="popupBox">
+            <button class="popup-close" id="popupClose">✕</button>
+            <div id="popupContent"></div>
         </div>
     </div>
 
@@ -1513,7 +1571,7 @@
                     </div>
                     <div style="margin-bottom:14px;">
                         <label style="font-weight:600;display:block;margin-bottom:4px;color:#b8860b;">Link (for service)</label>
-                        <textarea id="custLink" rows="2" placeholder="Enter your Instagram/TikTok/Shopee link" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);font-size:15px;font-family:inherit;background:rgba(255,255,255,0.3);"></textarea>
+                        <textarea id="custLink" rows="2" placeholder="Enter your link" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);font-size:15px;font-family:inherit;background:rgba(255,255,255,0.3);"></textarea>
                         <div style="font-size:12px;color:#6e6e73;margin-top:4px;">Example: https://instagram.com/username</div>
                     </div>
                     <div style="margin-bottom:14px;">
@@ -1654,7 +1712,6 @@
     let results = [];
     let readContent = '';
     let announcements = [];
-    let popups = [];
     let settings = { discountPercent: 10, minPurchase: 10 };
     let cart = [];
     let customSelections = {};
@@ -1663,6 +1720,7 @@
     let announceInterval = null;
     let orderCounter = 0;
     let currentReceiptOrder = null;
+    let popupData = { type: 'text', title: '', desc: '', icon: '', buttonEnabled: false, buttonText: '', buttonLink: '', image: '' };
 
     // ===== DARK MODE =====
     function toggleDarkMode() {
@@ -1782,12 +1840,17 @@
         return 'SOC-' + datePart + '-' + randomPart;
     }
 
-    // ===== CART =====
-    function getTotalCartItems() { return cart.length; }
-    function updateCartUI() {
-        document.getElementById('cartCount').textContent = getTotalCartItems();
+    // ===== CART COUNTER =====
+    function getTotalCartItems() {
+        return cart.length;
     }
 
+    function updateCartUI() {
+        const totalItems = getTotalCartItems();
+        document.getElementById('cartCount').textContent = totalItems;
+    }
+
+    // ===== RE-NUMBER PACKAGES =====
     function renumberPackages() {
         let counter = 0;
         cart.forEach(item => {
@@ -1796,7 +1859,9 @@
                 const newLabel = 'Package ' + counter;
                 item.label = newLabel;
                 if (item.services) {
-                    item.services.forEach(s => { s.packageLabel = newLabel; });
+                    item.services.forEach(s => {
+                        s.packageLabel = newLabel;
+                    });
                 }
             }
         });
@@ -1807,7 +1872,9 @@
     function loadAnnouncements() {
         db.ref('announcements').on('value', snap => {
             const data = snap.val() || {};
-            announcements = Object.entries(data).map(([id, val]) => ({ id, ...val })).filter(a => a.active !== false);
+            announcements = Object.entries(data)
+                .map(([id, val]) => ({ id, ...val }))
+                .filter(a => a.active !== false);
             announcements.sort((a, b) => new Date(b.date) - new Date(a.date));
             renderAnnouncements();
         });
@@ -1821,10 +1888,12 @@
             updateHeaderOffsets();
             return;
         }
+
         bar.style.display = 'flex';
         updateHeaderOffsets();
         currentAnnounceIndex = 0;
         showAnnouncement(0);
+
         if (announceInterval) clearInterval(announceInterval);
         if (announcements.length > 1) {
             announceInterval = setInterval(() => {
@@ -1837,7 +1906,8 @@
     function showAnnouncement(index) {
         if (index >= announcements.length) return;
         currentAnnounceIndex = index;
-        document.getElementById('announceText').textContent = announcements[index].text || '';
+        const ann = announcements[index];
+        document.getElementById('announceText').textContent = ann.text || '';
         updateHeaderOffsets();
     }
 
@@ -1861,155 +1931,6 @@
         if (announceInterval) clearInterval(announceInterval);
     });
 
-    // ===== POPUP - FULL FIX =====
-    function loadPopup() {
-        db.ref('popups').once('value').then(snap => {
-            const data = snap.val() || {};
-            const popupsList = Object.entries(data)
-                .map(([id, val]) => ({ id, ...val }))
-                .filter(p => p.active !== false);
-            if (popupsList.length === 0) return;
-
-            const latest = popupsList.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-            const modal = document.querySelector('.popup-modal');
-            const iconEl = document.getElementById('popupIcon');
-            const titleEl = document.getElementById('popupTitle');
-            const descEl = document.getElementById('popupDesc');
-            const featuresContainer = document.getElementById('popupFeatures');
-            const btn = document.getElementById('popupBtn');
-            const overlay = document.getElementById('promoPopup');
-
-            // Reset semua
-            modal.classList.remove('type-image', 'type-text', 'type-textimage');
-            iconEl.textContent = '';
-            iconEl.style.display = 'none';
-            titleEl.textContent = '';
-            titleEl.style.display = 'none';
-            descEl.textContent = '';
-            descEl.style.display = 'none';
-            featuresContainer.innerHTML = '';
-            btn.textContent = '';
-            btn.classList.remove('visible');
-
-            const popupType = latest.popupType || 'text';
-            const hasTitle = latest.title && latest.title.trim();
-            const hasDesc = latest.text && latest.text.trim();
-            const hasText = hasTitle || hasDesc;
-            const hasImages = latest.features && latest.features.length > 0 && latest.features.some(url => url && url.trim());
-
-            if (!hasText && !hasImages) return;
-
-            let finalType = popupType;
-            if (finalType === 'image' && !hasImages && hasText) finalType = 'text';
-            if (finalType === 'text' && !hasText && hasImages) finalType = 'image';
-            if (finalType === 'textimage') {
-                if (hasImages && !hasText) finalType = 'image';
-                else if (hasText && !hasImages) finalType = 'text';
-                else if (!hasText && !hasImages) return;
-            }
-
-            if (!finalType || finalType === 'textimage') {
-                if (hasImages && !hasText) finalType = 'image';
-                else if (hasText && !hasImages) finalType = 'text';
-                else if (hasText && hasImages) finalType = 'textimage';
-                else return;
-            }
-
-            if (finalType === 'image') modal.classList.add('type-image');
-            else if (finalType === 'text') modal.classList.add('type-text');
-            else if (finalType === 'textimage') modal.classList.add('type-textimage');
-            else return;
-
-            // SET ICON
-            if (finalType !== 'image' && latest.icon && latest.icon.trim()) {
-                iconEl.textContent = latest.icon;
-                iconEl.style.display = 'block';
-            }
-
-            // SET TITLE
-            if (hasTitle && finalType !== 'image') {
-                titleEl.textContent = latest.title;
-                titleEl.style.display = 'block';
-            }
-
-            // SET DESCRIPTION
-            if (hasDesc && finalType !== 'image') {
-                descEl.textContent = latest.text;
-                descEl.style.display = 'block';
-            }
-
-            // SET IMAGES - ONLY FIRST IMAGE
-            if (hasImages) {
-                const firstImage = latest.features.find(url => url && url.trim());
-                if (firstImage) {
-                    const img = document.createElement('img');
-                    let src = firstImage.trim();
-                    if (!src.startsWith('http://') && !src.startsWith('https://') && !src.startsWith('data:')) {
-                        if (!src.startsWith('./') && !src.startsWith('../') && !src.startsWith('/')) {
-                            src = './' + src;
-                        }
-                    }
-                    img.src = src;
-                    img.className = 'popup-feature-img';
-                    img.alt = '';
-                    img.loading = 'lazy';
-                    img.onerror = function() {
-                        this.style.display = 'none';
-                        console.warn('Image failed:', firstImage);
-                    };
-                    featuresContainer.appendChild(img);
-                }
-            }
-
-            // SET BUTTON
-            const link = latest.link || '';
-            if (link && link.trim() && finalType !== 'image') {
-                btn.classList.add('visible');
-                btn.textContent = latest.btnText || 'Shop Now';
-                btn.onclick = function(e) {
-                    e.stopPropagation();
-                    const href = link.trim();
-                    if (href.startsWith('#')) {
-                        closePopup();
-                        const target = document.querySelector(href);
-                        if (target) {
-                            const navbarHeight = document.querySelector('.navbar').offsetHeight;
-                            const announceH = document.getElementById('announcementBar');
-                            const announceHeight = announceH.style.display === 'none' ? 0 : announceH.offsetHeight;
-                            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight - announceHeight - 12;
-                            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                        }
-                    } else if (href.startsWith('http://') || href.startsWith('https://')) {
-                        window.open(href, '_blank');
-                    } else {
-                        closePopup();
-                        const target = document.querySelector(href);
-                        if (target) {
-                            const navbarHeight = document.querySelector('.navbar').offsetHeight;
-                            const announceH = document.getElementById('announcementBar');
-                            const announceHeight = announceH.style.display === 'none' ? 0 : announceH.offsetHeight;
-                            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navbarHeight - announceHeight - 12;
-                            window.scrollTo({ top: targetPosition, behavior: 'smooth' });
-                        } else {
-                            try { window.open(href, '_blank'); } catch (e) {}
-                        }
-                    }
-                };
-            }
-
-            overlay.classList.add('open');
-            console.log('Popup opened:', finalType);
-        }).catch(err => console.log('Popup error:', err));
-    }
-
-    function closePopup() {
-        document.getElementById('promoPopup').classList.remove('open');
-    }
-
-    document.getElementById('promoPopup').addEventListener('click', function(e) {
-        if (e.target === this) closePopup();
-    });
-
     // ===== UPDATE HERO COUNTERS =====
     function updateHeroCounters() {
         document.getElementById('heroServices').textContent = services.length;
@@ -2023,11 +1944,13 @@
             container.innerHTML = '<div style="text-align:center;padding:30px 20px;color:#8e8e93;font-size:15px;">No services available</div>';
             return;
         }
+
         const grouped = {};
         categories.forEach(cat => { grouped[cat.id] = { name: cat.name, items: [] }; });
         services.forEach(s => {
             if (grouped[s.category]) grouped[s.category].items.push(s);
         });
+
         let html = '';
         let hasItems = false;
         Object.values(grouped).forEach(group => {
@@ -2035,21 +1958,49 @@
             hasItems = true;
             const cat = group.name;
             const safeId = 'body_' + cat.replace(/[^a-zA-Z0-9]/g, '_');
-            html += `<div class="dropdown-item"><button class="dropdown-btn" data-category="${cat}"><span>${cat} <span style="font-size:12px;color:#8e8e93;font-weight:400;">(${group.items.length})</span></span><span class="arrow">▾</span></button><div class="dropdown-body" id="${safeId}"><div class="service-list">`;
-            group.items.forEach(item => {
-                const finalPrice = getFinalPrice(item);
-                const hasDiscount = item.discount && item.discount > 0;
-                const isUnavail = item.unavailable || false;
-                const isNewItem = isNew(item.addedDate);
-                html += `<div class="service-card"><div class="info"><span class="name">${isNewItem ? '<span class="new-stamp">NEW</span>' : ''} ${item.label}</span>${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}<span class="desc">${item.desc || ''}</span></div><div class="price-row">${hasDiscount ? `<span class="original">${formatPrice(item.price)}</span>` : ''}<span class="price">${formatPrice(finalPrice)}</span></div><button class="btn-add" data-id="${item.id}" ${isUnavail ? 'disabled' : ''}>${isUnavail ? 'Unavailable' : 'Add to Cart'}</button></div>`;
-            });
-            html += `</div></div></div>`;
+            html += `
+                <div class="dropdown-item">
+                    <button class="dropdown-btn" data-category="${cat}">
+                        <span>${cat} <span style="font-size:12px;color:#8e8e93;font-weight:400;">(${group.items.length})</span></span>
+                        <span class="arrow">▾</span>
+                    </button>
+                    <div class="dropdown-body" id="${safeId}">
+                        <div class="service-list">
+                            ${group.items.map(item => {
+                                const finalPrice = getFinalPrice(item);
+                                const hasDiscount = item.discount && item.discount > 0;
+                                const isUnavail = item.unavailable || false;
+                                const isNewItem = isNew(item.addedDate);
+                                return `
+                                    <div class="service-card">
+                                        <div class="info">
+                                            <span class="name">${isNewItem ? '<span class="new-stamp">NEW</span>' : ''} ${item.label}</span>
+                                            ${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
+                                            <span class="desc">${item.desc || ''}</span>
+                                        </div>
+                                        <div class="price-row">
+                                            ${hasDiscount ? `<span class="original">${formatPrice(item.price)}</span>` : ''}
+                                            <span class="price">${formatPrice(finalPrice)}</span>
+                                        </div>
+                                        <button class="btn-add" data-id="${item.id}" ${isUnavail ? 'disabled' : ''}>
+                                            ${isUnavail ? 'Unavailable' : 'Add to Cart'}
+                                        </button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
         });
+
         if (!hasItems) {
             container.innerHTML = '<div style="text-align:center;padding:30px 20px;color:#8e8e93;font-size:15px;">No services available</div>';
             return;
         }
+
         container.innerHTML = html;
+
         container.querySelectorAll('.dropdown-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -2070,6 +2021,7 @@
                 }
             });
         });
+
         container.querySelectorAll('.service-card .btn-add:not([disabled])').forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.dataset.id;
@@ -2093,13 +2045,29 @@
             container.innerHTML = '<div style="text-align:center;padding:16px;color:#8e8e93;font-size:13px;">No services available</div>';
             return;
         }
+
         container.innerHTML = available.map(item => {
             const qty = customSelections[item.id] || 0;
             const finalPrice = getFinalPrice(item);
             const hasDiscount = item.discount && item.discount > 0;
             const isNewItem = isNew(item.addedDate);
-            return `<div class="opt"><div class="left"><span>${isNewItem ? '<span class="new-stamp" style="font-size:10px;">NEW</span>' : ''} ${item.label}</span>${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}</div><div class="right">${hasDiscount ? `<span class="original-price">${formatPrice(item.price)}</span>` : ''}<span class="final-price">${formatPrice(finalPrice)}</span><button class="qty-btn" data-id="${item.id}" data-dir="-1">−</button><span class="qty-num">${qty}</span><button class="qty-btn" data-id="${item.id}" data-dir="1">+</button></div></div>`;
+            return `
+                <div class="opt">
+                    <div class="left">
+                        <span>${isNewItem ? '<span class="new-stamp" style="font-size:10px;">NEW</span>' : ''} ${item.label}</span>
+                        ${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
+                    </div>
+                    <div class="right">
+                        ${hasDiscount ? `<span class="original-price">${formatPrice(item.price)}</span>` : ''}
+                        <span class="final-price">${formatPrice(finalPrice)}</span>
+                        <button class="qty-btn" data-id="${item.id}" data-dir="-1">−</button>
+                        <span class="qty-num">${qty}</span>
+                        <button class="qty-btn" data-id="${item.id}" data-dir="1">+</button>
+                    </div>
+                </div>
+            `;
         }).join('');
+
         container.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const id = this.dataset.id;
@@ -2124,12 +2092,15 @@
         } else {
             desc.innerHTML = `Decide your own package, it's all yours. Select services and quantities.`;
         }
+
         const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
         const container = document.getElementById('customSummary');
+
         if (entries.length === 0) {
             container.innerHTML = '<div class="empty">No services selected yet</div>';
             return;
         }
+
         let total = 0;
         let html = '';
         entries.forEach(([id, qty]) => {
@@ -2140,11 +2111,13 @@
             total += subtotal;
             html += `<div class="item"><span>${item.label} x${qty}</span><span>${formatPrice(subtotal)}</span></div>`;
         });
+
         let discount = 0;
         if (total >= minPurchase && discountPercent > 0) {
             discount = Math.round(total * (discountPercent / 100) * 100) / 100;
         }
         const finalTotal = total - discount;
+
         html += `<div class="total-row"><span>Subtotal</span><span>${formatPrice(total)}</span></div>`;
         if (discount > 0) {
             html += `<div class="total-row discount"><span>Discount ${discountPercent}%</span><span>-${formatPrice(discount)}</span></div>`;
@@ -2160,7 +2133,13 @@
             container.innerHTML = '<div style="text-align:center;padding:30px 20px;color:#8e8e93;font-size:15px;width:100%;">No reviews yet</div>';
             return;
         }
-        container.innerHTML = reviews.map(r => `<div class="review"><div class="stars">${renderStars(r.stars)}</div><div class="quote">${escapeHtml(r.quote)}</div><div class="customer">${escapeHtml(r.customer)}</div></div>`).join('');
+        container.innerHTML = reviews.map(r => `
+            <div class="review">
+                <div class="stars">${renderStars(r.stars)}</div>
+                <div class="quote">${escapeHtml(r.quote)}</div>
+                <div class="customer">${escapeHtml(r.customer)}</div>
+            </div>
+        `).join('');
     }
 
     // ===== RESULTS =====
@@ -2172,7 +2151,17 @@
         }
         container.innerHTML = results.map(r => {
             const catName = getCategoryName(r.badge);
-            return `<div class="result" data-image="${escapeHtml(r.image)}"><div class="image-wrap"><img src="${isSafeExternalUrl(r.image) ? escapeHtml(r.image) : ''}" alt="${escapeHtml(r.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23e8e8ed%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%22200%22 y=%22200%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2220%22 fill=%22%238e8e93%22%3ENo Image%3C/text%3E%3C/svg%3E'" /></div><div class="info"><span class="badge">${escapeHtml(catName)}</span><div class="title">${escapeHtml(r.title)}</div></div></div>`;
+            return `
+                <div class="result" data-image="${escapeHtml(r.image)}">
+                    <div class="image-wrap">
+                        <img src="${isSafeExternalUrl(r.image) ? escapeHtml(r.image) : ''}" alt="${escapeHtml(r.title)}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23e8e8ed%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%22200%22 y=%22200%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2220%22 fill=%22%238e8e93%22%3ENo Image%3C/text%3E%3C/svg%3E'" />
+                    </div>
+                    <div class="info">
+                        <span class="badge">${escapeHtml(catName)}</span>
+                        <div class="title">${escapeHtml(r.title)}</div>
+                    </div>
+                </div>
+            `;
         }).join('');
         container.querySelectorAll('.result').forEach(result => {
             result.addEventListener('click', () => openImageModal(result.dataset.image));
@@ -2189,39 +2178,60 @@
         container.innerHTML = sanitizeReadContent(readContent);
     }
 
-    // ===== TRACKING =====
+    // ===== TRACKING FUNCTIONS =====
     let pendingTrackingPhone = '';
+
     function closeTrackingPinModal() {
         document.getElementById('trackingPinModal').classList.remove('open');
         document.getElementById('trackingPinInput').value = '';
     }
+
     async function trackOrder() {
         const input = document.getElementById('trackInput').value.trim();
         const results = document.getElementById('trackResults');
-        if (!input) { showToast('Please enter an Order ID, or your phone number and tracking PIN'); return; }
+
+        if (!input) {
+            showToast('Please enter an Order ID, or your phone number and tracking PIN');
+            return;
+        }
+
         results.innerHTML = '<div style="text-align:center;padding:20px;color:#8e8e93;">Searching...</div>';
+
         if (input.toUpperCase().startsWith('SOC-')) {
             db.ref('orders/' + input).once('value').then(snap => {
                 const order = snap.val();
                 if (!order) {
-                    results.innerHTML = `<div style="text-align:center;padding:20px;color:#8e8e93;background:#fff;border-radius:12px;border:1px solid #eaeaee;"><p>Order not found. Please check your Order ID.</p></div>`;
+                    results.innerHTML = `
+                        <div style="text-align:center;padding:20px;color:#8e8e93;background:#fff;border-radius:12px;border:1px solid #eaeaee;">
+                            <p>Order not found. Please check your Order ID.</p>
+                        </div>
+                    `;
                     return;
                 }
                 renderOrderList([{ id: input, ...order }], results);
-            }).catch(err => { results.innerHTML = `<div style="color:#e74c3c;">Error: ${err.message}</div>`; });
+            }).catch(err => {
+                results.innerHTML = `<div style="color:#e74c3c;">Error: ${err.message}</div>`;
+            });
         } else {
             const cleanPhone = input.replace(/[\s\-+()]/g, '');
-            if (!/^\d{9,15}$/.test(cleanPhone)) { showToast('Please enter a valid phone number'); return; }
+            if (!/^\d{9,15}$/.test(cleanPhone)) {
+                showToast('Please enter a valid phone number');
+                return;
+            }
             pendingTrackingPhone = cleanPhone;
             document.getElementById('trackingPinPhone').textContent = input;
             document.getElementById('trackingPinModal').classList.add('open');
             setTimeout(() => document.getElementById('trackingPinInput').focus(), 100);
         }
     }
+
     async function submitTrackingPin() {
         const pin = document.getElementById('trackingPinInput').value.trim();
         const results = document.getElementById('trackResults');
-        if (!/^\d{8}$/.test(pin)) { showToast('Please enter your 8-digit tracking PIN'); return; }
+        if (!/^\d{8}$/.test(pin)) {
+            showToast('Please enter your 8-digit tracking PIN');
+            return;
+        }
         if (!pendingTrackingPhone) return;
         closeTrackingPinModal();
         results.innerHTML = '<div style="text-align:center;padding:20px;color:#8e8e93;">Searching...</div>';
@@ -2229,53 +2239,127 @@
             const accessKey = await getTrackingAccessKey(pendingTrackingPhone, pin);
             db.ref('customer_access/' + accessKey + '/orders').once('value').then(snap => {
                 const orderIds = snap.val();
+
                 if (!orderIds) {
-                    results.innerHTML = `<div style="text-align:center;padding:20px;color:#8e8e93;background:#fff;border-radius:12px;border:1px solid #eaeaee;"><p>No orders found with this phone number and PIN.</p><p style="font-size:12px;">If you forgot your PIN, contact us on WhatsApp for a reset.</p></div>`;
+                    results.innerHTML = `
+                        <div style="text-align:center;padding:20px;color:#8e8e93;background:#fff;border-radius:12px;border:1px solid #eaeaee;">
+                            <p>No orders found with this phone number and PIN.</p>
+                            <p style="font-size:12px;">If you forgot your PIN, contact us on WhatsApp for a reset.</p>
+                        </div>
+                    `;
                     return;
                 }
+
                 const orderKeys = Object.keys(orderIds);
                 const orderPromises = orderKeys.map(id => db.ref('orders/' + id).once('value'));
+
                 Promise.all(orderPromises).then(snapshots => {
-                    const orders = snapshots.filter(snap => snap.exists()).map(snap => ({ id: snap.key, ...snap.val() }));
+                    const orders = snapshots
+                        .filter(snap => snap.exists())
+                        .map(snap => ({ id: snap.key, ...snap.val() }));
                     orders.sort((a, b) => new Date(b.date) - new Date(a.date));
                     renderOrderList(orders, results);
                 });
-            }).catch(err => { results.innerHTML = `<div style="color:#e74c3c;">Error: ${err.message}</div>`; });
+            }).catch(err => {
+                results.innerHTML = `<div style="color:#e74c3c;">Error: ${err.message}</div>`;
+            });
         } catch (err) {
             results.innerHTML = '<div style="color:#e74c3c;">Unable to verify the tracking PIN. Please try again.</div>';
         }
     }
-    document.getElementById('trackInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') trackOrder(); });
-    document.getElementById('trackingPinInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') submitTrackingPin(); });
+
+    document.getElementById('trackInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') trackOrder();
+    });
+    document.getElementById('trackingPinInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitTrackingPin();
+    });
 
     function renderOrderList(orders, container) {
-        const statusColors = { pending: '#f39c12', paid: '#3498db', processing: '#9b59b6', completed: '#27ae60', cancelled: '#e74c3c' };
-        const statusLabels = { pending: 'Pending Payment', paid: 'Paid', processing: 'Processing', completed: 'Completed', cancelled: 'Cancelled' };
-        let html = `<div class="order-list"><div class="order-counter"><span>${orders.length}</span> order${orders.length > 1 ? 's' : ''} found</div>`;
+        const statusColors = {
+            pending: '#f39c12',
+            paid: '#3498db',
+            processing: '#9b59b6',
+            completed: '#27ae60',
+            cancelled: '#e74c3c'
+        };
+        const statusLabels = {
+            pending: 'Pending Payment',
+            paid: 'Paid',
+            processing: 'Processing',
+            completed: 'Completed',
+            cancelled: 'Cancelled'
+        };
+
+        let html = `
+            <div class="order-list">
+                <div class="order-counter"><span>${orders.length}</span> order${orders.length > 1 ? 's' : ''} found</div>
+        `;
+
         orders.forEach(order => {
             const statusColor = statusColors[order.status] || '#666';
             const statusLabel = statusLabels[order.status] || order.status;
             const date = order.date ? formatDateForDisplay(order.date) : 'N/A';
             const total = order.total || 0;
             const servicesCount = order.services?.length || 0;
-            html += `<div class="order-item"><div class="order-row"><span class="order-id">${order.id}</span><span class="order-date">${date}</span></div><div class="order-row"><span class="order-meta">${servicesCount} service${servicesCount > 1 ? 's' : ''} · RM${total.toFixed(2)}</span><span class="order-status" style="background:${statusColor};">${statusLabel}</span></div><div class="order-actions"><button class="btn-view" onclick="viewReceipt('${order.id}', ${JSON.stringify(order).replace(/"/g, '&quot;')})"><i class="fas fa-eye"></i> View Receipt</button><button class="btn-download" onclick="downloadReceiptPDFDirect(${JSON.stringify(order).replace(/"/g, '&quot;')})"><i class="fas fa-download"></i> Download PDF</button></div></div>`;
+
+            html += `
+                <div class="order-item">
+                    <div class="order-row">
+                        <span class="order-id">${order.id}</span>
+                        <span class="order-date">${date}</span>
+                    </div>
+                    <div class="order-row">
+                        <span class="order-meta">${servicesCount} service${servicesCount > 1 ? 's' : ''} · RM${total.toFixed(2)}</span>
+                        <span class="order-status" style="background:${statusColor};">${statusLabel}</span>
+                    </div>
+                    <div class="order-actions">
+                        <button class="btn-view" onclick="viewReceipt('${order.id}', ${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                            <i class="fas fa-eye"></i> View Receipt
+                        </button>
+                        <button class="btn-download" onclick="downloadReceiptPDFDirect(${JSON.stringify(order).replace(/"/g, '&quot;')})">
+                            <i class="fas fa-download"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+            `;
         });
-        html += `<button class="back-btn" onclick="document.getElementById('trackInput').value='';document.getElementById('trackResults').innerHTML='';">← Back to Search</button></div>`;
+
+        html += `
+                <button class="back-btn" onclick="document.getElementById('trackInput').value='';document.getElementById('trackResults').innerHTML='';">← Back to Search</button>
+            </div>
+        `;
         container.innerHTML = html;
     }
 
-    // ===== RECEIPT =====
+    // ===== VIEW RECEIPT IN MODAL =====
     function viewReceipt(orderId, order) {
         currentReceiptOrder = order;
         showReceiptModal(order);
     }
 
+    // ===== RECEIPT MODAL =====
     function showReceiptModal(order) {
-        const statusColors = { pending: '#f39c12', paid: '#3498db', processing: '#9b59b6', completed: '#27ae60', cancelled: '#e74c3c' };
-        const statusLabels = { pending: 'Pending Payment', paid: 'Paid', processing: 'Processing', completed: 'Completed', cancelled: 'Cancelled' };
+        const statusColors = {
+            pending: '#f39c12',
+            paid: '#3498db',
+            processing: '#9b59b6',
+            completed: '#27ae60',
+            cancelled: '#e74c3c'
+        };
+        const statusLabels = {
+            pending: 'Pending Payment',
+            paid: 'Paid',
+            processing: 'Processing',
+            completed: 'Completed',
+            cancelled: 'Cancelled'
+        };
+
         const orderId = order.id || order.orderId || 'N/A';
+
         let servicesHtml = '';
         let currentPackage = null;
+        let isFirstService = true;
         let subtotal = 0;
         let discountTotal = 0;
 
@@ -2283,36 +2367,171 @@
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
+
                 const hasDiscount = s.originalPrice && s.originalPrice > s.price;
                 const discountPercent = hasDiscount ? Math.round((1 - s.price / s.originalPrice) * 100) : 0;
+
                 if (s.isCustomPackage && s.packageLabel) {
                     if (currentPackage !== s.packageLabel) {
                         currentPackage = s.packageLabel;
-                        servicesHtml += `<div class="package-header">${s.packageLabel}:</div>`;
+                        servicesHtml += `
+                            <div class="package-header">${s.packageLabel}:</div>
+                        `;
                     }
-                    servicesHtml += `<div class="receipt-service package-indent"><div class="service-left"><span class="service-name">${s.name}</span><span class="service-qty"> × ${s.qty}</span></div>${hasDiscount ? `<div class="service-discount-info"><span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span><span class="service-discount">(-${discountPercent}%)</span></div>` : ''}<div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div></div>`;
+
+                    if (hasDiscount) {
+                        servicesHtml += `
+                            <div class="receipt-service package-indent">
+                                <div class="service-left">
+                                    <span class="service-name">${s.name}</span>
+                                    <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-discount-info">
+                                    <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
+                                    <span class="service-discount">(-${discountPercent}%)</span>
+                                </div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    } else {
+                        servicesHtml += `
+                            <div class="receipt-service package-indent">
+                                <div class="service-left">
+                                    <span class="service-name">${s.name}</span>
+                                    <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    }
+                    isFirstService = false;
                 } else {
-                    servicesHtml += `<div class="receipt-service individual"><div class="service-left"><span class="service-name">${s.name}</span><span class="service-qty"> × ${s.qty}</span></div>${hasDiscount ? `<div class="service-discount-info"><span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span><span class="service-discount">(-${discountPercent}%)</span></div>` : ''}<div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div></div>`;
+                    if (hasDiscount) {
+                        servicesHtml += `
+                            <div class="receipt-service individual">
+                                <div class="service-left">
+                                    <span class="service-name">${s.name}</span>
+                                    <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-discount-info">
+                                    <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
+                                    <span class="service-discount">(-${discountPercent}%)</span>
+                                </div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    } else {
+                        servicesHtml += `
+                            <div class="receipt-service individual">
+                                <div class="service-left">
+                                    <span class="service-name">${s.name}</span>
+                                    <span class="service-qty"> × ${s.qty}</span>
+                                </div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    }
+                    isFirstService = false;
                 }
             });
         }
 
-        if (order.discountAmount) discountTotal = order.discountAmount;
-        else if (order.discount) discountTotal = order.discount;
+        if (order.discountAmount) {
+            discountTotal = order.discountAmount;
+        } else if (order.discount) {
+            discountTotal = order.discount;
+        }
         if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
             discountTotal = order.subtotal - order.total;
         }
+
         const finalTotal = order.total || (subtotal - discountTotal);
         const displaySubtotal = order.subtotal || subtotal;
+
         const statusColor = statusColors[order.status] || '#666';
         const statusLabel = statusLabels[order.status] || order.status;
         const date = order.date ? new Date(order.date).toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : 'N/A';
 
-        const receiptHtml = `<div class="receipt" id="receiptContent"><div class="receipt-header"><img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" /><div class="title">Socmegy</div><div class="sub">Order Receipt</div></div><hr class="receipt-divider" /><div class="receipt-row"><span class="label">Order ID</span><span class="value">${orderId}</span></div><div class="receipt-row"><span class="label">Date</span><span class="value">${date}</span></div><div class="receipt-row"><span class="label">Status</span><span class="value" style="color:${statusColor};">${statusLabel}</span></div><hr class="receipt-divider" /><div class="receipt-row"><span class="label">Customer</span><span class="value">${escapeHtml(order.customer?.name || 'Unknown')}</span></div><div class="receipt-row"><span class="label">Phone</span><span class="value">${escapeHtml(order.customer?.phone || 'N/A')}</span></div><div class="receipt-row"><span class="label">Link</span><span class="value">${escapeHtml(order.link || 'N/A')}</span></div><hr class="receipt-divider" /><div style="font-weight:600;margin-bottom:4px;font-size:12px;">Services</div>${servicesHtml}<hr class="receipt-divider" /><div class="receipt-row" style="font-size:12px;"><span class="label">Subtotal</span><span class="value">${formatPrice(displaySubtotal)}</span></div>${discountTotal > 0 ? `<div class="receipt-row" style="font-size:12px;"><span class="label" style="color:#e74c3c;">Discount</span><span class="value" style="color:#e74c3c;">-${formatPrice(discountTotal)}</span></div>` : ''}<div class="receipt-total" style="margin-top:4px;"><span>Total</span><span>${formatPrice(finalTotal)}</span></div>${order.notes ? `<hr class="receipt-divider" /><div style="font-size:11px;color:#555555;"><strong>Notes:</strong> ${escapeHtml(order.notes)}</div>` : ''}<div class="receipt-footer">Thank you for your order!<br />For any inquiries, contact us on WhatsApp</div></div>`;
+        const receiptHtml = `
+            <div class="receipt" id="receiptContent">
+                <div class="receipt-header">
+                    <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+                    <div class="title">Socmegy</div>
+                    <div class="sub">Order Receipt</div>
+                </div>
+
+                <hr class="receipt-divider" />
+
+                <div class="receipt-row">
+                    <span class="label">Order ID</span>
+                    <span class="value">${orderId}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Date</span>
+                    <span class="value">${date}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Status</span>
+                    <span class="value" style="color:${statusColor};">${statusLabel}</span>
+                </div>
+
+                <hr class="receipt-divider" />
+
+                <div class="receipt-row">
+                    <span class="label">Customer</span>
+                    <span class="value">${escapeHtml(order.customer?.name || 'Unknown')}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Phone</span>
+                    <span class="value">${escapeHtml(order.customer?.phone || 'N/A')}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="label">Link</span>
+                    <span class="value">${escapeHtml(order.link || 'N/A')}</span>
+                </div>
+
+                <hr class="receipt-divider" />
+
+                <div style="font-weight:600;margin-bottom:4px;font-size:12px;">Services</div>
+                ${servicesHtml}
+
+                <hr class="receipt-divider" />
+
+                <div class="receipt-row" style="font-size:12px;">
+                    <span class="label">Subtotal</span>
+                    <span class="value">${formatPrice(displaySubtotal)}</span>
+                </div>
+                ${discountTotal > 0 ? `
+                <div class="receipt-row" style="font-size:12px;">
+                    <span class="label" style="color:#e74c3c;">Discount</span>
+                    <span class="value" style="color:#e74c3c;">-${formatPrice(discountTotal)}</span>
+                </div>
+                ` : ''}
+
+                <div class="receipt-total" style="margin-top:4px;">
+                    <span>Total</span>
+                    <span>${formatPrice(finalTotal)}</span>
+                </div>
+
+                ${order.notes ? `
+                    <hr class="receipt-divider" />
+                    <div style="font-size:11px;color:#555555;">
+                        <strong>Notes:</strong> ${escapeHtml(order.notes)}
+                    </div>
+                ` : ''}
+
+                <div class="receipt-footer">
+                    Thank you for your order!<br />
+                    For any inquiries, contact us on WhatsApp
+                </div>
+            </div>
+        `;
+
         document.getElementById('receiptBody').innerHTML = receiptHtml;
         document.getElementById('receiptModal').classList.add('open');
     }
 
+    // ===== DOWNLOAD PDF =====
     function downloadReceiptPDF() {
         const order = currentReceiptOrder;
         if (!order) return showToast('No receipt to download');
@@ -2320,47 +2539,223 @@
     }
 
     function downloadReceiptPDFDirect(order) {
-        const statusColors = { pending: '#f39c12', paid: '#3498db', processing: '#9b59b6', completed: '#27ae60', cancelled: '#e74c3c' };
-        const statusLabels = { pending: 'Pending Payment', paid: 'Paid', processing: 'Processing', completed: 'Completed', cancelled: 'Cancelled' };
+        const statusColors = {
+            pending: '#f39c12',
+            paid: '#3498db',
+            processing: '#9b59b6',
+            completed: '#27ae60',
+            cancelled: '#e74c3c'
+        };
+        const statusLabels = {
+            pending: 'Pending Payment',
+            paid: 'Paid',
+            processing: 'Processing',
+            completed: 'Completed',
+            cancelled: 'Cancelled'
+        };
+
         const orderId = order.id || order.orderId || 'N/A';
+
         let servicesHtml = '';
         let currentPackage = null;
+        let isFirstService = true;
         let subtotal = 0;
         let discountTotal = 0;
+
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
                 const itemSubtotal = s.price * s.qty;
                 subtotal += itemSubtotal;
+
                 const hasDiscount = s.originalPrice && s.originalPrice > s.price;
                 const discountPercent = hasDiscount ? Math.round((1 - s.price / s.originalPrice) * 100) : 0;
+
                 if (s.isCustomPackage && s.packageLabel) {
                     if (currentPackage !== s.packageLabel) {
                         currentPackage = s.packageLabel;
-                        servicesHtml += `<div style="font-weight:600;font-size:11px;color:#b8860b;margin-top:4px;padding:2px 0;">${s.packageLabel}:</div>`;
+                        servicesHtml += `
+                            <div style="font-weight:600;font-size:11px;color:#b8860b;margin-top:4px;padding:2px 0;">${s.packageLabel}:</div>
+                        `;
                     }
-                    servicesHtml += `<div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;"><div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;"><span style="font-weight:500;">${s.name}</span><span style="color:#888;font-size:9px;"> × ${s.qty}</span></div>${hasDiscount ? `<div style="white-space:nowrap;text-align:right;"><span style="font-size:9px;color:#8e8e93;text-decoration:line-through;margin-left:4px;">RM${(s.originalPrice * s.qty).toFixed(2)}</span><span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span></div>` : ''}<div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div></div>`;
+
+                    if (hasDiscount) {
+                        servicesHtml += `
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
+                                <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                                    <span style="font-weight:500;">${s.name}</span>
+                                    <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                                </div>
+                                <div style="white-space:nowrap;text-align:right;">
+                                    <span style="font-size:9px;color:#8e8e93;text-decoration:line-through;margin-left:4px;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
+                                    <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
+                                </div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    } else {
+                        servicesHtml += `
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
+                                <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
+                                    <span style="font-weight:500;">${s.name}</span>
+                                    <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
+                                </div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    }
+                    isFirstService = false;
                 } else {
-                    servicesHtml += `<div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;"><div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;"><span>${s.name}</span><span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span></div>${hasDiscount ? `<div style="white-space:nowrap;text-align:right;"><span style="font-size:9px;color:#b8860b;text-decoration:line-through;margin-left:4px;font-weight:400;">RM${(s.originalPrice * s.qty).toFixed(2)}</span><span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span></div>` : ''}<div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div></div>`;
+                    if (hasDiscount) {
+                        servicesHtml += `
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
+                                <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
+                                    <span>${s.name}</span>
+                                    <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
+                                </div>
+                                <div style="white-space:nowrap;text-align:right;">
+                                    <span style="font-size:9px;color:#b8860b;text-decoration:line-through;margin-left:4px;font-weight:400;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
+                                    <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
+                                </div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    } else {
+                        servicesHtml += `
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
+                                <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
+                                    <span>${s.name}</span>
+                                    <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
+                                </div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
+                            </div>
+                        `;
+                    }
+                    isFirstService = false;
                 }
             });
         }
-        if (order.discountAmount) discountTotal = order.discountAmount;
-        else if (order.discount) discountTotal = order.discount;
+
+        if (order.discountAmount) {
+            discountTotal = order.discountAmount;
+        } else if (order.discount) {
+            discountTotal = order.discount;
+        }
         if (discountTotal === 0 && order.subtotal && order.total && order.subtotal > order.total) {
             discountTotal = order.subtotal - order.total;
         }
+
         const finalTotal = order.total || (subtotal - discountTotal);
         const displaySubtotal = order.subtotal || subtotal;
+
         const statusColor = statusColors[order.status] || '#666';
         const statusLabel = statusLabels[order.status] || order.status;
         const date = order.date ? new Date(order.date).toLocaleString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' }) : 'N/A';
-        const receiptHTML = `<div style="max-width:210mm;margin:0 auto;padding:16px 18px;background:#ffffff;color:#000000;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;border:1px solid #eaeaee;border-radius:8px;"><div style="text-align:center;margin-bottom:12px;"><img src="logo.png" alt="Socmegy" style="width:50px;height:50px;border-radius:50%;object-fit:cover;margin-bottom:4px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" /><div style="font-size:16px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div><div style="font-size:10px;color:#555555;">Order Receipt</div></div><hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" /><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Order ID</span><span style="font-weight:600;color:#000000;">${orderId}</span></div><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Date</span><span style="font-weight:600;color:#000000;">${date}</span></div><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Status</span><span style="font-weight:600;color:${statusColor};">${statusLabel}</span></div><hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" /><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Customer</span><span style="font-weight:600;color:#000000;">${order.customer?.name || 'Unknown'}</span></div><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Phone</span><span style="font-weight:600;color:#000000;">${order.customer?.phone || 'N/A'}</span></div><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Link</span><span style="font-weight:600;color:#000000;">${order.link || 'N/A'}</span></div><hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" /><div style="font-weight:600;margin-bottom:4px;font-size:12px;">Services</div>${servicesHtml}<hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" /><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#555555;">Subtotal</span><span style="font-weight:600;color:#000000;">${formatPrice(displaySubtotal)}</span></div>${discountTotal > 0 ? `<div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;"><span style="color:#e74c3c;">Discount</span><span style="font-weight:600;color:#e74c3c;">-${formatPrice(discountTotal)}</span></div>` : ''}<div style="font-size:14px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;"><span>Total</span><span>${formatPrice(finalTotal)}</span></div>${order.notes ? `<hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" /><div style="font-size:11px;color:#555555;"><strong>Notes:</strong> ${order.notes}</div>` : ''}<div style="text-align:center;font-size:10px;color:#555555;margin-top:10px;border-top:1px dashed #cccccc;padding-top:8px;">Thank you for your order!<br />For any inquiries, contact us on WhatsApp</div></div>`;
+
+        const receiptHTML = `
+            <div style="max-width:210mm;margin:0 auto;padding:16px 18px;background:#ffffff;color:#000000;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;border:1px solid #eaeaee;border-radius:8px;">
+                <div style="text-align:center;margin-bottom:12px;">
+                    <img src="logo.png" alt="Socmegy" style="width:50px;height:50px;border-radius:50%;object-fit:cover;margin-bottom:4px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
+                    <div style="font-size:16px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div>
+                    <div style="font-size:10px;color:#555555;">Order Receipt</div>
+                </div>
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
+
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Order ID</span>
+                    <span style="font-weight:600;color:#000000;">${orderId}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Date</span>
+                    <span style="font-weight:600;color:#000000;">${date}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Status</span>
+                    <span style="font-weight:600;color:${statusColor};">${statusLabel}</span>
+                </div>
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
+
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Customer</span>
+                    <span style="font-weight:600;color:#000000;">${order.customer?.name || 'Unknown'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Phone</span>
+                    <span style="font-weight:600;color:#000000;">${order.customer?.phone || 'N/A'}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Link</span>
+                    <span style="font-weight:600;color:#000000;">${order.link || 'N/A'}</span>
+                </div>
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
+
+                <div style="font-weight:600;margin-bottom:4px;font-size:12px;">Services</div>
+                ${servicesHtml}
+
+                <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
+
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#555555;">Subtotal</span>
+                    <span style="font-weight:600;color:#000000;">${formatPrice(displaySubtotal)}</span>
+                </div>
+                ${discountTotal > 0 ? `
+                <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
+                    <span style="color:#e74c3c;">Discount</span>
+                    <span style="font-weight:600;color:#e74c3c;">-${formatPrice(discountTotal)}</span>
+                </div>
+                ` : ''}
+
+                <div style="font-size:14px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
+                    <span>Total</span>
+                    <span>${formatPrice(finalTotal)}</span>
+                </div>
+
+                ${order.notes ? `
+                    <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
+                    <div style="font-size:11px;color:#555555;">
+                        <strong>Notes:</strong> ${order.notes}
+                    </div>
+                ` : ''}
+
+                <div style="text-align:center;font-size:10px;color:#555555;margin-top:10px;border-top:1px dashed #cccccc;padding-top:8px;">
+                    Thank you for your order!<br />
+                    For any inquiries, contact us on WhatsApp
+                </div>
+            </div>
+        `;
+
         const win = window.open('', '_blank');
-        win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt - ${orderId}</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{background:#ffffff;padding:20px;}@media print{body{padding:10px;}}.no-print{text-align:center;margin-bottom:16px;padding:10px;background:#f8f8fa;border-radius:8px;}.no-print button{padding:8px 24px;background:#b8860b;color:#fff;border:none;border-radius:30px;font-weight:600;cursor:pointer;margin:0 4px;}.no-print button:hover{opacity:0.85;}@media print{.no-print{display:none;}}</style></head><body><div class="no-print"><button onclick="window.print()"><i class="fas fa-print"></i> Print / Save as PDF</button><button onclick="window.close()">Close</button></div>${receiptHTML}</body></html>`);
+        win.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>Receipt - ${orderId}</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { background: #ffffff; padding: 20px; }
+                    @media print { body { padding: 10px; } }
+                    .no-print { text-align:center; margin-bottom:16px; padding:10px; background:#f8f8fa; border-radius:8px; }
+                    .no-print button { padding:8px 24px; background:#b8860b; color:#fff; border:none; border-radius:30px; font-weight:600; cursor:pointer; margin:0 4px; }
+                    .no-print button:hover { opacity:0.85; }
+                    @media print { .no-print { display: none; } }
+                </style>
+            </head>
+            <body>
+                <div class="no-print">
+                    <button onclick="window.print()"><i class="fas fa-print"></i> Print / Save as PDF</button>
+                    <button onclick="window.close()">Close</button>
+                </div>
+                ${receiptHTML}
+            </body>
+            </html>
+        `);
         win.document.close();
     }
 
-    // ===== CART MODAL =====
+    // ===== CART =====
     function getRandomSuggestions(count = 3) {
         const available = services.filter(s => !s.unavailable);
         const shuffled = [...available].sort(() => Math.random() - 0.5);
@@ -2372,6 +2767,7 @@
         let html = '';
         let subtotal = 0;
         let totalDiscount = 0;
+
         if (!hasItems) {
             html = '<div class="empty">Your cart is empty</div>';
         } else {
@@ -2379,14 +2775,19 @@
                 let price, itemSubtotal, originalTotal;
                 let originalPriceDisplay = '';
                 let isDiscounted = false;
+
                 if (c.isCustom) {
                     itemSubtotal = c.finalTotal || 0;
                     originalTotal = c.totalOriginal || itemSubtotal;
                     isDiscounted = (originalTotal > itemSubtotal);
+
                     subtotal += originalTotal;
                     if (isDiscounted) {
                         totalDiscount += originalTotal - itemSubtotal;
-                        originalPriceDisplay = `<span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(originalTotal)}</span><span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>`;
+                        originalPriceDisplay = `
+                            <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(originalTotal)}</span>
+                            <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>
+                        `;
                     } else {
                         originalPriceDisplay = `<span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>`;
                     }
@@ -2395,29 +2796,66 @@
                     originalTotal = c.price * c.qty;
                     itemSubtotal = price * c.qty;
                     isDiscounted = (originalTotal > itemSubtotal);
+
                     subtotal += originalTotal;
+
                     if (isDiscounted) {
                         totalDiscount += originalTotal - itemSubtotal;
-                        originalPriceDisplay = `<span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(originalTotal)}</span><span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>`;
+                        originalPriceDisplay = `
+                            <span style="font-size:11px;color:#8e8e93;text-decoration:line-through;margin-right:4px;">${formatPrice(originalTotal)}</span>
+                            <span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>
+                        `;
                     } else {
                         originalPriceDisplay = `<span style="font-weight:600;color:#b8860b;font-size:13px;">${formatPrice(itemSubtotal)}</span>`;
                     }
                 }
+
                 const label = c.isCustom ? c.label : c.label;
-                html += `<div class="cart-modal-item" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);align-items:center;gap:10px;"><div class="item-info" style="flex:1;min-width:0;"><div style="font-weight:500;color:#b8860b;font-size:13px;">${label}</div><div style="font-size:12px;color:#6e6e73;">${c.isCustom ? c.desc : formatPrice(price) + ' x' + c.qty}</div></div><div class="item-right-col" style="display:flex;align-items:center;gap:10px;flex-shrink:0;"><div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">${originalPriceDisplay}</div>${!c.isCustom ? `<button class="qty-btn" onclick="updateQty(${idx}, -1)" style="background:rgba(0,0,0,0.04);border:none;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;color:#b8860b;">−</button><span style="min-width:20px;text-align:center;color:#b8860b;font-size:13px;">${c.qty}</span><button class="qty-btn" onclick="updateQty(${idx}, 1)" style="background:rgba(0,0,0,0.04);border:none;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;color:#b8860b;">+</button>` : ''}<button onclick="removeFromCart(${idx})" style="background:transparent;border:none;color:#e74c3c;font-size:18px;cursor:pointer;">✕</button></div></div>`;
+
+                html += `
+                    <div class="cart-modal-item" style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.05);align-items:center;gap:10px;">
+                        <div class="item-info" style="flex:1;min-width:0;">
+                            <div style="font-weight:500;color:#b8860b;font-size:13px;">${label}</div>
+                            <div style="font-size:12px;color:#6e6e73;">${c.isCustom ? c.desc : formatPrice(price) + ' x' + c.qty}</div>
+                        </div>
+                        <div class="item-right-col" style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+                            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                ${originalPriceDisplay}
+                            </div>
+                            ${!c.isCustom ? `
+                                <button class="qty-btn" onclick="updateQty(${idx}, -1)" style="background:rgba(0,0,0,0.04);border:none;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;color:#b8860b;">−</button>
+                                <span style="min-width:20px;text-align:center;color:#b8860b;font-size:13px;">${c.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${idx}, 1)" style="background:rgba(0,0,0,0.04);border:none;width:26px;height:26px;border-radius:50%;font-size:14px;cursor:pointer;color:#b8860b;">+</button>
+                            ` : ''}
+                            <button onclick="removeFromCart(${idx})" style="background:transparent;border:none;color:#e74c3c;font-size:18px;cursor:pointer;">✕</button>
+                        </div>
+                    </div>
+                `;
             });
         }
+
         const suggestions = getRandomSuggestions(3);
         if (suggestions.length > 0) {
             html += `<div class="cart-suggestions"><div class="suggest-title"><i class="fas fa-star" style="margin-right:4px;"></i> You might also like</div>`;
             suggestions.forEach(item => {
                 const price = getFinalPrice(item);
                 const hasDiscount = item.discount > 0;
-                html += `<div class="suggest-item"><span class="suggest-name">${item.label}</span><span class="suggest-price-wrap">${hasDiscount ? `<span class="original-price">${formatPrice(item.price)}</span>` : ''}<span class="suggest-price">${formatPrice(price)}</span></span><button class="suggest-add" data-id="${item.id}">+ Add</button></div>`;
+                html += `
+                    <div class="suggest-item">
+                        <span class="suggest-name">${item.label}</span>
+                        <span class="suggest-price-wrap">
+                            ${hasDiscount ? `<span class="original-price">${formatPrice(item.price)}</span>` : ''}
+                            <span class="suggest-price">${formatPrice(price)}</span>
+                        </span>
+                        <button class="suggest-add" data-id="${item.id}">+ Add</button>
+                    </div>
+                `;
             });
             html += '</div>';
         }
+
         document.getElementById('cartBody').innerHTML = html;
+
         document.querySelectorAll('.suggest-add').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -2433,12 +2871,19 @@
                 }
             });
         });
+
         const finalTotal = subtotal - totalDiscount;
         if (hasItems) {
-            document.getElementById('cartTotals').innerHTML = `<div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;padding-top:8px;border-top:2px solid rgba(0,0,0,0.05);"><span style="color:#b8860b;">Total</span><span style="color:#b8860b;">${formatPrice(finalTotal)}</span></div>`;
+            document.getElementById('cartTotals').innerHTML = `
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;padding-top:8px;border-top:2px solid rgba(0,0,0,0.05);">
+                    <span style="color:#b8860b;">Total</span>
+                    <span style="color:#b8860b;">${formatPrice(finalTotal)}</span>
+                </div>
+            `;
         } else {
             document.getElementById('cartTotals').innerHTML = '';
         }
+
         window._cartSubtotal = subtotal;
         window._cartDiscount = totalDiscount;
     }
@@ -2447,11 +2892,16 @@
         const c = cart[idx];
         if (!c || c.isCustom) return;
         const newQty = c.qty + delta;
-        if (newQty <= 0) { cart.splice(idx, 1); renumberPackages(); } 
-        else { c.qty = newQty; }
+        if (newQty <= 0) {
+            cart.splice(idx, 1);
+            renumberPackages();
+        } else {
+            c.qty = newQty;
+        }
         updateCartUI();
         renderCartModal();
     };
+
     window.removeFromCart = function(idx) {
         cart.splice(idx, 1);
         renumberPackages();
@@ -2461,13 +2911,17 @@
 
     // ===== TOAST =====
     let toastTimeout = null;
+
     function showToast(title, sub) {
         document.getElementById('toastTitle').textContent = title;
         document.getElementById('toastSub').textContent = sub || '';
         document.getElementById('toast').classList.add('show');
         clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => { document.getElementById('toast').classList.remove('show'); }, 3000);
+        toastTimeout = setTimeout(() => {
+            document.getElementById('toast').classList.remove('show');
+        }, 3000);
     }
+
     document.getElementById('toastClose').addEventListener('click', function() {
         document.getElementById('toast').classList.remove('show');
         clearTimeout(toastTimeout);
@@ -2499,7 +2953,10 @@
     });
     document.getElementById('checkoutBackBtn').addEventListener('click', function() {
         document.getElementById('checkoutModal').classList.remove('open');
-        setTimeout(() => { renderCartModal(); document.getElementById('cartModal').classList.add('open'); }, 300);
+        setTimeout(() => {
+            renderCartModal();
+            document.getElementById('cartModal').classList.add('open');
+        }, 300);
     });
     document.getElementById('btnRead').addEventListener('click', function() {
         renderReadContent();
@@ -2508,23 +2965,115 @@
     document.getElementById('readClose').addEventListener('click', function() {
         document.getElementById('readModal').classList.remove('open');
     });
+
     document.getElementById('reviewInfo').addEventListener('click', function() {
         showToast('All reviews fresh from our customers from Carousell');
     });
+
     document.getElementById('receiptModal').addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('open');
     });
+
     document.querySelectorAll('.modal-overlay').forEach(el => {
         el.addEventListener('click', function(e) {
             if (e.target === this) this.classList.remove('open');
         });
     });
 
+    // ===== POPUP =====
+    function loadPopup() {
+        db.ref('popup').on('value', snap => {
+            const data = snap.val() || {};
+            popupData = {
+                type: data.type || 'text',
+                title: data.title || '',
+                desc: data.desc || '',
+                icon: data.icon || '',
+                buttonEnabled: data.buttonEnabled || false,
+                buttonText: data.buttonText || '',
+                buttonLink: data.buttonLink || '',
+                image: data.image || ''
+            };
+
+            const trigger = document.getElementById('popupTrigger');
+            const hasContent = (popupData.type === 'text' && (popupData.title || popupData.desc)) ||
+                              (popupData.type === 'image' && popupData.image);
+
+            if (hasContent) {
+                trigger.style.display = 'flex';
+                // Update trigger text based on type
+                if (popupData.type === 'text') {
+                    trigger.innerHTML = '<i class="fas fa-gem"></i> ' + (popupData.title || 'Special Offer');
+                } else {
+                    trigger.innerHTML = '<i class="fas fa-image"></i> View Offer';
+                }
+            } else {
+                trigger.style.display = 'none';
+            }
+        });
+    }
+
+    function renderPopup() {
+        const content = document.getElementById('popupContent');
+        const d = popupData;
+
+        if (d.type === 'text') {
+            const iconHTML = d.icon ? `<span class="popup-icon"><i class="${d.icon}"></i></span>` : '';
+            const lineHTML = `<div class="popup-line"></div>`;
+            const btnHTML = d.buttonEnabled && d.buttonText ? `
+                <a href="${d.buttonLink || '#'}" target="${d.buttonLink && d.buttonLink.startsWith('http') ? '_blank' : '_self'}" class="popup-glass-btn">${d.buttonText}</a>
+            ` : '';
+            content.innerHTML = `
+                <div class="popup-text-content">
+                    ${iconHTML}
+                    <div class="popup-title">${d.title}</div>
+                    ${lineHTML}
+                    <div class="popup-desc">${d.desc}</div>
+                    ${btnHTML}
+                </div>
+            `;
+        } else {
+            const btnHTML = d.buttonEnabled && d.buttonText ? `
+                <a href="${d.buttonLink || '#'}" target="${d.buttonLink && d.buttonLink.startsWith('http') ? '_blank' : '_self'}" class="popup-img-btn popup-img-btn-right">${d.buttonText}</a>
+            ` : '';
+            content.innerHTML = `
+                <div class="popup-image-wrap">
+                    <div class="popup-img" style="background-image: url('${d.image}');"></div>
+                    ${btnHTML}
+                </div>
+            `;
+        }
+    }
+
+    function openPopup() {
+        renderPopup();
+        document.getElementById('popupOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePopup() {
+        document.getElementById('popupOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('popupTrigger').addEventListener('click', openPopup);
+    document.getElementById('popupClose').addEventListener('click', closePopup);
+    document.getElementById('popupOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closePopup();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('popupOverlay').classList.contains('active')) {
+            closePopup();
+        }
+    });
+
     // ===== CHECKOUT =====
     function openCheckout() {
         if (cart.length === 0) { showToast('Cart is empty'); return; }
+
         let subtotal = 0;
         let totalDiscount = 0;
+
         cart.forEach(c => {
             if (c.isCustom) {
                 const originalTotal = c.totalOriginal || c.finalTotal;
@@ -2542,7 +3091,9 @@
                 }
             }
         });
+
         const finalTotal = subtotal - totalDiscount;
+
         document.getElementById('checkoutSubtotal').textContent = formatPrice(subtotal);
         if (totalDiscount > 0) {
             document.getElementById('checkoutDiscount').textContent = '-' + formatPrice(totalDiscount);
@@ -2550,6 +3101,7 @@
             document.getElementById('checkoutDiscount').textContent = 'RM0.00';
         }
         document.getElementById('checkoutTotal').textContent = formatPrice(finalTotal);
+
         document.getElementById('checkoutModal').classList.add('open');
     }
 
@@ -2559,6 +3111,7 @@
         const phone = document.getElementById('custPhone').value.trim();
         const link = document.getElementById('custLink').value.trim();
         const trackingPin = document.getElementById('custTrackingPin').value.trim();
+
         if (!name) { showToast('Please enter your name'); return; }
         if (!phone) { showToast('Please enter your phone number'); return; }
         const cleanPhone = phone.replace(/[\s\-+()]/g, '');
@@ -2583,20 +3136,30 @@
             showToast('Use your existing tracking PIN, or contact us on WhatsApp to reset it.');
             return;
         }
+
         let subtotal = 0;
         let totalDiscount = 0;
         const servicesList = [];
+
         cart.forEach(c => {
             if (c.isCustom) {
                 const originalTotal = c.totalOriginal || c.finalTotal;
                 subtotal += originalTotal;
                 const discountAmount = (c.totalOriginal && c.totalOriginal > c.finalTotal) ? (c.totalOriginal - c.finalTotal) : 0;
                 totalDiscount += discountAmount;
+
                 if (c.services && c.services.length > 0) {
                     c.services.forEach(s => {
                         const serviceItem = services.find(serv => serv.id === s.id);
                         const discountedPrice = serviceItem ? getFinalPrice(serviceItem) : s.price;
-                        servicesList.push({ name: s.name, qty: s.qty, price: discountedPrice, originalPrice: serviceItem ? serviceItem.price : s.price, isCustomPackage: true, packageLabel: c.label });
+                        servicesList.push({
+                            name: s.name,
+                            qty: s.qty,
+                            price: discountedPrice,
+                            originalPrice: serviceItem ? serviceItem.price : s.price,
+                            isCustomPackage: true,
+                            packageLabel: c.label
+                        });
                     });
                 }
             } else {
@@ -2607,14 +3170,25 @@
                 if (c.discount && c.discount > 0) {
                     totalDiscount += originalTotal - itemSubtotal;
                 }
-                servicesList.push({ name: c.label, qty: c.qty, price: price, originalPrice: c.price, isCustomPackage: false });
+                servicesList.push({
+                    name: c.label,
+                    qty: c.qty,
+                    price: price,
+                    originalPrice: c.price,
+                    isCustomPackage: false
+                });
             }
         });
+
         const finalTotal = subtotal - totalDiscount;
         const orderId = generateOrderId();
+
         const orderData = {
             orderId: orderId,
-            customer: { name: name, phone: phone },
+            customer: {
+                name: name,
+                phone: phone
+            },
             link: link || 'Not provided',
             services: servicesList,
             subtotal: subtotal,
@@ -2625,55 +3199,92 @@
             date: new Date().toISOString(),
             notes: ''
         };
+
         const allOrderIds = { ...existingOrderIds, [orderId]: true };
         db.ref().update({
             ['orders/' + orderId]: orderData,
             ['customer_orders/' + cleanPhone + '/' + orderId]: true,
             ['customer_access/' + trackingAccessKey + '/orders']: allOrderIds,
-            ['customers/' + cleanPhone]: { ...existingProfile, name, phone, accessKey: trackingAccessKey, updatedAt: new Date().toISOString() }
+            ['customers/' + cleanPhone]: {
+                ...existingProfile,
+                name,
+                phone,
+                accessKey: trackingAccessKey,
+                updatedAt: new Date().toISOString()
+            }
         })
-        .then(() => {
-            let msg = 'ORDER SUMMARY\n==============================\n\n';
-            msg += `Order ID: ${orderId}\n\n`;
-            msg += 'CUSTOMER DETAILS\n';
-            msg += `Name: ${name}\n`;
-            msg += `Phone: ${phone}\n`;
-            msg += `Link: ${link || 'Not provided'}\n\n`;
-            msg += 'SERVICES\n';
-            let currentPackage = null;
-            servicesList.forEach((s, index) => {
-                if (s.isCustomPackage) {
-                    if (currentPackage !== s.packageLabel) {
-                        currentPackage = s.packageLabel;
-                        if (index > 0) msg += '\n';
-                        msg += `${s.packageLabel}:\n`;
+            .then(() => {
+                let msg = 'ORDER SUMMARY\n==============================\n\n';
+                msg += `Order ID: ${orderId}\n\n`;
+                msg += 'CUSTOMER DETAILS\n';
+                msg += `Name: ${name}\n`;
+                msg += `Phone: ${phone}\n`;
+                msg += `Link: ${link || 'Not provided'}\n\n`;
+                msg += 'SERVICES\n';
+
+                let currentPackage = null;
+                servicesList.forEach((s, index) => {
+                    if (s.isCustomPackage) {
+                        if (currentPackage !== s.packageLabel) {
+                            currentPackage = s.packageLabel;
+                            if (index > 0) msg += '\n';
+                            msg += `${s.packageLabel}:\n`;
+                        }
+                        msg += `- ${s.name} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
+                    } else {
+                        msg += `${s.name} x ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
                     }
-                    msg += `- ${s.name} × ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
-                } else {
-                    msg += `${s.name} x ${s.qty} = RM${(s.price * s.qty).toFixed(2)}\n`;
+                });
+
+                msg += '\n==============================\n';
+                msg += `Subtotal: RM${subtotal.toFixed(2)}\n`;
+                if (totalDiscount > 0) {
+                    msg += `Discount: -RM${totalDiscount.toFixed(2)}\n`;
                 }
+                msg += `Total: RM${finalTotal.toFixed(2)}\n`;
+                msg += `Status: Pending Payment\n`;
+                msg += '==============================\n';
+                msg += '\nPlease send payment to confirm your order.';
+
+                showOrderConfirmation(orderId, finalTotal, name);
+
+                window.open('https://wa.me/60108043004?text=' + encodeURIComponent(msg), '_blank');
+
+                cart = [];
+                packageCounter = 0;
+                updateCartUI();
+                renderCartModal();
+                document.getElementById('checkoutModal').classList.remove('open');
+                showToast('Order placed!');
+            })
+            .catch(err => {
+                showToast('Error: ' + err.message);
             });
-            msg += '\n==============================\n';
-            msg += `Subtotal: RM${subtotal.toFixed(2)}\n`;
-            if (totalDiscount > 0) { msg += `Discount: -RM${totalDiscount.toFixed(2)}\n`; }
-            msg += `Total: RM${finalTotal.toFixed(2)}\n`;
-            msg += `Status: Pending Payment\n`;
-            msg += '==============================\n';
-            msg += '\nPlease send payment to confirm your order.';
-            showOrderConfirmation(orderId, finalTotal, name);
-            window.open('https://wa.me/60108043004?text=' + encodeURIComponent(msg), '_blank');
-            cart = [];
-            packageCounter = 0;
-            updateCartUI();
-            renderCartModal();
-            document.getElementById('checkoutModal').classList.remove('open');
-            showToast('Order placed!');
-        })
-        .catch(err => { showToast('Error: ' + err.message); });
     });
 
     function showOrderConfirmation(orderId, total, name) {
-        document.getElementById('orderConfirmBody').innerHTML = `<div style="text-align:center;padding:10px 0;"><p style="font-size:14px;color:#6e6e73;">Thank you, <strong>${name}</strong>!</p><div style="background:#f8f8fa;border-radius:12px;padding:16px;margin:12px 0;"><p style="font-size:12px;color:#8e8e93;">Order ID</p><p style="font-size:18px;font-weight:700;color:#b8860b;">${orderId}</p><p style="font-size:16px;font-weight:700;color:#b8860b;">RM${total.toFixed(2)}</p><p style="font-size:12px;color:#8e8e93;">Status: <span style="color:#f39c12;font-weight:600;">Pending Payment</span></p></div><p style="font-size:13px;color:#6e6e73;">Send payment to complete your order.</p><div style="display:flex;gap:10px;margin-top:12px;justify-content:center;flex-wrap:wrap;"><button onclick="document.getElementById('orderConfirmModal').classList.remove('open')" style="padding:10px 24px;background:#b8860b;color:#fff;border:none;border-radius:30px;font-weight:600;cursor:pointer;">Close</button><button onclick="document.getElementById('orderConfirmModal').classList.remove('open');document.getElementById('trackInput').value='${orderId}';trackOrder();scrollToSection('#track');" style="padding:10px 24px;background:#e8e8ed;color:#1d1d1f;border:none;border-radius:30px;font-weight:600;cursor:pointer;">Track Order</button></div></div>`;
+        document.getElementById('orderConfirmBody').innerHTML = `
+            <div style="text-align:center;padding:10px 0;">
+                <p style="font-size:14px;color:#6e6e73;">Thank you, <strong>${name}</strong>!</p>
+                <div style="background:#f8f8fa;border-radius:12px;padding:16px;margin:12px 0;">
+                    <p style="font-size:12px;color:#8e8e93;">Order ID</p>
+                    <p style="font-size:18px;font-weight:700;color:#b8860b;">${orderId}</p>
+                    <p style="font-size:16px;font-weight:700;color:#b8860b;">RM${total.toFixed(2)}</p>
+                    <p style="font-size:12px;color:#8e8e93;">Status: <span style="color:#f39c12;font-weight:600;">Pending Payment</span></p>
+                </div>
+                <p style="font-size:13px;color:#6e6e73;">Send payment to complete your order.</p>
+                <div style="display:flex;gap:10px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
+                    <button onclick="document.getElementById('orderConfirmModal').classList.remove('open')"
+                            style="padding:10px 24px;background:#b8860b;color:#fff;border:none;border-radius:30px;font-weight:600;cursor:pointer;">
+                        Close
+                    </button>
+                    <button onclick="document.getElementById('orderConfirmModal').classList.remove('open');document.getElementById('trackInput').value='${orderId}';trackOrder();scrollToSection('#track');"
+                            style="padding:10px 24px;background:#e8e8ed;color:#1d1d1f;border:none;border-radius:30px;font-weight:600;cursor:pointer;">
+                        Track Order
+                    </button>
+                </div>
+            </div>
+        `;
         document.getElementById('orderConfirmModal').classList.add('open');
     }
 
@@ -2681,6 +3292,7 @@
     document.getElementById('addCustomCart').addEventListener('click', function() {
         const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
         if (entries.length === 0) { showToast('No services selected'); return; }
+
         let total = 0;
         const servicesList = [];
         entries.forEach(([id, qty]) => {
@@ -2690,6 +3302,7 @@
             total += price * qty;
             servicesList.push({ id, name: item.label, price: item.price, discount: item.discount || 0, qty });
         });
+
         let discount = 0;
         const minPurchase = settings.minPurchase || 10;
         const discountPercent = settings.discountPercent || 10;
@@ -2697,9 +3310,21 @@
             discount = Math.round(total * (discountPercent / 100) * 100) / 100;
         }
         const finalTotal = total - discount;
+
         packageCounter++;
         const desc = servicesList.map(s => s.name + ' (' + s.qty + 'x)').join(', ');
-        cart.push({ id: 'pkg-' + Date.now(), label: 'Package ' + packageCounter, desc: desc, services: servicesList, totalOriginal: total, discountAmount: discount, finalTotal: finalTotal, isCustom: true, qty: 1 });
+        cart.push({
+            id: 'pkg-' + Date.now(),
+            label: 'Package ' + packageCounter,
+            desc: desc,
+            services: servicesList,
+            totalOriginal: total,
+            discountAmount: discount,
+            finalTotal: finalTotal,
+            isCustom: true,
+            qty: 1
+        });
+
         customSelections = {};
         renderCustomPicker();
         updateCustomSummary();
@@ -2719,11 +3344,13 @@
         document.getElementById('mobileNav').classList.add('open');
         document.body.style.overflow = 'hidden';
     }
+
     function closeMobileNav() {
         document.getElementById('mobileNavOverlay').classList.remove('open');
         document.getElementById('mobileNav').classList.remove('open');
         document.body.style.overflow = '';
     }
+
     document.getElementById('hamburgerBtn').addEventListener('click', openMobileNav);
     document.getElementById('mobileNavOverlay').addEventListener('click', closeMobileNav);
     document.getElementById('closeNavBtn').addEventListener('click', closeMobileNav);
@@ -2741,6 +3368,7 @@
             window.scrollTo({ top: targetPosition, behavior: 'smooth' });
         }
     }
+
     document.querySelectorAll('#mobileNav a:not(.close-nav)').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -2748,6 +3376,7 @@
             if (href) scrollToSection(href);
         });
     });
+
     document.querySelectorAll('.navbar .nav-links a').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -2780,6 +3409,7 @@
             renderServices();
             renderResults();
         });
+
         db.ref('services').on('value', snap => {
             const data = snap.val() || {};
             services = Object.entries(data).map(([id, val]) => ({ id, ...val }));
@@ -2788,25 +3418,31 @@
             renderCustomPicker();
             updateCustomSummary();
         });
+
         db.ref('reviews').on('value', snap => {
             const data = snap.val() || {};
             reviews = Object.entries(data).map(([id, val]) => ({ id, ...val }));
             renderReviews();
         });
+
         db.ref('results').on('value', snap => {
             const data = snap.val() || {};
             results = Object.entries(data).map(([id, val]) => ({ id, ...val }));
             renderResults();
         });
+
         db.ref('settings').on('value', snap => {
             const data = snap.val() || {};
             settings = { discountPercent: data.discountPercent ?? 10, minPurchase: data.minPurchase ?? 10 };
             updateCustomSummary();
         });
+
         db.ref('read').on('value', snap => {
             readContent = snap.val() || '';
         });
+
         loadAnnouncements();
+        loadPopup();
     }
 
     // ===== INIT =====
@@ -2814,13 +3450,13 @@
     updateCartUI();
     window.addEventListener('resize', updateHeaderOffsets);
     updateHeaderOffsets();
-    setTimeout(loadPopup, 3000);
 
     console.log('✅ Website connected to Firebase');
-    console.log('✅ Popup supports 3 types: Text Only, Image Only, Text+Image');
-    console.log('✅ Image Only - shows full image');
-    console.log('✅ Text+Image - title atas, desc tengah, button bawah (glass effect)');
-    console.log('✅ Close button works + click outside to close');
+    console.log('✅ Popup integrated with glass effect (blur 0px, alpha 0.20, sat 1.5)');
+    console.log('✅ Text popup: title & desc, icon optional, button optional');
+    console.log('✅ Image popup: plain image, button optional (right position)');
+    console.log('✅ Close button: glass effect, stay white');
+    console.log('✅ Popup trigger button: bottom right');
 </script>
 
 </body>
