@@ -174,7 +174,7 @@
 
         /* ===== LOGIN MOBILE ===== */
         @media (max-width: 768px) {
-            #loginPage { 
+            #loginPage {
                 background-image: url('bg.jpg') !important;
                 background-size: cover !important;
                 background-position: center !important;
@@ -234,12 +234,12 @@
                 text-align: center;
                 color: #1d1d1f;
             }
-            .login-right .sub { 
-                text-align: center; 
+            .login-right .sub {
+                text-align: center;
                 color: #6e6e73;
             }
-            .login-right .remember-row { 
-                justify-content: center; 
+            .login-right .remember-row {
+                justify-content: center;
             }
         }
 
@@ -534,7 +534,7 @@
             justify-content: center;
         }
         .list-item .item-actions button:hover { background: rgba(0,0,0,0.08); }
-        
+
         .list-item .item-actions .edit-btn {
             background: rgba(184, 134, 11, 0.12);
             color: #b8860b;
@@ -979,7 +979,7 @@
         .receipt-content .receipt-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 12px; }
         .receipt-content .receipt-row .label { color: #555555; }
         .receipt-content .receipt-row .value { font-weight: 600; color: #000000; }
-        
+
         /* ===== RECEIPT SERVICE - THREE COLUMNS ===== */
         .receipt-content .receipt-service {
             display: grid;
@@ -990,7 +990,7 @@
             gap: 10px;
         }
         .receipt-content .receipt-service:last-child { border-bottom: none; }
-        
+
         .receipt-content .receipt-service .service-left {
             min-width: 0;
             font-size: 10px;
@@ -1006,7 +1006,7 @@
             color: #888888;
             font-size: 9px;
         }
-        
+
         /* Original price with strike-through */
         .receipt-content .receipt-service .service-original {
             font-size: 10px;
@@ -1022,7 +1022,7 @@
             white-space: nowrap;
         }
         .receipt-content .receipt-service .service-discount-info { white-space: nowrap; text-align: right; }
-        
+
         .receipt-content .receipt-service .service-price {
             font-size: 11px;
             font-weight: 700;
@@ -1031,7 +1031,7 @@
             padding-top: 1px;
         }
         .receipt-content .receipt-service .service-price:last-child { grid-column: 3; }
-        
+
         /* ===== PACKAGE HEADER IN RECEIPT ===== */
         .receipt-content .package-header {
             font-weight: 600;
@@ -1044,7 +1044,7 @@
         .receipt-content .receipt-service.package-indent {
             padding-left: 12px;
         }
-        
+
         /* Individual service name - GOLD */
         .receipt-content .receipt-service.individual .service-name {
             color: #b8860b !important;
@@ -1053,15 +1053,15 @@
         .receipt-content .receipt-service.individual .service-original {
             color: #b8860b !important;
         }
-        /* Package service name - BLACK/HITAM */
+        /* Package service name - BLACK/HITAM (pure black in darkmode) */
         .receipt-content .receipt-service.package-indent .service-name {
-            color: #333333 !important;
+            color: #000000 !important;
             font-weight: 500 !important;
         }
         .receipt-content .receipt-service.package-indent .service-original {
             color: #8e8e93 !important;
         }
-        
+
         /* Dark mode support */
         body.dark-mode .receipt-content .receipt-service.individual .service-name {
             color: #d4a017 !important;
@@ -1070,9 +1070,9 @@
             color: #d4a017 !important;
         }
         body.dark-mode .receipt-content .receipt-service.package-indent .service-name {
-            color: #e8e8e8 !important;
+            color: #000000 !important;
         }
-        
+
         .receipt-content .receipt-total {
             font-size: 14px;
             font-weight: 700;
@@ -1295,7 +1295,6 @@
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Content</div>
         <button class="nav-item" data-tab="announcements">Announcements <span class="badge" id="announceCount">0</span></button>
-        <button class="nav-item" data-tab="popups">Popups <span class="badge" id="popupCount">0</span></button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Settings</div>
@@ -1415,7 +1414,6 @@
     let customers = [];
     let customerProfiles = [];
     let announcements = [];
-    let popups = [];
     let readContent = '';
     let settings = { discountPercent: 10, minPurchase: 10 };
     let currentTab = 'dashboard';
@@ -1679,7 +1677,6 @@
         else if (currentTab === 'orders') renderOrders(container);
         else if (currentTab === 'customers') renderCustomers(container);
         else if (currentTab === 'announcements') renderAnnouncements(container);
-        else if (currentTab === 'popups') renderPopups(container);
         else if (currentTab === 'customization') renderCustomization(container);
         else if (currentTab === 'read') renderRead(container);
     }
@@ -1748,7 +1745,6 @@
                     <button class="btn btn-primary" onclick="switchTab('services')">Manage Services</button>
                     <button class="btn btn-primary" onclick="switchTab('orders')">View Orders</button>
                     <button class="btn btn-primary" onclick="switchTab('announcements')">Add Announcement</button>
-                    <button class="btn btn-secondary" onclick="switchTab('popups')">Create Popup</button>
                 </div>
             </div>
         `;
@@ -2588,7 +2584,7 @@
                     }
                     if (hasDiscount) {
                         servicesHtml += `
-                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
@@ -2602,7 +2598,7 @@
                         `;
                     } else {
                         servicesHtml += `
-                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#333;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;">
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
@@ -2617,7 +2613,7 @@
                     currentPackage = null;
                     if (hasDiscount) {
                         servicesHtml += `
-                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
@@ -2631,7 +2627,7 @@
                         `;
                     } else {
                         servicesHtml += `
-                            <div style="display:grid;grid-template-columns:minmax(0,1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
+                            <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
                                 <div style="flex:1;min-width:0;font-size:10px;color:#b8860b;word-wrap:break-word;word-break:break-word;line-height:1.4;text-align:left;font-weight:600;">
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
@@ -2775,7 +2771,7 @@
 
         const orderId = order.id || order.orderId || 'N/A';
         const phone = order.customer?.phone || '60108043004';
-        
+
         let subtotal = 0;
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
@@ -2787,7 +2783,7 @@
             discountTotal = order.subtotal - order.total;
         }
         const finalTotal = order.total || (subtotal - discountTotal);
-        
+
         const msg = `ORDER RECEIPT
         ====================
         Order ID: ${orderId}
@@ -2954,103 +2950,6 @@
         if (confirm(`Delete announcement "${name}"?`)) {
             db.ref('announcements/' + id).remove()
                 .then(() => showToast('Announcement deleted'))
-                .catch(() => showToast('Error deleting'));
-        }
-    }
-
-    // ============================================================
-    // POPUPS
-    // ============================================================
-    function renderPopups(container) {
-        document.getElementById('popupCount').textContent = popups.length;
-        let html = `
-            <div class="admin-card">
-                <div class="card-header">
-                    <h3>Promotional Popups</h3>
-                    <div class="card-actions">
-                        <span class="count-badge">${popups.length} total</span>
-                        <button class="btn btn-primary" id="addPopupBtn">Add Popup</button>
-                    </div>
-                </div>
-                ${popups.length === 0 ? `
-                    <div class="empty-state">
-                        <div class="empty-icon">🪟</div>
-                        <p>No popups yet. Create one to show on website.</p>
-                    </div>
-                ` : popups.sort((a,b) => new Date(b.date) - new Date(a.date)).map(p => `
-                    <div class="list-item">
-                        <div class="item-main">
-                            <div class="title">${p.title || 'Untitled'}</div>
-                            <div class="sub">${p.text ? p.text.substring(0,60) + (p.text.length > 60 ? '...' : '') : ''}</div>
-                            <div class="meta">
-                                ${p.date || 'N/A'} ·
-                                <span style="color:${p.active !== false ? '#27ae60' : '#e74c3c'};font-weight:600;">
-                                    ${p.active !== false ? 'Active' : 'Inactive'}
-                                </span>
-                                ${p.link ? '· Has link' : ''}
-                            </div>
-                        </div>
-                        <div class="item-actions">
-                            <button class="edit-btn" onclick="editPopup('${p.id}')"><i class="fas fa-edit"></i></button>
-                            <button class="delete-btn" onclick="deletePopup('${p.id}','${p.title}')"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        container.innerHTML = html;
-
-        document.getElementById('addPopupBtn')?.addEventListener('click', function() { openPopupModal(); });
-    }
-
-    function openPopupModal(data) {
-        const isEdit = !!data;
-        const body = `
-            <input type="hidden" id="f_id" value="${data ? data.id : ''}" />
-            <div class="form-group">
-                <label>Icon (emoji)</label>
-                <input type="text" id="f_icon" value="${data ? data.icon : '🎉'}" placeholder="e.g. 🎉" maxlength="4" />
-            </div>
-            <div class="form-group">
-                <label>Title</label>
-                <input type="text" id="f_title" value="${data ? data.title : ''}" placeholder="e.g. Special Offer!" required />
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <textarea id="f_text" required style="min-height:80px;" placeholder="Get 20% off all services this weekend!">${data ? data.text : ''}</textarea>
-            </div>
-            <div class="form-group">
-                <label>Button Text</label>
-                <input type="text" id="f_btn_text" value="${data ? data.btnText : 'Shop Now'}" placeholder="e.g. Shop Now" />
-            </div>
-            <div class="form-group">
-                <label>Link (optional)</label>
-                <input type="url" id="f_link" value="${data ? data.link : ''}" placeholder="https://example.com/promo" />
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select id="f_status">
-                    <option value="active" ${data && data.active === false ? '' : 'selected'}>Active</option>
-                    <option value="inactive" ${data && data.active === false ? 'selected' : ''}>Inactive</option>
-                </select>
-            </div>
-        `;
-        editingType = 'popups';
-        editingId = data ? data.id : null;
-        openModal(isEdit ? 'Edit Popup' : 'New Popup', body, isEdit ? 'Update' : 'Create');
-    }
-
-    function editPopup(id) {
-        db.ref('popups/' + id).once('value').then(snap => {
-            const data = snap.val();
-            if (data) openPopupModal({ id, ...data });
-        });
-    }
-
-    function deletePopup(id, name) {
-        if (confirm(`Delete popup "${name}"?`)) {
-            db.ref('popups/' + id).remove()
-                .then(() => showToast('Popup deleted'))
                 .catch(() => showToast('Error deleting'));
         }
     }
@@ -3238,22 +3137,6 @@
                         date: getMalaysiaTime()
                     };
                 }
-            } else if (type === 'popups') {
-                const title = document.getElementById('f_title');
-                const text = document.getElementById('f_text');
-                if (!title || !title.value.trim()) { showToast('Title is required'); isValid = false; }
-                else if (!text || !text.value.trim()) { showToast('Description is required'); isValid = false; }
-                else {
-                    data = {
-                        icon: document.getElementById('f_icon').value.trim() || '🎉',
-                        title: title.value.trim(),
-                        text: text.value.trim(),
-                        btnText: document.getElementById('f_btn_text').value.trim() || 'Shop Now',
-                        link: document.getElementById('f_link').value.trim() || '',
-                        active: document.getElementById('f_status').value === 'active',
-                        date: getMalaysiaTime()
-                    };
-                }
             } else {
                 showToast('Unknown type');
                 isValid = false;
@@ -3372,13 +3255,6 @@
             document.getElementById('announceCount').textContent = announcements.length;
         });
 
-        db.ref('popups').on('value', snap => {
-            const data = snap.val() || {};
-            popups = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            if (currentTab === 'popups') renderContent();
-            document.getElementById('popupCount').textContent = popups.length;
-        });
-
         db.ref('settings').on('value', snap => {
             const data = snap.val() || {};
             settings = { discountPercent: data.discountPercent ?? 10, minPurchase: data.minPurchase ?? 10 };
@@ -3406,9 +3282,8 @@
     console.log('✅ Admin panel ready');
     console.log('✅ Receipt - Individual services GOLD');
     console.log('✅ Receipt - Package headers GOLD');
-    console.log('✅ Receipt - Package services BLACK (with indent)');
+    console.log('✅ Receipt - Package services PURE BLACK');
     console.log('✅ Subtotal, Discount, Total displayed');
-    console.log('✅ Discount display fixed on mobile - no overlap');
 </script>
 
 </body>
