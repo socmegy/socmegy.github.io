@@ -132,17 +132,50 @@
             opacity: 1 !important;
             font-size: 14px !important;
         }
-        body.dark-mode .modal label span div { color: #d4a017 !important; }
-        body.dark-mode .modal label span span { color: #d4a017 !important; }
-        body.dark-mode .modal label span .payment-sub { color: #d4a017 !important; }
-        body.dark-mode .payment-method-label .payment-sub { color: #d4a017 !important; }
-        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary { background: #4a4a4a !important; color: #d4a017 !important; }
-        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary:hover { background: #5a5a5a !important; }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn { background: #4a4a4a !important; color: #d4a017 !important; }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn:hover { background: #5a5a5a !important; }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num { color: #d4a017 !important; }
-        body.dark-mode .track-wrap .track-card .receipt .receipt-service.package-indent .service-name { color: #000000 !important; }
-        body.dark-mode .receipt .receipt-service.package-indent .service-name { color: #000000 !important; }
+
+        /* ===== DARK MODE - PAYMENT METHOD GOLD ===== */
+        body.dark-mode .modal label span div {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .modal label span span {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .modal label span .payment-sub {
+            color: #d4a017 !important;
+        }
+        body.dark-mode .payment-method-label .payment-sub {
+            color: #d4a017 !important;
+        }
+
+        /* ===== DARK MODE - CUSTOM BUTTONS ===== */
+        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary {
+            background: #4a4a4a !important;
+            color: #d4a017 !important;
+        }
+        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary:hover {
+            background: #5a5a5a !important;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn {
+            background: #4a4a4a !important;
+            color: #d4a017 !important;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn:hover {
+            background: #5a5a5a !important;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num {
+            color: #d4a017 !important;
+        }
+
+        /* ===== DARK MODE - RECEIPT PACKAGE ITEMS PURE BLACK ===== */
+        body.dark-mode .track-wrap .track-card .receipt .receipt-service.package-indent .service-name {
+            color: #000000 !important;
+        }
+        body.dark-mode .receipt-content .receipt-service.package-indent .service-name {
+            color: #000000 !important;
+        }
+        body.dark-mode .receipt .receipt-service.package-indent .service-name {
+            color: #000000 !important;
+        }
 
         /* ===== POPUP STYLES ===== */
         .popup-overlay {
@@ -193,8 +226,12 @@
             text-shadow: 0 1px 4px rgba(0,0,0,0.15);
         }
         .popup-close:hover { background: rgba(255,255,255,0.35); }
-        body.dark-mode .popup-close { color: #fff; border-color: rgba(255,255,255,0.06); }
+        body.dark-mode .popup-close {
+            color: #fff;
+            border-color: rgba(255,255,255,0.06);
+        }
         body.dark-mode .popup-close:hover { background: rgba(255,255,255,0.15); }
+
         .popup-text-content {
             background: rgba(255,255,255,0.6);
             backdrop-filter: blur(32px) saturate(1.3);
@@ -248,6 +285,7 @@
             background: rgba(255,255,255,0.15);
             border-color: rgba(255,255,255,0.12);
         }
+
         .popup-image-wrap {
             position: relative;
             width: 100%;
@@ -301,6 +339,7 @@
             border-color: rgba(255,255,255,0.12);
         }
         .popup-img-btn-right { bottom: 28px; right: 20px; }
+        .popup-img-btn-none { display: none; }
 
         /* ===== ANNOUNCEMENT BAR ===== */
         .announcement-bar {
@@ -1607,6 +1646,8 @@
     let announceInterval = null;
     let orderCounter = 0;
     let currentReceiptOrder = null;
+
+    // ===== POPUP STATE =====
     let popupData = { type: 'text', title: '', desc: '', icon: '', enableButton: false, buttonText: '', buttonLink: '', image: '' };
 
     // ===== DARK MODE =====
@@ -1713,7 +1754,7 @@
         }
     }
 
-    // ===== GENERATE ORDER ID =====
+    // ===== GENERATE ORDER ID - RANDOM 6 CHARACTERS =====
     function generateOrderId() {
         const now = new Date();
         const datePart = now.getFullYear() +
@@ -2227,7 +2268,7 @@
         showReceiptModal(order);
     }
 
-    // ===== RECEIPT MODAL - WITH STAMP & DISCOUNT ALWAYS SHOWN =====
+    // ===== RECEIPT MODAL - WITH STRIKE-THROUGH & STAMP & DISCOUNT ALWAYS SHOWN =====
     function showReceiptModal(order) {
         const statusColors = {
             pending: '#f39c12',
@@ -2253,16 +2294,14 @@
 
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
-                const origPrice = s.originalPrice || s.price;
-                const itemOrig = origPrice * s.qty;
-                const itemFinal = s.price * s.qty;
-                subtotal += itemOrig;
+                const itemSubtotal = s.price * s.qty;
+                subtotal += itemSubtotal;
 
-                if (s.originalPrice && s.originalPrice > s.price) {
+                // Calculate discount for this service
+                const hasDiscount = s.originalPrice && s.originalPrice > s.price;
+                if (hasDiscount) {
                     totalDiscount += (s.originalPrice - s.price) * s.qty;
                 }
-
-                const hasDiscount = s.originalPrice && s.originalPrice > s.price;
                 const discountPercent = hasDiscount ? Math.round((1 - s.price / s.originalPrice) * 100) : 0;
 
                 if (s.isCustomPackage && s.packageLabel) {
@@ -2272,6 +2311,7 @@
                             <div class="package-header">${s.packageLabel}:</div>
                         `;
                     }
+
                     if (hasDiscount) {
                         servicesHtml += `
                             <div class="receipt-service package-indent">
@@ -2280,10 +2320,10 @@
                                     <span class="service-qty"> × ${s.qty}</span>
                                 </div>
                                 <div class="service-discount-info">
-                                    <span class="service-original">${formatPrice(itemOrig)}</span>
+                                    <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span class="service-discount">(-${discountPercent}%)</span>
                                 </div>
-                                <div class="service-price">${formatPrice(itemFinal)}</div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     } else {
@@ -2293,12 +2333,11 @@
                                     <span class="service-name">${s.name}</span>
                                     <span class="service-qty"> × ${s.qty}</span>
                                 </div>
-                                <div class="service-price">${formatPrice(itemFinal)}</div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     }
                 } else {
-                    currentPackage = null;
                     if (hasDiscount) {
                         servicesHtml += `
                             <div class="receipt-service individual">
@@ -2307,10 +2346,10 @@
                                     <span class="service-qty"> × ${s.qty}</span>
                                 </div>
                                 <div class="service-discount-info">
-                                    <span class="service-original">${formatPrice(itemOrig)}</span>
+                                    <span class="service-original">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span class="service-discount">(-${discountPercent}%)</span>
                                 </div>
-                                <div class="service-price">${formatPrice(itemFinal)}</div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     } else {
@@ -2320,7 +2359,7 @@
                                     <span class="service-name">${s.name}</span>
                                     <span class="service-qty"> × ${s.qty}</span>
                                 </div>
-                                <div class="service-price">${formatPrice(itemFinal)}</div>
+                                <div class="service-price">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     }
@@ -2328,7 +2367,7 @@
             });
         }
 
-        // Use order-level discount if available and larger
+        // Also check order-level discount
         if (order.discountAmount && order.discountAmount > totalDiscount) {
             totalDiscount = order.discountAmount;
         }
@@ -2476,16 +2515,13 @@
 
         if (order.services && order.services.length > 0) {
             order.services.forEach(s => {
-                const origPrice = s.originalPrice || s.price;
-                const itemOrig = origPrice * s.qty;
-                const itemFinal = s.price * s.qty;
-                subtotal += itemOrig;
-
-                if (s.originalPrice && s.originalPrice > s.price) {
-                    totalDiscount += (s.originalPrice - s.price) * s.qty;
-                }
+                const itemSubtotal = s.price * s.qty;
+                subtotal += itemSubtotal;
 
                 const hasDiscount = s.originalPrice && s.originalPrice > s.price;
+                if (hasDiscount) {
+                    totalDiscount += (s.originalPrice - s.price) * s.qty;
+                }
                 const discountPercent = hasDiscount ? Math.round((1 - s.price / s.originalPrice) * 100) : 0;
 
                 if (s.isCustomPackage && s.packageLabel) {
@@ -2495,6 +2531,7 @@
                             <div style="font-weight:600;font-size:11px;color:#b8860b;margin-top:4px;padding:2px 0;">${s.packageLabel}:</div>
                         `;
                     }
+
                     if (hasDiscount) {
                         servicesHtml += `
                             <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0 3px 12px;border-bottom:1px solid #eee;gap:8px;">
@@ -2503,10 +2540,10 @@
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
                                 </div>
                                 <div style="white-space:nowrap;text-align:right;">
-                                    <span style="font-size:9px;color:#8e8e93;text-decoration:line-through;margin-left:4px;">${formatPrice(itemOrig)}</span>
+                                    <span style="font-size:9px;color:#8e8e93;text-decoration:line-through;margin-left:4px;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
                                 </div>
-                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">${formatPrice(itemFinal)}</div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     } else {
@@ -2516,12 +2553,11 @@
                                     <span style="font-weight:500;">${s.name}</span>
                                     <span style="color:#888;font-size:9px;"> × ${s.qty}</span>
                                 </div>
-                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">${formatPrice(itemFinal)}</div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     }
                 } else {
-                    currentPackage = null;
                     if (hasDiscount) {
                         servicesHtml += `
                             <div style="display:grid;grid-template-columns:minmax(0, 1fr) max-content max-content;align-items:flex-start;padding:3px 0;border-bottom:1px solid #eee;gap:8px;">
@@ -2530,10 +2566,10 @@
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
                                 </div>
                                 <div style="white-space:nowrap;text-align:right;">
-                                    <span style="font-size:9px;color:#b8860b;text-decoration:line-through;margin-left:4px;font-weight:400;">${formatPrice(itemOrig)}</span>
+                                    <span style="font-size:9px;color:#b8860b;text-decoration:line-through;margin-left:4px;font-weight:400;">RM${(s.originalPrice * s.qty).toFixed(2)}</span>
                                     <span style="font-size:9px;color:#e74c3c;font-weight:600;margin-left:2px;">(-${discountPercent}%)</span>
                                 </div>
-                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">${formatPrice(itemFinal)}</div>
+                                <div style="white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     } else {
@@ -2543,7 +2579,7 @@
                                     <span>${s.name}</span>
                                     <span style="color:#888;font-size:9px;font-weight:400;"> × ${s.qty}</span>
                                 </div>
-                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">${formatPrice(itemFinal)}</div>
+                                <div style="grid-column:3;white-space:nowrap;font-size:11px;font-weight:700;color:#000;">RM${(s.price * s.qty).toFixed(2)}</div>
                             </div>
                         `;
                     }
@@ -3406,7 +3442,6 @@
     console.log('✅ No splash screen - direct content load');
     console.log('✅ Full device compatibility - all screen sizes');
     console.log('✅ Dark mode - cart suggestion names fixed');
-    console.log('✅ Mobile receipt about:blank styling fixed');
 </script>
 
 </body>
