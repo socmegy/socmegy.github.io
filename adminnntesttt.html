@@ -69,6 +69,21 @@
             position: relative;
         }
 
+        /* Wand semasa bergerak - nampak */
+        #wandMoving {
+            position: fixed;
+            z-index: 9999;
+            font-size: 28px;
+            pointer-events: none;
+            display: none;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
         .custom-wrap {
             background-image: url('bg.jpg');
             background-size: cover;
@@ -306,6 +321,10 @@
             display: inline-block;
         }
 
+        #wandMoving.beating {
+            animation: heartbeat 0.5s ease-in-out 1;
+        }
+
         .qty-btn.pulse-glow {
             animation: btnPulse 0.25s ease 1;
             background: #b8860b !important;
@@ -344,20 +363,6 @@
             100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(180deg); }
         }
 
-        /* ===== WAND SLIDE ===== */
-        @keyframes wandSlide {
-            0% { opacity: 0; transform: scale(0.5); }
-            30% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .gold-icon.sliding {
-            animation: wandSlide 0.6s ease forwards;
-            position: fixed;
-            z-index: 9999;
-            font-size: 28px;
-            pointer-events: none;
-        }
-
         /* ===== TOGGLE DARK MODE ===== */
         .dark-toggle {
             position: fixed;
@@ -390,6 +395,7 @@
             .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
             .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
             .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
+            #wandMoving { font-size: 22px; }
         }
     </style>
 </head>
@@ -418,6 +424,9 @@
     </section>
 </div>
 
+<!-- Wand bergerak - nampak sepanjang masa -->
+<div id="wandMoving"><i class="fas fa-wand-magic-sparkles"></i></div>
+
 <script>
     const servicesData = [
         { id: 's1', label: '1K Instagram Followers', price: 10.00, discount: 0 },
@@ -426,12 +435,13 @@
     ];
 
     let customSelections = {};
-    let isLocked = false;
     let isBeating = false;
     let beatCount = 0;
     let beatInterval = null;
-    let wandRef = document.getElementById('titleWand');
-    let wandClone = null;
+    let isMoving = false;
+
+    const titleWand = document.getElementById('titleWand');
+    const wandMoving = document.getElementById('wandMoving');
 
     // ===== RENDER =====
     function renderCustomPicker() {
@@ -513,7 +523,12 @@
         const btn = document.querySelector('#opt_s1 .plus-btn');
         if (!btn) return null;
         const rect = btn.getBoundingClientRect();
-        return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
+        return { x: rect.left + rect.width / 2 - 14, y: rect.top + rect.height / 2 - 14 };
+    }
+
+    function getTitlePosition() {
+        const rect = titleWand.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2 - 14, y: rect.top + rect.height / 2 - 14 };
     }
 
     // ===== SPARKLES =====
@@ -546,12 +561,10 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Heartbeat on wand clone
-        if (wandClone) {
-            wandClone.classList.remove('beating');
-            void wandClone.offsetWidth;
-            wandClone.classList.add('beating');
-        }
+        // Heartbeat on moving wand
+        wandMoving.classList.remove('beating');
+        void wandMoving.offsetWidth;
+        wandMoving.classList.add('beating');
 
         const qtyEl = document.getElementById('qtyNum_' + serviceId);
         if (qtyEl) {
@@ -570,61 +583,62 @@
         }
     }
 
-    // ===== AUTO SLIDE WAND =====
+    // ===== SLIDE WAND =====
     function slideWandToButton() {
-        const wand = document.getElementById('titleWand');
-        if (!wand) return;
+        if (isMoving) return;
+        isMoving = true;
 
-        const targetPos = getPlusButtonPosition();
-        if (!targetPos) return;
+        const startPos = getTitlePosition();
+        const endPos = getPlusButtonPosition();
 
-        // Hide original wand in title
-        wand.style.display = 'none';
+        if (!startPos || !endPos) {
+            isMoving = false;
+            return;
+        }
 
-        // Create clone for sliding - nampak dari mula
-        wandClone = wand.cloneNode(true);
-        wandClone.className = 'gold-icon sliding';
-        wandClone.style.position = 'fixed';
-        wandClone.style.zIndex = '9999';
-        wandClone.style.left = targetPos.x + 'px';
-        wandClone.style.top = targetPos.y + 'px';
-        wandClone.style.backgroundImage = 'url("bg.jpg")';
-        wandClone.style.backgroundSize = 'cover';
-        wandClone.style.backgroundPosition = 'center';
-        wandClone.style.webkitBackgroundClip = 'text';
-        wandClone.style.backgroundClip = 'text';
-        wandClone.style.color = 'transparent';
-        wandClone.style.fontSize = '28px';
-        wandClone.style.pointerEvents = 'none';
-        wandClone.style.opacity = '1';
-        wandClone.id = 'wandClone';
-        document.body.appendChild(wandClone);
+        // Hide title wand
+        titleWand.style.display = 'none';
 
-        // After slide animation completes
-        setTimeout(() => {
-            wandClone.className = 'gold-icon';
-            wandClone.style.position = 'fixed';
-            wandClone.style.zIndex = '9999';
-            wandClone.style.fontSize = '22px';
-            wandClone.style.pointerEvents = 'none';
-            wandClone.style.backgroundImage = 'url("bg.jpg")';
-            wandClone.style.backgroundSize = 'cover';
-            wandClone.style.backgroundPosition = 'center';
-            wandClone.style.webkitBackgroundClip = 'text';
-            wandClone.style.backgroundClip = 'text';
-            wandClone.style.color = 'transparent';
-            wandClone.style.opacity = '1';
-            wandClone.id = 'wandClone';
-            wandClone.style.left = targetPos.x + 'px';
-            wandClone.style.top = targetPos.y + 'px';
+        // Show moving wand at start position
+        wandMoving.style.display = 'block';
+        wandMoving.style.left = startPos.x + 'px';
+        wandMoving.style.top = startPos.y + 'px';
+        wandMoving.style.fontSize = '28px';
+        wandMoving.style.opacity = '1';
 
-            isLocked = true;
+        // Animate to end position
+        const startTime = performance.now();
+        const duration = 700;
 
-            // Start heartbeat after 1 second
-            setTimeout(() => {
-                startAutoBeat();
-            }, 800);
-        }, 700);
+        function animateMove(time) {
+            const elapsed = time - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease in-out
+            const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+            const x = startPos.x + (endPos.x - startPos.x) * ease;
+            const y = startPos.y + (endPos.y - startPos.y) * ease;
+
+            wandMoving.style.left = x + 'px';
+            wandMoving.style.top = y + 'px';
+
+            if (progress < 1) {
+                requestAnimationFrame(animateMove);
+            } else {
+                wandMoving.style.left = endPos.x + 'px';
+                wandMoving.style.top = endPos.y + 'px';
+                wandMoving.style.fontSize = '22px';
+                isMoving = false;
+
+                // Start heartbeat after 1 second
+                setTimeout(() => {
+                    startAutoBeat();
+                }, 800);
+            }
+        }
+
+        requestAnimationFrame(animateMove);
     }
 
     // ===== AUTO BEAT 5 TIMES =====
@@ -644,16 +658,15 @@
 
             // Update wand position if button moved
             const pos = getPlusButtonPosition();
-            if (pos && wandClone) {
-                wandClone.style.left = pos.x + 'px';
-                wandClone.style.top = pos.y + 'px';
+            if (pos) {
+                wandMoving.style.left = pos.x + 'px';
+                wandMoving.style.top = pos.y + 'px';
             }
 
             if (beatCount >= 5) {
                 clearInterval(beatInterval);
                 beatInterval = null;
                 isBeating = false;
-                isLocked = false;
 
                 // Clear all and reset
                 setTimeout(() => {
@@ -661,23 +674,14 @@
                     renderCustomPicker();
                     updateCustomSummary();
 
-                    // Remove clone
-                    if (wandClone && wandClone.parentNode) {
-                        wandClone.parentNode.removeChild(wandClone);
-                        wandClone = null;
-                    }
+                    // Hide moving wand
+                    wandMoving.style.display = 'none';
 
-                    // Show original wand back in title
-                    const originalWand = document.getElementById('titleWand');
-                    if (originalWand) {
-                        originalWand.style.display = 'inline-block';
-                        originalWand.style.position = 'relative';
-                        originalWand.style.zIndex = 'auto';
-                        originalWand.style.fontSize = '22px';
-                        originalWand.style.pointerEvents = 'auto';
-                        originalWand.style.left = 'auto';
-                        originalWand.style.top = 'auto';
-                    }
+                    // Show title wand back
+                    titleWand.style.display = 'inline-block';
+                    titleWand.style.position = 'relative';
+                    titleWand.style.zIndex = 'auto';
+                    titleWand.style.fontSize = '22px';
 
                     // Restart after 1.5 second
                     setTimeout(() => {
@@ -695,37 +699,18 @@
             beatInterval = null;
         }
         isBeating = false;
-        isLocked = false;
+        isMoving = false;
 
         customSelections = {};
         renderCustomPicker();
         updateCustomSummary();
 
-        // Remove clone if exists
-        if (wandClone && wandClone.parentNode) {
-            wandClone.parentNode.removeChild(wandClone);
-            wandClone = null;
-        }
+        wandMoving.style.display = 'none';
+        titleWand.style.display = 'inline-block';
+        titleWand.style.position = 'relative';
+        titleWand.style.zIndex = 'auto';
+        titleWand.style.fontSize = '22px';
 
-        // Show original wand
-        const wand = document.getElementById('titleWand');
-        if (wand) {
-            wand.style.display = 'inline-block';
-            wand.style.position = 'relative';
-            wand.style.zIndex = 'auto';
-            wand.style.fontSize = '22px';
-            wand.style.pointerEvents = 'auto';
-            wand.style.left = 'auto';
-            wand.style.top = 'auto';
-            wand.style.backgroundImage = 'url("bg.jpg")';
-            wand.style.backgroundSize = 'cover';
-            wand.style.backgroundPosition = 'center';
-            wand.style.webkitBackgroundClip = 'text';
-            wand.style.backgroundClip = 'text';
-            wand.style.color = 'transparent';
-        }
-
-        // Restart after 1 second
         setTimeout(() => {
             slideWandToButton();
         }, 1000);
@@ -756,14 +741,13 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    // Auto start after 1 second
     setTimeout(() => {
         slideWandToButton();
     }, 1000);
 
-    console.log('✅ Wand nampak sepanjang masa - dari title sampai drop');
-    console.log('✅ Auto slide smooth ke + button');
-    console.log('✅ Auto heartbeat 5 kali - each beat +1');
+    console.log('✅ Wand nampak SEPANJANG MASA - dari title sampai drop');
+    console.log('✅ Auto slide smooth ke + button 1K Instagram Followers');
+    console.log('✅ Auto heartbeat 5 kali - setiap degup +1');
     console.log('✅ Reset dan ulang');
     console.log('✅ 30% OFF for RM20+');
 </script>
