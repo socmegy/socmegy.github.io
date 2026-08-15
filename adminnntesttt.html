@@ -29,7 +29,7 @@
             padding: 20px;
         }
 
-        /* ===== CUSTOM SECTION - SEBIJIK MACAM ASAL ===== */
+        /* ===== CUSTOM SECTION ===== */
         .section-title {
             font-size: 26px;
             font-weight: 700;
@@ -77,7 +77,7 @@
             z-index: 9999;
             font-size: 28px;
             pointer-events: none;
-            opacity: 0.9;
+            opacity: 1;
         }
 
         .custom-wrap {
@@ -361,7 +361,7 @@
             background: rgba(184,134,11,0.04) !important;
         }
 
-        /* ===== TOGGLE DARK MODE BUTTON ===== */
+        /* ===== TOGGLE DARK MODE ===== */
         .dark-toggle {
             position: fixed;
             top: 20px;
@@ -393,7 +393,6 @@
             .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
             .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
             .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
-            #custom .section-title .gold-icon.dragging { font-size: 22px; }
         }
     </style>
 </head>
@@ -430,7 +429,10 @@
     ];
 
     let customSelections = {};
-    const titleWand = document.getElementById('titleWand');
+    let wandRef = document.getElementById('titleWand');
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
     // ===== RENDER =====
     function renderCustomPicker() {
@@ -510,9 +512,11 @@
 
     // ===== HEARTBEAT =====
     function triggerHeartbeat() {
-        titleWand.classList.remove('beating');
-        void titleWand.offsetWidth;
-        titleWand.classList.add('beating');
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
+        wand.classList.remove('beating');
+        void wand.offsetWidth;
+        wand.classList.add('beating');
     }
 
     // ===== SPARKLES =====
@@ -545,7 +549,6 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Trigger heartbeat on wand
         triggerHeartbeat();
 
         const qtyEl = document.getElementById('qtyNum_' + serviceId);
@@ -571,127 +574,91 @@
         }
     }
 
-    // ===== DRAG WAND - STAY WHERE YOU PUT IT =====
-    let isDragging = false;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
-    let wandClone = null;
+    // ===== DRAG WAND - FIXED =====
+    function initDrag(e) {
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
 
-    titleWand.addEventListener('mousedown', function(e) {
+        const touch = e.touches ? e.touches[0] : e;
+        const rect = wand.getBoundingClientRect();
+
         isDragging = true;
-        const rect = this.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-
-        // Create clone for dragging
-        wandClone = this.cloneNode(true);
-        wandClone.className = 'gold-icon dragging';
-        wandClone.style.left = (e.clientX - dragOffsetX) + 'px';
-        wandClone.style.top = (e.clientY - dragOffsetY) + 'px';
-        wandClone.style.pointerEvents = 'none';
-        document.body.appendChild(wandClone);
-
-        // Hide original
-        this.style.opacity = '0';
-        e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', function(e) {
-        if (!isDragging || !wandClone) return;
-        wandClone.style.left = (e.clientX - dragOffsetX) + 'px';
-        wandClone.style.top = (e.clientY - dragOffsetY) + 'px';
-        e.preventDefault();
-    });
-
-    document.addEventListener('mouseup', function(e) {
-        if (isDragging && wandClone) {
-            isDragging = false;
-
-            // Keep the clone at final position
-            wandClone.className = 'gold-icon';
-            wandClone.style.position = 'fixed';
-            wandClone.style.zIndex = '9999';
-            wandClone.style.pointerEvents = 'auto';
-            wandClone.style.cursor = 'grab';
-            wandClone.style.fontSize = '28px';
-            wandClone.style.opacity = '1';
-            wandClone.id = 'titleWand';
-            wandClone.style.backgroundImage = 'url("bg.jpg")';
-            wandClone.style.backgroundSize = 'cover';
-            wandClone.style.backgroundPosition = 'center';
-            wandClone.style.webkitBackgroundClip = 'text';
-            wandClone.style.backgroundClip = 'text';
-            wandClone.style.color = 'transparent';
-
-            // Hide original permanently
-            titleWand.style.display = 'none';
-
-            // Update reference
-            window.titleWand = wandClone;
-
-            // Add event listeners to clone
-            wandClone.addEventListener('click', function() {
-                // Nothing - just heartbeat trigger via plus button
-            });
-
-            e.preventDefault();
-        }
-    });
-
-    // Touch support
-    titleWand.addEventListener('touchstart', function(e) {
-        const touch = e.touches[0];
-        isDragging = true;
-        const rect = this.getBoundingClientRect();
         dragOffsetX = touch.clientX - rect.left;
         dragOffsetY = touch.clientY - rect.top;
 
-        wandClone = this.cloneNode(true);
-        wandClone.className = 'gold-icon dragging';
-        wandClone.style.left = (touch.clientX - dragOffsetX) + 'px';
-        wandClone.style.top = (touch.clientY - dragOffsetY) + 'px';
-        wandClone.style.pointerEvents = 'none';
-        document.body.appendChild(wandClone);
+        wand.classList.add('dragging');
+        wand.style.left = (touch.clientX - dragOffsetX) + 'px';
+        wand.style.top = (touch.clientY - dragOffsetY) + 'px';
+        wand.style.position = 'fixed';
+        wand.style.zIndex = '9999';
+        wand.style.fontSize = '28px';
+        wand.style.opacity = '1';
+        wand.style.pointerEvents = 'none';
 
-        this.style.opacity = '0';
-        e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('touchmove', function(e) {
-        if (!isDragging || !wandClone) return;
-        const touch = e.touches[0];
-        wandClone.style.left = (touch.clientX - dragOffsetX) + 'px';
-        wandClone.style.top = (touch.clientY - dragOffsetY) + 'px';
-        e.preventDefault();
-    }, { passive: false });
-
-    document.addEventListener('touchend', function(e) {
-        if (isDragging && wandClone) {
-            isDragging = false;
-            wandClone.className = 'gold-icon';
-            wandClone.style.position = 'fixed';
-            wandClone.style.zIndex = '9999';
-            wandClone.style.pointerEvents = 'auto';
-            wandClone.style.cursor = 'grab';
-            wandClone.style.fontSize = '28px';
-            wandClone.style.opacity = '1';
-            wandClone.id = 'titleWand';
-            wandClone.style.backgroundImage = 'url("bg.jpg")';
-            wandClone.style.backgroundSize = 'cover';
-            wandClone.style.backgroundPosition = 'center';
-            wandClone.style.webkitBackgroundClip = 'text';
-            wandClone.style.backgroundClip = 'text';
-            wandClone.style.color = 'transparent';
-
-            titleWand.style.display = 'none';
-            window.titleWand = wandClone;
-
-            wandClone.addEventListener('click', function() {});
+        if (e.type === 'touchstart') {
             e.preventDefault();
+        }
+    }
+
+    function moveDrag(e) {
+        if (!isDragging) return;
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
+
+        const touch = e.touches ? e.touches[0] : e;
+        wand.style.left = (touch.clientX - dragOffsetX) + 'px';
+        wand.style.top = (touch.clientY - dragOffsetY) + 'px';
+
+        if (e.type === 'touchmove') {
+            e.preventDefault();
+        }
+    }
+
+    function endDrag(e) {
+        if (!isDragging) return;
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
+
+        isDragging = false;
+        wand.classList.remove('dragging');
+        wand.style.position = 'fixed';
+        wand.style.zIndex = '9999';
+        wand.style.fontSize = '28px';
+        wand.style.opacity = '1';
+        wand.style.pointerEvents = 'auto';
+        wand.style.cursor = 'grab';
+
+        // Keep it at final position
+        if (e.type === 'touchend') {
+            e.preventDefault();
+        }
+    }
+
+    // Mouse events
+    document.addEventListener('mousedown', function(e) {
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
+        if (e.target === wand || wand.contains(e.target)) {
+            initDrag(e);
         }
     });
 
-    // ===== PLUS BUTTON - ADD TO PACKAGE =====
+    document.addEventListener('mousemove', moveDrag);
+    document.addEventListener('mouseup', endDrag);
+
+    // Touch events
+    document.addEventListener('touchstart', function(e) {
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
+        if (e.target === wand || wand.contains(e.target)) {
+            initDrag(e);
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchmove', moveDrag, { passive: false });
+    document.addEventListener('touchend', endDrag, { passive: false });
+
+    // ===== PLUS BUTTON =====
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.plus-btn');
         if (btn) {
@@ -733,7 +700,7 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    console.log('✅ Drag wand anywhere - it STAYS where you put it');
+    console.log('✅ Drag wand anywhere - it STAYS');
     console.log('✅ Click + button = wand heartbeats + add to package');
     console.log('✅ 30% OFF for RM20+');
 </script>
