@@ -29,7 +29,7 @@
             padding: 20px;
         }
 
-        /* ===== CUSTOM SECTION ===== */
+        /* ===== CUSTOM SECTION - SEBIJIK MACAM ASAL ===== */
         .section-title {
             font-size: 26px;
             font-weight: 700;
@@ -57,7 +57,6 @@
             font-size: 22px;
             display: inline-block;
             vertical-align: middle;
-            cursor: grab;
             user-select: none;
             -webkit-user-select: none;
             -webkit-background-clip: text;
@@ -68,24 +67,6 @@
             background-position: center;
             transition: none;
             position: relative;
-        }
-        #custom .section-title .gold-icon:active {
-            cursor: grabbing;
-        }
-        #custom .section-title .gold-icon.dragging {
-            position: fixed;
-            z-index: 9999;
-            font-size: 28px;
-            pointer-events: none;
-            opacity: 1;
-        }
-        #custom .section-title .gold-icon.locked {
-            position: fixed;
-            z-index: 9999;
-            font-size: 22px;
-            pointer-events: none;
-            opacity: 1;
-            cursor: default;
         }
 
         .custom-wrap {
@@ -138,7 +119,6 @@
             gap: 4px;
             position: relative;
             border: 1px solid #eaeaee;
-            transition: all 0.2s ease;
         }
         body.dark-mode .custom-wrap .custom-card .picker .opt {
             background: #1a1a1a;
@@ -214,13 +194,6 @@
         }
         body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num {
             color: #d4a017;
-        }
-
-        /* Drop zone highlight */
-        .opt.drop-zone {
-            border-color: #b8860b !important;
-            box-shadow: 0 0 20px rgba(184,134,11,0.2);
-            background: rgba(184,134,11,0.06) !important;
         }
 
         .custom-wrap .custom-card .summary {
@@ -371,10 +344,18 @@
             100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(180deg); }
         }
 
-        .opt.highlight-service {
-            border-color: #b8860b !important;
-            box-shadow: 0 0 15px rgba(184,134,11,0.1);
-            background: rgba(184,134,11,0.04) !important;
+        /* ===== WAND SLIDE ===== */
+        @keyframes wandSlide {
+            0% { opacity: 0; transform: scale(0.5); }
+            30% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .gold-icon.sliding {
+            animation: wandSlide 0.6s ease forwards;
+            position: fixed;
+            z-index: 9999;
+            font-size: 28px;
+            pointer-events: none;
         }
 
         /* ===== TOGGLE DARK MODE ===== */
@@ -409,8 +390,6 @@
             .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
             .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
             .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
-            #custom .section-title .gold-icon.dragging { font-size: 22px; }
-            #custom .section-title .gold-icon.locked { font-size: 18px; }
         }
     </style>
 </head>
@@ -447,14 +426,11 @@
     ];
 
     let customSelections = {};
-    let wandRef = document.getElementById('titleWand');
-    let isDragging = false;
     let isLocked = false;
     let isBeating = false;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
     let beatCount = 0;
     let beatInterval = null;
+    let wandRef = document.getElementById('titleWand');
 
     // ===== RENDER =====
     function renderCustomPicker() {
@@ -463,9 +439,8 @@
             const qty = customSelections[item.id] || 0;
             const finalPrice = item.discount ? Math.round(item.price * (1 - item.discount / 100) * 100) / 100 : item.price;
             const hasDiscount = item.discount > 0;
-            const isFirst = index === 0;
             return `
-                <div class="opt ${isFirst ? 'drop-zone' : ''}" data-id="${item.id}" data-index="${index}" id="opt_${item.id}">
+                <div class="opt" data-id="${item.id}" data-index="${index}" id="opt_${item.id}">
                     <div class="left">
                         <span>${item.label}</span>
                         ${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
@@ -492,11 +467,6 @@
                 else customSelections[id] = newQty;
                 renderCustomPicker();
                 updateCustomSummary();
-
-                // Update locked wand position if it's on s1
-                if (isLocked) {
-                    updateWandPosition('s1');
-                }
             });
         });
     }
@@ -537,26 +507,18 @@
         container.innerHTML = html;
     }
 
-    // ===== UPDATE WAND POSITION =====
-    function updateWandPosition(serviceId) {
-        const wand = document.getElementById('titleWand');
-        if (!wand || !isLocked) return;
-
-        const btn = document.querySelector(`#opt_${serviceId} .plus-btn`);
-        if (!btn) return;
-
+    // ===== GET POSITION =====
+    function getPlusButtonPosition() {
+        const btn = document.querySelector('#opt_s1 .plus-btn');
+        if (!btn) return null;
         const rect = btn.getBoundingClientRect();
-        wand.style.left = (rect.left + rect.width / 2 - 11) + 'px';
-        wand.style.top = (rect.top + rect.height / 2 - 11) + 'px';
+        return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
-    // ===== HEARTBEAT =====
-    function triggerHeartbeat() {
-        const wand = document.getElementById('titleWand');
-        if (!wand) return;
-        wand.classList.remove('beating');
-        void wand.offsetWidth;
-        wand.classList.add('beating');
+    function getTitlePosition() {
+        const title = document.querySelector('.section-title');
+        const rect = title.getBoundingClientRect();
+        return { x: rect.left + 20, y: rect.top + 10 };
     }
 
     // ===== SPARKLES =====
@@ -589,7 +551,13 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        triggerHeartbeat();
+        // Heartbeat on wand
+        const wand = document.getElementById('titleWand');
+        if (wand) {
+            wand.classList.remove('beating');
+            void wand.offsetWidth;
+            wand.classList.add('beating');
+        }
 
         const qtyEl = document.getElementById('qtyNum_' + serviceId);
         if (qtyEl) {
@@ -606,26 +574,69 @@
             setTimeout(() => btn.classList.remove('pulse-glow'), 400);
             createSparklesAtElement(btn, 6);
         }
+    }
 
-        const opt = btn ? btn.closest('.opt') : null;
-        if (opt) {
-            opt.classList.add('highlight-service');
-            setTimeout(() => opt.classList.remove('highlight-service'), 300);
-        }
+    // ===== AUTO SLIDE WAND =====
+    function slideWandToButton() {
+        const wand = document.getElementById('titleWand');
+        if (!wand) return;
 
-        // Update wand position after add
-        if (isLocked) {
-            updateWandPosition('s1');
-        }
+        const targetPos = getPlusButtonPosition();
+        if (!targetPos) return;
+
+        // Hide original wand in title
+        wand.style.display = 'none';
+
+        // Create clone for sliding
+        const clone = wand.cloneNode(true);
+        clone.className = 'gold-icon sliding';
+        clone.style.left = targetPos.x + 'px';
+        clone.style.top = targetPos.y + 'px';
+        clone.style.backgroundImage = 'url("bg.jpg")';
+        clone.style.backgroundSize = 'cover';
+        clone.style.backgroundPosition = 'center';
+        clone.style.webkitBackgroundClip = 'text';
+        clone.style.backgroundClip = 'text';
+        clone.style.color = 'transparent';
+        clone.style.fontSize = '28px';
+        clone.id = 'wandClone';
+        document.body.appendChild(clone);
+
+        // After slide animation completes
+        setTimeout(() => {
+            clone.className = 'gold-icon';
+            clone.style.position = 'fixed';
+            clone.style.zIndex = '9999';
+            clone.style.fontSize = '22px';
+            clone.style.pointerEvents = 'none';
+            clone.style.backgroundImage = 'url("bg.jpg")';
+            clone.style.backgroundSize = 'cover';
+            clone.style.backgroundPosition = 'center';
+            clone.style.webkitBackgroundClip = 'text';
+            clone.style.backgroundClip = 'text';
+            clone.style.color = 'transparent';
+            clone.id = 'titleWand';
+            clone.style.left = targetPos.x + 'px';
+            clone.style.top = targetPos.y + 'px';
+
+            // Update reference
+            window.titleWand = clone;
+            isLocked = true;
+
+            // Start heartbeat after 1 second
+            setTimeout(() => {
+                startAutoBeat(clone);
+            }, 800);
+        }, 700);
     }
 
     // ===== AUTO BEAT 5 TIMES =====
-    function startAutoBeat() {
+    function startAutoBeat(wand) {
         if (isBeating) return;
         isBeating = true;
         beatCount = 0;
 
-        // Reset selections for s1 only
+        // Reset s1 quantity
         customSelections['s1'] = 0;
         renderCustomPicker();
         updateCustomSummary();
@@ -634,214 +645,50 @@
             beatCount++;
             addToPackage('s1');
 
+            // Update wand position if button moved
+            const pos = getPlusButtonPosition();
+            if (pos && wand) {
+                wand.style.left = pos.x + 'px';
+                wand.style.top = pos.y + 'px';
+            }
+
             if (beatCount >= 5) {
                 clearInterval(beatInterval);
                 beatInterval = null;
                 isBeating = false;
+                isLocked = false;
 
-                // Reset after 5 beats - clear all and restart
+                // Clear all and reset
                 setTimeout(() => {
                     customSelections = {};
                     renderCustomPicker();
                     updateCustomSummary();
 
-                    // Unlock wand and return to title
-                    const wand = document.getElementById('titleWand');
-                    if (wand) {
-                        wand.classList.remove('locked', 'beating');
-                        wand.classList.add('gold-icon');
-                        wand.style.position = 'relative';
-                        wand.style.zIndex = 'auto';
-                        wand.style.left = 'auto';
-                        wand.style.top = 'auto';
-                        wand.style.fontSize = '22px';
-                        wand.style.pointerEvents = 'auto';
-                        wand.style.cursor = 'grab';
-                        isLocked = false;
-
-                        // Move back to title
-                        const parent = document.querySelector('.section-title');
-                        parent.appendChild(wand);
-                        wand.style.position = 'relative';
-                        wand.style.display = 'inline-block';
-                        wand.style.backgroundImage = 'url("bg.jpg")';
-                        wand.style.backgroundSize = 'cover';
-                        wand.style.backgroundPosition = 'center';
-                        wand.style.webkitBackgroundClip = 'text';
-                        wand.style.backgroundClip = 'text';
-                        wand.style.color = 'transparent';
+                    // Remove clone
+                    if (wand && wand.parentNode) {
+                        wand.parentNode.removeChild(wand);
                     }
 
-                    // Remove drop zone highlight
-                    document.querySelectorAll('.opt').forEach(el => el.classList.remove('drop-zone'));
-                    const firstOpt = document.querySelector('.opt[data-index="0"]');
-                    if (firstOpt) firstOpt.classList.add('drop-zone');
+                    // Show original wand back in title
+                    const originalWand = document.getElementById('titleWand');
+                    if (originalWand) {
+                        originalWand.style.display = 'inline-block';
+                        originalWand.style.position = 'relative';
+                        originalWand.style.zIndex = 'auto';
+                        originalWand.style.fontSize = '22px';
+                        originalWand.style.pointerEvents = 'auto';
+                        originalWand.style.left = 'auto';
+                        originalWand.style.top = 'auto';
+                    }
 
+                    // Restart after 1 second
+                    setTimeout(() => {
+                        slideWandToButton();
+                    }, 1000);
                 }, 1000);
             }
         }, 600);
     }
-
-    // ===== DRAG AND DROP =====
-    function initDrag(e) {
-        const wand = document.getElementById('titleWand');
-        if (!wand || isLocked) return;
-
-        const touch = e.touches ? e.touches[0] : e;
-        const rect = wand.getBoundingClientRect();
-
-        isDragging = true;
-        dragOffsetX = touch.clientX - rect.left;
-        dragOffsetY = touch.clientY - rect.top;
-
-        wand.classList.add('dragging');
-        wand.style.left = (touch.clientX - dragOffsetX) + 'px';
-        wand.style.top = (touch.clientY - dragOffsetY) + 'px';
-        wand.style.position = 'fixed';
-        wand.style.zIndex = '9999';
-        wand.style.fontSize = '28px';
-        wand.style.opacity = '1';
-        wand.style.pointerEvents = 'none';
-
-        if (e.type === 'touchstart') {
-            e.preventDefault();
-        }
-    }
-
-    function moveDrag(e) {
-        if (!isDragging) return;
-        const wand = document.getElementById('titleWand');
-        if (!wand) return;
-
-        const touch = e.touches ? e.touches[0] : e;
-        wand.style.left = (touch.clientX - dragOffsetX) + 'px';
-        wand.style.top = (touch.clientY - dragOffsetY) + 'px';
-
-        // Check if over drop zone
-        const dropZone = document.querySelector('.opt.drop-zone');
-        if (dropZone) {
-            const rect = dropZone.getBoundingClientRect();
-            const cx = touch.clientX;
-            const cy = touch.clientY;
-            if (cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom) {
-                dropZone.style.borderColor = '#d4a017';
-                dropZone.style.boxShadow = '0 0 30px rgba(184,134,11,0.3)';
-            } else {
-                dropZone.style.borderColor = '#b8860b';
-                dropZone.style.boxShadow = '0 0 20px rgba(184,134,11,0.2)';
-            }
-        }
-
-        if (e.type === 'touchmove') {
-            e.preventDefault();
-        }
-    }
-
-    function endDrag(e) {
-        if (!isDragging) return;
-        const wand = document.getElementById('titleWand');
-        if (!wand) return;
-
-        isDragging = false;
-        wand.classList.remove('dragging');
-
-        // Check if dropped on drop zone
-        const dropZone = document.querySelector('.opt.drop-zone');
-        let dropped = false;
-
-        if (dropZone) {
-            const rect = dropZone.getBoundingClientRect();
-            const touch = e.changedTouches ? e.changedTouches[0] : e;
-            const cx = touch.clientX;
-            const cy = touch.clientY;
-
-            if (cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom) {
-                dropped = true;
-            }
-        }
-
-        if (dropped) {
-            // Lock wand to plus button
-            isLocked = true;
-            wand.classList.remove('gold-icon');
-            wand.classList.add('locked');
-
-            const btn = document.querySelector('#opt_s1 .plus-btn');
-            if (btn) {
-                const rect = btn.getBoundingClientRect();
-                wand.style.left = (rect.left + rect.width / 2 - 11) + 'px';
-                wand.style.top = (rect.top + rect.height / 2 - 11) + 'px';
-                wand.style.position = 'fixed';
-                wand.style.zIndex = '9999';
-                wand.style.fontSize = '22px';
-                wand.style.opacity = '1';
-                wand.style.pointerEvents = 'none';
-                wand.style.cursor = 'default';
-            }
-
-            // Start auto beat after 1 second
-            setTimeout(() => {
-                startAutoBeat();
-            }, 800);
-
-        } else {
-            // Return to title
-            wand.classList.remove('dragging', 'gold-icon');
-            wand.style.position = 'relative';
-            wand.style.zIndex = 'auto';
-            wand.style.left = 'auto';
-            wand.style.top = 'auto';
-            wand.style.fontSize = '22px';
-            wand.style.pointerEvents = 'auto';
-            wand.style.cursor = 'grab';
-            wand.style.display = 'inline-block';
-
-            const parent = document.querySelector('.section-title');
-            parent.appendChild(wand);
-            wand.style.position = 'relative';
-            wand.style.display = 'inline-block';
-            wand.style.backgroundImage = 'url("bg.jpg")';
-            wand.style.backgroundSize = 'cover';
-            wand.style.backgroundPosition = 'center';
-            wand.style.webkitBackgroundClip = 'text';
-            wand.style.backgroundClip = 'text';
-            wand.style.color = 'transparent';
-        }
-
-        // Reset drop zone style
-        if (dropZone) {
-            dropZone.style.borderColor = '#b8860b';
-            dropZone.style.boxShadow = '0 0 20px rgba(184,134,11,0.2)';
-        }
-
-        if (e.type === 'touchend') {
-            e.preventDefault();
-        }
-    }
-
-    // Mouse events
-    document.addEventListener('mousedown', function(e) {
-        const wand = document.getElementById('titleWand');
-        if (!wand) return;
-        if (e.target === wand || wand.contains(e.target)) {
-            if (!isLocked) initDrag(e);
-        }
-    });
-
-    document.addEventListener('mousemove', moveDrag);
-    document.addEventListener('mouseup', endDrag);
-
-    // Touch events
-    document.addEventListener('touchstart', function(e) {
-        const wand = document.getElementById('titleWand');
-        if (!wand) return;
-        if (e.target === wand || wand.contains(e.target)) {
-            if (!isLocked) initDrag(e);
-        }
-    }, { passive: false });
-
-    document.addEventListener('touchmove', moveDrag, { passive: false });
-    document.addEventListener('touchend', endDrag, { passive: false });
 
     // ===== CLEAR =====
     document.getElementById('clearCustom').addEventListener('click', function() {
@@ -855,24 +702,23 @@
         customSelections = {};
         renderCustomPicker();
         updateCustomSummary();
-        document.querySelectorAll('.opt').forEach(el => el.classList.remove('highlight-service'));
 
+        // Remove clone if exists
+        const clone = document.getElementById('wandClone');
+        if (clone && clone.parentNode) {
+            clone.parentNode.removeChild(clone);
+        }
+
+        // Show original wand
         const wand = document.getElementById('titleWand');
         if (wand) {
-            wand.classList.remove('locked', 'beating', 'dragging');
+            wand.style.display = 'inline-block';
             wand.style.position = 'relative';
             wand.style.zIndex = 'auto';
-            wand.style.left = 'auto';
-            wand.style.top = 'auto';
             wand.style.fontSize = '22px';
             wand.style.pointerEvents = 'auto';
-            wand.style.cursor = 'grab';
-            wand.style.display = 'inline-block';
-
-            const parent = document.querySelector('.section-title');
-            parent.appendChild(wand);
-            wand.style.position = 'relative';
-            wand.style.display = 'inline-block';
+            wand.style.left = 'auto';
+            wand.style.top = 'auto';
             wand.style.backgroundImage = 'url("bg.jpg")';
             wand.style.backgroundSize = 'cover';
             wand.style.backgroundPosition = 'center';
@@ -890,8 +736,6 @@
             return;
         }
         alert('Package added to cart! 🎉');
-        // Reset
-        document.getElementById('clearCustom').click();
     });
 
     // ===== DARK MODE =====
@@ -909,9 +753,14 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    console.log('✅ Drag wand to "+" button of 1K Instagram Followers');
-    console.log('✅ Auto heartbeat 5 times - each beat adds +1');
-    console.log('✅ Resets and repeats after 5 beats');
+    // Auto start after 1 second
+    setTimeout(() => {
+        slideWandToButton();
+    }, 1000);
+
+    console.log('✅ Auto slide wand to + button');
+    console.log('✅ Auto heartbeat 5 times - each beat +1');
+    console.log('✅ Resets and repeats');
     console.log('✅ 30% OFF for RM20+');
 </script>
 
