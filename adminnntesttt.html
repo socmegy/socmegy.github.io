@@ -1092,33 +1092,6 @@
             padding-top: 8px;
         }
 
-        /* ===== POPUP FIELDS CONDITIONAL ===== */
-        .popup-field-group {
-            border: 1px solid rgba(0,0,0,0.04);
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-        }
-        .popup-field-group .field-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #b8860b;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .popup-field-group .field-hint {
-            font-size: 11px;
-            color: #8e8e93;
-            margin-top: 2px;
-        }
-        .popup-field-group .field-required {
-            color: #e74c3c;
-            font-weight: 700;
-        }
-        .popup-field-hidden {
-            display: none !important;
-        }
-
         /* ===== MOBILE ===== */
         .mobile-hamburger {
             display: none;
@@ -1322,7 +1295,6 @@
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Content</div>
         <button class="nav-item" data-tab="announcements">Announcements <span class="badge" id="announceCount">0</span></button>
-        <button class="nav-item" data-tab="popup">Popup <span class="badge" id="popupStatus">Off</span></button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-label">Settings</div>
@@ -1449,7 +1421,6 @@
     let editingId = null;
     let currentReceiptOrder = null;
     let orderIdCounter = 0;
-    let popupData = { type: 'text', title: '', desc: '', icon: '', enableButton: false, buttonText: '', buttonLink: '', image: '' };
 
     // ============================================================
     // SPLASH SCREEN
@@ -1706,7 +1677,6 @@
         else if (currentTab === 'orders') renderOrders(container);
         else if (currentTab === 'customers') renderCustomers(container);
         else if (currentTab === 'announcements') renderAnnouncements(container);
-        else if (currentTab === 'popup') renderPopup(container);
         else if (currentTab === 'customization') renderCustomization(container);
         else if (currentTab === 'read') renderRead(container);
     }
@@ -1775,7 +1745,6 @@
                     <button class="btn btn-primary" onclick="switchTab('services')">Manage Services</button>
                     <button class="btn btn-primary" onclick="switchTab('orders')">View Orders</button>
                     <button class="btn btn-primary" onclick="switchTab('announcements')">Add Announcement</button>
-                    <button class="btn btn-primary" onclick="switchTab('popup')">Manage Popup</button>
                 </div>
             </div>
         `;
@@ -2986,265 +2955,6 @@
     }
 
     // ============================================================
-    // POPUP MANAGEMENT - FIXED WITH CONDITIONAL FIELDS
-    // ============================================================
-    function renderPopup(container) {
-        const isActive = popupData.title || popupData.desc || popupData.image;
-        document.getElementById('popupStatus').textContent = isActive ? 'On' : 'Off';
-        document.getElementById('popupStatus').style.color = isActive ? '#27ae60' : '#8e8e93';
-
-        const typeOptions = ['text', 'image'].map(t =>
-            `<option value="${t}" ${popupData.type === t ? 'selected' : ''}>${t.charAt(0).toUpperCase() + t.slice(1)}</option>`
-        ).join('');
-
-        const buttonChecked = popupData.enableButton ? 'checked' : '';
-        const isTextMode = popupData.type === 'text';
-
-        // Only show Title and Desc for Text mode
-        const titleField = isTextMode ? `
-            <div class="popup-field-group" id="popupTitleGroup">
-                <label class="field-label">Title <span class="field-required">*</span></label>
-                <input type="text" id="popupTitle" value="${popupData.title || ''}" placeholder="Popup Title" required />
-            </div>
-        ` : '';
-
-        const descField = isTextMode ? `
-            <div class="popup-field-group" id="popupDescGroup">
-                <label class="field-label">Description <span class="field-required">*</span></label>
-                <textarea id="popupDesc" rows="3" placeholder="Description goes here." required>${popupData.desc || ''}</textarea>
-            </div>
-        ` : '';
-
-        const iconField = isTextMode ? `
-            <div class="popup-field-group" id="popupIconGroup">
-                <label class="field-label">Icon (Text mode only)</label>
-                <input type="text" id="popupIcon" value="${popupData.icon || ''}" placeholder="fa-regular fa-bell" />
-                <div class="field-hint">Font Awesome icon class, e.g. fa-regular fa-bell</div>
-            </div>
-        ` : '';
-
-        const imageField = `
-            <div class="popup-field-group" id="popupImageGroup">
-                <label class="field-label">Image URL ${!isTextMode ? '<span class="field-required">*</span>' : ''}</label>
-                <input type="text" id="popupImage" value="${popupData.image || ''}" placeholder="logo.png or https://example.com/image.jpg" ${!isTextMode ? 'required' : ''} />
-                <div id="popupImagePreview" style="margin-top:6px;${popupData.image ? '' : 'display:none;'}">
-                    <img src="${popupData.image || ''}" style="max-width:100%;max-height:120px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);" alt="Preview" />
-                </div>
-                <div class="field-hint">${!isTextMode ? 'Required for Image mode. ' : ''}Supports local (logo.png) or external URLs.</div>
-            </div>
-        `;
-
-        const buttonField = `
-            <div class="popup-field-group" style="margin-top:4px;border-color:rgba(184,134,11,0.2);">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;color:#b8860b;">
-                    <input type="checkbox" id="popupEnableButton" ${buttonChecked} />
-                    <span>Enable Button</span>
-                </label>
-                <div id="popupButtonFields" style="${popupData.enableButton ? '' : 'display:none;'}margin-top:8px;">
-                    <div class="form-row">
-                        <div class="form-group"><label>Button Text <span class="field-required">*</span></label><input type="text" id="popupButtonText" value="${popupData.buttonText || ''}" placeholder="Shop Now" /></div>
-                        <div class="form-group"><label>Button Link <span class="field-required">*</span></label><input type="text" id="popupButtonLink" value="${popupData.buttonLink || ''}" placeholder="#custom or https://..." /></div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        const saveDisabled = isTextMode ? '' : '';
-
-        container.innerHTML = `
-            <div class="admin-card">
-                <div class="card-header">
-                    <h3>Popup Settings <span style="font-size:13px;font-weight:400;color:#8e8e93;">${isActive ? '🟢 Active' : '⚪ Inactive'}</span></h3>
-                    <div class="card-actions">
-                        <button class="btn btn-primary" id="previewPopupBtn"><i class="fas fa-eye"></i> Preview</button>
-                        <button class="btn btn-secondary" id="clearPopupBtn">Clear All</button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Popup Type</label>
-                    <select id="popupType">${typeOptions}</select>
-                    <div class="field-hint">Switch between Text (with title/description) or Image (image only) mode.</div>
-                </div>
-
-                ${iconField}
-                ${titleField}
-                ${descField}
-                ${imageField}
-                ${buttonField}
-
-                <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
-                    <button class="btn btn-primary" id="savePopupBtn">Save Popup</button>
-                    <button class="btn btn-secondary" id="popupAutoShowBtn">${popupData.autoShow !== false ? 'Disable Auto-Show' : 'Enable Auto-Show'}</button>
-                </div>
-                <div style="font-size:12px;color:#8e8e93;margin-top:6px;">
-                    ${isTextMode ? 'Text mode: Title and Description are required.' : 'Image mode: Image URL is required.'}
-                    ${popupData.enableButton ? ' Button is enabled.' : ''}
-                </div>
-            </div>
-        `;
-
-        // Image preview
-        document.getElementById('popupImage')?.addEventListener('input', function() {
-            const preview = document.getElementById('popupImagePreview');
-            const img = preview?.querySelector('img');
-            if (this.value && img) {
-                img.src = this.value;
-                preview.style.display = 'block';
-            } else if (preview) {
-                preview.style.display = 'none';
-            }
-        });
-
-        // Toggle button fields
-        document.getElementById('popupEnableButton')?.addEventListener('change', function() {
-            const fields = document.getElementById('popupButtonFields');
-            fields.style.display = this.checked ? '' : 'none';
-        });
-
-        // Toggle type - show/hide fields based on type
-        document.getElementById('popupType')?.addEventListener('change', function() {
-            const type = this.value;
-            const titleGroup = document.getElementById('popupTitleGroup');
-            const descGroup = document.getElementById('popupDescGroup');
-            const iconGroup = document.getElementById('popupIconGroup');
-            const imageGroup = document.getElementById('popupImageGroup');
-
-            if (type === 'text') {
-                if (titleGroup) titleGroup.style.display = 'block';
-                if (descGroup) descGroup.style.display = 'block';
-                if (iconGroup) iconGroup.style.display = 'block';
-                if (imageGroup) {
-                    imageGroup.style.display = 'block';
-                    const input = imageGroup.querySelector('input');
-                    if (input) input.required = false;
-                    const hint = imageGroup.querySelector('.field-hint');
-                    if (hint) hint.textContent = 'Supports local (logo.png) or external URLs.';
-                }
-                // Show required indicators
-                const labels = document.querySelectorAll('#popupTitleGroup .field-required, #popupDescGroup .field-required');
-                labels.forEach(l => l.style.display = 'inline');
-            } else {
-                if (titleGroup) titleGroup.style.display = 'none';
-                if (descGroup) descGroup.style.display = 'none';
-                if (iconGroup) iconGroup.style.display = 'none';
-                if (imageGroup) {
-                    imageGroup.style.display = 'block';
-                    const input = imageGroup.querySelector('input');
-                    if (input) input.required = true;
-                    const hint = imageGroup.querySelector('.field-hint');
-                    if (hint) hint.textContent = 'Required for Image mode. Supports local (logo.png) or external URLs.';
-                }
-                // Hide required indicators for title/desc
-                const labels = document.querySelectorAll('#popupTitleGroup .field-required, #popupDescGroup .field-required');
-                labels.forEach(l => l.style.display = 'none');
-            }
-
-            // Update hint text
-            const hint = document.querySelector('.field-hint:last-child');
-            if (hint) {
-                if (type === 'text') {
-                    hint.textContent = 'Text mode: Title and Description are required.';
-                } else {
-                    hint.textContent = 'Image mode: Image URL is required.';
-                }
-                if (document.getElementById('popupEnableButton')?.checked) {
-                    hint.textContent += ' Button is enabled.';
-                }
-            }
-        });
-
-        // Preview
-        document.getElementById('previewPopupBtn')?.addEventListener('click', function() {
-            const type = document.getElementById('popupType').value;
-            const title = document.getElementById('popupTitle')?.value || 'Popup Title';
-            const desc = document.getElementById('popupDesc')?.value || 'Description goes here.';
-            const icon = document.getElementById('popupIcon')?.value || '';
-            const image = document.getElementById('popupImage').value || '';
-            const enableButton = document.getElementById('popupEnableButton').checked;
-            const buttonText = document.getElementById('popupButtonText').value || 'Shop Now';
-            const buttonLink = document.getElementById('popupButtonLink').value || '#';
-
-            const previewData = { type, title, desc, icon, enableButton, buttonText, buttonLink, image };
-            window.openPopupPreview?.(previewData);
-            showToast('Preview opened in new window');
-        });
-
-        // Clear
-        document.getElementById('clearPopupBtn')?.addEventListener('click', function() {
-            if (confirm('Clear all popup data?')) {
-                db.ref('popup').set({
-                    type: 'text',
-                    title: '',
-                    desc: '',
-                    icon: '',
-                    enableButton: false,
-                    buttonText: '',
-                    buttonLink: '',
-                    image: '',
-                    autoShow: true
-                }).then(() => showToast('Popup cleared')).catch(() => showToast('Error clearing'));
-            }
-        });
-
-        // Save
-        document.getElementById('savePopupBtn')?.addEventListener('click', function() {
-            const type = document.getElementById('popupType').value;
-            const title = document.getElementById('popupTitle')?.value?.trim() || '';
-            const desc = document.getElementById('popupDesc')?.value?.trim() || '';
-            const icon = document.getElementById('popupIcon')?.value?.trim() || '';
-            const image = document.getElementById('popupImage').value.trim();
-            const enableButton = document.getElementById('popupEnableButton').checked;
-            const buttonText = document.getElementById('popupButtonText').value.trim();
-            const buttonLink = document.getElementById('popupButtonLink').value.trim();
-
-            // Validation based on type
-            if (type === 'text') {
-                if (!title || !desc) {
-                    showToast('Title and Description are required for Text mode');
-                    return;
-                }
-            } else {
-                if (!image) {
-                    showToast('Image URL is required for Image mode');
-                    return;
-                }
-            }
-
-            if (enableButton && (!buttonText || !buttonLink)) {
-                showToast('Button text and link are required when button is enabled');
-                return;
-            }
-
-            db.ref('popup').update({
-                type,
-                title,
-                desc,
-                icon,
-                image,
-                enableButton,
-                buttonText,
-                buttonLink,
-                autoShow: true
-            }).then(() => {
-                showToast('Popup saved');
-                renderPopup(container);
-            }).catch(() => showToast('Error saving'));
-        });
-
-        // Auto-show toggle
-        document.getElementById('popupAutoShowBtn')?.addEventListener('click', function() {
-            const current = popupData.autoShow !== false;
-            db.ref('popup/autoShow').set(!current)
-                .then(() => {
-                    showToast(`Auto-show ${!current ? 'enabled' : 'disabled'}`);
-                    renderPopup(container);
-                })
-                .catch(() => showToast('Error toggling auto-show'));
-        });
-    }
-
-    // ============================================================
     // CUSTOMIZATION
     // ============================================================
     function renderCustomization(container) {
@@ -3545,24 +3255,6 @@
             document.getElementById('announceCount').textContent = announcements.length;
         });
 
-        db.ref('popup').on('value', snap => {
-            const data = snap.val() || {};
-            popupData = {
-                type: data.type || 'text',
-                title: data.title || '',
-                desc: data.desc || '',
-                icon: data.icon || '',
-                enableButton: data.enableButton || false,
-                buttonText: data.buttonText || '',
-                buttonLink: data.buttonLink || '',
-                image: data.image || '',
-                autoShow: data.autoShow !== false
-            };
-            if (currentTab === 'popup') renderContent();
-            document.getElementById('popupStatus').textContent = (popupData.title || popupData.desc || popupData.image) ? 'On' : 'Off';
-            document.getElementById('popupStatus').style.color = (popupData.title || popupData.desc || popupData.image) ? '#27ae60' : '#8e8e93';
-        });
-
         db.ref('settings').on('value', snap => {
             const data = snap.val() || {};
             settings = { discountPercent: data.discountPercent ?? 10, minPurchase: data.minPurchase ?? 10 };
@@ -3576,88 +3268,6 @@
 
         renderContent();
     }
-
-    // ============================================================
-    // POPUP PREVIEW IN NEW WINDOW
-    // ============================================================
-    window.openPopupPreview = function(data) {
-        const win = window.open('', '_blank', 'width=500,height=700');
-        if (!win) {
-            showToast('Please allow popups for preview');
-            return;
-        }
-
-        const iconHTML = data.icon ? `<span style="font-size:44px;color:#b8860b;display:block;margin-bottom:8px;"><i class="${data.icon}"></i></span>` : '';
-        const lineHTML = `<div style="width:50px;height:2px;background:#b8860b;margin:8px auto 12px auto;border-radius:4px;"></div>`;
-        const buttonHTML = data.enableButton && data.buttonText && data.buttonLink ?
-            `<a href="${data.buttonLink}" target="${data.buttonLink.startsWith('http') ? '_blank' : '_self'}" style="display:inline-flex;align-items:center;justify-content:center;padding:12px 32px;background:rgba(255,255,255,0.20);backdrop-filter:blur(0px) saturate(1.5);-webkit-backdrop-filter:blur(0px) saturate(1.5);border:1px solid rgba(255,255,255,0.10);border-radius:60px;font-weight:600;font-size:16px;color:#1d1d1f;text-decoration:none;transition:0.25s;min-width:120px;text-shadow:0 1px 4px rgba(255,255,255,0.1);">${data.buttonText}</a>` :
-            '';
-
-        let contentHtml = '';
-        if (data.type === 'text') {
-            contentHtml = `
-                <div style="background:rgba(255,255,255,0.6);backdrop-filter:blur(32px) saturate(1.3);-webkit-backdrop-filter:blur(32px) saturate(1.3);border-radius:32px;padding:36px 30px 38px;border:1px solid rgba(255,255,255,0.3);box-shadow:0 40px 100px rgba(0,0,0,0.06);text-align:center;">
-                    ${iconHTML}
-                    <div style="font-size:22px;font-weight:700;color:#1d1d1f;margin-bottom:6px;word-wrap:break-word;">${data.title}</div>
-                    ${lineHTML}
-                    <div style="font-size:15px;color:#4a4a4d;margin-bottom:18px;line-height:1.7;">${data.desc}</div>
-                    ${buttonHTML}
-                </div>
-            `;
-        } else {
-            const imgBtnHTML = data.enableButton && data.buttonText && data.buttonLink ?
-                `<a href="${data.buttonLink}" target="${data.buttonLink.startsWith('http') ? '_blank' : '_self'}" style="position:absolute;bottom:28px;right:20px;background:rgba(255,255,255,0.20);backdrop-filter:blur(0px) saturate(1.5);-webkit-backdrop-filter:blur(0px) saturate(1.5);border:1px solid rgba(255,255,255,0.10);border-radius:60px;padding:12px 32px;font-weight:600;font-size:16px;color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:0.25s;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.15);min-width:120px;">${data.buttonText}</a>` :
-                '';
-            contentHtml = `
-                <div style="position:relative;width:100%;overflow:hidden;background:transparent !important;border-radius:24px;">
-                    <div style="width:100%;aspect-ratio:1/1;background-size:contain;background-repeat:no-repeat;background-position:center;display:block;background-color:transparent !important;border-radius:24px;border:none !important;outline:none !important;background-image:url('${data.image || ''}');"></div>
-                    ${imgBtnHTML}
-                </div>
-            `;
-        }
-
-        win.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Popup Preview</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-            <style>
-                * { margin:0; padding:0; box-sizing:border-box; }
-                body { background:rgba(0,0,0,0.6); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-                .preview-box { max-width:560px; width:100%; background:transparent !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important; border:none !important; box-shadow:none !important; padding:0 !important; border-radius:0 !important; position:relative; }
-                .close-btn { position:absolute; top:16px; right:18px; background:rgba(255,255,255,0.20); backdrop-filter:blur(0px) saturate(1.5); -webkit-backdrop-filter:blur(0px) saturate(1.5); border:1px solid rgba(255,255,255,0.10); border-radius:40px; color:#fff; font-size:20px; padding:6px 16px; cursor:pointer; transition:0.2s; line-height:1.6; z-index:20; letter-spacing:0.5px; font-weight:400; text-shadow:0 1px 4px rgba(0,0,0,0.15); border:none; background:rgba(0,0,0,0.3); }
-                .close-btn:hover { background:rgba(0,0,0,0.5); }
-                .dark-mode .preview-box .text-content { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.04); box-shadow:0 40px 100px rgba(0,0,0,0.2); }
-                .dark-mode .preview-box .text-content .title { color:#fff; }
-                .dark-mode .preview-box .text-content .desc { color:#aaa; }
-                .dark-mode .preview-box .text-content .btn { color:#fff; border-color:rgba(255,255,255,0.06); text-shadow:0 1px 4px rgba(0,0,0,0.15); }
-                .dark-mode .preview-box .text-content .btn:hover { background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.12); }
-                .dark-mode .preview-box .img-btn { color:#fff; border-color:rgba(255,255,255,0.06); }
-                .dark-mode .preview-box .img-btn:hover { background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.12); }
-                body.dark-mode .preview-box .close-btn { color:#fff; border-color:rgba(255,255,255,0.06); background:rgba(0,0,0,0.3); }
-                body.dark-mode .preview-box .close-btn:hover { background:rgba(0,0,0,0.5); }
-            </style>
-            </head>
-            <body>
-                <div class="preview-box">
-                    <button class="close-btn" onclick="window.close()">✕</button>
-                    ${contentHtml}
-                </div>
-                <script>
-                    // Detect dark mode from parent
-                    if (window.opener && window.opener.document.body.classList.contains('dark-mode')) {
-                        document.body.classList.add('dark-mode');
-                    }
-                    // Toggle dark mode on click
-                    document.body.addEventListener('click', function() {
-                        document.body.classList.toggle('dark-mode');
-                    });
-                <\/script>
-            </body>
-            </html>
-        `);
-        win.document.close();
-    };
 
     // ============================================================
     // INIT
@@ -3674,9 +3284,6 @@
     console.log('✅ Receipt - Package headers GOLD');
     console.log('✅ Receipt - Package services PURE BLACK');
     console.log('✅ Subtotal, Discount, Total displayed');
-    console.log('✅ Popup management - Text mode: Title + Description required');
-    console.log('✅ Popup management - Image mode: Image URL required');
-    console.log('✅ Fields dynamically show/hide based on type selection');
 </script>
 
 </body>
