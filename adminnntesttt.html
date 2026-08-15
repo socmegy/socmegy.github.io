@@ -69,7 +69,7 @@
             position: relative;
         }
 
-        /* Wand semasa bergerak - nampak */
+        /* Wand semasa bergerak - nampak, tiada hover */
         #wandMoving {
             position: fixed;
             z-index: 9999;
@@ -82,6 +82,8 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            will-change: left, top;
+            transition: none;
         }
 
         .custom-wrap {
@@ -424,7 +426,7 @@
     </section>
 </div>
 
-<!-- Wand bergerak - nampak sepanjang masa -->
+<!-- Wand bergerak - nampak sepanjang masa, tiada hover -->
 <div id="wandMoving"><i class="fas fa-wand-magic-sparkles"></i></div>
 
 <script>
@@ -439,6 +441,7 @@
     let beatCount = 0;
     let beatInterval = null;
     let isMoving = false;
+    let animFrameId = null;
 
     const titleWand = document.getElementById('titleWand');
     const wandMoving = document.getElementById('wandMoving');
@@ -561,7 +564,7 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Heartbeat on moving wand
+        // Heartbeat on moving wand - smooth
         wandMoving.classList.remove('beating');
         void wandMoving.offsetWidth;
         wandMoving.classList.add('beating');
@@ -583,7 +586,7 @@
         }
     }
 
-    // ===== SLIDE WAND =====
+    // ===== SLIDE WAND - SMOOTH =====
     function slideWandToButton() {
         if (isMoving) return;
         isMoving = true;
@@ -606,16 +609,16 @@
         wandMoving.style.fontSize = '28px';
         wandMoving.style.opacity = '1';
 
-        // Animate to end position
+        // Animate to end position dengan smooth
         const startTime = performance.now();
-        const duration = 700;
+        const duration = 800;
 
         function animateMove(time) {
             const elapsed = time - startTime;
             const progress = Math.min(elapsed / duration, 1);
 
-            // Ease in-out
-            const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+            // Ease in-out cubic
+            const ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
             const x = startPos.x + (endPos.x - startPos.x) * ease;
             const y = startPos.y + (endPos.y - startPos.y) * ease;
@@ -624,12 +627,13 @@
             wandMoving.style.top = y + 'px';
 
             if (progress < 1) {
-                requestAnimationFrame(animateMove);
+                animFrameId = requestAnimationFrame(animateMove);
             } else {
                 wandMoving.style.left = endPos.x + 'px';
                 wandMoving.style.top = endPos.y + 'px';
                 wandMoving.style.fontSize = '22px';
                 isMoving = false;
+                animFrameId = null;
 
                 // Start heartbeat after 1 second
                 setTimeout(() => {
@@ -638,10 +642,10 @@
             }
         }
 
-        requestAnimationFrame(animateMove);
+        animFrameId = requestAnimationFrame(animateMove);
     }
 
-    // ===== AUTO BEAT 5 TIMES =====
+    // ===== AUTO BEAT 5 TIMES - SMOOTH =====
     function startAutoBeat() {
         if (isBeating) return;
         isBeating = true;
@@ -652,22 +656,31 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        beatInterval = setInterval(() => {
+        // Update wand position once sebelum start
+        const pos = getPlusButtonPosition();
+        if (pos) {
+            wandMoving.style.left = pos.x + 'px';
+            wandMoving.style.top = pos.y + 'px';
+        }
+
+        let beatDelay = 0;
+        const beatIntervalTime = 650;
+
+        function doBeat() {
             beatCount++;
             addToPackage('s1');
 
-            // Update wand position if button moved
-            const pos = getPlusButtonPosition();
-            if (pos) {
-                wandMoving.style.left = pos.x + 'px';
-                wandMoving.style.top = pos.y + 'px';
+            // Update wand position
+            const p = getPlusButtonPosition();
+            if (p) {
+                wandMoving.style.left = p.x + 'px';
+                wandMoving.style.top = p.y + 'px';
             }
 
-            if (beatCount >= 5) {
-                clearInterval(beatInterval);
-                beatInterval = null;
+            if (beatCount < 5) {
+                setTimeout(doBeat, beatIntervalTime);
+            } else {
                 isBeating = false;
-
                 // Clear all and reset
                 setTimeout(() => {
                     customSelections = {};
@@ -689,17 +702,20 @@
                     }, 1500);
                 }, 1000);
             }
-        }, 600);
+        }
+
+        // Start first beat after delay
+        setTimeout(doBeat, 600);
     }
 
     // ===== CLEAR =====
     document.getElementById('clearCustom').addEventListener('click', function() {
-        if (beatInterval) {
-            clearInterval(beatInterval);
-            beatInterval = null;
+        if (animFrameId) {
+            cancelAnimationFrame(animFrameId);
+            animFrameId = null;
         }
-        isBeating = false;
         isMoving = false;
+        isBeating = false;
 
         customSelections = {};
         renderCustomPicker();
@@ -745,9 +761,9 @@
         slideWandToButton();
     }, 1000);
 
-    console.log('✅ Wand nampak SEPANJANG MASA - dari title sampai drop');
-    console.log('✅ Auto slide smooth ke + button 1K Instagram Followers');
-    console.log('✅ Auto heartbeat 5 kali - setiap degup +1');
+    console.log('✅ Wand nampak SEPANJANG MASA');
+    console.log('✅ Slide SMOOTH guna requestAnimationFrame');
+    console.log('✅ Auto heartbeat 5 kali SMOOTH - setiap degup +1');
     console.log('✅ Reset dan ulang');
     console.log('✅ 30% OFF for RM20+');
 </script>
