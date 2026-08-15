@@ -431,6 +431,7 @@
     let beatCount = 0;
     let beatInterval = null;
     let wandRef = document.getElementById('titleWand');
+    let wandClone = null;
 
     // ===== RENDER =====
     function renderCustomPicker() {
@@ -515,12 +516,6 @@
         return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
-    function getTitlePosition() {
-        const title = document.querySelector('.section-title');
-        const rect = title.getBoundingClientRect();
-        return { x: rect.left + 20, y: rect.top + 10 };
-    }
-
     // ===== SPARKLES =====
     function createSparklesAtElement(el, count = 8) {
         const rect = el.getBoundingClientRect();
@@ -551,12 +546,11 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Heartbeat on wand
-        const wand = document.getElementById('titleWand');
-        if (wand) {
-            wand.classList.remove('beating');
-            void wand.offsetWidth;
-            wand.classList.add('beating');
+        // Heartbeat on wand clone
+        if (wandClone) {
+            wandClone.classList.remove('beating');
+            void wandClone.offsetWidth;
+            wandClone.classList.add('beating');
         }
 
         const qtyEl = document.getElementById('qtyNum_' + serviceId);
@@ -587,51 +581,54 @@
         // Hide original wand in title
         wand.style.display = 'none';
 
-        // Create clone for sliding
-        const clone = wand.cloneNode(true);
-        clone.className = 'gold-icon sliding';
-        clone.style.left = targetPos.x + 'px';
-        clone.style.top = targetPos.y + 'px';
-        clone.style.backgroundImage = 'url("bg.jpg")';
-        clone.style.backgroundSize = 'cover';
-        clone.style.backgroundPosition = 'center';
-        clone.style.webkitBackgroundClip = 'text';
-        clone.style.backgroundClip = 'text';
-        clone.style.color = 'transparent';
-        clone.style.fontSize = '28px';
-        clone.id = 'wandClone';
-        document.body.appendChild(clone);
+        // Create clone for sliding - nampak dari mula
+        wandClone = wand.cloneNode(true);
+        wandClone.className = 'gold-icon sliding';
+        wandClone.style.position = 'fixed';
+        wandClone.style.zIndex = '9999';
+        wandClone.style.left = targetPos.x + 'px';
+        wandClone.style.top = targetPos.y + 'px';
+        wandClone.style.backgroundImage = 'url("bg.jpg")';
+        wandClone.style.backgroundSize = 'cover';
+        wandClone.style.backgroundPosition = 'center';
+        wandClone.style.webkitBackgroundClip = 'text';
+        wandClone.style.backgroundClip = 'text';
+        wandClone.style.color = 'transparent';
+        wandClone.style.fontSize = '28px';
+        wandClone.style.pointerEvents = 'none';
+        wandClone.style.opacity = '1';
+        wandClone.id = 'wandClone';
+        document.body.appendChild(wandClone);
 
         // After slide animation completes
         setTimeout(() => {
-            clone.className = 'gold-icon';
-            clone.style.position = 'fixed';
-            clone.style.zIndex = '9999';
-            clone.style.fontSize = '22px';
-            clone.style.pointerEvents = 'none';
-            clone.style.backgroundImage = 'url("bg.jpg")';
-            clone.style.backgroundSize = 'cover';
-            clone.style.backgroundPosition = 'center';
-            clone.style.webkitBackgroundClip = 'text';
-            clone.style.backgroundClip = 'text';
-            clone.style.color = 'transparent';
-            clone.id = 'titleWand';
-            clone.style.left = targetPos.x + 'px';
-            clone.style.top = targetPos.y + 'px';
+            wandClone.className = 'gold-icon';
+            wandClone.style.position = 'fixed';
+            wandClone.style.zIndex = '9999';
+            wandClone.style.fontSize = '22px';
+            wandClone.style.pointerEvents = 'none';
+            wandClone.style.backgroundImage = 'url("bg.jpg")';
+            wandClone.style.backgroundSize = 'cover';
+            wandClone.style.backgroundPosition = 'center';
+            wandClone.style.webkitBackgroundClip = 'text';
+            wandClone.style.backgroundClip = 'text';
+            wandClone.style.color = 'transparent';
+            wandClone.style.opacity = '1';
+            wandClone.id = 'wandClone';
+            wandClone.style.left = targetPos.x + 'px';
+            wandClone.style.top = targetPos.y + 'px';
 
-            // Update reference
-            window.titleWand = clone;
             isLocked = true;
 
             // Start heartbeat after 1 second
             setTimeout(() => {
-                startAutoBeat(clone);
+                startAutoBeat();
             }, 800);
         }, 700);
     }
 
     // ===== AUTO BEAT 5 TIMES =====
-    function startAutoBeat(wand) {
+    function startAutoBeat() {
         if (isBeating) return;
         isBeating = true;
         beatCount = 0;
@@ -647,9 +644,9 @@
 
             // Update wand position if button moved
             const pos = getPlusButtonPosition();
-            if (pos && wand) {
-                wand.style.left = pos.x + 'px';
-                wand.style.top = pos.y + 'px';
+            if (pos && wandClone) {
+                wandClone.style.left = pos.x + 'px';
+                wandClone.style.top = pos.y + 'px';
             }
 
             if (beatCount >= 5) {
@@ -665,8 +662,9 @@
                     updateCustomSummary();
 
                     // Remove clone
-                    if (wand && wand.parentNode) {
-                        wand.parentNode.removeChild(wand);
+                    if (wandClone && wandClone.parentNode) {
+                        wandClone.parentNode.removeChild(wandClone);
+                        wandClone = null;
                     }
 
                     // Show original wand back in title
@@ -681,10 +679,10 @@
                         originalWand.style.top = 'auto';
                     }
 
-                    // Restart after 1 second
+                    // Restart after 1.5 second
                     setTimeout(() => {
                         slideWandToButton();
-                    }, 1000);
+                    }, 1500);
                 }, 1000);
             }
         }, 600);
@@ -704,9 +702,9 @@
         updateCustomSummary();
 
         // Remove clone if exists
-        const clone = document.getElementById('wandClone');
-        if (clone && clone.parentNode) {
-            clone.parentNode.removeChild(clone);
+        if (wandClone && wandClone.parentNode) {
+            wandClone.parentNode.removeChild(wandClone);
+            wandClone = null;
         }
 
         // Show original wand
@@ -726,6 +724,11 @@
             wand.style.backgroundClip = 'text';
             wand.style.color = 'transparent';
         }
+
+        // Restart after 1 second
+        setTimeout(() => {
+            slideWandToButton();
+        }, 1000);
     });
 
     // ===== ADD TO CART =====
@@ -758,9 +761,10 @@
         slideWandToButton();
     }, 1000);
 
-    console.log('✅ Auto slide wand to + button');
-    console.log('✅ Auto heartbeat 5 times - each beat +1');
-    console.log('✅ Resets and repeats');
+    console.log('✅ Wand nampak sepanjang masa - dari title sampai drop');
+    console.log('✅ Auto slide smooth ke + button');
+    console.log('✅ Auto heartbeat 5 kali - each beat +1');
+    console.log('✅ Reset dan ulang');
     console.log('✅ 30% OFF for RM20+');
 </script>
 
