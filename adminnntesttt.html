@@ -69,6 +69,9 @@
             transition: none;
             position: relative;
         }
+        #custom .section-title .gold-icon.hidden {
+            display: none;
+        }
 
         #wandMoving {
             position: fixed;
@@ -84,6 +87,9 @@
             color: transparent;
             will-change: left, top;
             transition: none;
+        }
+        #wandMoving.show {
+            display: block;
         }
 
         @keyframes heartbeat {
@@ -283,7 +289,7 @@
             font-weight: 500;
         }
 
-        /* ===== ZOOM - SLOW & SMOOTH ===== */
+        /* ===== ZOOM ===== */
         .summary.zoom-active {
             position: fixed !important;
             top: 50% !important;
@@ -305,7 +311,6 @@
             animation: fadeInZoom 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
-            transition: scroll 1s ease;
         }
         .summary.zoom-active::-webkit-scrollbar {
             display: none !important;
@@ -480,7 +485,8 @@
     </section>
 </div>
 
-<div id="wandMoving"><i class="fas fa-wand-magic-sparkles"></i></div>
+<!-- Wand bergerak - start dari title -->
+<div id="wandMoving" class="show"><i class="fas fa-wand-magic-sparkles"></i></div>
 
 <script>
     const servicesData = [
@@ -498,10 +504,27 @@
     let isProcessing = false;
     let currentWandPos = null;
     let scrollTimeout = null;
+    let isInitialized = false;
 
     const titleWand = document.getElementById('titleWand');
     const wandMoving = document.getElementById('wandMoving');
     const summaryEl = document.getElementById('customSummary');
+
+    // ===== SET WAND POSITION =====
+    function setWandToTitle() {
+        const rect = titleWand.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+            wandMoving.style.left = (rect.left + rect.width / 2 - 11) + 'px';
+            wandMoving.style.top = (rect.top + rect.height / 2 - 11) + 'px';
+            wandMoving.style.display = 'block';
+            wandMoving.style.fontSize = '22px';
+            wandMoving.style.opacity = '1';
+            currentWandPos = { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
+        } else {
+            // Fallback - tunggu sebentar
+            setTimeout(setWandToTitle, 100);
+        }
+    }
 
     function renderCustomPicker() {
         const container = document.getElementById('customPicker');
@@ -651,10 +674,10 @@
         isZoomed = true;
 
         wandMoving.style.display = 'none';
+        titleWand.classList.add('hidden');
 
         summaryEl.classList.add('zoom-active');
 
-        // Hold atas 2 saat, lepas tu scroll perlahan ke bawah (3 saat)
         setTimeout(() => {
             const scrollHeight = summaryEl.scrollHeight;
             const step = 8;
@@ -689,6 +712,9 @@
         summaryEl.onclick = null;
         summaryEl.style.animation = '';
         summaryEl.scrollTop = 0;
+        titleWand.classList.remove('hidden');
+        wandMoving.style.display = 'block';
+        setWandToTitle();
     }
 
     function slideWandToPosition(targetPos, callback) {
@@ -703,11 +729,9 @@
             return;
         }
 
-        if (wandMoving.style.display !== 'block') {
-            wandMoving.style.display = 'block';
-            wandMoving.style.fontSize = '22px';
-            wandMoving.style.opacity = '1';
-        }
+        wandMoving.style.display = 'block';
+        wandMoving.style.fontSize = '22px';
+        wandMoving.style.opacity = '1';
 
         wandMoving.style.left = startPos.x + 'px';
         wandMoving.style.top = startPos.y + 'px';
@@ -788,11 +812,15 @@
         customSelections = {};
         renderCustomPicker();
         updateCustomSummary();
-        currentWandPos = null;
-        wandMoving.style.display = 'none';
-        titleWand.style.display = 'none';
+
+        // Pastikan wand kat title
+        setWandToTitle();
+        titleWand.classList.remove('hidden');
 
         setTimeout(function() {
+            // Hide title wand, show moving wand
+            titleWand.classList.add('hidden');
+
             slideWandToButton('s1', function() {
                 setTimeout(function() {
                     doHeartbeat('s1', 5, function() {
@@ -836,12 +864,9 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        wandMoving.style.display = 'none';
-        currentWandPos = null;
-        titleWand.style.display = 'inline-block';
-        titleWand.style.position = 'relative';
-        titleWand.style.zIndex = 'auto';
-        titleWand.style.fontSize = '22px';
+        titleWand.classList.remove('hidden');
+        wandMoving.style.display = 'block';
+        setWandToTitle();
 
         setTimeout(function() {
             startSequence();
@@ -876,15 +901,22 @@
     renderCustomPicker();
     updateCustomSummary();
 
+    // Set wand to title position
     setTimeout(function() {
-        startSequence();
-    }, 1000);
+        setWandToTitle();
+        isInitialized = true;
+    }, 300);
 
-    console.log('✅ Wand slide: 0.8s');
-    console.log('✅ Heartbeat: 0.6s setiap beat');
-    console.log('✅ Zoom in: 0.9s (smooth)');
-    console.log('✅ Hold atas: 2s');
-    console.log('✅ Scroll bawah: 3s (perlahan)');
+    setTimeout(function() {
+        if (isInitialized) {
+            startSequence();
+        } else {
+            setTimeout(startSequence, 500);
+        }
+    }, 1200);
+
+    console.log('✅ Wand start dari title');
+    console.log('✅ Nampak sepanjang masa');
     console.log('✅ Professional untuk screen record');
 </script>
 
