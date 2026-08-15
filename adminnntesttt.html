@@ -6,82 +6,104 @@
     <title>Socmegy · Custom Package</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ===== HIDE ALL SCROLLBARS ===== */
+        ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        body { overflow-y: scroll; }
+
+        /* ===== RESET & BASE ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: #ffffff;
             color: #1d1d1f;
-            padding: 20px;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            flex-direction: column;
         }
 
         .app {
-            max-width: 560px;
-            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 24px;
-            padding: 24px 20px 30px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
-            border: 1px solid #eaeaee;
-            position: relative;
-            overflow: hidden;
+            min-height: 100vh;
+            transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
+        :root { --announcement-height: 0px; --navbar-height: 64px; }
+        .app-content { flex: 1; padding-top: calc(var(--announcement-height) + var(--navbar-height)); }
 
         /* ===== DARK MODE ===== */
         body.dark-mode {
             background: #1a1a1a;
+            color: #e8e8e8;
         }
-        body.dark-mode .app {
-            background: #1a1a1a;
-            border-color: rgba(255,255,255,0.06);
-        }
-        body.dark-mode .custom-wrap .custom-card {
-            background: #2a2a2a;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        body.dark-mode .custom-wrap .custom-card .desc {
-            color: #d4a017;
-        }
-        body.dark-mode .custom-wrap .custom-card .picker .opt {
-            background: #1a1a1a;
-            border-color: rgba(255,255,255,0.06);
-        }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .left {
-            color: #d4a017;
-        }
-        body.dark-mode .custom-wrap .custom-card .summary {
-            background: #1a1a1a;
-            border-color: rgba(255,255,255,0.06);
-        }
-        body.dark-mode .custom-wrap .custom-card .summary .item {
-            color: #d4a017;
-            border-bottom-color: rgba(255,255,255,0.06);
-        }
-        body.dark-mode .custom-wrap .custom-card .summary .total-row {
-            color: #d4a017;
-            border-top-color: rgba(255,255,255,0.1);
-        }
-        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary {
-            background: #3a3a3a;
-            color: #d4a017;
-        }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn {
-            background: #3a3a3a;
-            color: #d4a017;
-        }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num {
-            color: #d4a017;
-        }
-        body.dark-mode .custom-wrap .custom-card .picker .opt .right .final-price {
-            color: #d4a017;
+        body.dark-mode .app { background: #1a1a1a; }
+        body.dark-mode .custom-wrap .custom-card { background: #2a2a2a; border: 1px solid rgba(255,255,255,0.05); }
+        body.dark-mode .custom-wrap .custom-card .desc { color: #d4a017; }
+        body.dark-mode .custom-wrap .custom-card .picker .opt { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.05); }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .left { color: #d4a017; }
+        body.dark-mode .custom-wrap .custom-card .summary { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.05); }
+        body.dark-mode .custom-wrap .custom-card .summary .item { color: #d4a017; border-bottom-color: rgba(255,255,255,0.05); }
+        body.dark-mode .custom-wrap .custom-card .summary .total-row { color: #d4a017; border-top-color: rgba(255,255,255,0.1); }
+        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary { background: #3a3a3a; color: #d4a017; }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn { background: #3a3a3a; color: #d4a017; }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num { color: #d4a017; }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .final-price { color: #d4a017; }
+        body.dark-mode input, body.dark-mode textarea, body.dark-mode select {
+            color: #e8e8e8 !important;
+            background: #2a2a2a !important;
+            border-color: rgba(255,255,255,0.08) !important;
         }
 
-        /* ===== CUSTOM SECTION - SAMA MACAM ASAL ===== */
-        .section { padding: 0; margin-top: 0; width: 100%; }
+        /* ===== HEADER / NAVBAR ===== */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: fixed;
+            top: var(--announcement-height);
+            left: 0;
+            right: 0;
+            z-index: 50;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .navbar .logo { display: flex; align-items: center; gap: 10px; }
+        .navbar .logo img { height: 36px; width: 36px; border-radius: 50%; object-fit: cover; vertical-align: middle; }
+        .navbar .logo .brand { font-size: 22px; font-weight: 700; color: #b8860b; letter-spacing: -0.5px; transition: color 0.3s; }
+        .navbar .nav-links { display: flex; gap: 32px; align-items: center; }
+        .navbar .nav-links a { text-decoration: none; color: #b8860b; font-size: 14px; font-weight: 500; transition: color 0.2s; padding: 4px 0; cursor: pointer; }
+        .navbar .nav-links a:hover { color: #d4a017; }
+        .navbar .nav-right { display: flex; align-items: center; gap: 12px; }
+        .navbar .nav-right .dark-toggle {
+            background: rgba(0,0,0,0.04);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            color: #b8860b;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .navbar .nav-right .dark-toggle:hover { background: rgba(0,0,0,0.08); }
+        body.dark-mode .navbar .nav-right .dark-toggle { background: rgba(255,255,255,0.08); }
+        body.dark-mode .navbar .nav-right .dark-toggle:hover { background: rgba(255,255,255,0.15); }
+
+        /* ===== SECTION ===== */
+        .section { padding: 0 40px 0px; margin-top: 40px; width: 100%; }
         .section-title {
             font-size: 26px;
             font-weight: 700;
@@ -90,7 +112,7 @@
             color: #b8860b;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .section-title .gold { color: #b8860b; }
 
@@ -109,11 +131,25 @@
             font-size: 22px;
             display: inline-block;
             vertical-align: middle;
-            position: relative;
             cursor: grab;
             transition: opacity 0.3s ease;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #custom .section-title .gold-icon:active {
+            cursor: grabbing;
         }
 
+        .section-title .info-icon-gold { color: #b8860b; font-size: 20px; cursor: pointer; margin-left: 6px; transition: opacity 0.2s; display: inline-block; vertical-align: middle; line-height: 1; }
+        .section-title .info-icon-gold:hover { opacity: 0.7; }
+
+        /* ===== CUSTOM ===== */
         .custom-wrap {
             background-image: url('bg.jpg');
             background-size: cover;
@@ -121,7 +157,6 @@
             border-radius: 20px;
             padding: 16px;
             width: 100%;
-            position: relative;
         }
         .custom-wrap .custom-card {
             background: #ffffff;
@@ -130,7 +165,6 @@
             border-radius: 16px;
             padding: 12px 14px;
             position: relative;
-            z-index: 2;
         }
         .custom-wrap .custom-card .desc {
             font-size: 13px;
@@ -145,7 +179,6 @@
             max-height: 200px;
             overflow-y: auto;
             margin-bottom: 10px;
-            position: relative;
         }
         .custom-wrap .custom-card .picker .opt {
             display: flex;
@@ -158,7 +191,6 @@
             gap: 4px;
             position: relative;
             border: 1px solid #eaeaee;
-            transition: all 0.3s ease;
         }
         .custom-wrap .custom-card .picker .opt .left {
             display: flex;
@@ -202,8 +234,6 @@
             cursor: pointer;
             transition: background 0.15s;
             color: #b8860b;
-            position: relative;
-            z-index: 5;
         }
         .custom-wrap .custom-card .picker .opt .right .qty-btn:active {
             background: #cdcdd2;
@@ -228,7 +258,6 @@
             bottom: 0;
             z-index: 5;
             border: 1px solid #eaeaee;
-            transition: all 0.3s ease;
         }
         .custom-wrap .custom-card .summary .empty {
             color: #8e8e93;
@@ -296,7 +325,6 @@
             100% { opacity: 1; transform: translateX(0); }
         }
 
-        /* ===== HEARTBEAT ANIMATION - GUNA BG.JPG ===== */
         @keyframes heartbeat {
             0% { transform: scale(1); }
             14% { transform: scale(1.3); }
@@ -305,13 +333,11 @@
             56% { transform: scale(1); }
             100% { transform: scale(1); }
         }
-
         .gold-icon.beating {
             animation: heartbeat 0.5s ease-in-out infinite;
             display: inline-block;
         }
 
-        /* ===== GLOW ON BUTTON ===== */
         .qty-btn.pulse-glow {
             animation: btnPulse 0.25s ease 1;
             background: #b8860b !important;
@@ -323,7 +349,6 @@
             50% { transform: scale(1.35); }
         }
 
-        /* ===== QUANTITY BOUNCE ===== */
         .qty-num.bounce-num {
             animation: bounceNum 0.2s ease;
         }
@@ -352,43 +377,109 @@
             100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(180deg); }
         }
 
-        /* ===== HIGHLIGHT SERVICE ===== */
         .opt.highlight-service {
             border-color: #b8860b !important;
             box-shadow: 0 0 15px rgba(184,134,11,0.1);
             background: rgba(184,134,11,0.04) !important;
         }
 
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 14px 40px 14px;
+            margin-top: 40px;
+            background: #ffffff;
+            border-top: 1px solid #eaeaee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+            width: 100%;
+            transition: background 0.3s, border-color 0.3s;
+            flex-shrink: 0;
+        }
+        .footer .payment { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+        .footer .payment span { color: #b8860b; }
+        .footer .copy { font-size: 14px; color: #b8860b; }
+        body.dark-mode .footer { background: #2a2a2a; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .navbar { padding: 14px 20px; }
+            .navbar .logo .brand { font-size: 18px; }
+            .navbar .logo img { height: 30px; width: 30px; }
+            .section { padding: 0 20px 0px; margin-top: 32px; }
+            .section-title { font-size: 20px; margin-bottom: 16px; }
+            .footer { padding: 14px 20px 14px; margin-top: 32px; gap: 4px; }
+        }
         @media (max-width: 480px) {
-            body { padding: 10px; }
-            .app { padding: 16px 12px 20px; }
-            .section-title { font-size: 20px; }
-            .custom-wrap { padding: 8px; }
+            .navbar { padding: 12px 14px; }
+            .navbar .logo .brand { font-size: 16px; }
+            .navbar .logo img { height: 28px; width: 28px; }
+            .section { padding: 0 14px 0px; margin-top: 24px; }
+            .section-title { font-size: 18px; margin-bottom: 14px; }
+            .footer { padding: 12px 14px 12px; margin-top: 24px; gap: 3px; }
+            .footer .payment { gap: 3px; font-size: 12px; }
+            .footer .copy { font-size: 12px; }
+            .custom-wrap { padding: 6px; }
             .custom-wrap .custom-card { padding: 8px 10px; }
+            .custom-wrap .custom-card .picker .opt { padding: 4px 8px; }
+            .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
+            .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
+            .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
         }
     </style>
 </head>
 <body>
 
 <div class="app">
-    <section class="section" id="custom">
-        <div class="section-title">
-            Package <span class="gold">Customization</span>
-            <i class="fas fa-wand-magic-sparkles gold-icon" id="titleWand"></i>
+    <!-- ===== HEADER ===== -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22 viewBox=%220 0 36 36%22%3E%3Crect width=%2236%22 height=%2236%22 rx=%2218%22 fill=%22%23b8860b%22/%3E%3Ctext x=%2218%22 y=%2224%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-weight=%22700%22 font-size=%2216%22 fill=%22%23ffffff%22%3ES%3C/text%3E%3C/svg%3E';" />
+            <span class="brand">Socmegy</span>
         </div>
+        <div class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#custom">Custom</a>
+            <a href="#reviews">Reviews</a>
+            <a href="#results">Results</a>
+            <a href="#track">Track Order</a>
+        </div>
+        <div class="nav-right">
+            <button class="dark-toggle" id="darkToggle" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
+        </div>
+    </header>
 
-        <div class="custom-wrap">
-            <div class="custom-card">
-                <div class="desc" id="customDesc">Decide your own package, it's all yours. Select services and quantities. <strong>30% OFF for orders RM20+</strong></div>
-                <div class="picker" id="customPicker"></div>
-                <div class="summary" id="customSummary"><div class="empty">No services selected yet</div></div>
-                <div class="actions">
-                    <button class="btn btn-secondary" id="clearCustom">Clear All</button>
-                    <button class="btn btn-primary" id="addCustomCart">Add to Cart</button>
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="app-content">
+
+        <section class="section" id="custom">
+            <div class="section-title">
+                Package <span class="gold">Customization</span>
+                <i class="fas fa-wand-magic-sparkles gold-icon" id="titleWand"></i>
+            </div>
+            <div class="custom-wrap">
+                <div class="custom-card">
+                    <div class="desc" id="customDesc">Decide your own package, it's all yours. Select services and quantities. <strong>30% OFF for orders RM20+</strong></div>
+                    <div class="picker" id="customPicker"></div>
+                    <div class="summary" id="customSummary"><div class="empty">No services selected yet</div></div>
+                    <div class="actions">
+                        <button class="btn btn-secondary" id="clearCustom">Clear All</button>
+                        <button class="btn btn-primary" id="addCustomCart">Add to Cart</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="payment"><span>Payment:</span> <span>WhatsApp</span></div>
+        <div class="copy">&copy; 2026 Socmegy. All rights reserved.</div>
+    </footer>
+
 </div>
 
 <script>
@@ -481,27 +572,11 @@
         container.innerHTML = html;
     }
 
-    // ===== HEARTBEAT EFFECT =====
+    // ===== HEARTBEAT =====
     function startHeartbeat() {
         if (isBeating) return;
         isBeating = true;
         titleWand.classList.add('beating');
-
-        // Sparkle effect on each beat
-        let beatCount = 0;
-        beatInterval = setInterval(() => {
-            beatCount++;
-            // Sparkle on title wand
-            createSparklesAtElement(titleWand, 6);
-
-            // Also add to package if wand is near plus button (manual trigger)
-            // User will trigger the plus button manually
-
-            if (beatCount >= 10) {
-                // Auto stop after 10 beats, but user can stop anytime
-                stopHeartbeat();
-            }
-        }, 500);
     }
 
     function stopHeartbeat() {
@@ -544,7 +619,7 @@
         }
     }
 
-    // ===== ADD TO PACKAGE (triggered by plus button) =====
+    // ===== ADD TO PACKAGE =====
     function addToPackage(serviceId) {
         const current = customSelections[serviceId] || 0;
         customSelections[serviceId] = current + 1;
@@ -564,47 +639,126 @@
             void btn.offsetWidth;
             btn.classList.add('pulse-glow');
             setTimeout(() => btn.classList.remove('pulse-glow'), 400);
+            createSparklesAtElement(btn, 6);
         }
 
-        // Sparkle at plus button
-        if (btn) {
-            createSparklesAtElement(btn, 6);
+        const opt = btn ? btn.closest('.opt') : null;
+        if (opt) {
+            opt.classList.add('highlight-service');
+            setTimeout(() => opt.classList.remove('highlight-service'), 300);
         }
     }
 
-    // ===== EVENTS =====
+    // ===== DRAG WAND =====
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
-    // Click wand to toggle heartbeat
-    titleWand.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleHeartbeat();
+    titleWand.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        const rect = this.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
+        this.style.cursor = 'grabbing';
+        this.style.opacity = '0.8';
+        this.style.position = 'fixed';
+        this.style.zIndex = '9999';
+        this.style.left = (e.clientX - dragOffsetX) + 'px';
+        this.style.top = (e.clientY - dragOffsetY) + 'px';
+        this.style.width = 'auto';
+        this.style.fontSize = '28px';
+        document.body.appendChild(this);
+        e.preventDefault();
     });
 
-    // Plus button click - add to package and trigger sparkle
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        titleWand.style.left = (e.clientX - dragOffsetX) + 'px';
+        titleWand.style.top = (e.clientY - dragOffsetY) + 'px';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mouseup', function(e) {
+        if (isDragging) {
+            isDragging = false;
+            titleWand.style.cursor = 'grab';
+            titleWand.style.opacity = '1';
+            titleWand.style.position = 'relative';
+            titleWand.style.zIndex = 'auto';
+            titleWand.style.left = 'auto';
+            titleWand.style.top = 'auto';
+            titleWand.style.width = 'auto';
+            titleWand.style.fontSize = '22px';
+            // Move back to original position in DOM
+            const parent = document.querySelector('.section-title');
+            parent.appendChild(titleWand);
+            titleWand.style.position = 'relative';
+            titleWand.style.display = 'inline-block';
+        }
+    });
+
+    // Touch support for mobile
+    titleWand.addEventListener('touchstart', function(e) {
+        const touch = e.touches[0];
+        isDragging = true;
+        const rect = this.getBoundingClientRect();
+        dragOffsetX = touch.clientX - rect.left;
+        dragOffsetY = touch.clientY - rect.top;
+        this.style.opacity = '0.8';
+        this.style.position = 'fixed';
+        this.style.zIndex = '9999';
+        this.style.left = (touch.clientX - dragOffsetX) + 'px';
+        this.style.top = (touch.clientY - dragOffsetY) + 'px';
+        this.style.width = 'auto';
+        this.style.fontSize = '28px';
+        document.body.appendChild(this);
+        e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        const touch = e.touches[0];
+        titleWand.style.left = (touch.clientX - dragOffsetX) + 'px';
+        titleWand.style.top = (touch.clientY - dragOffsetY) + 'px';
+        e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+        if (isDragging) {
+            isDragging = false;
+            titleWand.style.opacity = '1';
+            titleWand.style.position = 'relative';
+            titleWand.style.zIndex = 'auto';
+            titleWand.style.left = 'auto';
+            titleWand.style.top = 'auto';
+            titleWand.style.width = 'auto';
+            titleWand.style.fontSize = '22px';
+            const parent = document.querySelector('.section-title');
+            parent.appendChild(titleWand);
+            titleWand.style.position = 'relative';
+            titleWand.style.display = 'inline-block';
+        }
+    });
+
+    // ===== CLICK WAND TO TOGGLE HEARTBEAT =====
+    titleWand.addEventListener('click', function(e) {
+        // Only toggle if not dragging
+        if (!isDragging) {
+            e.stopPropagation();
+            toggleHeartbeat();
+        }
+    });
+
+    // ===== PLUS BUTTON - ADD TO PACKAGE =====
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.plus-btn');
         if (btn) {
             const id = btn.dataset.id;
-            // If heartbeat is active, add to package with effects
-            if (isBeating) {
-                addToPackage(id);
-                // Highlight the service
-                const opt = btn.closest('.opt');
-                if (opt) {
-                    opt.classList.add('highlight-service');
-                    setTimeout(() => opt.classList.remove('highlight-service'), 300);
-                }
-            } else {
-                // Normal click - just add
-                const current = customSelections[id] || 0;
-                customSelections[id] = current + 1;
-                renderCustomPicker();
-                updateCustomSummary();
-            }
+            addToPackage(id);
         }
     });
 
-    // Clear button
+    // ===== CLEAR =====
     document.getElementById('clearCustom').addEventListener('click', function() {
         stopHeartbeat();
         customSelections = {};
@@ -613,7 +767,7 @@
         document.querySelectorAll('.opt').forEach(el => el.classList.remove('highlight-service'));
     });
 
-    // Add to Cart button
+    // ===== ADD TO CART =====
     document.getElementById('addCustomCart').addEventListener('click', function() {
         const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
         if (entries.length === 0) {
@@ -624,10 +778,17 @@
     });
 
     // ===== DARK MODE =====
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'd' || e.key === 'D') {
-            document.body.classList.toggle('dark-mode');
+    document.getElementById('darkToggle').addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const icon = this.querySelector('i');
+        if (document.body.classList.contains('dark-mode')) {
+            icon.className = 'fas fa-sun';
+        } else {
+            icon.className = 'fas fa-moon';
         }
+    });
+
+    document.addEventListener('keydown', function(e) {
         if (e.key === ' ' || e.key === 'Space') {
             e.preventDefault();
             toggleHeartbeat();
@@ -638,10 +799,10 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    console.log('✅ Custom Package - Heartbeat Effect Only');
-    console.log('✅ Click wand ✦ or press SPACE to toggle heartbeat');
-    console.log('✅ When heartbeat is ON, clicking + button adds to package with effects');
-    console.log('✅ Press "D" for dark mode');
+    console.log('✅ Custom Package - Drag wand & Heartbeat');
+    console.log('✅ Drag wand ✦ anywhere on screen');
+    console.log('✅ Click wand or press SPACE to toggle heartbeat');
+    console.log('✅ When heartbeat ON, click + button to add with effects');
     console.log('✅ 30% OFF for RM20+');
 </script>
 
