@@ -69,11 +69,11 @@
             position: relative;
         }
 
-        /* Wand semasa bergerak - nampak, tiada hover */
+        /* Wand bergerak - saiz OG 22px */
         #wandMoving {
             position: fixed;
             z-index: 9999;
-            font-size: 28px;
+            font-size: 22px;
             pointer-events: none;
             display: none;
             background-image: url('bg.jpg');
@@ -84,6 +84,31 @@
             color: transparent;
             will-change: left, top;
             transition: none;
+        }
+
+        /* Heartbeat effect - hanya bila sampai drop */
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.2); }
+            56% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        #wandMoving.beating {
+            animation: heartbeat 0.5s ease-in-out 1;
+        }
+
+        /* ===== ZOOM SUMMARY ===== */
+        @keyframes zoomIn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); box-shadow: 0 0 40px rgba(184,134,11,0.2); }
+            100% { transform: scale(1); }
+        }
+        .summary.zoom {
+            animation: zoomIn 0.8s ease 1;
+            border-color: #b8860b !important;
+            box-shadow: 0 0 30px rgba(184,134,11,0.15);
         }
 
         .custom-wrap {
@@ -225,6 +250,7 @@
             bottom: 0;
             z-index: 5;
             border: 1px solid #eaeaee;
+            transition: all 0.3s ease;
         }
         body.dark-mode .custom-wrap .custom-card .summary {
             background: #1a1a1a;
@@ -310,23 +336,6 @@
             100% { opacity: 1; transform: translateX(0); }
         }
 
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.3); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.2); }
-            56% { transform: scale(1); }
-            100% { transform: scale(1); }
-        }
-        .gold-icon.beating {
-            animation: heartbeat 0.5s ease-in-out 1;
-            display: inline-block;
-        }
-
-        #wandMoving.beating {
-            animation: heartbeat 0.5s ease-in-out 1;
-        }
-
         .qty-btn.pulse-glow {
             animation: btnPulse 0.25s ease 1;
             background: #b8860b !important;
@@ -397,7 +406,7 @@
             .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
             .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
             .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
-            #wandMoving { font-size: 22px; }
+            #wandMoving { font-size: 18px; }
         }
     </style>
 </head>
@@ -426,7 +435,7 @@
     </section>
 </div>
 
-<!-- Wand bergerak - nampak sepanjang masa, tiada hover -->
+<!-- Wand bergerak - saiz OG 22px -->
 <div id="wandMoving"><i class="fas fa-wand-magic-sparkles"></i></div>
 
 <script>
@@ -439,12 +448,13 @@
     let customSelections = {};
     let isBeating = false;
     let beatCount = 0;
-    let beatInterval = null;
     let isMoving = false;
     let animFrameId = null;
+    let isPaused = false;
 
     const titleWand = document.getElementById('titleWand');
     const wandMoving = document.getElementById('wandMoving');
+    const summaryEl = document.getElementById('customSummary');
 
     // ===== RENDER =====
     function renderCustomPicker() {
@@ -521,17 +531,18 @@
         container.innerHTML = html;
     }
 
-    // ===== GET POSITION =====
+    // ===== GET POSITION - CENTER TEPAT =====
     function getPlusButtonPosition() {
         const btn = document.querySelector('#opt_s1 .plus-btn');
         if (!btn) return null;
         const rect = btn.getBoundingClientRect();
-        return { x: rect.left + rect.width / 2 - 14, y: rect.top + rect.height / 2 - 14 };
+        // Center of button - 11px because font-size 22px / 2
+        return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
     function getTitlePosition() {
         const rect = titleWand.getBoundingClientRect();
-        return { x: rect.left + rect.width / 2 - 14, y: rect.top + rect.height / 2 - 14 };
+        return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
     // ===== SPARKLES =====
@@ -564,7 +575,7 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Heartbeat on moving wand - smooth
+        // Heartbeat effect - hanya bila sampai drop
         wandMoving.classList.remove('beating');
         void wandMoving.offsetWidth;
         wandMoving.classList.add('beating');
@@ -584,9 +595,16 @@
             setTimeout(() => btn.classList.remove('pulse-glow'), 400);
             createSparklesAtElement(btn, 6);
         }
+
+        // Update wand position to stay centered
+        const pos = getPlusButtonPosition();
+        if (pos) {
+            wandMoving.style.left = pos.x + 'px';
+            wandMoving.style.top = pos.y + 'px';
+        }
     }
 
-    // ===== SLIDE WAND - SMOOTH =====
+    // ===== SLIDE WAND - SMOOTH, SAIZ OG =====
     function slideWandToButton() {
         if (isMoving) return;
         isMoving = true;
@@ -602,14 +620,13 @@
         // Hide title wand
         titleWand.style.display = 'none';
 
-        // Show moving wand at start position
+        // Show moving wand at start position - saiz OG 22px
         wandMoving.style.display = 'block';
+        wandMoving.style.fontSize = '22px';
         wandMoving.style.left = startPos.x + 'px';
         wandMoving.style.top = startPos.y + 'px';
-        wandMoving.style.fontSize = '28px';
         wandMoving.style.opacity = '1';
 
-        // Animate to end position dengan smooth
         const startTime = performance.now();
         const duration = 800;
 
@@ -631,7 +648,6 @@
             } else {
                 wandMoving.style.left = endPos.x + 'px';
                 wandMoving.style.top = endPos.y + 'px';
-                wandMoving.style.fontSize = '22px';
                 isMoving = false;
                 animFrameId = null;
 
@@ -645,7 +661,7 @@
         animFrameId = requestAnimationFrame(animateMove);
     }
 
-    // ===== AUTO BEAT 5 TIMES - SMOOTH =====
+    // ===== AUTO BEAT 5 KALI, ZOOM SUMMARY =====
     function startAutoBeat() {
         if (isBeating) return;
         isBeating = true;
@@ -656,15 +672,12 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Update wand position once sebelum start
+        // Update wand position
         const pos = getPlusButtonPosition();
         if (pos) {
             wandMoving.style.left = pos.x + 'px';
             wandMoving.style.top = pos.y + 'px';
         }
-
-        let beatDelay = 0;
-        const beatIntervalTime = 650;
 
         function doBeat() {
             beatCount++;
@@ -678,33 +691,26 @@
             }
 
             if (beatCount < 5) {
-                setTimeout(doBeat, beatIntervalTime);
+                setTimeout(doBeat, 650);
             } else {
                 isBeating = false;
-                // Clear all and reset
+
+                // ZOOM SUMMARY - tunjuk diskaun gila
                 setTimeout(() => {
-                    customSelections = {};
-                    renderCustomPicker();
-                    updateCustomSummary();
+                    summaryEl.classList.remove('zoom');
+                    void summaryEl.offsetWidth;
+                    summaryEl.classList.add('zoom');
 
-                    // Hide moving wand
-                    wandMoving.style.display = 'none';
-
-                    // Show title wand back
-                    titleWand.style.display = 'inline-block';
-                    titleWand.style.position = 'relative';
-                    titleWand.style.zIndex = 'auto';
-                    titleWand.style.fontSize = '22px';
-
-                    // Restart after 1.5 second
+                    // Keep zoomed for content recording
                     setTimeout(() => {
-                        slideWandToButton();
-                    }, 1500);
-                }, 1000);
+                        // Stay zoomed - untuk content
+                        console.log('✅ Zoom complete - content ready');
+                    }, 2000);
+
+                }, 500);
             }
         }
 
-        // Start first beat after delay
         setTimeout(doBeat, 600);
     }
 
@@ -726,6 +732,7 @@
         titleWand.style.position = 'relative';
         titleWand.style.zIndex = 'auto';
         titleWand.style.fontSize = '22px';
+        summaryEl.classList.remove('zoom');
 
         setTimeout(() => {
             slideWandToButton();
@@ -761,11 +768,10 @@
         slideWandToButton();
     }, 1000);
 
-    console.log('✅ Wand nampak SEPANJANG MASA');
-    console.log('✅ Slide SMOOTH guna requestAnimationFrame');
-    console.log('✅ Auto heartbeat 5 kali SMOOTH - setiap degup +1');
-    console.log('✅ Reset dan ulang');
-    console.log('✅ 30% OFF for RM20+');
+    console.log('✅ Wand saiz OG 22px - tiada effect masa drag');
+    console.log('✅ Heartbeat hanya bila sampai drop');
+    console.log('✅ Center tepat dengan button +');
+    console.log('✅ Zoom summary lepas 5 kali - tunjuk diskaun');
 </script>
 
 </body>
