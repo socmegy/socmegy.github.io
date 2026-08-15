@@ -17,6 +17,8 @@
             min-height: 100vh;
             transition: background 0.3s;
         }
+        ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
 
         body.dark-mode {
             background: #1a1a1a;
@@ -93,7 +95,7 @@
             100% { transform: scale(1); }
         }
         #wandMoving.beating {
-            animation: heartbeat 0.5s ease-in-out 1;
+            animation: heartbeat 0.6s ease-in-out 1;
         }
 
         .custom-wrap {
@@ -235,8 +237,7 @@
             bottom: 0;
             z-index: 5;
             border: 1px solid #eaeaee;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: center center;
+            transition: all 0.3s ease;
         }
         body.dark-mode .custom-wrap .custom-card .summary {
             background: #1a1a1a;
@@ -282,28 +283,43 @@
             font-weight: 500;
         }
 
-        /* ===== ZOOM ===== */
+        /* ===== ZOOM - SLOW & SMOOTH ===== */
         .summary.zoom-active {
             position: fixed !important;
             top: 50% !important;
             left: 50% !important;
-            transform: translate(-50%, -50%) scale(1.3) !important;
+            transform: translate(-50%, -50%) scale(1.25) !important;
             max-height: 80vh !important;
-            width: 400px !important;
+            width: 420px !important;
             max-width: 92vw !important;
             z-index: 99999 !important;
             border-color: #b8860b !important;
             border-width: 2px !important;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15) !important;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.2) !important;
             overflow-y: auto !important;
-            padding: 12px 16px !important;
+            padding: 16px 20px !important;
             margin: 0 !important;
             background: #ffffff !important;
             cursor: pointer !important;
+            opacity: 0;
+            animation: fadeInZoom 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+            transition: scroll 1s ease;
+        }
+        .summary.zoom-active::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
         }
         body.dark-mode .summary.zoom-active {
             background: #2a2a2a !important;
             border-color: #d4a017 !important;
+        }
+
+        @keyframes fadeInZoom {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
         }
 
         .custom-wrap .custom-card .actions {
@@ -346,22 +362,22 @@
         }
 
         .qty-btn.pulse-glow {
-            animation: btnPulse 0.25s ease 1;
+            animation: btnPulse 0.3s ease 1;
             background: #b8860b !important;
             color: #ffffff !important;
-            box-shadow: 0 0 15px rgba(184,134,11,0.4);
+            box-shadow: 0 0 20px rgba(184,134,11,0.5);
         }
         @keyframes btnPulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.35); }
+            50% { transform: scale(1.4); }
         }
 
         .qty-num.bounce-num {
-            animation: bounceNum 0.2s ease;
+            animation: bounceNum 0.25s ease;
         }
         @keyframes bounceNum {
             0% { transform: scale(1); }
-            50% { transform: scale(1.6); }
+            50% { transform: scale(1.7); }
             100% { transform: scale(1); }
         }
 
@@ -376,7 +392,7 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            animation: sparkleFly 0.5s ease forwards;
+            animation: sparkleFly 0.6s ease forwards;
         }
         @keyframes sparkleFly {
             0% { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
@@ -418,15 +434,23 @@
             .summary.zoom-active {
                 width: 92vw !important;
                 max-width: 92vw !important;
-                padding: 10px 12px !important;
+                padding: 12px 14px !important;
                 transform: translate(-50%, -50%) scale(1.1) !important;
+            }
+            @keyframes fadeInZoom {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+                100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
             }
         }
 
         @media (max-width: 380px) {
             .summary.zoom-active {
                 transform: translate(-50%, -50%) scale(1) !important;
-                padding: 8px 10px !important;
+                padding: 10px 12px !important;
+            }
+            @keyframes fadeInZoom {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+                100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
             }
         }
     </style>
@@ -471,8 +495,9 @@
     let isMoving = false;
     let animFrameId = null;
     let isZoomed = false;
-    let currentServiceIndex = 0;
     let isProcessing = false;
+    let currentWandPos = null;
+    let scrollTimeout = null;
 
     const titleWand = document.getElementById('titleWand');
     const wandMoving = document.getElementById('wandMoving');
@@ -565,7 +590,7 @@
         return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
-    function createSparklesAtElement(el, count = 8) {
+    function createSparklesAtElement(el, count = 10) {
         const rect = el.getBoundingClientRect();
         const x = rect.left + rect.width / 2;
         const y = rect.top + rect.height / 2;
@@ -573,17 +598,17 @@
         for (let i = 0; i < count; i++) {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle-particle';
-            const symbols = ['✦', '✧', '✦', '✧', '✦', '✧', '✦', '✧'];
+            const symbols = ['✦', '✧', '✦', '✧', '✦', '✧', '✦', '✧', '✦', '✧'];
             sparkle.textContent = symbols[i % symbols.length];
             const angle = (i / count) * Math.PI * 2 + Math.random() * 0.2;
-            const distance = 20 + Math.random() * 35;
-            sparkle.style.left = (x + (Math.random() - 0.5) * 6) + 'px';
-            sparkle.style.top = (y + (Math.random() - 0.5) * 6) + 'px';
+            const distance = 25 + Math.random() * 40;
+            sparkle.style.left = (x + (Math.random() - 0.5) * 8) + 'px';
+            sparkle.style.top = (y + (Math.random() - 0.5) * 8) + 'px';
             sparkle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
             sparkle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
-            sparkle.style.fontSize = (8 + Math.random() * 10) + 'px';
+            sparkle.style.fontSize = (8 + Math.random() * 12) + 'px';
             document.body.appendChild(sparkle);
-            setTimeout(() => { if (sparkle.parentNode) sparkle.remove(); }, 600);
+            setTimeout(() => { if (sparkle.parentNode) sparkle.remove(); }, 700);
         }
     }
 
@@ -610,13 +635,14 @@
             void btn.offsetWidth;
             btn.classList.add('pulse-glow');
             setTimeout(() => btn.classList.remove('pulse-glow'), 400);
-            createSparklesAtElement(btn, 6);
+            createSparklesAtElement(btn, 8);
         }
 
         const pos = getPlusButtonPosition(serviceId);
         if (pos) {
             wandMoving.style.left = pos.x + 'px';
             wandMoving.style.top = pos.y + 'px';
+            currentWandPos = pos;
         }
     }
 
@@ -624,12 +650,27 @@
         if (isZoomed) return;
         isZoomed = true;
 
-        const rect = summaryEl.getBoundingClientRect();
-        const originX = rect.left + rect.width / 2;
-        const originY = rect.top + rect.height / 2;
+        wandMoving.style.display = 'none';
 
-        summaryEl.style.transformOrigin = originX + 'px ' + originY + 'px';
         summaryEl.classList.add('zoom-active');
+
+        // Hold atas 2 saat, lepas tu scroll perlahan ke bawah (3 saat)
+        setTimeout(() => {
+            const scrollHeight = summaryEl.scrollHeight;
+            const step = 8;
+            const delay = 25;
+            let currentScroll = 0;
+
+            function smoothScroll() {
+                if (currentScroll < scrollHeight) {
+                    currentScroll += step;
+                    summaryEl.scrollTop = currentScroll;
+                    scrollTimeout = setTimeout(smoothScroll, delay);
+                }
+            }
+
+            smoothScroll();
+        }, 2000);
 
         summaryEl.onclick = function(e) {
             e.stopPropagation();
@@ -640,42 +681,47 @@
     function closeZoom() {
         if (!isZoomed) return;
         isZoomed = false;
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = null;
+        }
         summaryEl.classList.remove('zoom-active');
-        summaryEl.style.transformOrigin = '';
         summaryEl.onclick = null;
+        summaryEl.style.animation = '';
+        summaryEl.scrollTop = 0;
     }
 
-    function slideWandToButton(serviceId, callback) {
+    function slideWandToPosition(targetPos, callback) {
         if (isMoving) return;
         isMoving = true;
 
-        const startPos = getTitlePosition();
-        const endPos = getPlusButtonPosition(serviceId);
+        const startPos = currentWandPos || getTitlePosition();
 
-        if (!startPos || !endPos) {
+        if (!startPos || !targetPos) {
             isMoving = false;
             if (callback) callback();
             return;
         }
 
-        titleWand.style.display = 'none';
+        if (wandMoving.style.display !== 'block') {
+            wandMoving.style.display = 'block';
+            wandMoving.style.fontSize = '22px';
+            wandMoving.style.opacity = '1';
+        }
 
-        wandMoving.style.display = 'block';
-        wandMoving.style.fontSize = '22px';
         wandMoving.style.left = startPos.x + 'px';
         wandMoving.style.top = startPos.y + 'px';
-        wandMoving.style.opacity = '1';
 
         const startTime = performance.now();
-        const duration = 700;
+        const duration = 800;
 
         function animateMove(time) {
             const elapsed = time - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-            const x = startPos.x + (endPos.x - startPos.x) * ease;
-            const y = startPos.y + (endPos.y - startPos.y) * ease;
+            const x = startPos.x + (targetPos.x - startPos.x) * ease;
+            const y = startPos.y + (targetPos.y - startPos.y) * ease;
 
             wandMoving.style.left = x + 'px';
             wandMoving.style.top = y + 'px';
@@ -683,8 +729,9 @@
             if (progress < 1) {
                 animFrameId = requestAnimationFrame(animateMove);
             } else {
-                wandMoving.style.left = endPos.x + 'px';
-                wandMoving.style.top = endPos.y + 'px';
+                wandMoving.style.left = targetPos.x + 'px';
+                wandMoving.style.top = targetPos.y + 'px';
+                currentWandPos = targetPos;
                 isMoving = false;
                 animFrameId = null;
                 if (callback) callback();
@@ -694,12 +741,20 @@
         animFrameId = requestAnimationFrame(animateMove);
     }
 
+    function slideWandToButton(serviceId, callback) {
+        const targetPos = getPlusButtonPosition(serviceId);
+        if (!targetPos) {
+            if (callback) callback();
+            return;
+        }
+        slideWandToPosition(targetPos, callback);
+    }
+
     function doHeartbeat(serviceId, count, callback) {
         if (isBeating) return;
         isBeating = true;
         beatCount = 0;
 
-        // Reset quantity for this service
         customSelections[serviceId] = 0;
         renderCustomPicker();
         updateCustomSummary();
@@ -712,10 +767,11 @@
             if (pos) {
                 wandMoving.style.left = pos.x + 'px';
                 wandMoving.style.top = pos.y + 'px';
+                currentWandPos = pos;
             }
 
             if (beatCount < count) {
-                setTimeout(beat, 550);
+                setTimeout(beat, 600);
             } else {
                 isBeating = false;
                 if (callback) callback();
@@ -725,50 +781,47 @@
         setTimeout(beat, 500);
     }
 
-    // ===== MAIN SEQUENCE =====
     function startSequence() {
         if (isProcessing) return;
         isProcessing = true;
 
-        // Reset semua
         customSelections = {};
         renderCustomPicker();
         updateCustomSummary();
-        currentServiceIndex = 0;
+        currentWandPos = null;
+        wandMoving.style.display = 'none';
+        titleWand.style.display = 'none';
 
-        // Step 1: Item 1 - 5 kali heartbeat
-        slideWandToButton('s1', function() {
-            setTimeout(function() {
-                doHeartbeat('s1', 5, function() {
-                    // Step 2: Slide ke item 2 - 1 kali heartbeat
-                    setTimeout(function() {
-                        slideWandToButton('s2', function() {
-                            setTimeout(function() {
-                                doHeartbeat('s2', 1, function() {
-                                    // Step 3: Slide ke item 3 - 1 kali heartbeat
-                                    setTimeout(function() {
-                                        slideWandToButton('s3', function() {
-                                            setTimeout(function() {
-                                                doHeartbeat('s3', 1, function() {
-                                                    // Step 4: Zoom summary
-                                                    setTimeout(function() {
-                                                        zoomSummary();
-                                                        isProcessing = false;
-                                                    }, 600);
-                                                });
-                                            }, 400);
-                                        });
-                                    }, 400);
-                                });
-                            }, 400);
-                        });
-                    }, 400);
-                });
-            }, 400);
-        });
+        setTimeout(function() {
+            slideWandToButton('s1', function() {
+                setTimeout(function() {
+                    doHeartbeat('s1', 5, function() {
+                        setTimeout(function() {
+                            slideWandToButton('s2', function() {
+                                setTimeout(function() {
+                                    doHeartbeat('s2', 1, function() {
+                                        setTimeout(function() {
+                                            slideWandToButton('s3', function() {
+                                                setTimeout(function() {
+                                                    doHeartbeat('s3', 1, function() {
+                                                        setTimeout(function() {
+                                                            zoomSummary();
+                                                            isProcessing = false;
+                                                        }, 600);
+                                                    });
+                                                }, 400);
+                                            });
+                                        }, 400);
+                                    });
+                                }, 400);
+                            });
+                        }, 400);
+                    });
+                }, 400);
+            });
+        }, 600);
     }
 
-    // ===== CLEAR =====
     document.getElementById('clearCustom').addEventListener('click', function() {
         if (animFrameId) {
             cancelAnimationFrame(animFrameId);
@@ -784,6 +837,7 @@
         updateCustomSummary();
 
         wandMoving.style.display = 'none';
+        currentWandPos = null;
         titleWand.style.display = 'inline-block';
         titleWand.style.position = 'relative';
         titleWand.style.zIndex = 'auto';
@@ -791,10 +845,9 @@
 
         setTimeout(function() {
             startSequence();
-        }, 1000);
+        }, 1200);
     });
 
-    // ===== ADD TO CART =====
     document.getElementById('addCustomCart').addEventListener('click', function() {
         const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
         if (entries.length === 0) {
@@ -804,7 +857,6 @@
         alert('Package added to cart! 🎉');
     });
 
-    // ===== DARK MODE =====
     document.getElementById('darkToggle').addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
         const icon = this.querySelector('i');
@@ -828,10 +880,12 @@
         startSequence();
     }, 1000);
 
-    console.log('✅ Sequence: Item1 (5x) → Item2 (1x) → Item3 (1x) → Zoom Summary');
-    console.log('✅ Wand slides ke setiap button +');
-    console.log('✅ Lock wand pada setiap button');
-    console.log('✅ Tiada hold lama - terus ke step seterusnya');
+    console.log('✅ Wand slide: 0.8s');
+    console.log('✅ Heartbeat: 0.6s setiap beat');
+    console.log('✅ Zoom in: 0.9s (smooth)');
+    console.log('✅ Hold atas: 2s');
+    console.log('✅ Scroll bawah: 3s (perlahan)');
+    console.log('✅ Professional untuk screen record');
 </script>
 
 </body>
