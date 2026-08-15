@@ -79,6 +79,14 @@
             pointer-events: none;
             opacity: 1;
         }
+        #custom .section-title .gold-icon.locked {
+            position: fixed;
+            z-index: 9999;
+            font-size: 22px;
+            pointer-events: none;
+            opacity: 1;
+            cursor: default;
+        }
 
         .custom-wrap {
             background-image: url('bg.jpg');
@@ -130,6 +138,7 @@
             gap: 4px;
             position: relative;
             border: 1px solid #eaeaee;
+            transition: all 0.2s ease;
         }
         body.dark-mode .custom-wrap .custom-card .picker .opt {
             background: #1a1a1a;
@@ -205,6 +214,13 @@
         }
         body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num {
             color: #d4a017;
+        }
+
+        /* Drop zone highlight */
+        .opt.drop-zone {
+            border-color: #b8860b !important;
+            box-shadow: 0 0 20px rgba(184,134,11,0.2);
+            background: rgba(184,134,11,0.06) !important;
         }
 
         .custom-wrap .custom-card .summary {
@@ -393,6 +409,8 @@
             .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
             .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
             .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
+            #custom .section-title .gold-icon.dragging { font-size: 22px; }
+            #custom .section-title .gold-icon.locked { font-size: 18px; }
         }
     </style>
 </head>
@@ -431,8 +449,12 @@
     let customSelections = {};
     let wandRef = document.getElementById('titleWand');
     let isDragging = false;
+    let isLocked = false;
+    let isBeating = false;
     let dragOffsetX = 0;
     let dragOffsetY = 0;
+    let beatCount = 0;
+    let beatInterval = null;
 
     // ===== RENDER =====
     function renderCustomPicker() {
@@ -441,8 +463,9 @@
             const qty = customSelections[item.id] || 0;
             const finalPrice = item.discount ? Math.round(item.price * (1 - item.discount / 100) * 100) / 100 : item.price;
             const hasDiscount = item.discount > 0;
+            const isFirst = index === 0;
             return `
-                <div class="opt" data-id="${item.id}" data-index="${index}">
+                <div class="opt ${isFirst ? 'drop-zone' : ''}" data-id="${item.id}" data-index="${index}" id="opt_${item.id}">
                     <div class="left">
                         <span>${item.label}</span>
                         ${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
@@ -469,7 +492,11 @@
                 else customSelections[id] = newQty;
                 renderCustomPicker();
                 updateCustomSummary();
-                document.querySelectorAll('.opt').forEach(el => el.classList.remove('highlight-service'));
+
+                // Update locked wand position if it's on s1
+                if (isLocked) {
+                    updateWandPosition('s1');
+                }
             });
         });
     }
@@ -508,6 +535,19 @@
         }
         html += `<div class="total-row"><span>Total</span><span>RM${finalTotal.toFixed(2)}</span></div>`;
         container.innerHTML = html;
+    }
+
+    // ===== UPDATE WAND POSITION =====
+    function updateWandPosition(serviceId) {
+        const wand = document.getElementById('titleWand');
+        if (!wand || !isLocked) return;
+
+        const btn = document.querySelector(`#opt_${serviceId} .plus-btn`);
+        if (!btn) return;
+
+        const rect = btn.getBoundingClientRect();
+        wand.style.left = (rect.left + rect.width / 2 - 11) + 'px';
+        wand.style.top = (rect.top + rect.height / 2 - 11) + 'px';
     }
 
     // ===== HEARTBEAT =====
@@ -572,12 +612,80 @@
             opt.classList.add('highlight-service');
             setTimeout(() => opt.classList.remove('highlight-service'), 300);
         }
+
+        // Update wand position after add
+        if (isLocked) {
+            updateWandPosition('s1');
+        }
     }
 
-    // ===== DRAG WAND - FIXED =====
+    // ===== AUTO BEAT 5 TIMES =====
+    function startAutoBeat() {
+        if (isBeating) return;
+        isBeating = true;
+        beatCount = 0;
+
+        // Reset selections for s1 only
+        customSelections['s1'] = 0;
+        renderCustomPicker();
+        updateCustomSummary();
+
+        beatInterval = setInterval(() => {
+            beatCount++;
+            addToPackage('s1');
+
+            if (beatCount >= 5) {
+                clearInterval(beatInterval);
+                beatInterval = null;
+                isBeating = false;
+
+                // Reset after 5 beats - clear all and restart
+                setTimeout(() => {
+                    customSelections = {};
+                    renderCustomPicker();
+                    updateCustomSummary();
+
+                    // Unlock wand and return to title
+                    const wand = document.getElementById('titleWand');
+                    if (wand) {
+                        wand.classList.remove('locked', 'beating');
+                        wand.classList.add('gold-icon');
+                        wand.style.position = 'relative';
+                        wand.style.zIndex = 'auto';
+                        wand.style.left = 'auto';
+                        wand.style.top = 'auto';
+                        wand.style.fontSize = '22px';
+                        wand.style.pointerEvents = 'auto';
+                        wand.style.cursor = 'grab';
+                        isLocked = false;
+
+                        // Move back to title
+                        const parent = document.querySelector('.section-title');
+                        parent.appendChild(wand);
+                        wand.style.position = 'relative';
+                        wand.style.display = 'inline-block';
+                        wand.style.backgroundImage = 'url("bg.jpg")';
+                        wand.style.backgroundSize = 'cover';
+                        wand.style.backgroundPosition = 'center';
+                        wand.style.webkitBackgroundClip = 'text';
+                        wand.style.backgroundClip = 'text';
+                        wand.style.color = 'transparent';
+                    }
+
+                    // Remove drop zone highlight
+                    document.querySelectorAll('.opt').forEach(el => el.classList.remove('drop-zone'));
+                    const firstOpt = document.querySelector('.opt[data-index="0"]');
+                    if (firstOpt) firstOpt.classList.add('drop-zone');
+
+                }, 1000);
+            }
+        }, 600);
+    }
+
+    // ===== DRAG AND DROP =====
     function initDrag(e) {
         const wand = document.getElementById('titleWand');
-        if (!wand) return;
+        if (!wand || isLocked) return;
 
         const touch = e.touches ? e.touches[0] : e;
         const rect = wand.getBoundingClientRect();
@@ -609,6 +717,21 @@
         wand.style.left = (touch.clientX - dragOffsetX) + 'px';
         wand.style.top = (touch.clientY - dragOffsetY) + 'px';
 
+        // Check if over drop zone
+        const dropZone = document.querySelector('.opt.drop-zone');
+        if (dropZone) {
+            const rect = dropZone.getBoundingClientRect();
+            const cx = touch.clientX;
+            const cy = touch.clientY;
+            if (cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom) {
+                dropZone.style.borderColor = '#d4a017';
+                dropZone.style.boxShadow = '0 0 30px rgba(184,134,11,0.3)';
+            } else {
+                dropZone.style.borderColor = '#b8860b';
+                dropZone.style.boxShadow = '0 0 20px rgba(184,134,11,0.2)';
+            }
+        }
+
         if (e.type === 'touchmove') {
             e.preventDefault();
         }
@@ -621,14 +744,76 @@
 
         isDragging = false;
         wand.classList.remove('dragging');
-        wand.style.position = 'fixed';
-        wand.style.zIndex = '9999';
-        wand.style.fontSize = '28px';
-        wand.style.opacity = '1';
-        wand.style.pointerEvents = 'auto';
-        wand.style.cursor = 'grab';
 
-        // Keep it at final position
+        // Check if dropped on drop zone
+        const dropZone = document.querySelector('.opt.drop-zone');
+        let dropped = false;
+
+        if (dropZone) {
+            const rect = dropZone.getBoundingClientRect();
+            const touch = e.changedTouches ? e.changedTouches[0] : e;
+            const cx = touch.clientX;
+            const cy = touch.clientY;
+
+            if (cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom) {
+                dropped = true;
+            }
+        }
+
+        if (dropped) {
+            // Lock wand to plus button
+            isLocked = true;
+            wand.classList.remove('gold-icon');
+            wand.classList.add('locked');
+
+            const btn = document.querySelector('#opt_s1 .plus-btn');
+            if (btn) {
+                const rect = btn.getBoundingClientRect();
+                wand.style.left = (rect.left + rect.width / 2 - 11) + 'px';
+                wand.style.top = (rect.top + rect.height / 2 - 11) + 'px';
+                wand.style.position = 'fixed';
+                wand.style.zIndex = '9999';
+                wand.style.fontSize = '22px';
+                wand.style.opacity = '1';
+                wand.style.pointerEvents = 'none';
+                wand.style.cursor = 'default';
+            }
+
+            // Start auto beat after 1 second
+            setTimeout(() => {
+                startAutoBeat();
+            }, 800);
+
+        } else {
+            // Return to title
+            wand.classList.remove('dragging', 'gold-icon');
+            wand.style.position = 'relative';
+            wand.style.zIndex = 'auto';
+            wand.style.left = 'auto';
+            wand.style.top = 'auto';
+            wand.style.fontSize = '22px';
+            wand.style.pointerEvents = 'auto';
+            wand.style.cursor = 'grab';
+            wand.style.display = 'inline-block';
+
+            const parent = document.querySelector('.section-title');
+            parent.appendChild(wand);
+            wand.style.position = 'relative';
+            wand.style.display = 'inline-block';
+            wand.style.backgroundImage = 'url("bg.jpg")';
+            wand.style.backgroundSize = 'cover';
+            wand.style.backgroundPosition = 'center';
+            wand.style.webkitBackgroundClip = 'text';
+            wand.style.backgroundClip = 'text';
+            wand.style.color = 'transparent';
+        }
+
+        // Reset drop zone style
+        if (dropZone) {
+            dropZone.style.borderColor = '#b8860b';
+            dropZone.style.boxShadow = '0 0 20px rgba(184,134,11,0.2)';
+        }
+
         if (e.type === 'touchend') {
             e.preventDefault();
         }
@@ -639,7 +824,7 @@
         const wand = document.getElementById('titleWand');
         if (!wand) return;
         if (e.target === wand || wand.contains(e.target)) {
-            initDrag(e);
+            if (!isLocked) initDrag(e);
         }
     });
 
@@ -651,28 +836,50 @@
         const wand = document.getElementById('titleWand');
         if (!wand) return;
         if (e.target === wand || wand.contains(e.target)) {
-            initDrag(e);
+            if (!isLocked) initDrag(e);
         }
     }, { passive: false });
 
     document.addEventListener('touchmove', moveDrag, { passive: false });
     document.addEventListener('touchend', endDrag, { passive: false });
 
-    // ===== PLUS BUTTON =====
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.plus-btn');
-        if (btn) {
-            const id = btn.dataset.id;
-            addToPackage(id);
-        }
-    });
-
     // ===== CLEAR =====
     document.getElementById('clearCustom').addEventListener('click', function() {
+        if (beatInterval) {
+            clearInterval(beatInterval);
+            beatInterval = null;
+        }
+        isBeating = false;
+        isLocked = false;
+
         customSelections = {};
         renderCustomPicker();
         updateCustomSummary();
         document.querySelectorAll('.opt').forEach(el => el.classList.remove('highlight-service'));
+
+        const wand = document.getElementById('titleWand');
+        if (wand) {
+            wand.classList.remove('locked', 'beating', 'dragging');
+            wand.style.position = 'relative';
+            wand.style.zIndex = 'auto';
+            wand.style.left = 'auto';
+            wand.style.top = 'auto';
+            wand.style.fontSize = '22px';
+            wand.style.pointerEvents = 'auto';
+            wand.style.cursor = 'grab';
+            wand.style.display = 'inline-block';
+
+            const parent = document.querySelector('.section-title');
+            parent.appendChild(wand);
+            wand.style.position = 'relative';
+            wand.style.display = 'inline-block';
+            wand.style.backgroundImage = 'url("bg.jpg")';
+            wand.style.backgroundSize = 'cover';
+            wand.style.backgroundPosition = 'center';
+            wand.style.webkitBackgroundClip = 'text';
+            wand.style.backgroundClip = 'text';
+            wand.style.color = 'transparent';
+        }
     });
 
     // ===== ADD TO CART =====
@@ -683,6 +890,8 @@
             return;
         }
         alert('Package added to cart! 🎉');
+        // Reset
+        document.getElementById('clearCustom').click();
     });
 
     // ===== DARK MODE =====
@@ -700,8 +909,9 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    console.log('✅ Drag wand anywhere - it STAYS');
-    console.log('✅ Click + button = wand heartbeats + add to package');
+    console.log('✅ Drag wand to "+" button of 1K Instagram Followers');
+    console.log('✅ Auto heartbeat 5 times - each beat adds +1');
+    console.log('✅ Resets and repeats after 5 beats');
     console.log('✅ 30% OFF for RM20+');
 </script>
 
