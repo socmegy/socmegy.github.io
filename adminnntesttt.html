@@ -282,7 +282,7 @@
             font-weight: 500;
         }
 
-        /* ===== ZOOM - DIAMBIL DARI TEMPAT ASAL KE CENTER ===== */
+        /* ===== ZOOM ===== */
         .summary.zoom-active {
             position: fixed !important;
             top: 50% !important;
@@ -471,6 +471,8 @@
     let isMoving = false;
     let animFrameId = null;
     let isZoomed = false;
+    let currentServiceIndex = 0;
+    let isProcessing = false;
 
     const titleWand = document.getElementById('titleWand');
     const wandMoving = document.getElementById('wandMoving');
@@ -551,8 +553,8 @@
         container.innerHTML = html;
     }
 
-    function getPlusButtonPosition() {
-        const btn = document.querySelector('#opt_s1 .plus-btn');
+    function getPlusButtonPosition(serviceId) {
+        const btn = document.querySelector(`#opt_${serviceId} .plus-btn`);
         if (!btn) return null;
         const rect = btn.getBoundingClientRect();
         return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
@@ -611,7 +613,7 @@
             createSparklesAtElement(btn, 6);
         }
 
-        const pos = getPlusButtonPosition();
+        const pos = getPlusButtonPosition(serviceId);
         if (pos) {
             wandMoving.style.left = pos.x + 'px';
             wandMoving.style.top = pos.y + 'px';
@@ -622,18 +624,13 @@
         if (isZoomed) return;
         isZoomed = true;
 
-        // Get current position for transform origin
         const rect = summaryEl.getBoundingClientRect();
         const originX = rect.left + rect.width / 2;
         const originY = rect.top + rect.height / 2;
 
-        // Set transform origin to current center
         summaryEl.style.transformOrigin = originX + 'px ' + originY + 'px';
-
-        // Add zoom class
         summaryEl.classList.add('zoom-active');
 
-        // Click to close
         summaryEl.onclick = function(e) {
             e.stopPropagation();
             closeZoom();
@@ -643,21 +640,21 @@
     function closeZoom() {
         if (!isZoomed) return;
         isZoomed = false;
-
         summaryEl.classList.remove('zoom-active');
         summaryEl.style.transformOrigin = '';
         summaryEl.onclick = null;
     }
 
-    function slideWandToButton() {
+    function slideWandToButton(serviceId, callback) {
         if (isMoving) return;
         isMoving = true;
 
         const startPos = getTitlePosition();
-        const endPos = getPlusButtonPosition();
+        const endPos = getPlusButtonPosition(serviceId);
 
         if (!startPos || !endPos) {
             isMoving = false;
+            if (callback) callback();
             return;
         }
 
@@ -670,7 +667,7 @@
         wandMoving.style.opacity = '1';
 
         const startTime = performance.now();
-        const duration = 800;
+        const duration = 700;
 
         function animateMove(time) {
             const elapsed = time - startTime;
@@ -690,54 +687,88 @@
                 wandMoving.style.top = endPos.y + 'px';
                 isMoving = false;
                 animFrameId = null;
-
-                setTimeout(() => {
-                    startAutoBeat();
-                }, 800);
+                if (callback) callback();
             }
         }
 
         animFrameId = requestAnimationFrame(animateMove);
     }
 
-    function startAutoBeat() {
+    function doHeartbeat(serviceId, count, callback) {
         if (isBeating) return;
         isBeating = true;
         beatCount = 0;
 
-        customSelections['s1'] = 0;
+        // Reset quantity for this service
+        customSelections[serviceId] = 0;
         renderCustomPicker();
         updateCustomSummary();
 
-        const pos = getPlusButtonPosition();
-        if (pos) {
-            wandMoving.style.left = pos.x + 'px';
-            wandMoving.style.top = pos.y + 'px';
-        }
-
-        function doBeat() {
+        function beat() {
             beatCount++;
-            addToPackage('s1');
+            addToPackage(serviceId);
 
-            const p = getPlusButtonPosition();
-            if (p) {
-                wandMoving.style.left = p.x + 'px';
-                wandMoving.style.top = p.y + 'px';
+            const pos = getPlusButtonPosition(serviceId);
+            if (pos) {
+                wandMoving.style.left = pos.x + 'px';
+                wandMoving.style.top = pos.y + 'px';
             }
 
-            if (beatCount < 5) {
-                setTimeout(doBeat, 650);
+            if (beatCount < count) {
+                setTimeout(beat, 550);
             } else {
                 isBeating = false;
-                setTimeout(() => {
-                    zoomSummary();
-                }, 500);
+                if (callback) callback();
             }
         }
 
-        setTimeout(doBeat, 600);
+        setTimeout(beat, 500);
     }
 
+    // ===== MAIN SEQUENCE =====
+    function startSequence() {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        // Reset semua
+        customSelections = {};
+        renderCustomPicker();
+        updateCustomSummary();
+        currentServiceIndex = 0;
+
+        // Step 1: Item 1 - 5 kali heartbeat
+        slideWandToButton('s1', function() {
+            setTimeout(function() {
+                doHeartbeat('s1', 5, function() {
+                    // Step 2: Slide ke item 2 - 1 kali heartbeat
+                    setTimeout(function() {
+                        slideWandToButton('s2', function() {
+                            setTimeout(function() {
+                                doHeartbeat('s2', 1, function() {
+                                    // Step 3: Slide ke item 3 - 1 kali heartbeat
+                                    setTimeout(function() {
+                                        slideWandToButton('s3', function() {
+                                            setTimeout(function() {
+                                                doHeartbeat('s3', 1, function() {
+                                                    // Step 4: Zoom summary
+                                                    setTimeout(function() {
+                                                        zoomSummary();
+                                                        isProcessing = false;
+                                                    }, 600);
+                                                });
+                                            }, 400);
+                                        });
+                                    }, 400);
+                                });
+                            }, 400);
+                        });
+                    }, 400);
+                });
+            }, 400);
+        });
+    }
+
+    // ===== CLEAR =====
     document.getElementById('clearCustom').addEventListener('click', function() {
         if (animFrameId) {
             cancelAnimationFrame(animFrameId);
@@ -745,6 +776,7 @@
         }
         isMoving = false;
         isBeating = false;
+        isProcessing = false;
         closeZoom();
 
         customSelections = {};
@@ -757,11 +789,12 @@
         titleWand.style.zIndex = 'auto';
         titleWand.style.fontSize = '22px';
 
-        setTimeout(() => {
-            slideWandToButton();
+        setTimeout(function() {
+            startSequence();
         }, 1000);
     });
 
+    // ===== ADD TO CART =====
     document.getElementById('addCustomCart').addEventListener('click', function() {
         const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
         if (entries.length === 0) {
@@ -771,6 +804,7 @@
         alert('Package added to cart! 🎉');
     });
 
+    // ===== DARK MODE =====
     document.getElementById('darkToggle').addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
         const icon = this.querySelector('i');
@@ -790,14 +824,14 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    setTimeout(() => {
-        slideWandToButton();
+    setTimeout(function() {
+        startSequence();
     }, 1000);
 
-    console.log('✅ Summary zoom dari tempat asal ke center');
-    console.log('✅ Tiada overlay, tiada blur');
-    console.log('✅ Klik summary atau ESC untuk tutup');
-    console.log('✅ Compatible mobile');
+    console.log('✅ Sequence: Item1 (5x) → Item2 (1x) → Item3 (1x) → Zoom Summary');
+    console.log('✅ Wand slides ke setiap button +');
+    console.log('✅ Lock wand pada setiap button');
+    console.log('✅ Tiada hold lama - terus ke step seterusnya');
 </script>
 
 </body>
