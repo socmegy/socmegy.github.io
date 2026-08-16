@@ -69,10 +69,8 @@
             transition: none;
             position: relative;
         }
-        #custom .section-title .gold-icon.hidden {
-            display: none;
-        }
 
+        /* Wand bergerak - guna element yang sama dari title */
         #wandMoving {
             position: fixed;
             z-index: 9999;
@@ -87,9 +85,6 @@
             color: transparent;
             will-change: left, top;
             transition: none;
-        }
-        #wandMoving.show {
-            display: block;
         }
 
         @keyframes heartbeat {
@@ -485,8 +480,8 @@
     </section>
 </div>
 
-<!-- Wand bergerak - start dari title -->
-<div id="wandMoving" class="show"><i class="fas fa-wand-magic-sparkles"></i></div>
+<!-- Wand bergerak - ambil dari title -->
+<div id="wandMoving"><i class="fas fa-wand-magic-sparkles"></i></div>
 
 <script>
     const servicesData = [
@@ -504,26 +499,27 @@
     let isProcessing = false;
     let currentWandPos = null;
     let scrollTimeout = null;
-    let isInitialized = false;
 
     const titleWand = document.getElementById('titleWand');
     const wandMoving = document.getElementById('wandMoving');
-    const summaryEl = document.getElementById('customSummary');
 
-    // ===== SET WAND POSITION =====
-    function setWandToTitle() {
+    // ===== AMBIL WAND DARI TITLE =====
+    function grabWandFromTitle() {
+        // Copy style dari title wand ke moving wand
+        wandMoving.style.backgroundImage = titleWand.style.backgroundImage || 'url("bg.jpg")';
+        wandMoving.style.backgroundSize = 'cover';
+        wandMoving.style.backgroundPosition = 'center';
+        wandMoving.style.webkitBackgroundClip = 'text';
+        wandMoving.style.backgroundClip = 'text';
+        wandMoving.style.color = 'transparent';
+        wandMoving.style.fontSize = '22px';
+
+        // Position wand exactly at title wand
         const rect = titleWand.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-            wandMoving.style.left = (rect.left + rect.width / 2 - 11) + 'px';
-            wandMoving.style.top = (rect.top + rect.height / 2 - 11) + 'px';
-            wandMoving.style.display = 'block';
-            wandMoving.style.fontSize = '22px';
-            wandMoving.style.opacity = '1';
-            currentWandPos = { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
-        } else {
-            // Fallback - tunggu sebentar
-            setTimeout(setWandToTitle, 100);
-        }
+        wandMoving.style.left = (rect.left + rect.width / 2 - 11) + 'px';
+        wandMoving.style.top = (rect.top + rect.height / 2 - 11) + 'px';
+        wandMoving.style.display = 'block';
+        currentWandPos = { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
     function renderCustomPicker() {
@@ -608,11 +604,6 @@
         return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
     }
 
-    function getTitlePosition() {
-        const rect = titleWand.getBoundingClientRect();
-        return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
-    }
-
     function createSparklesAtElement(el, count = 10) {
         const rect = el.getBoundingClientRect();
         const x = rect.left + rect.width / 2;
@@ -674,7 +665,7 @@
         isZoomed = true;
 
         wandMoving.style.display = 'none';
-        titleWand.classList.add('hidden');
+        titleWand.style.display = 'none';
 
         summaryEl.classList.add('zoom-active');
 
@@ -712,16 +703,16 @@
         summaryEl.onclick = null;
         summaryEl.style.animation = '';
         summaryEl.scrollTop = 0;
-        titleWand.classList.remove('hidden');
+        titleWand.style.display = 'inline-block';
         wandMoving.style.display = 'block';
-        setWandToTitle();
+        grabWandFromTitle();
     }
 
     function slideWandToPosition(targetPos, callback) {
         if (isMoving) return;
         isMoving = true;
 
-        const startPos = currentWandPos || getTitlePosition();
+        const startPos = currentWandPos;
 
         if (!startPos || !targetPos) {
             isMoving = false;
@@ -813,14 +804,11 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        // Pastikan wand kat title
-        setWandToTitle();
-        titleWand.classList.remove('hidden');
+        // Ambil wand dari title
+        grabWandFromTitle();
+        titleWand.style.display = 'none';
 
         setTimeout(function() {
-            // Hide title wand, show moving wand
-            titleWand.classList.add('hidden');
-
             slideWandToButton('s1', function() {
                 setTimeout(function() {
                     doHeartbeat('s1', 5, function() {
@@ -864,9 +852,9 @@
         renderCustomPicker();
         updateCustomSummary();
 
-        titleWand.classList.remove('hidden');
+        titleWand.style.display = 'inline-block';
         wandMoving.style.display = 'block';
-        setWandToTitle();
+        grabWandFromTitle();
 
         setTimeout(function() {
             startSequence();
@@ -901,22 +889,17 @@
     renderCustomPicker();
     updateCustomSummary();
 
-    // Set wand to title position
+    // Ambil wand dari title
     setTimeout(function() {
-        setWandToTitle();
-        isInitialized = true;
+        grabWandFromTitle();
     }, 300);
 
     setTimeout(function() {
-        if (isInitialized) {
-            startSequence();
-        } else {
-            setTimeout(startSequence, 500);
-        }
+        startSequence();
     }, 1200);
 
-    console.log('✅ Wand start dari title');
-    console.log('✅ Nampak sepanjang masa');
+    console.log('✅ Wand ambil dari title');
+    console.log('✅ Start dari title');
     console.log('✅ Professional untuk screen record');
 </script>
 
