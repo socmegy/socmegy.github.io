@@ -6,6 +6,8 @@
     <title>Socmegy · Social Media Boost</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="apple-touch-icon" href="logo.png" />
+    <link rel="preload" as="image" href="logo.png" />
+    <link rel="preload" as="image" href="bg.jpg" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* ===== HIDE ALL SCROLLBARS ===== */
@@ -27,6 +29,7 @@
         }
 
         .app {
+            width: 100%;
             max-width: 100%;
             margin: 0 auto;
             background: #ffffff;
@@ -764,28 +767,20 @@
             position: relative;
             overflow: hidden;
         }
-        .receipt .stamp {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            opacity: 0.12;
-            pointer-events: none;
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            object-fit: cover;
-            z-index: 0;
-        }
         .receipt .stamp-content { position: relative; z-index: 1; }
-        .receipt .receipt-header { text-align: center; margin-bottom: 12px; }
-        .receipt .receipt-header img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-bottom: 4px; }
+        .receipt .receipt-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; margin-bottom: 12px; }
+        .receipt .receipt-header img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin: 0; flex: none; }
+        .receipt .receipt-header .receipt-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .receipt .receipt-header .sub { flex: none; text-align: right; }
         .receipt .receipt-header .title { font-size: 16px; font-weight: 700; color: #000000; letter-spacing: 1px; }
         .receipt .receipt-header .sub { font-size: 10px; color: #555555; }
         .receipt .receipt-divider { border: none; border-top: 1px dashed #cccccc; margin: 6px 0; }
         .receipt .receipt-row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 12px; }
         .receipt .receipt-row .label { color: #555555; }
         .receipt .receipt-row .value { font-weight: 600; color: #000000; }
+        .receipt .receipt-link { display: block; padding: 2px 0 5px; font-size: 12px; text-align: left; }
+        .receipt .receipt-link .label { display: block; color: #555555; }
+        .receipt .receipt-link .value { display: block; margin-top: 5px; padding: 0; text-align: left; font-weight: 600; color: #000000; overflow-wrap: anywhere; word-break: break-word; line-height: 1.55; }
 
         .receipt .receipt-service {
             display: grid;
@@ -867,6 +862,13 @@
             display: flex;
             justify-content: space-between;
         }
+        .receipt .receipt-total-value { position: relative; display: inline-block; }
+        .receipt .receipt-stamp-wrap { position: absolute; bottom: -5px; right: calc(100% - 6px); pointer-events: none; z-index: 2; }
+        .receipt .receipt-stamp { width: 88px; height: 88px; border-radius: 50%; border: 3.5px solid #2f9d5b; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-18deg); opacity: 0.82; position: relative; }
+        .receipt .receipt-stamp::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; border: 1.5px dashed #2f9d5b; }
+        .receipt .receipt-stamp-logo { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+        .receipt .receipt-stamp-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .receipt .receipt-stamp-paid { font-size: 12px; font-weight: 900; color: #2f9d5b; letter-spacing: .14em; position: relative; z-index: 1; }
         .receipt .receipt-footer {
             text-align: center;
             font-size: 10px;
@@ -1202,7 +1204,6 @@
             .receipt .receipt-service .service-left { font-size: 9px; }
             .receipt .receipt-service .service-price { font-size: 10px; }
             .receipt .receipt-total { font-size: 13px; }
-            .receipt .stamp { width: 100px; height: 100px; }
         }
 
         @media (max-width: 480px) {
@@ -1302,11 +1303,13 @@
             .receipt .receipt-total { font-size: 12px; }
             .receipt .receipt-row { font-size: 10px; }
             .receipt .receipt-footer { font-size: 9px; }
-            .receipt .stamp { width: 80px; height: 80px; }
         }
     </style>
 </head>
 <body>
+<script>
+    if (localStorage.getItem('darkMode') === 'enabled') document.body.classList.add('dark-mode');
+</script>
 
 <div class="app">
 
@@ -2404,11 +2407,9 @@
 
         const receiptHtml = `
             <div class="receipt" id="receiptContent">
-                <img src="${logoStamp}" class="stamp" onerror="this.style.display='none'" />
                 <div class="stamp-content">
                     <div class="receipt-header">
-                        <img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
-                        <div class="title">Socmegy</div>
+                        <div class="receipt-brand"><img src="logo.png" alt="Socmegy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" /><div class="title">Socmegy</div></div>
                         <div class="sub">Order Receipt</div>
                     </div>
 
@@ -2437,9 +2438,9 @@
                         <span class="label">Phone</span>
                         <span class="value">${escapeHtml(order.customer?.phone || 'N/A')}</span>
                     </div>
-                    <div class="receipt-row">
-                        <span class="label">Link</span>
-                        <span class="value">${escapeHtml(order.link || 'N/A')}</span>
+                    <div class="receipt-link">
+                        <div class="label">Link</div>
+                        <div class="value">${escapeHtml(order.link || 'N/A').replace(/\r?\n/g, '<br>')}</div>
                     </div>
 
                     <hr class="receipt-divider" />
@@ -2461,7 +2462,10 @@
 
                     <div class="receipt-total" style="margin-top:4px;">
                         <span>Total</span>
-                        <span>${formatPrice(finalTotal)}</span>
+                        <span class="receipt-total-value">
+                            ${order.status === 'paid' ? `<span class="receipt-stamp-wrap"><span class="receipt-stamp"><span class="receipt-stamp-logo"><img src="${logoStamp}" alt="Socmegy" onerror="this.style.display='none'" /></span><span class="receipt-stamp-paid">PAID</span></span></span>` : ''}
+                            <span>${formatPrice(finalTotal)}</span>
+                        </span>
                     </div>
 
                     ${order.notes ? `
@@ -2623,12 +2627,10 @@
 
         const receiptHTML = `
             <div style="max-width:210mm;margin:0 auto;padding:16px 18px;background:#ffffff;color:#000000;font-family:'Courier New',monospace;font-size:12px;line-height:1.5;border:1px solid #eaeaee;border-radius:8px;position:relative;overflow:hidden;">
-                <img src="${logoStamp}" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-15deg);opacity:0.12;width:140px;height:140px;border-radius:50%;object-fit:cover;pointer-events:none;z-index:0;" onerror="this.style.display='none'" />
                 <div style="position:relative;z-index:1;">
-                    <div style="text-align:center;margin-bottom:12px;">
-                        <img src="logo.png" alt="Socmegy" style="width:50px;height:50px;border-radius:50%;object-fit:cover;margin-bottom:4px;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" />
-                        <div style="font-size:16px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div>
-                        <div style="font-size:10px;color:#555555;">Order Receipt</div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;gap:10px;min-width:0;"><img src="logo.png" alt="Socmegy" style="width:50px;height:50px;border-radius:50%;object-fit:cover;margin:0;flex:none;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect fill=%22%23b8860b%22 width=%2260%22 height=%2260%22 rx=%2230%22/%3E%3Ctext x=%2230%22 y=%2240%22 text-anchor=%22middle%22 font-family=%22system-ui%22 font-size=%2228%22 fill=%22%23fff%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E'" /><div style="font-size:16px;font-weight:700;color:#000000;letter-spacing:1px;">Socmegy</div></div>
+                        <div style="font-size:10px;color:#555555;flex:none;text-align:right;">Order Receipt</div>
                     </div>
 
                     <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
@@ -2656,9 +2658,9 @@
                         <span style="color:#555555;">Phone</span>
                         <span style="font-weight:600;color:#000000;">${order.customer?.phone || 'N/A'}</span>
                     </div>
-                    <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:12px;">
-                        <span style="color:#555555;">Link</span>
-                        <span style="font-weight:600;color:#000000;">${order.link || 'N/A'}</span>
+                    <div style="display:block;padding:2px 0 5px;font-size:12px;text-align:left;">
+                        <div style="display:block;color:#555555;">Link</div>
+                        <div style="display:block;margin-top:5px;padding:0;text-align:left;font-weight:600;color:#000000;overflow-wrap:anywhere;word-break:break-word;line-height:1.55;">${escapeHtml(order.link || 'N/A').replace(/\r?\n/g, '<br>')}</div>
                     </div>
 
                     <hr style="border:none;border-top:1px dashed #cccccc;margin:6px 0;" />
@@ -2680,7 +2682,10 @@
 
                     <div style="font-size:14px;font-weight:700;color:#000000;padding-top:6px;border-top:2px solid #000000;margin-top:6px;display:flex;justify-content:space-between;">
                         <span>Total</span>
-                        <span>${formatPrice(finalTotal)}</span>
+                        <span style="position:relative;display:inline-block;">
+                            ${order.status === 'paid' ? `<span style="position:absolute;bottom:-5px;right:calc(100% - 6px);pointer-events:none;z-index:2;"><span style="width:88px;height:88px;border-radius:50%;border:3.5px solid #2f9d5b;display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-18deg);opacity:.82;position:relative;"><span style="position:absolute;inset:5px;border-radius:50%;border:1.5px dashed #2f9d5b;"></span><span style="width:28px;height:28px;border-radius:50%;overflow:hidden;margin-bottom:2px;display:flex;align-items:center;justify-content:center;position:relative;z-index:1;"><img src="${logoStamp}" alt="Socmegy" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none'" /></span><span style="font-size:12px;font-weight:900;color:#2f9d5b;letter-spacing:.14em;position:relative;z-index:1;">PAID</span></span></span>` : ''}
+                            <span>${formatPrice(finalTotal)}</span>
+                        </span>
                     </div>
 
                     ${order.notes ? `
@@ -2755,7 +2760,6 @@
                             .receipt-content .receipt-total { font-size:12px !important; }
                             .receipt-content .receipt-row { font-size:10px !important; }
                             .receipt-content .receipt-footer { font-size:9px !important; }
-                            .receipt-content .stamp { width:80px !important; height:80px !important; }
                             .receipt-content .receipt-service { gap:6px !important; padding:2px 0 !important; }
                             .receipt-content .package-header { font-size:10px !important; }
                             .receipt-content .receipt-divider { margin:4px 0 !important; }
@@ -3480,7 +3484,7 @@
 
     console.log('✅ Website connected to Firebase');
     console.log('✅ Order ID: SOC-YYYYMMDD-xxxxxx (random 6 chars)');
-    console.log('✅ Receipt with strike-through for discounted items, STAMP logo at center');
+    console.log('✅ Receipt with strike-through and PAID stamp anchored beside total price');
     console.log('✅ DISCOUNT ROW ALWAYS SHOWN (RM0.00 if no discount)');
     console.log('✅ Individual services GOLD, Package header GOLD');
     console.log('✅ Package services PURE BLACK');
