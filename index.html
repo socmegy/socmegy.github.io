@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <title>Socmegy · Social Media Boost</title>
+    <meta property="og:image" content="https://socmegy.my/og-image.png" />
+    <meta property="og:image:secure_url" content="https://socmegy.my/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://socmegy.my/og-image.png" />
     <link rel="icon" type="image/png" href="logo.png" />
     <link rel="apple-touch-icon" href="logo.png" />
     <link rel="preload" as="image" href="logo.png" />
@@ -1125,8 +1130,10 @@
 
         /* Image modal */
         #imageModal .modal {
+            width: auto;
             max-width: 90vw;
             max-height: 90vh;
+            display: inline-flex;
             background: transparent;
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
@@ -1134,8 +1141,9 @@
             padding: 0;
             overflow: hidden;
             border: none;
+            border-radius: 20px;
         }
-        #imageModal .modal img { width: 100%; height: auto; max-height: 85vh; object-fit: contain; border-radius: 20px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15); }
+        #imageModal .modal img { display: block; width: auto; height: auto; max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: 20px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15); }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
@@ -3421,7 +3429,7 @@
         const imgModal = document.createElement('div');
         imgModal.className = 'modal-overlay';
         imgModal.id = 'imageModal';
-        imgModal.innerHTML = `<div class="modal" style="max-width:90vw;max-height:90vh;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;padding:0;overflow:hidden;border:none;"><img id="modalImage" src="" style="width:100%;height:auto;max-height:85vh;object-fit:contain;border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,0.15);" /></div>`;
+        imgModal.innerHTML = `<div class="modal"><img id="modalImage" src="" /></div>`;
         document.body.appendChild(imgModal);
         imgModal.addEventListener('click', function(e) {
             if (e.target === this || e.target === document.getElementById('modalImage')) {
