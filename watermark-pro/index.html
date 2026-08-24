@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="ms" class="auth-checking">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>if(location.hash==='#profile')document.documentElement.classList.add('profile-route');if(location.hash==='#subscription')document.documentElement.classList.add('subscription-route');if(location.hash==='#payment')document.documentElement.classList.add('payment-route');if(location.hash==='#settings')document.documentElement.classList.add('settings-route');if(location.hash==='#top-users')document.documentElement.classList.add('top-users-route')</script>
 <title>Watermark Pro - Free</title>
 <link rel="icon" type="image/png" href="logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
+<script src="firebase-config.js?v=20260824-3"></script>
+<link rel="stylesheet" href="website-account-shell.css?v=20260825-28">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -170,6 +177,21 @@ body {
 .footer p { font-size: 13px; font-weight: 400; background-image: url('bg.jpg'); background-size: cover; background-position: center; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .footer i { -webkit-text-fill-color: transparent; }
 
+/* TOP USERS */
+.website-top-users { background:#ffffff; border-radius:16px; margin-top:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); }
+.website-top-users-header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 20px; border-bottom:1px solid rgba(0,0,0,0.07); }
+.website-top-users-title { display:flex; align-items:center; gap:10px; min-width:0; }
+.website-top-users-title i { width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:none; background-image:url('bg.jpg'); background-size:cover; color:#fff; }
+.website-top-users-title h2 { color:#000; font-size:15px; font-weight:700; line-height:1.2; }
+.website-top-users-title p { color:rgba(0,0,0,0.42); font-size:10px; margin-top:2px; }
+.website-top-users-period { flex:none; color:rgba(0,0,0,0.42); background:rgba(0,0,0,0.04); border-radius:999px; padding:6px 10px; font-size:9px; font-weight:600; }
+.website-top-users-empty { min-height:150px; padding:28px 20px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.website-top-users-empty i { font-size:24px; color:rgba(0,0,0,0.14); margin-bottom:9px; }
+.website-top-users-empty strong { color:#000; font-size:12px; font-weight:600; }
+.website-top-users-empty span { color:rgba(0,0,0,0.38); font-size:10px; margin-top:4px; max-width:360px; line-height:1.6; }
+#websiteTopUsersList:not(.website-top-users-empty) .website-user-row { padding-left:20px; padding-right:20px; }
+@media(max-width:650px){#websiteTopUsersList:not(.website-top-users-empty) .website-user-row{padding-left:14px;padding-right:14px}}
+
 .processing-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; align-items: center; justify-content: center; flex-direction: column; }
 .processing-overlay.active { display: flex; }
 .processing-overlay .spinner { width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #ffffff; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -234,7 +256,13 @@ body {
 .notice-box .notice-body { font-size: 11px; }
 .notice-box .notice-body ul li { font-size: 11px; }
 .notice-box .notice-body ul li i { font-size: 12px; }
+.website-top-users-header { padding:14px; }
+.website-top-users-title i { width:30px; height:30px; }
+.website-top-users-title h2 { font-size:13px; }
+.website-top-users-title p { font-size:9px; }
+.website-top-users-empty { min-height:130px; padding:22px 14px; }
 }
+.header-account{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:7px;z-index:4}.header-account button,.header-account a{border:0;border-radius:9px;padding:8px 11px;font:700 10px Poppins,sans-serif;text-decoration:none;cursor:pointer}.account-login{background:#172027;color:#fff}.account-link{background:#eef2f4;color:#253038}.account-user{font:700 10px Poppins,sans-serif;color:#253038;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.auth-overlay{position:fixed;inset:0;background:#172027aa;display:none;align-items:center;justify-content:center;padding:18px;z-index:10000}.auth-overlay.active{display:flex}.auth-card{width:min(390px,100%);background:#fff;border-radius:20px;padding:24px;box-shadow:0 24px 70px #0004}.auth-card h2{font-size:21px}.auth-card p{font-size:11px;color:#7b8790;margin:5px 0 16px}.auth-tabs{display:flex;background:#f1f4f6;border-radius:10px;padding:3px;margin-bottom:14px}.auth-tabs button{flex:1;border:0;background:transparent;border-radius:8px;padding:8px;font:700 11px Poppins}.auth-tabs button.active{background:#fff;box-shadow:0 2px 8px #0001}.auth-field{display:grid;gap:5px;margin:10px 0}.auth-field label{font-size:9px;font-weight:700;color:#59656e}.auth-field input{border:1px solid #dfe5e8;border-radius:9px;padding:10px;font:500 12px Poppins}.auth-submit{width:100%;border:0;border-radius:10px;padding:11px;background:#172027;color:#fff;font:700 11px Poppins;margin-top:8px}.auth-error{min-height:16px;color:#d84b55;font-size:10px;margin-top:8px}.auth-close{float:right;border:0;background:transparent;font-size:22px;cursor:pointer}.website-user-row{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid #edf0f2;font-size:11px}.website-user-row strong{overflow:hidden;text-overflow:ellipsis}.website-user-row span:last-child{color:#7b8790}@media(max-width:650px){.header-account{right:7px}.account-user{display:none}.header-account button,.header-account a{padding:7px 8px;font-size:8px}.header-center{transform:scale(.88)}}
 </style>
 </head>
 <body>
@@ -252,7 +280,43 @@ body {
                 <p class="sub">Upload · Setup · Preview · Download</p>
             </div>
         </div>
+        <div class="header-account" id="headerAccount"><button class="account-top-users" id="openTopUsersButton" type="button" aria-label="View Top Users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg><span>Top Users</span></button><button class="account-support" id="openPlansButton" type="button">Support</button><button class="account-login" id="openAuthButton" type="button">Login / Register</button></div>
     </div>
+
+    <main class="website-profile-page" id="websiteProfilePage" hidden>
+        <h2 class="website-profile-title">Profile</h2>
+        <section class="website-profile-card" id="websiteProfileCard" aria-live="polite"></section>
+        <section class="website-supporter-card-section" id="websiteSupporterCardSection" hidden aria-labelledby="websiteSupporterCardTitle"></section>
+        <section class="website-account-history" aria-labelledby="websiteAccountHistoryTitle">
+            <h3 id="websiteAccountHistoryTitle">Account History <button class="website-history-info" id="websiteHistoryInfo" type="button" aria-label="About Account History">i</button></h3>
+            <div id="websiteAccountHistory"></div>
+        </section>
+    </main>
+
+    <main class="website-subscription-page" id="websiteSubscriptionPage" hidden>
+        <h2 class="website-profile-title">Subscriptions</h2>
+        <div class="website-subscription-intro"><h3>Support Watermark Pro</h3><p><strong>All watermark settings are completely free.</strong> A Pro subscription is <strong>optional support</strong> for keeping the project available and improving; in return, supporters receive a <strong>verified identity and WhatsApp support</strong>.</p></div>
+        <div class="website-subscription-plans" id="websiteSubscriptionPlans"></div>
+        <section class="website-subscription-history"><h3>Subscription History</h3><div id="websiteSubscriptionHistory"></div></section>
+    </main>
+
+    <main class="website-payment-page" id="websitePaymentPage" hidden>
+        <h2 class="website-profile-title">Complete Support Payment</h2>
+        <section class="website-payment-card">
+            <button class="website-payment-back" id="websitePaymentBack" type="button">← Back to Subscriptions</button>
+            <div class="website-payment-grid"><div><h3>Support Payment</h3><div class="website-payment-amount" id="websitePaymentAmount">RM3.80 <small>/ month</small></div><ol><li><strong>Scan the QR</strong> using any bank or supported payment app.</li><li>Enter the compulsory <strong class="payment-reference-alert">reference</strong> shown here.</li><li><strong>Complete the payment</strong>, then submit the <strong class="payment-reference-alert">reference</strong> for verification.</li></ol><div class="website-payment-important"><strong>Important:</strong> Without this exact reference, the transaction cannot be identified or verified.</div><div class="website-payment-policy"><strong>Payment policy:</strong> Subscriptions cannot be canceled and payments are non-refundable. By making payment, you accept this policy.</div></div><div><div class="website-payment-qr"><img id="websitePaymentQr" src="qr.jpg" alt="Payment QR"></div><button class="website-payment-download-qr" id="websiteDownloadPaymentQr" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2"/></svg>Download QR</button><div class="website-payment-reference"><span>PAYMENT REFERENCE</span><strong id="websitePaymentReference">PRO-XXXXXX</strong></div><div class="website-payment-actions"><button id="websiteGenerateReference" type="button">Generate New Reference</button><button id="websiteSubmitPayment" type="button">Submit Payment</button></div></div></div>
+        </section>
+    </main>
+
+    <main class="website-settings-page" id="websiteSettingsPage" hidden>
+        <h2 class="website-profile-title">Settings</h2>
+        <section class="website-settings-card" id="websiteSettingsCard"></section>
+    </main>
+
+    <main class="website-top-users-page" id="websiteTopUsersPage" hidden>
+        <h2 class="website-profile-title">Top Users</h2>
+        <div id="websiteTopUsersPageContent"></div>
+    </main>
 
     <div class="upload-box" id="uploadZone">
         <i class="fas fa-cloud-upload-alt"></i>
@@ -389,10 +453,48 @@ body {
         <p class="progress-text" id="processingProgress">0 / 0</p>
     </div>
 
+    <section class="website-top-users" id="websiteTopUsersSection" aria-labelledby="websiteTopUsersTitle">
+        <div class="website-top-users-header">
+            <div class="website-top-users-title">
+                <i class="fas fa-ranking-star" aria-hidden="true"></i>
+                <div><h2 id="websiteTopUsersTitle">Top Users</h2><p>People who have downloaded the most.</p></div>
+            </div>
+            <span class="website-top-users-period">All time</span>
+        </div>
+        <div class="website-top-users-empty" id="websiteTopUsersList">
+            <i class="fas fa-users" aria-hidden="true"></i>
+            <strong>No ranking data yet</strong>
+            <span>Top users will appear here after registered users begin recording downloads.</span>
+        </div>
+    </section>
+
     <div class="footer">
         <p><i class="fas fa-check-circle"></i> Supports multiple files · All common image & video formats</p>
     </div>
 
+</div>
+
+<div class="auth-overlay" id="authOverlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <form class="auth-card" id="authForm">
+    <button class="auth-close" id="authClose" type="button" aria-label="Close">&times;</button>
+    <div class="auth-intro">
+      <div class="auth-welcome">Welcome to</div>
+      <div class="auth-brand"><img src="logo.png" alt=""><strong>Watermark Pro</strong></div>
+      <p>All watermark settings remain completely free. Your account records downloads and lets you optionally support the project.</p>
+      <div class="auth-tabs"><button type="button" class="active" data-auth-mode="login">Login</button><button type="button" data-auth-mode="register">Register</button></div>
+    </div>
+    <div class="auth-fields">
+      <h2 id="authTitle">Welcome back</h2>
+      <div class="auth-field" id="usernameField" hidden><label>USERNAME <button class="about-username-button" id="aboutUsernameButton" type="button">i</button></label><input id="authUsername" maxlength="20" autocomplete="username" placeholder="2–20 letters, numbers, . or _"></div>
+      <div class="auth-field"><label id="authIdentityLabel">EMAIL / USERNAME</label><input id="authEmail" type="text" required autocomplete="username" placeholder="Enter your email or username"></div>
+      <div class="auth-field"><label>PASSWORD</label><input id="authPassword" type="password" required minlength="8" autocomplete="current-password" placeholder="Minimum 8 characters"></div>
+      <div class="auth-important" id="authImportant" hidden><strong>Important:</strong> Username and email cannot be changed after registration. Account-detail changes require admin support, available exclusively to active Pro Supporters.</div>
+      <button class="auth-submit" id="authSubmit" type="submit">Login</button><div class="auth-error" id="authError" aria-live="polite"></div>
+    </div>
+  </form>
+</div>
+<div class="username-info-overlay" id="usernameInfoOverlay" role="dialog" aria-modal="true" aria-labelledby="usernameInfoTitle">
+  <div class="username-info-card"><button type="button" id="usernameInfoClose" aria-label="Close">&times;</button><h2 id="usernameInfoTitle">About Username</h2><p>Your username must contain 2–20 characters using letters, numbers, dots or underscores. It is unique, case-insensitive and permanent after registration.</p></div>
 </div>
 
 <!-- NOTICE BUTTON -->
@@ -423,7 +525,7 @@ body {
                 <li><i class="fas fa-check-circle"></i> No files are uploaded to any server</li>
                 <li><i class="fas fa-check-circle"></i> All processing happens in your browser</li>
                 <li><i class="fas fa-check-circle"></i> Your files never leave your device</li>
-                <li><i class="fas fa-check-circle"></i> No tracking or data collection</li>
+                <li><i class="fas fa-check-circle"></i> Only account and usage metadata are recorded; your media files are never uploaded</li>
             </ul>
 
             <p><strong>Video Processing</strong></p>
@@ -552,6 +654,183 @@ const processingText = document.getElementById('processingText');
 const processingProgress = document.getElementById('processingProgress');
 
 const headerWatermark = document.getElementById('headerWatermark');
+
+// ============================================================
+// FIREBASE ACCOUNT, RANKING & ACTIVITY
+// ============================================================
+const authOverlay = document.getElementById('authOverlay');
+const authForm = document.getElementById('authForm');
+const authError = document.getElementById('authError');
+let authMode = 'login';
+window.authDestination = 'profile';
+
+function showAuth(message = '') { authError.textContent = message; authOverlay.classList.add('active'); }
+function hideAuth() { authOverlay.classList.remove('active'); authError.textContent = ''; }
+function setAuthMode(mode) {
+    authMode = mode;
+    document.querySelectorAll('[data-auth-mode]').forEach(button => button.classList.toggle('active', button.dataset.authMode === mode));
+    document.getElementById('usernameField').hidden = mode !== 'register';
+    document.getElementById('authUsername').required = mode === 'register';
+    document.getElementById('authIdentityLabel').textContent = mode === 'register' ? 'EMAIL' : 'EMAIL / USERNAME';
+    document.getElementById('authEmail').autocomplete = mode === 'register' ? 'email' : 'username';
+    document.getElementById('authEmail').type = mode === 'register' ? 'email' : 'text';
+    document.getElementById('authEmail').placeholder = mode === 'register' ? 'Enter your email' : 'Enter your email or username';
+    document.getElementById('authImportant').hidden = mode !== 'register';
+    document.getElementById('authSubmit').textContent = mode === 'register' ? 'Create account' : 'Login';
+    document.getElementById('authTitle').textContent = mode === 'register' ? 'Create your account' : 'Welcome back';
+    document.getElementById('authPassword').autocomplete = mode === 'register' ? 'new-password' : 'current-password';
+    authError.textContent = '';
+}
+document.getElementById('openAuthButton').addEventListener('click', () => { location.href = 'login.html'; });
+document.getElementById('openPlansButton').addEventListener('click', () => window.openWebsitePlans?.());
+document.getElementById('openTopUsersButton').addEventListener('click', () => window.openAccountCentre?.('top-users'));
+document.getElementById('authClose').addEventListener('click', hideAuth);
+authOverlay.addEventListener('click', event => { if (event.target === authOverlay) hideAuth(); });
+document.querySelectorAll('[data-auth-mode]').forEach(button => button.addEventListener('click', () => setAuthMode(button.dataset.authMode)));
+const usernameInfoOverlay = document.getElementById('usernameInfoOverlay');
+document.getElementById('aboutUsernameButton').addEventListener('click', () => usernameInfoOverlay.classList.add('active'));
+document.getElementById('usernameInfoClose').addEventListener('click', () => usernameInfoOverlay.classList.remove('active'));
+usernameInfoOverlay.addEventListener('click', event => { if (event.target === usernameInfoOverlay) usernameInfoOverlay.classList.remove('active'); });
+
+authForm.addEventListener('submit', async event => {
+    event.preventDefault(); authError.textContent = '';
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const username = document.getElementById('authUsername').value.trim();
+    try {
+        if (authMode === 'login') {
+            if (email.includes('@')) {
+                await WMFirebase.auth.signInWithEmailAndPassword(email, password);
+            } else {
+                if (!WMFirebase.functions) throw new Error('Username login service is unavailable. Use your email address.');
+                const result = await WMFirebase.functions.httpsCallable('loginWithUsername')({ username: email, password });
+                await WMFirebase.auth.signInWithCustomToken(result.data.token);
+            }
+        } else {
+            if (!/^[A-Za-z0-9._]{2,20}$/.test(username)) throw new Error('Username mesti 2–20 aksara: huruf, nombor, titik atau underscore.');
+            const credential = await WMFirebase.auth.createUserWithEmailAndPassword(email, password);
+            const key = WMFirebase.usernameKey(username);
+            const reservation = await WMFirebase.db.ref('usernames/' + key).transaction(current => current === null ? credential.user.uid : undefined);
+            if (!reservation.committed) { await credential.user.delete(); throw new Error('Username ini sudah digunakan.'); }
+            try {
+                await credential.user.updateProfile({ displayName: username });
+                await WMFirebase.ensureUser(credential.user, username);
+            } catch (setupError) {
+                await WMFirebase.db.ref('usernames/' + key).remove().catch(() => {});
+                await credential.user.delete().catch(() => {});
+                throw setupError;
+            }
+        }
+        const signedInUser = WMFirebase.auth.currentUser;
+        let isAdmin = false;
+        try {
+            const adminSnapshot = await WMFirebase.db.ref('admins/' + signedInUser.uid).once('value');
+            isAdmin = adminSnapshot.val() === true;
+        } catch (adminLookupError) {
+            console.warn('Admin lookup unavailable; continuing as a regular user.', adminLookupError.code || adminLookupError.message);
+        }
+        authForm.reset(); hideAuth();
+        if (isAdmin) {
+            location.href = 'admin.html';
+        } else {
+            const destination = window.authDestination || 'profile';
+            window.authDestination = 'profile';
+            if (typeof window.openAccountCentre === 'function') {
+                window.openAccountCentre(destination);
+            } else {
+                location.href = 'index.html#profile';
+            }
+        }
+    } catch (error) { authError.textContent = String(error.message || 'Authentication failed').replace(/^Firebase:\s*/i, ''); }
+});
+
+let latestTopUsersSnapshot = null;
+function renderTopUsers(snapshot) {
+    latestTopUsersSnapshot = snapshot;
+    const list = document.getElementById('websiteTopUsersList');
+    const users = [];
+    snapshot.forEach(child => { const value = { uid: child.key, ...child.val() }; if (value.showOnTopUsers !== false) users.push(value); });
+    users.sort((a,b) => Number(b.downloads || 0) - Number(a.downloads || 0));
+    if (!users.length) { list.className = 'website-top-users-empty'; list.innerHTML = '<i class="fas fa-users"></i><strong>No ranking data yet</strong><span>Top users will appear after downloads are recorded.</span>'; return; }
+    list.className = '';
+    const rankedUsers = users.slice(0,10);
+    list.innerHTML = rankedUsers.map((user,index) => {
+        const fullName = user.name || 'User';
+        const masked = user.censorUsername ? censorPublicUsername(fullName) : fullName;
+        const displayName = mobilePublicUsername(masked);
+        const isPro = Number(user.proExpiresAt || 0) > Date.now();
+        const badge = isPro && window.createVerifiedBadgeMarkup ? window.createVerifiedBadgeMarkup('top' + index, 'website-top-verified') : '';
+        return `<div class="website-user-row"><b>#${index + 1}</b><div class="website-user-main">${user.avatarUrl ? `<img class="website-user-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">` : `<span class="website-user-avatar">${escapeHtml(fullName.charAt(0))}</span>`}<strong title="${escapeHtml(masked)}">${escapeHtml(displayName)}${badge}</strong></div><span>${compactPublicDownloads(Number(user.downloads || 0))} downloads</span></div>`;
+    }).join('');
+    list.querySelectorAll('.website-user-row').forEach((row,index) => {
+        const badge = row.querySelector('.website-top-verified');
+        if (!badge) return;
+        const user = rankedUsers[index];
+        badge.addEventListener('click', event => {
+            event.stopPropagation();
+            const name = user.censorUsername ? censorPublicUsername(user.name || 'User') : (user.name || 'User');
+            window.openWebsiteVerifiedModal?.(name, user.name || 'User', user.avatarUrl || '', user.proSince);
+        });
+    });
+}
+function escapeHtml(value) { const node = document.createElement('span'); node.textContent = String(value); return node.innerHTML; }
+function censorPublicUsername(username) { return username.length <= 2 ? username.charAt(0) + '*' : username.charAt(0) + '*'.repeat(username.length - 2) + username.charAt(username.length - 1); }
+function mobilePublicUsername(username) { return window.matchMedia('(max-width:720px)').matches && username.length >= 13 ? username.slice(0,8) + '..' + username.charAt(username.length - 1) : username; }
+function compactPublicDownloads(value) { if (value >= 1000000) return (value / 1000000).toFixed(value % 1000000 ? 1 : 0).replace('.0','') + 'M'; if (value >= 10000) return (value / 1000).toFixed(value % 1000 ? 1 : 0).replace('.0','') + 'k'; return value.toLocaleString('en-US'); }
+
+if (window.WMFirebase) WMFirebase.auth.onAuthStateChanged(async user => {
+    const header = document.getElementById('headerAccount');
+    if (!user) {
+        header.innerHTML = '<button class="account-top-users" id="openTopUsersButtonLive" type="button" aria-label="View Top Users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg><span>Top Users</span></button><button class="account-support" id="openPlansButtonLive" type="button">Support</button><button class="account-login" id="openAuthButtonLive" type="button">Login / Register</button>';
+        document.getElementById('openTopUsersButtonLive').onclick = () => window.openAccountCentre?.('top-users');
+        document.getElementById('openPlansButtonLive').onclick = () => window.openWebsitePlans?.();
+        document.getElementById('openAuthButtonLive').onclick = () => { location.href = 'login.html'; };
+        return;
+    }
+    try { await WMFirebase.ensureUser(user); }
+    catch (error) { console.warn('Account profile sync unavailable; watermark tools remain active.', error.code || error.message); }
+});
+if (window.WMFirebase) WMFirebase.db.ref('publicProfiles').orderByChild('downloads').limitToLast(10).on('value', renderTopUsers, error => console.warn('Top Users unavailable:', error.code || error.message));
+window.addEventListener('resize', () => { if (latestTopUsersSnapshot) renderTopUsers(latestTopUsersSnapshot); });
+
+async function recordDownloadActivity(files) {
+    if (!window.WMFirebase) return;
+    const user = WMFirebase.auth.currentUser;
+    if (!user || !files.length) return;
+    const images = files.filter(file => file.type.startsWith('image/')).length;
+    const videos = files.filter(file => file.type.startsWith('video/')).length;
+    const clientId = 'dl-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    const payload = { clientId, images, videos, watermarkType: watermarkSettings.font === 'signature' ? 'signature' : 'text', font: String(watermarkSettings.font || 'arial'), position: String(watermarkSettings.position || 'center'), color: String(watermarkSettings.color || 'white') };
+    const fallbackKey = 'wmActivityFallback:' + user.uid;
+    const localId = clientId;
+    const stored = JSON.parse(localStorage.getItem(fallbackKey) || '[]');
+    stored.unshift({ id: localId, createdAt: Date.now(), ...payload, total: images + videos });
+    localStorage.setItem(fallbackKey, JSON.stringify(stored.slice(0, 100)));
+    window.dispatchEvent(new CustomEvent('wm-local-activity'));
+    try {
+        await recordDownloadActivityDirect(user, payload);
+        /* Keep the local shadow until the realtime listener confirms the same clientId. */
+    } catch (directError) {
+        console.error('Download record failed:', directError.code || directError.message);
+        window.showDownloadRecordWarning?.();
+    }
+}
+
+async function recordDownloadActivityDirect(user, payload) {
+        const { images, videos } = payload;
+        const activityId = WMFirebase.db.ref('activities/' + user.uid).push().key;
+        let activityError = null;
+        try {
+            await WMFirebase.db.ref('activities/' + user.uid + '/' + activityId).set({ clientId:payload.clientId, createdAt: firebase.database.ServerValue.TIMESTAMP, images, videos, total: images + videos, watermarkType: payload.watermarkType, font: payload.font, position: payload.position, color: payload.color });
+        } catch (error) {
+            activityError = error;
+        }
+        await WMFirebase.db.ref().update({['users/' + user.uid + '/images']:firebase.database.ServerValue.increment(images),['users/' + user.uid + '/videos']:firebase.database.ServerValue.increment(videos),['users/' + user.uid + '/downloads']:firebase.database.ServerValue.increment(images + videos)});
+        const [profileSnapshot,subscriptionSnapshot] = await Promise.all([WMFirebase.db.ref('users/' + user.uid).once('value'),WMFirebase.db.ref('subscriptions/' + user.uid).once('value')]);
+        const profile = profileSnapshot.val() || {}, subscription = subscriptionSnapshot.val() || {};
+        await WMFirebase.db.ref('publicProfiles/' + user.uid).update({name:profile.name||user.displayName||user.email.split('@')[0],avatarUrl:profile.avatarUrl||'',downloads:Number(profile.images||0)+Number(profile.videos||0),showOnTopUsers:profile.showOnTopUsers!==false,censorUsername:profile.censorUsername===true,proSince:Number(subscription.proSince||profile.proSince||0),proExpiresAt:Number(subscription.expiresAt||profile.proExpiresAt||0)}).catch(error=>console.warn('Public ranking sync failed:',error.code||error.message));
+        if (activityError) throw activityError;
+}
 
 // ============================================================
 // HEADER WATERMARK
@@ -1978,7 +2257,7 @@ function processVideo(file) {
 downloadBtn.addEventListener('click', async function() {
     if (uploadedFiles.length === 0 || isProcessing) return;
     isProcessing = true;
-
+    const completedFiles = [];
     processingOverlay.classList.add('active');
     processingText.textContent = 'Processing files...';
     processingProgress.textContent = `0 / ${uploadedFiles.length}`;
@@ -2026,10 +2305,15 @@ downloadBtn.addEventListener('click', async function() {
             a.click();
             document.body.removeChild(a);
             setTimeout(() => URL.revokeObjectURL(url), 5000);
+            completedFiles.push(file);
         }
     } catch (err) {
         console.error('Download error:', err);
         alert('Error processing files. Please try again.');
+    }
+
+    if (completedFiles.length) {
+        await recordDownloadActivity(completedFiles).catch(error => console.warn('Account history record skipped:', error.message));
     }
 
     processingOverlay.classList.remove('active');
@@ -2125,5 +2409,7 @@ function init() {
 document.addEventListener('DOMContentLoaded', init);
 </script>
 
+<div class="account-centre-overlay" id="accountCentreOverlay" aria-label="Watermark Pro Account Centre"><iframe class="account-centre-frame" id="accountCentreFrame" title="Watermark Pro Account Centre" src="about:blank"></iframe></div>
+<script src="website-account-shell.js?v=20260825-28"></script>
 </body>
 </html>
