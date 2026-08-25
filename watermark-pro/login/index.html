@@ -36,6 +36,7 @@
     .field input{width:100%;height:44px;padding:0 13px;border:1px solid #dfe5e8;border-radius:9px;outline:none;background:#fff;color:#172027;font:500 13px Poppins,Arial,sans-serif;transition:border-color .2s,box-shadow .2s}
     .field input::placeholder{color:#a2abb1;font-size:12px}
     .field input:focus{border-color:#7b8790;box-shadow:0 0 0 3px #1720270d}
+    .email-local{display:flex;height:44px;border:1px solid #dfe5e8;border-radius:9px;overflow:hidden;background:#fff}.email-local:focus-within{border-color:#7b8790;box-shadow:0 0 0 3px #1720270d}.email-local input{height:42px;border:0;border-radius:0;box-shadow:none!important}.email-local span{display:flex;align-items:center;padding:0 12px 0 4px;color:#59656e;font-size:12px;font-weight:600;white-space:nowrap}
     .password-wrap{position:relative}
     .password-wrap input{padding-right:46px}
     .password-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:8px;background:transparent;color:#7b8790;cursor:pointer}
@@ -43,7 +44,7 @@
     .login-button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:10px;background:url('bg.jpg') center/cover;color:#fff;text-shadow:0 1px 2px #0005;font:800 11px Poppins,Arial,sans-serif;cursor:pointer;transition:transform .15s,filter .2s}
     .login-button:hover{filter:brightness(.94)}
     .login-button:active{transform:translateY(1px)}
-    .form-error{min-height:17px;margin-top:8px;color:#d84b55;font-size:10px;line-height:1.5}
+    .form-error{min-height:17px;margin-top:8px;color:#d84b55;font-size:10px;line-height:1.5;white-space:pre-line}
     .remember-row{display:flex;align-items:center;gap:8px;margin-top:13px;color:#b8c1c6;font-size:11px;font-weight:600;cursor:pointer}
     .remember-row input{width:15px;height:15px;accent-color:#172027;cursor:pointer}
     .about-button{width:18px;height:18px;display:inline-grid;place-items:center;margin-left:4px;padding:0;border:1px solid #cbd4d9;border-radius:50%;background:#fff;color:#59656e;font:800 10px Arial;cursor:pointer}
@@ -91,7 +92,7 @@
 
       <div class="field">
         <label for="identity" id="identityLabel">EMAIL ADDRESS</label>
-        <input id="identity" name="identity" type="email" autocomplete="email" placeholder="Enter your email" required>
+        <div class="email-local"><input id="identity" name="identity" type="text" inputmode="email" autocomplete="email" placeholder="yourname" required><span>@gmail.com</span></div>
       </div>
 
       <div class="field">
@@ -153,9 +154,9 @@
       tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
       document.getElementById('welcomeText').textContent = register ? 'Welcome' : 'Welcome back';
       document.getElementById('identityLabel').textContent = 'EMAIL ADDRESS';
-      identity.type = 'email';
+      identity.type = 'text';
       identity.autocomplete = 'email';
-      identity.placeholder = 'Enter your email';
+      identity.placeholder = 'yourname';
       password.autocomplete = register ? 'new-password' : 'current-password';
       password.placeholder = register ? 'Minimum 8 characters' : 'Enter your password';
       usernameField.hidden = !register;
@@ -183,14 +184,19 @@
       submitButton.disabled = true;
       submitButton.textContent = currentMode === 'register' ? 'Creating account…' : 'Logging in…';
       try {
-        const identityValue = identity.value.trim();
+        const localPart = identity.value.trim().replace(/@gmail\.com$/i, '');
+        const identityValue = localPart + '@gmail.com';
+        const errors = [];
+        if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(localPart)) errors.push('Enter a valid Gmail username before @gmail.com.');
+        if (password.value.length < 8) errors.push('Password must contain at least 8 characters.');
+        if (currentMode === 'register' && !/^[A-Za-z0-9._]{2,20}$/.test(username.value.trim())) errors.push('Username must contain 2–20 letters, numbers, dots or underscores.');
+        if (errors.length) throw new Error(errors.map((message,index)=>(index+1)+'. '+message).join('\n'));
         if (currentMode === 'login') {
           await WMFirebase.auth.setPersistence(rememberMe.checked ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);
           await WMFirebase.auth.signInWithEmailAndPassword(identityValue, password.value);
         } else {
           await WMFirebase.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
           const usernameValue = username.value.trim();
-          if (!/^[A-Za-z0-9._]{2,20}$/.test(usernameValue)) throw new Error('Username must contain 2–20 letters, numbers, dots or underscores.');
           const credential = await WMFirebase.auth.createUserWithEmailAndPassword(identityValue, password.value);
           const key = WMFirebase.usernameKey(usernameValue);
           const reservation = await WMFirebase.db.ref('usernames/' + key).transaction(value => value === null ? credential.user.uid : undefined);
