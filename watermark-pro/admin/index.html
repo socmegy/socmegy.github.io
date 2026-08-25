@@ -266,15 +266,15 @@
     .receipt-total .label { font-weight: 700; font-size: 14px; }
     .receipt-total .val { font-size: 24px; font-weight: 800; }
     .receipt-stamp-wrap { position: absolute; bottom: 18px; right: 94px; pointer-events: none; z-index:2; }
-    .receipt-stamp { width: 88px; height: 88px; border-radius: 50%; border: 3.5px solid #2f9d5b; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-18deg); opacity: 0.82; position: relative; }
-    .receipt-stamp::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; border: 1.5px dashed #2f9d5b; }
+    .receipt-stamp { --stamp-color:#2f9d5b; width: 88px; height: 88px; border-radius: 50%; border: 3.5px solid var(--stamp-color); display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-18deg); opacity: 0.82; position: relative; }
+    .receipt-stamp::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; border: 1.5px dashed var(--stamp-color); }
     .receipt-stamp-logo { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
     .receipt-stamp-logo img { width: 100%; height: 100%; object-fit: cover; }
     .receipt-stamp-paid { font-size: 12px; font-weight: 900; color: #2f9d5b; letter-spacing: .14em; }
     .receipt-btn-row { display: flex; gap: 10px; margin-top: 16px; }
     .receipt-btn-row .btn { flex: 1; }
     .receipt-status-pending { display: inline-block; background: #f0f3f5; color: #7b8790; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
-    .receipt-status-paid { display: inline-block; background: #edf8f1; color: #2f9d5b; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+    .receipt-status-paid { display: inline-block; background: #edf8f1; color: #2f9d5b; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }.receipt-status-rejected{display:inline-block;background:#fff0f1;color:#d84b55;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800}
     .avatar-url-preview { width: 72px; height: 72px; border-radius: 50%; background: #dce3e7; display: flex; align-items: center; justify-content: center; overflow: hidden; flex: none; position: relative; }
     .avatar-url-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .avatar-url-preview .avatar-letter { font-size: 24px; font-weight: 800; color: #59656e; }
@@ -894,7 +894,7 @@
     <div class="receipt-btn-row">
       <button class="btn btn-dark" onclick="printReceipt()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print / Save as PDF
+        View Receipt
       </button>
     </div>
   </div>
@@ -1182,12 +1182,17 @@
       statusEl.innerHTML = '<span class="receipt-status-paid">PAID</span>';
     } else if (status === 'granted') {
       statusEl.innerHTML = '<span class="receipt-status-paid">GRANTED</span>';
+    } else if (status === 'rejected') {
+      statusEl.innerHTML = '<span class="receipt-status-rejected">REJECTED</span>';
     } else {
       statusEl.innerHTML = '<span class="receipt-status-pending">PENDING</span>';
     }
     const stampWrap = document.getElementById('receiptStampWrap');
-    stampWrap.style.display = status === 'paid' || status === 'granted' ? '' : 'none';
-    document.getElementById('receiptStampText').textContent = status === 'granted' ? 'GRANTED' : 'PAID';
+    stampWrap.style.display = '';
+    const stampColor = status === 'rejected' ? '#d84b55' : status === 'pending' ? '#b57908' : '#2f9d5b';
+    const stamp = document.getElementById('receiptStampEl');stamp.style.setProperty('--stamp-color',stampColor);
+    document.getElementById('receiptStampText').style.color=stampColor;
+    document.getElementById('receiptStampText').textContent = status === 'granted' ? 'GRANTED' : String(status||'pending').toUpperCase();
     const logoUrl = new URL('logo.png', document.baseURI).href;
     document.getElementById('rcptLogoImg').src = logoUrl;
     const stampLogo = document.querySelector('#receiptStampLogo img');
@@ -1201,15 +1206,12 @@
     const { name, ref, subtotal, discount, total, payDate, status, validUntilOverride, planLabel = 'Pro Supporter · 1 month' } = data;
     const validUntil = validUntilOverride || addMonths(payDate, 1);
     const rcptNo = 'RCPT-' + ref.replace('PRO-','');
-    const stampColor = '#2f9d5b';
-    const isPaid = status === 'paid' || status === 'granted';
-    const receiptStatus = status === 'granted' ? 'GRANTED' : 'PAID';
+    const receiptStatus = status === 'granted' ? 'GRANTED' : String(status||'pending').toUpperCase();
     const logoUrl = new URL('logo.png', document.baseURI).href;
     const bgUrl = new URL('bg.jpg', document.baseURI).href;
-    const statusHtml = isPaid
-      ? `<span style="display:inline-block;background:#edf8f1;color:#2f9d5b;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;">${receiptStatus}</span>`
-      : `<span style="display:inline-block;background:#f0f3f5;color:#7b8790;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;">PENDING</span>`;
-    const stampHtml = isPaid ? `
+    const stampColor = status === 'rejected' ? '#d84b55' : status === 'pending' ? '#b57908' : '#2f9d5b';
+    const statusHtml = `<span style="display:inline-block;background:${status==='rejected'?'#fff0f1':status==='pending'?'#fff8e7':'#edf8f1'};color:${stampColor};padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;">${receiptStatus}</span>`;
+    const stampHtml = `
       <div style="position:absolute;bottom:-5px;right:64px;pointer-events:none;z-index:2;">
         <div style="width:88px;height:88px;border-radius:50%;border:3.5px solid ${stampColor};display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-18deg);opacity:0.82;position:relative;">
           <div style="position:absolute;inset:5px;border-radius:50%;border:1.5px dashed ${stampColor};"></div>
@@ -1218,7 +1220,7 @@
           </div>
           <div style="font-size:12px;font-weight:900;color:${stampColor};letter-spacing:.14em;z-index:1;">${receiptStatus}</div>
         </div>
-      </div>` : '';
+      </div>`;
     return `<!DOCTYPE html><html><head><meta charset="UTF-8">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
@@ -1226,7 +1228,7 @@
   @page { size:A4; margin:20mm; }
   body { font-family:Poppins,Arial,sans-serif; background:#fff; color:#172027; font-size:13px; line-height:1.6; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .page { position:relative; width:100%; padding:36px; min-height:180mm; }
-  .brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .brand { display:flex;align-items:center;gap:10px;margin-bottom:22px; }
   .brand-circle { width:36px;height:36px;border-radius:50%;background:#172027;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
   .brand-name { font-size:20px;font-weight:800;letter-spacing:-.5px;background:url('${bgUrl}') center/cover;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
   hr { border:0;border-top:1px dashed #ccc;margin:14px 0; }
@@ -1265,33 +1267,13 @@
 
   function printReceipt() {
     if (!currentReceiptData) return;
-    const html = getReceiptHTML(currentReceiptData);
-    closeReceipt();
-    const frame = document.createElement('iframe');
-    frame.setAttribute('title', 'Receipt print document');
-    frame.style.cssText = 'position:fixed;width:794px;height:1123px;right:0;bottom:0;border:0;opacity:0;pointer-events:none;';
-    document.body.appendChild(frame);
-    const printWindow = frame.contentWindow;
-    const printDocument = frame.contentDocument;
-    const cleanup = () => { if (frame.isConnected) frame.remove(); };
-    let printed = false;
-    frame.onload = () => {
-      if (printed) return;
-      printed = true;
-      const images = [...printDocument.images];
-      Promise.all(images.map(img => img.complete ? Promise.resolve() : new Promise(resolve => {
-        img.onload = resolve;
-        img.onerror = resolve;
-      }))).then(() => {
-        printWindow.onafterprint = cleanup;
-        printWindow.focus();
-        printWindow.print();
-        setTimeout(cleanup, 60000);
-      });
-    };
-    printDocument.open();
-    printDocument.write(html);
-    printDocument.close();
+    const slug=String(currentReceiptData.name||'supporter').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'supporter';
+    const ref=String(currentReceiptData.ref||'receipt').replace(/[^a-z0-9-]/gi,'-');
+    const popup=window.open('','_blank');if(!popup){showToast('Please allow pop-ups to view the receipt');return}
+    const actions='<div class="print-actions"><button onclick="window.print()">Print Receipt</button><button onclick="window.close()">Close</button></div>';
+    const extra='<title>payment-receipt-'+slug+'-'+ref+'</title><style>.print-actions{display:flex;justify-content:center;gap:10px;margin:16px}.print-actions button{padding:10px 22px;border:0;border-radius:9px;background:#172027;color:#fff;font:700 12px Poppins;cursor:pointer}.print-actions button+button{background:#e9eef0;color:#172027}@media print{.print-actions{display:none}.page{max-width:none}}</style>';
+    const html=getReceiptHTML(currentReceiptData).replace('<head>','<head>'+extra).replace('<body>','<body>'+actions);
+    popup.document.open();popup.document.write(html);popup.document.close();popup.focus();
   }
 
   document.getElementById("badgeModal").addEventListener("click", e => { if (e.target === document.getElementById("badgeModal")) closeBadgeModal(); });
