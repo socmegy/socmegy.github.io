@@ -216,6 +216,12 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
 .website-plan-features{transform:translateX(-3px);width:calc(100% + 3px)}.website-plan-features .header-verified{width:16px!important;height:16px!important}
 @media(min-width:761px){.website-supporter-card-heading{min-height:100%;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.website-supporter-card-heading p{max-width:370px;margin-left:auto;margin-right:auto}}
 
+/* Separate the verified identity block from its supporting message. */
+.website-verified-copy{margin-top:12px!important;font-size:13px!important}.admin-page #badgeModalSub{margin-top:12px!important;font-size:13px!important;line-height:1.6!important}@media(max-width:650px){.website-verified-copy,.admin-page #badgeModalSub{margin-top:11px!important;font-size:11px!important;line-height:1.55!important}}
+
+/* Production supporter cards use neutral surfaces; bg.jpg remains only inside verified badges. */
+.website-supporter-card-art{background:#fff!important;color:#000!important}.website-supporter-card-art:after{border-color:#0005!important}.website-supporter-card-person strong{display:inline-flex!important;align-items:center!important;gap:4px!important;color:#000!important}.website-supporter-card-person strong .header-verified{width:1em!important;height:1em!important;margin:0!important}.website-supporter-card-person span,.website-supporter-card-details span,.website-supporter-card-details strong,.website-supporter-card-brand{color:#000!important;text-shadow:none!important}.website-supporter-card-details div{border-color:#0005!important}.website-supporter-card-art.white{background:#000!important;color:#fff!important}.website-supporter-card-art.white:after{border-color:#fff8!important}.website-supporter-card-art.white .website-supporter-card-person strong,.website-supporter-card-art.white .website-supporter-card-person span,.website-supporter-card-art.white .website-supporter-card-details span,.website-supporter-card-art.white .website-supporter-card-details strong,.website-supporter-card-art.white .website-supporter-card-brand{color:#fff!important}.website-supporter-card-art.white .website-supporter-card-details div{border-color:#fff8!important}
+
 /* All history columns keep their grid positions but share the same left edge behavior. */
 .website-account-history .website-history-head span:nth-child(n),.website-account-history .website-history-row>span:nth-child(n){text-align:left!important}
 

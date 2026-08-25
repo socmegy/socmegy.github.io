@@ -12,8 +12,8 @@
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
-<script src="firebase-config.js?v=20260824-3"></script>
-<link rel="stylesheet" href="website-account-shell.css?v=20260825-28">
+<script src="firebase-config.js?v=20260826-1"></script>
+<link rel="stylesheet" href="website-account-shell.css?v=20260826-1">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -681,7 +681,7 @@ function setAuthMode(mode) {
     document.getElementById('authPassword').autocomplete = mode === 'register' ? 'new-password' : 'current-password';
     authError.textContent = '';
 }
-document.getElementById('openAuthButton').addEventListener('click', () => { location.href = 'login.html'; });
+document.getElementById('openAuthButton').addEventListener('click', () => { location.href = 'login/'; });
 document.getElementById('openPlansButton').addEventListener('click', () => window.openWebsitePlans?.());
 document.getElementById('openTopUsersButton').addEventListener('click', () => window.openAccountCentre?.('top-users'));
 document.getElementById('authClose').addEventListener('click', hideAuth);
@@ -731,7 +731,7 @@ authForm.addEventListener('submit', async event => {
         }
         authForm.reset(); hideAuth();
         if (isAdmin) {
-            location.href = 'admin.html';
+            location.href = 'admin/';
         } else {
             const destination = window.authDestination || 'profile';
             window.authDestination = 'profile';
@@ -784,7 +784,7 @@ if (window.WMFirebase) WMFirebase.auth.onAuthStateChanged(async user => {
         header.innerHTML = '<button class="account-top-users" id="openTopUsersButtonLive" type="button" aria-label="View Top Users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg><span>Top Users</span></button><button class="account-support" id="openPlansButtonLive" type="button">Support</button><button class="account-login" id="openAuthButtonLive" type="button">Login / Register</button>';
         document.getElementById('openTopUsersButtonLive').onclick = () => window.openAccountCentre?.('top-users');
         document.getElementById('openPlansButtonLive').onclick = () => window.openWebsitePlans?.();
-        document.getElementById('openAuthButtonLive').onclick = () => { location.href = 'login.html'; };
+        document.getElementById('openAuthButtonLive').onclick = () => { location.href = 'login/'; };
         return;
     }
     try { await WMFirebase.ensureUser(user); }
@@ -818,18 +818,12 @@ async function recordDownloadActivity(files) {
 
 async function recordDownloadActivityDirect(user, payload) {
         const { images, videos } = payload;
-        const activityId = WMFirebase.db.ref('activities/' + user.uid).push().key;
-        let activityError = null;
-        try {
-            await WMFirebase.db.ref('activities/' + user.uid + '/' + activityId).set({ clientId:payload.clientId, createdAt: firebase.database.ServerValue.TIMESTAMP, images, videos, total: images + videos, watermarkType: payload.watermarkType, font: payload.font, position: payload.position, color: payload.color });
-        } catch (error) {
-            activityError = error;
-        }
+        const activityId = payload.clientId.replace(/[^A-Za-z0-9_-]/g, '').slice(0,80);
+        await WMFirebase.db.ref('activities/' + user.uid + '/' + activityId).set({ clientId:payload.clientId, createdAt: firebase.database.ServerValue.TIMESTAMP, images, videos, total: images + videos, watermarkType: payload.watermarkType, font: payload.font, position: payload.position, color: payload.color });
         await WMFirebase.db.ref().update({['users/' + user.uid + '/images']:firebase.database.ServerValue.increment(images),['users/' + user.uid + '/videos']:firebase.database.ServerValue.increment(videos),['users/' + user.uid + '/downloads']:firebase.database.ServerValue.increment(images + videos)});
         const [profileSnapshot,subscriptionSnapshot] = await Promise.all([WMFirebase.db.ref('users/' + user.uid).once('value'),WMFirebase.db.ref('subscriptions/' + user.uid).once('value')]);
         const profile = profileSnapshot.val() || {}, subscription = subscriptionSnapshot.val() || {};
         await WMFirebase.db.ref('publicProfiles/' + user.uid).update({name:profile.name||user.displayName||user.email.split('@')[0],avatarUrl:profile.avatarUrl||'',downloads:Number(profile.images||0)+Number(profile.videos||0),showOnTopUsers:profile.showOnTopUsers!==false,censorUsername:profile.censorUsername===true,proSince:Number(subscription.proSince||profile.proSince||0),proExpiresAt:Number(subscription.expiresAt||profile.proExpiresAt||0)}).catch(error=>console.warn('Public ranking sync failed:',error.code||error.message));
-        if (activityError) throw activityError;
 }
 
 // ============================================================
@@ -2410,6 +2404,6 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div class="account-centre-overlay" id="accountCentreOverlay" aria-label="Watermark Pro Account Centre"><iframe class="account-centre-frame" id="accountCentreFrame" title="Watermark Pro Account Centre" src="about:blank"></iframe></div>
-<script src="website-account-shell.js?v=20260825-28"></script>
+<script src="website-account-shell.js?v=20260826-1"></script>
 </body>
 </html>

@@ -19,6 +19,27 @@ function validUsername(value) {
   return /^[A-Za-z0-9._]{2,20}$/.test(String(value || ''));
 }
 
+async function assertUsernameAvailable(name, uid) {
+  const wanted = String(name || '').trim().toLowerCase();
+  const snapshot = await db.ref('users').once('value');
+  let conflict = false;
+  snapshot.forEach(child => {
+    if (child.key !== uid && String(child.val()?.name || '').trim().toLowerCase() === wanted) conflict = true;
+  });
+  if (conflict) throw new functions.https.HttpsError('already-exists', 'This username is already in use.');
+}
+
+exports.claimUsername = functions.region('asia-southeast1').https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login is required.');
+  const name = String(data?.username || '').trim();
+  if (!validUsername(name)) throw new functions.https.HttpsError('invalid-argument', 'Username must contain 2–20 letters, numbers, dots or underscores.');
+  await assertUsernameAvailable(name, context.auth.uid);
+  const key = usernameKey(name);
+  const reservation = await db.ref('usernames/' + key).transaction(current => current === null || current === context.auth.uid ? context.auth.uid : undefined);
+  if (!reservation.committed) throw new functions.https.HttpsError('already-exists', 'This username is already in use.');
+  return { ok: true, key };
+});
+
 exports.recordDownloadActivity = functions.region('asia-southeast1').https.onCall(async (data, context) => {
   if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login is required to record downloads.');
   const images = Math.max(0, Math.floor(Number(data?.images || 0)));
@@ -26,9 +47,11 @@ exports.recordDownloadActivity = functions.region('asia-southeast1').https.onCal
   const total = images + videos;
   if (!total || total > 1000) throw new functions.https.HttpsError('invalid-argument', 'Invalid download count.');
   const uid = context.auth.uid;
-  const activityRef = db.ref('activities/' + uid).push();
+  const clientId = String(data?.clientId || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80);
+  if (!clientId) throw new functions.https.HttpsError('invalid-argument', 'A download event ID is required.');
+  const activityRef = db.ref('activities/' + uid + '/' + clientId);
   const activity = {
-    clientId: String(data?.clientId || '').slice(0, 80),
+    clientId,
     createdAt: admin.database.ServerValue.TIMESTAMP,
     images,
     videos,
@@ -38,13 +61,14 @@ exports.recordDownloadActivity = functions.region('asia-southeast1').https.onCal
     position: String(data?.position || 'center').slice(0, 40),
     color: String(data?.color || 'white').slice(0, 30)
   };
+  const claim = await activityRef.transaction(current => current === null ? activity : undefined);
+  if (!claim.committed) return { recorded: false, duplicate: true, images, videos, total, activityId: clientId };
   await db.ref().update({
     ['users/' + uid + '/images']: admin.database.ServerValue.increment(images),
     ['users/' + uid + '/videos']: admin.database.ServerValue.increment(videos),
-    ['users/' + uid + '/downloads']: admin.database.ServerValue.increment(total),
-    ['activities/' + uid + '/' + activityRef.key]: activity
+    ['users/' + uid + '/downloads']: admin.database.ServerValue.increment(total)
   });
-  return { recorded: true, images, videos, total, activityId: activityRef.key };
+  return { recorded: true, images, videos, total, activityId: clientId };
 });
 
 async function requireAdmin(context) {
@@ -101,6 +125,7 @@ exports.adminUpdateUser = functions.region('asia-southeast1').https.onCall(async
   let reservedNewName = false;
 
   if (newKey !== oldKey) {
+    await assertUsernameAvailable(name, uid);
     const reservation = await db.ref('usernames/' + newKey).transaction(current => current === null || current === uid ? uid : undefined);
     if (!reservation.committed) throw new functions.https.HttpsError('already-exists', 'This username is already in use.');
     reservedNewName = true;

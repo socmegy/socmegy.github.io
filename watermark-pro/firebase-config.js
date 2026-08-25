@@ -12,7 +12,7 @@
     measurementId: 'G-VM9MWEQ3WW'
   };
 
-  const isAdminContext = /(?:^|\/)admin\.html(?:$|[?#])/i.test(location.pathname + location.search + location.hash);
+  const isAdminContext = /(?:^|\/)admin(?:\.html|\/)?(?:$|[?#])/i.test(location.pathname + location.search + location.hash);
   let app;
   if (isAdminContext) {
     app = firebase.apps.find(candidate => candidate.name === 'watermarkAdmin') || firebase.initializeApp(firebaseConfig, 'watermarkAdmin');
