@@ -12,7 +12,8 @@
     measurementId: 'G-VM9MWEQ3WW'
   };
 
-  const isAdminContext = /(?:^|\/)admin(?:\.html|\/)?(?:$|[?#])/i.test(location.pathname + location.search + location.hash);
+  const isAdminContext = /(?:^|\/)admin(?:\.html|\/)(?:index\.html)?\/?$/i.test(location.pathname)
+    || document.documentElement.hasAttribute('data-admin-app');
   let app;
   if (isAdminContext) {
     app = firebase.apps.find(candidate => candidate.name === 'watermarkAdmin') || firebase.initializeApp(firebaseConfig, 'watermarkAdmin');
@@ -72,7 +73,9 @@
     } else {
       const current = snapshot.val() || {};
       const repair = {};
-      if ((!current.email || current.email === '') && user.email) repair.email = user.email;
+      if ((!current.email || current.email === '') && user.email) {
+        await db.ref('users/' + user.uid + '/email').set(user.email).catch(() => {});
+      }
       if (!Number(current.accountCreatedAt)) repair.accountCreatedAt = Date.parse(user.metadata && user.metadata.creationTime || '') || Date.now();
       if (Object.keys(repair).length) await userRef.update(repair).catch(() => {});
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="admin-booting">
+<html lang="en" class="admin-booting" data-admin-app>
 <head>
   <base href="../">
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
     .admin-auth-card h2 { font-size:20px; }
     .admin-auth-card p { color:#89959d; font-size:11px; margin:5px 0 16px; }
     .admin-auth-card input { width:100%; height:42px; margin-top:8px; border:1px solid #35414a; border-radius:9px; padding:0 12px; background:#10161a; color:#fff; }
-    .admin-email-local{display:flex;width:100%;height:42px;margin-top:8px;border:1px solid #35414a;border-radius:9px;overflow:hidden;background:#10161a}.admin-email-local:focus-within{border-color:#7b8790}.admin-email-local input{height:40px;margin:0;border:0;border-radius:0}.admin-email-local span{display:flex;align-items:center;padding:0 12px 0 3px;color:#aeb9c0;font-size:12px;white-space:nowrap}
+    .admin-email-local{display:flex;width:100%;height:42px;margin-top:8px;border:1px solid #d7dee3;border-radius:9px;overflow:hidden;background:#fff}.admin-email-local:focus-within{border-color:#7b8790}.admin-email-local input{height:40px;margin:0;border:0!important;border-radius:0;background:transparent!important;color:#172027!important;box-shadow:none!important}.admin-email-local span{display:flex;align-items:center;padding:0 12px 0 3px;background:#fff;color:#59656e;font-size:12px;white-space:nowrap}
     .admin-auth-card button { width:100%; margin-top:10px; border:0; border-radius:9px; padding:11px; background:#fff; color:#111; font-weight:700; cursor:pointer; }
     .admin-auth-error { color:#ff9299 !important; min-height:16px; margin-bottom:0 !important; white-space:pre-line; }
     button, input { font: inherit; }
@@ -1227,26 +1227,29 @@
   * { box-sizing:border-box; margin:0; padding:0; }
   @page { size:A4; margin:20mm; }
   body { font-family:Poppins,Arial,sans-serif; background:#fff; color:#172027; font-size:13px; line-height:1.6; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  .page { position:relative; width:100%; padding:36px; min-height:180mm; }
-  .brand { display:flex;align-items:center;gap:10px;margin-bottom:22px; }
-  .brand-circle { width:36px;height:36px;border-radius:50%;background:#172027;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
-  .brand-name { font-size:20px;font-weight:800;letter-spacing:-.5px;background:url('${bgUrl}') center/cover;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
-  hr { border:0;border-top:1px dashed #ccc;margin:14px 0; }
-  .row { display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:13px; }
+  .page { position:relative; width:min(920px,calc(100% - 32px)); margin:24px auto; padding:48px 54px; min-height:540px; border:0; }
+  .brand { display:flex;align-items:center;gap:12px;margin-bottom:28px; }
+  .brand-circle { width:44px;height:44px;border-radius:50%;background:#172027;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .brand-name { font:800 23px Poppins,Arial,sans-serif;background:url('${bgUrl}') center/cover;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text; }
+  .receipt-label { margin-left:auto;color:#7b8790;font-size:10px;font-weight:800;letter-spacing:.1em;white-space:nowrap; }
+  hr { border:0;border-top:2px solid #172027;margin:22px 0; }
+  .row { display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:12px; }
   .row .lbl { color:#7b8790; }
   .row .val { font-weight:600;text-align:right; }
-  .pricing { margin-top:14px;padding-top:14px;border-top:1px solid #eee; }
+  .pricing { width:310px;margin:42px 0 0 auto;padding-top:14px;border-top:1px solid #eee; }
   .sub-row { display:flex;justify-content:space-between;font-size:12px;padding:2px 0;color:#7b8790; }
   .disc-row { display:flex;justify-content:space-between;font-size:12px;padding:2px 0;color:#2f9d5b; }
-  .total { position:relative;display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;padding-top:10px;border-top:2px solid #172027; }
+  .total { position:relative;width:310px;display:flex;justify-content:space-between;align-items:baseline;margin:8px 0 0 auto;padding-top:12px;border-top:2px solid #172027; }
   .total .lbl { font-weight:700;font-size:15px; }
   .total .val { font-size:26px;font-weight:800; }
   .footer { margin-top:32px;color:#a0a8ae;font-size:11px;text-align:center; }
+  @media(max-width:650px){.page{width:100%;margin:0;padding:20px;border:0}.brand{flex-wrap:wrap;margin-bottom:10px}.brand-name{font-size:19px;white-space:nowrap}.receipt-label{flex:0 0 100%;margin:7px 0 0 56px}.pricing,.total{width:100%}}
 </style></head><body>
 <div class="page">
 <div class="brand">
   <div class="brand-circle" style="overflow:hidden"><img src="${logoUrl}" alt="Watermark Pro" style="width:100%;height:100%;object-fit:cover"></div>
   <div class="brand-name">Watermark Pro</div>
+  <div class="receipt-label">PAYMENT RECEIPT</div>
 </div>
 <hr>
 <div class="row"><span class="lbl">Receipt No.</span><span class="val">${rcptNo}</span></div>
@@ -1271,7 +1274,7 @@
     const ref=String(currentReceiptData.ref||'receipt').replace(/[^a-z0-9-]/gi,'-');
     const popup=window.open('','_blank');if(!popup){showToast('Please allow pop-ups to view the receipt');return}
     const actions='<div class="print-actions"><button onclick="window.print()">Print Receipt</button><button onclick="window.close()">Close</button></div>';
-    const extra='<title>payment-receipt-'+slug+'-'+ref+'</title><style>.print-actions{display:flex;justify-content:center;gap:10px;margin:16px}.print-actions button{padding:10px 22px;border:0;border-radius:9px;background:#172027;color:#fff;font:700 12px Poppins;cursor:pointer}.print-actions button+button{background:#e9eef0;color:#172027}@media print{.print-actions{display:none}.page{max-width:none}}</style>';
+    const extra='<title>payment-receipt-'+slug+'-'+ref+'</title><style>.print-actions{display:flex;justify-content:center;gap:10px;margin:16px}.print-actions button{padding:10px 22px;border:0;border-radius:9px;background:#172027;color:#fff;font:700 12px Poppins;cursor:pointer}.print-actions button+button{background:#e9eef0;color:#172027}@media(max-width:650px){@page{size:A4;margin:8mm}.page{padding:20px}.brand{flex-wrap:wrap}.brand-name{white-space:nowrap}.receipt-label{flex:0 0 100%;margin:7px 0 0 46px;text-align:left}.print-actions{flex-wrap:wrap;margin:10px 20px}}@media print{.print-actions{display:none}.page{max-width:none}}@media print and (max-width:650px){.page{padding:0}}</style>';
     const html=getReceiptHTML(currentReceiptData).replace('<head>','<head>'+extra).replace('<body>','<body>'+actions);
     popup.document.open();popup.document.write(html);popup.document.close();popup.focus();
   }

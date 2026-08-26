@@ -68,6 +68,7 @@
       .login-intro p{margin-top:0;font-size:10px}
       .login-form h1{font-size:19px}
     }
+    .legal-consent{display:flex;align-items:flex-start;gap:7px;margin-top:5px;color:#c5ced4;font:500 10px/1.45 Poppins}.important+.legal-consent{margin-top:5px}.legal-consent[hidden]{display:none}.legal-consent input{width:15px;height:15px;margin:0;accent-color:#fff;flex:none}.legal-consent button{border:0;padding:0;background:transparent;color:#fff;font:700 10px Poppins;text-decoration:underline;cursor:pointer}.legal-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:#000b;backdrop-filter:blur(6px)}.legal-modal.show{display:flex}.legal-card{position:relative;width:min(560px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:26px;border:1px solid #273139;border-radius:18px;background:#fff;color:#172027}.legal-card .modal-close{position:absolute;right:16px;top:16px}.legal-card h2{padding-right:45px;font-size:19px}.legal-copy{margin-top:10px}.legal-copy h3{margin:10px 0 2px;font-size:12px}.legal-copy p{margin:3px 0;color:#59656e;font-size:10px;line-height:1.6}@media(max-width:650px){.legal-modal{align-items:flex-start;padding:24px 16px}.legal-card{max-height:calc(100dvh - 48px);padding:22px}}
   </style>
 </head>
 <body>
@@ -108,6 +109,7 @@
       </div>
 
       <div class="important" id="registerImportant" hidden><strong>Important:</strong> Username and email cannot be changed after registration. Account-detail changes require admin support, available exclusively to active Pro Supporters.</div>
+      <label class="legal-consent" id="legalConsent" hidden><input id="acceptLegal" type="checkbox"><span>I agree to the <button type="button" data-legal="terms">Terms &amp; Conditions</button> and <button type="button" data-legal="privacy">Privacy Policy</button>.</span></label>
       <label class="remember-row" id="rememberRow"><input id="rememberMe" type="checkbox"> Remember me</label>
       <button class="login-button" id="submitButton" type="submit">Login</button>
       <div class="form-error" id="formError" aria-live="polite"></div>
@@ -130,6 +132,8 @@
     </div>
   </div>
 
+  <div class="legal-modal" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalTitle"><div class="legal-card"><button class="modal-close" id="legalClose" type="button" aria-label="Close">&times;</button><h2 id="legalTitle"></h2><div class="legal-copy" id="legalCopy"></div></div></div>
+
   <script>
     const password = document.getElementById('password');
     const toggle = document.getElementById('passwordToggle');
@@ -143,6 +147,8 @@
     const formError = document.getElementById('formError');
     const rememberRow = document.getElementById('rememberRow');
     const rememberMe = document.getElementById('rememberMe');
+    const legalConsent = document.getElementById('legalConsent');
+    const acceptLegal = document.getElementById('acceptLegal');
     let currentMode = 'login';
     let initialAuthCheck = true;
     WMFirebase.auth.onAuthStateChanged(user => {
@@ -164,6 +170,8 @@
       usernameField.hidden = !register;
       username.required = register;
       important.hidden = !register;
+      legalConsent.hidden = !register;
+      acceptLegal.required = register;
       rememberRow.hidden = register;
       submitButton.textContent = register ? 'Create account' : 'Login';
       formError.textContent = '';
@@ -180,6 +188,9 @@
     document.getElementById('usernameModalClose').addEventListener('click', () => usernameModal.classList.remove('show'));
     document.getElementById('usernameModalGotIt').addEventListener('click', () => usernameModal.classList.remove('show'));
     usernameModal.addEventListener('click', event => { if (event.target === usernameModal) usernameModal.classList.remove('show'); });
+    const legalModal=document.getElementById('legalModal'),legalTitle=document.getElementById('legalTitle'),legalCopy=document.getElementById('legalCopy');
+    const legalContent={terms:'<p>By creating an account, you agree to use Watermark Pro lawfully and only with files you own or are authorised to edit.</p><h3>Accounts and access</h3><p>You are responsible for your login details and activity. Free tools require an account. Abuse, disruption, impersonation, excessive automated use and attempts to bypass service controls are prohibited.</p><h3>Files and results</h3><p>Watermark processing happens in your browser. Review downloaded results before relying on them. Availability and compatibility may vary by device, browser and file format.</p><h3>Pro Supporter payments</h3><p>Pro support is optional. Submit payment only when payment approval is shown as available. Access begins after verification, and rejected submissions retain a receipt record.</p><h3>Service changes</h3><p>Features may be improved, suspended or discontinued. The service is provided as available without a guarantee that it will always be uninterrupted or error-free.</p>',privacy:'<p>Watermark Pro collects only information needed to operate accounts and related features.</p><h3>Information stored</h3><p>Firebase stores your email, username, account dates, avatar URL, preferences, download totals, usage-history metadata, subscription status and payment references/status. Password authentication is handled by Firebase Authentication.</p><h3>Your files</h3><p>Uploaded images and videos are processed locally in your browser and are not intentionally uploaded to or stored by Watermark Pro. Account History stores metadata such as date, media counts and selected settings—not the media itself.</p><h3>Public information</h3><p>If Top Users visibility is enabled, your username, avatar, verified status and download total may be public. Visibility and username censoring can be changed in Settings.</p><h3>Use and sharing</h3><p>Data supports account access, cross-device history, rankings, payment review, receipts, support and security. It is stored through Firebase and is not sold.</p><h3>Your choices</h3><p>You may review privacy controls in Settings and contact Watermark Pro support about account-data correction or deletion.</p>'};
+    document.querySelectorAll('[data-legal]').forEach(button=>button.addEventListener('click',()=>{legalTitle.textContent=button.dataset.legal==='terms'?'Terms & Conditions':'Privacy Policy';legalCopy.innerHTML=legalContent[button.dataset.legal];legalModal.classList.add('show')}));document.getElementById('legalClose').onclick=()=>legalModal.classList.remove('show');legalModal.onclick=event=>{if(event.target===legalModal)legalModal.classList.remove('show')};
     form.addEventListener('submit', async event => {
       event.preventDefault();
       formError.textContent = '';
@@ -192,6 +203,7 @@
         if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(localPart)) errors.push('Enter a valid Gmail username before @gmail.com.');
         if (password.value.length < 8) errors.push('Password must contain at least 8 characters.');
         if (currentMode === 'register' && !/^[A-Za-z0-9._]{2,20}$/.test(username.value.trim())) errors.push('Username must contain 2–20 letters, numbers, dots or underscores.');
+        if (currentMode === 'register' && !acceptLegal.checked) errors.push('You must agree to the Terms & Conditions and Privacy Policy.');
         if (errors.length) throw new Error(errors.map((message,index)=>(index+1)+'. '+message).join('\n'));
         if (currentMode === 'login') {
           await WMFirebase.auth.setPersistence(rememberMe.checked ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION);

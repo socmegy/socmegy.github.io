@@ -40,6 +40,14 @@ exports.claimUsername = functions.region('asia-southeast1').https.onCall(async (
   return { ok: true, key };
 });
 
+exports.syncOwnEmail = functions.region('asia-southeast1').https.onCall(async (data, context) => {
+  if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login is required.');
+  const email = String(context.auth.token.email || '').trim().toLowerCase();
+  if (!email) throw new functions.https.HttpsError('failed-precondition', 'No email is attached to this account.');
+  await db.ref('users/' + context.auth.uid + '/email').set(email);
+  return { email };
+});
+
 exports.recordDownloadActivity = functions.region('asia-southeast1').https.onCall(async (data, context) => {
   if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Login is required to record downloads.');
   const images = Math.max(0, Math.floor(Number(data?.images || 0)));
@@ -278,6 +286,8 @@ exports.rebuildPublicProfiles = functions.region('asia-southeast1').https.onCall
         await userRef.set({ name, email: record.email || '', avatarUrl: record.photoURL || '', accountCreatedAt: createdAt, downloads: 0, images: 0, videos: 0, showOnTopUsers: true, censorUsername: false });
         const subscriptionRef = db.ref('subscriptions/' + record.uid);
         if (!(await subscriptionRef.once('value')).exists()) await subscriptionRef.set({ status: 'plain_free' });
+      } else if ((!existing.email || !String(existing.email).trim()) && record.email) {
+        await userRef.child('email').set(String(record.email).trim().toLowerCase());
       }
       authUsers += 1;
     }

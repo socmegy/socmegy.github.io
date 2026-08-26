@@ -176,6 +176,7 @@ body {
 .footer { margin-top: 16px; text-align: left; }
 .footer p { font-size: 13px; font-weight: 400; background-image: url('bg.jpg'); background-size: cover; background-position: center; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .footer i { -webkit-text-fill-color: transparent; }
+.social-wrap{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:12px}.social-label{color:#fff;font:700 10px Poppins}.social-links{display:flex;flex-wrap:wrap;gap:6px}.social-links a{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #283139;border-radius:50%;background:#111;color:#fff;text-decoration:none;font-size:12px;transition:.2s}.social-links a:hover{transform:translateY(-1px);border-color:#7b8790;background:#202930;color:#fff}.social-links i{-webkit-text-fill-color:currentColor!important;color:currentColor!important}
 
 /* TOP USERS */
 .website-top-users { background:#ffffff; border-radius:16px; margin-top:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); }
@@ -470,6 +471,7 @@ body {
 
     <div class="footer">
         <p><i class="fas fa-check-circle"></i> Supports multiple files · All common image & video formats</p>
+        <div class="social-wrap"><span class="social-label">Follow us</span><nav class="social-links" aria-label="Watermark Pro social links"><a href="https://www.threads.net/@watermark._.pro" title="Threads" target="_blank" rel="noopener"><i class="fa-brands fa-threads"></i></a><a href="https://www.tiktok.com/@watermark._.pro" title="TikTok" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i></a><a href="https://www.instagram.com/watermark._.pro" title="Instagram" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a><a href="https://www.facebook.com/watermark._.pro" title="Facebook" target="_blank" rel="noopener"><i class="fa-brands fa-facebook"></i></a><a href="https://x.com/watermark._.pro" title="Twitter" target="_blank" rel="noopener"><i class="fa-brands fa-x-twitter"></i></a></nav></div>
     </div>
 
 </div>
@@ -699,13 +701,7 @@ authForm.addEventListener('submit', async event => {
     const username = document.getElementById('authUsername').value.trim();
     try {
         if (authMode === 'login') {
-            if (email.includes('@')) {
-                await WMFirebase.auth.signInWithEmailAndPassword(email, password);
-            } else {
-                if (!WMFirebase.functions) throw new Error('Username login service is unavailable. Use your email address.');
-                const result = await WMFirebase.functions.httpsCallable('loginWithUsername')({ username: email, password });
-                await WMFirebase.auth.signInWithCustomToken(result.data.token);
-            }
+            await WMFirebase.auth.signInWithEmailAndPassword(email.includes('@') ? email : email + '@gmail.com', password);
         } else {
             if (!/^[A-Za-z0-9._]{2,20}$/.test(username)) throw new Error('Username mesti 2–20 aksara: huruf, nombor, titik atau underscore.');
             const credential = await WMFirebase.auth.createUserWithEmailAndPassword(email, password);
@@ -789,6 +785,7 @@ if (window.WMFirebase) WMFirebase.auth.onAuthStateChanged(async user => {
     }
     try { await WMFirebase.ensureUser(user); }
     catch (error) { console.warn('Account profile sync unavailable; watermark tools remain active.', error.code || error.message); }
+    await syncQueuedDownloadActivities(user);
 });
 if (window.WMFirebase) WMFirebase.db.ref('publicProfiles').orderByChild('downloads').limitToLast(10).on('value', renderTopUsers, error => console.warn('Top Users unavailable:', error.code || error.message));
 window.addEventListener('resize', () => { if (latestTopUsersSnapshot) renderTopUsers(latestTopUsersSnapshot); });
@@ -801,16 +798,14 @@ async function recordDownloadActivity(files) {
     const videos = files.filter(file => file.type.startsWith('video/')).length;
     const clientId = 'dl-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
     const payload = { clientId, images, videos, watermarkType: watermarkSettings.font === 'signature' ? 'signature' : 'text', font: String(watermarkSettings.font || 'arial'), position: String(watermarkSettings.position || 'center'), color: String(watermarkSettings.color || 'white') };
-    const fallbackKey = 'wmActivityFallback:' + user.uid;
-    const localId = clientId;
-    const stored = JSON.parse(localStorage.getItem(fallbackKey) || '[]');
-    stored.unshift({ id: localId, createdAt: Date.now(), ...payload, total: images + videos });
-    localStorage.setItem(fallbackKey, JSON.stringify(stored.slice(0, 100)));
-    window.dispatchEvent(new CustomEvent('wm-local-activity'));
     try {
         await recordDownloadActivityDirect(user, payload);
-        /* Keep the local shadow until the realtime listener confirms the same clientId. */
     } catch (directError) {
+        const fallbackKey = 'wmActivityFallback:' + user.uid;
+        const stored = JSON.parse(localStorage.getItem(fallbackKey) || '[]');
+        stored.unshift({ id: clientId, createdAt: Date.now(), ...payload, total: images + videos });
+        localStorage.setItem(fallbackKey, JSON.stringify(stored.slice(0, 100)));
+        window.dispatchEvent(new CustomEvent('wm-local-activity'));
         console.error('Download record failed:', directError.code || directError.message);
         window.showDownloadRecordWarning?.();
     }
@@ -819,11 +814,43 @@ async function recordDownloadActivity(files) {
 async function recordDownloadActivityDirect(user, payload) {
         const { images, videos } = payload;
         const activityId = payload.clientId.replace(/[^A-Za-z0-9_-]/g, '').slice(0,80);
-        await WMFirebase.db.ref('activities/' + user.uid + '/' + activityId).set({ clientId:payload.clientId, createdAt: firebase.database.ServerValue.TIMESTAMP, images, videos, total: images + videos, watermarkType: payload.watermarkType, font: payload.font, position: payload.position, color: payload.color });
-        await WMFirebase.db.ref().update({['users/' + user.uid + '/images']:firebase.database.ServerValue.increment(images),['users/' + user.uid + '/videos']:firebase.database.ServerValue.increment(videos),['users/' + user.uid + '/downloads']:firebase.database.ServerValue.increment(images + videos)});
+        const activityRef = WMFirebase.db.ref('activities/' + user.uid + '/' + activityId);
+        const claim = await activityRef.transaction(current => current === null ? {
+            clientId:payload.clientId,
+            createdAt:firebase.database.ServerValue.TIMESTAMP,
+            images,
+            videos,
+            total:images + videos,
+            watermarkType:payload.watermarkType,
+            font:payload.font,
+            position:payload.position,
+            color:payload.color
+        } : undefined);
+        if (claim.committed) {
+            await WMFirebase.db.ref().update({
+                ['users/' + user.uid + '/images']:firebase.database.ServerValue.increment(images),
+                ['users/' + user.uid + '/videos']:firebase.database.ServerValue.increment(videos),
+                ['users/' + user.uid + '/downloads']:firebase.database.ServerValue.increment(images + videos)
+            });
+        }
         const [profileSnapshot,subscriptionSnapshot] = await Promise.all([WMFirebase.db.ref('users/' + user.uid).once('value'),WMFirebase.db.ref('subscriptions/' + user.uid).once('value')]);
         const profile = profileSnapshot.val() || {}, subscription = subscriptionSnapshot.val() || {};
         await WMFirebase.db.ref('publicProfiles/' + user.uid).update({name:profile.name||user.displayName||user.email.split('@')[0],avatarUrl:profile.avatarUrl||'',downloads:Number(profile.images||0)+Number(profile.videos||0),showOnTopUsers:profile.showOnTopUsers!==false,censorUsername:profile.censorUsername===true,proSince:Number(subscription.proSince||profile.proSince||0),proExpiresAt:Number(subscription.expiresAt||profile.proExpiresAt||0)}).catch(error=>console.warn('Public ranking sync failed:',error.code||error.message));
+}
+
+async function syncQueuedDownloadActivities(user) {
+    const fallbackKey = 'wmActivityFallback:' + user.uid;
+    let queued = [];
+    try { queued = JSON.parse(localStorage.getItem(fallbackKey) || '[]'); } catch {}
+    if (!Array.isArray(queued) || !queued.length) return;
+    const remaining = [];
+    for (const item of queued) {
+        try { await recordDownloadActivityDirect(user, item); }
+        catch { remaining.push(item); }
+    }
+    if (remaining.length) localStorage.setItem(fallbackKey, JSON.stringify(remaining.slice(0, 100)));
+    else localStorage.removeItem(fallbackKey);
+    window.dispatchEvent(new CustomEvent('wm-local-activity'));
 }
 
 // ============================================================
@@ -1661,7 +1688,8 @@ function addFiles(files) {
 // UPLOAD HANDLERS
 // ============================================================
 
-uploadZone.addEventListener('click', () => fileInput.click());
+function requireToolAccount(){if(window.WMFirebase?.auth?.currentUser)return true;location.href='login/';return false}
+uploadZone.addEventListener('click', () => {if(requireToolAccount())fileInput.click()});
 
 uploadZone.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -1675,12 +1703,14 @@ uploadZone.addEventListener('dragleave', () => {
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.classList.remove('dragover');
+    if (!requireToolAccount()) return;
     if (e.dataTransfer.files.length) {
         addFiles(e.dataTransfer.files);
     }
 });
 
 fileInput.addEventListener('change', function() {
+    if (!requireToolAccount()) { this.value=''; return; }
     if (this.files.length) {
         addFiles(this.files);
         this.value = '';
