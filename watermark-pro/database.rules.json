@@ -32,7 +32,7 @@
       "$uid": {
         ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
         ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && !data.exists()))",
-        "email": { ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && !data.exists() && newData.val() === auth.token.email))", ".validate": "newData.isString() && (root.child('admins').child(auth.uid).val() === true || newData.val() === auth.token.email)" },
+        "email": { ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && (!data.exists() || data.val() === '') && newData.val() === auth.token.email))", ".validate": "newData.isString() && (root.child('admins').child(auth.uid).val() === true || newData.val() === auth.token.email)" },
         "downloads": { ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)", ".validate": "newData.isNumber() && newData.val() >= 0" },
         "images": { ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)", ".validate": "newData.isNumber() && newData.val() >= 0" },
         "videos": { ".write": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)", ".validate": "newData.isNumber() && newData.val() >= 0" },

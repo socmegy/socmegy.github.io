@@ -65,12 +65,16 @@
         videos: 0,
         showOnTopUsers: true
       });
+      // Write email separately in case the set() didn't include it (rule evaluation edge case)
+      if (user.email) {
+        await db.ref('users/' + user.uid + '/email').set(user.email).catch(() => {});
+      }
     } else {
       const current = snapshot.val() || {};
       const repair = {};
-      if (!current.email && user.email) repair.email = user.email;
+      if ((!current.email || current.email === '') && user.email) repair.email = user.email;
       if (!Number(current.accountCreatedAt)) repair.accountCreatedAt = Date.parse(user.metadata && user.metadata.creationTime || '') || Date.now();
-      if (Object.keys(repair).length) await userRef.update(repair);
+      if (Object.keys(repair).length) await userRef.update(repair).catch(() => {});
     }
     const subscriptionRef = db.ref('subscriptions/' + user.uid);
     const subscription = await subscriptionRef.once('value');
