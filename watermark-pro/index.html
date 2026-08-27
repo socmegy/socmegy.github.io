@@ -800,6 +800,12 @@ async function recordDownloadActivity(files) {
     const payload = { clientId, images, videos, watermarkType: watermarkSettings.font === 'signature' ? 'signature' : 'text', font: String(watermarkSettings.font || 'arial'), position: String(watermarkSettings.position || 'center'), color: String(watermarkSettings.color || 'white') };
     try {
         await recordDownloadActivityDirect(user, payload);
+        // Store a local copy so history shows immediately (before Firebase propagation)
+        const fallbackKey = 'wmActivityFallback:' + user.uid;
+        const stored = JSON.parse(localStorage.getItem(fallbackKey) || '[]');
+        stored.unshift({ id: payload.clientId, clientId: payload.clientId, createdAt: Date.now(), ...payload, total: images + videos });
+        localStorage.setItem(fallbackKey, JSON.stringify(stored.slice(0, 100)));
+        window.dispatchEvent(new CustomEvent('wm-local-activity'));
     } catch (directError) {
         const fallbackKey = 'wmActivityFallback:' + user.uid;
         const stored = JSON.parse(localStorage.getItem(fallbackKey) || '[]');
@@ -2434,6 +2440,6 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div class="account-centre-overlay" id="accountCentreOverlay" aria-label="Watermark Pro Account Centre"><iframe class="account-centre-frame" id="accountCentreFrame" title="Watermark Pro Account Centre" src="about:blank"></iframe></div>
-<script src="website-account-shell.js?v=20260826-1"></script>
+<script src="website-account-shell.js?v=20260827-8"></script>
 </body>
 </html>
