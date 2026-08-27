@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>if(location.hash==='#profile')document.documentElement.classList.add('profile-route');if(location.hash==='#subscription')document.documentElement.classList.add('subscription-route');if(location.hash==='#payment')document.documentElement.classList.add('payment-route');if(location.hash==='#settings')document.documentElement.classList.add('settings-route');if(location.hash==='#top-users')document.documentElement.classList.add('top-users-route')</script>
 <title>Watermark Pro - Free</title>
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Watermark Pro">
+<link rel="manifest" href="manifest.webmanifest?v=20260828-pwa1">
+<link rel="apple-touch-icon" href="app-icon-192.png">
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -13,7 +20,7 @@
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
 <script src="firebase-config.js?v=20260826-1"></script>
-<link rel="stylesheet" href="website-account-shell.css?v=20260827-counter1">
+<link rel="stylesheet" href="website-account-shell.css?v=20260828-final8">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -201,6 +208,8 @@ body {
 .footer i { color:#ffffff; -webkit-text-fill-color:#ffffff; }
 .social-wrap{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:12px}.social-label{color:#fff;font:700 10px Poppins}.social-links{display:flex;flex-wrap:wrap;gap:6px}.social-links a{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #283139;border-radius:50%;background:#111;color:#fff;text-decoration:none;font-size:12px;transition:.2s}.social-links a:hover{transform:translateY(-1px);border-color:#7b8790;background:#202930;color:#fff}.social-links i{-webkit-text-fill-color:currentColor!important;color:currentColor!important}
 .control-group label{font-size:12px!important}.control-group label i{font-size:13px!important}.footer p,.social-label{font-size:12px!important;line-height:1.5!important}
+.controls>.control-group:has(#atToggle){transform:translateY(-7px)!important}
+@media(max-width:720px){.header.scrolled{min-height:76px!important;padding-top:17px!important;padding-bottom:17px!important}}
 
 /* TOP USERS */
 .website-top-users { background:#ffffff; border-radius:16px; margin-top:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); }
@@ -402,14 +411,9 @@ body {
             </div>
             <div class="control-group">
                 <label><i class="fas fa-font"></i> Size</label>
-                <div class="size-label">
-                    <input type="range" id="sizeSlider" min="0" max="25" value="8" step="0.5">
-                    <span class="value" id="sizeValue">8%</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-size:7px; color:rgba(0,0,0,0.15); margin-top:-2px;">
-                    <span id="sizeMinLabel">0</span>
-                    <span id="sizeMaxLabel">25</span>
-                </div>
+                <input type="range" id="sizeSlider" min="0" max="25" value="8" step="0.5">
+                <span class="value" id="sizeValue">8%</span>
+                <span id="sizeMinLabel" hidden>0</span><span id="sizeMaxLabel" hidden>25</span>
             </div>
             <div class="control-group">
                 <label><i class="fas fa-adjust"></i> Opacity</label>
@@ -2428,6 +2432,7 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div class="account-centre-overlay" id="accountCentreOverlay" aria-label="Watermark Pro Account Centre"><iframe class="account-centre-frame" id="accountCentreFrame" title="Watermark Pro Account Centre" src="about:blank"></iframe></div>
-<script src="website-account-shell.js?v=20260827-counter1"></script>
+<script src="website-account-shell.js?v=20260828-final8"></script>
+<script src="pwa.js?v=20260828-pwa1"></script>
 </body>
 </html>
