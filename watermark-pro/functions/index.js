@@ -67,14 +67,21 @@ exports.recordDownloadActivity = functions.region('asia-southeast1').https.onCal
     watermarkType: data?.watermarkType === 'signature' ? 'signature' : 'text',
     font: String(data?.font || 'arial').slice(0, 50),
     position: String(data?.position || 'center').slice(0, 40),
-    color: String(data?.color || 'white').slice(0, 30)
+    color: String(data?.color || 'white').slice(0, 30),
+    totalsApplied: false
   };
   const claim = await activityRef.transaction(current => current === null ? activity : undefined);
-  if (!claim.committed) return { recorded: false, duplicate: true, images, videos, total, activityId: clientId };
+  const existing = claim.snapshot.val() || {};
+  if (!claim.committed && existing.totalsApplied === true) {
+    return { recorded: false, duplicate: true, images, videos, total, activityId: clientId };
+  }
+  // Apply the counters and completion marker atomically. A retry after an
+  // interrupted claim can safely finish the same event without double-counting.
   await db.ref().update({
     ['users/' + uid + '/images']: admin.database.ServerValue.increment(images),
     ['users/' + uid + '/videos']: admin.database.ServerValue.increment(videos),
-    ['users/' + uid + '/downloads']: admin.database.ServerValue.increment(total)
+    ['users/' + uid + '/downloads']: admin.database.ServerValue.increment(total),
+    ['activities/' + uid + '/' + clientId + '/totalsApplied']: true
   });
   return { recorded: true, images, videos, total, activityId: clientId };
 });

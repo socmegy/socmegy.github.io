@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Watermark Pro — Admin</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
   <script src="firebase-config.js?v=20260826-1"></script>
-  <link rel="stylesheet" href="admin-live.css?v=20260827-achievement3">
+  <link rel="stylesheet" href="admin-live.css?v=20260827-modal1">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -369,6 +369,25 @@
       .receipt-stamp-paid { font-size: 10px; }
       .receipt-stamp-logo { width: 22px; height: 22px; }
     }
+  </style>
+  <style>
+    .admin-page .receipt-stamp-wrap{right:64px!important;bottom:-5px!important}
+    .admin-page .receipt-footer{text-align:center!important;font:400 10px/1.5 'Courier New',monospace!important;color:#555!important;margin-top:10px!important;border-top:1px dashed #ccc!important;padding-top:8px!important}
+    @media(max-width:520px){.admin-page .receipt-stamp-wrap{right:50px!important;bottom:-4px!important}.admin-page .receipt-footer{font-size:9px!important;margin-top:6px!important;padding-top:6px!important}}
+    /* Exact Website verified-modal geometry and typography. */
+    .admin-page .badge-modal{padding:20px 14px!important;align-items:center!important}
+    .admin-page .badge-modal .modal-card{position:relative!important;width:min(480px,100%)!important;margin:0 8px!important;padding:18px!important;border-radius:16px!important;background:#fff!important}
+    .admin-page .badge-modal .modal-head{display:block!important;padding:0 48px 0 0!important;overflow:visible!important}
+    .admin-page .badge-modal .badge-user-row{display:grid!important;grid-template-columns:40px minmax(0,1fr)!important;align-items:start!important;column-gap:8px!important}
+    .admin-page .badge-modal .badge-avatar-column{width:40px!important;margin:0!important;gap:8px!important}
+    .admin-page .badge-modal .badge-user-avatar{width:40px!important;height:40px!important;font-size:16px!important}
+    .admin-page .badge-modal .badge-user-copy{min-height:40px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;gap:3px!important}
+    .admin-page .badge-modal .badge-user-name{max-width:100%!important;margin:0!important;color:#172027!important;font:650 14px/1.35 Poppins,sans-serif!important;display:inline-flex!important;align-items:center!important;gap:0!important;white-space:nowrap!important}
+    .admin-page .badge-modal .badge-user-name .verified-badge{display:inline-flex!important;width:1em!important;height:1em!important;margin:0 0 0 4px!important;position:static!important;top:auto!important;transform:none!important;align-self:center!important;flex:none!important}
+    .admin-page .badge-modal .badge-sub{margin:0!important;color:#59656e!important;font:700 9px/1.15 Poppins,sans-serif!important;letter-spacing:.06em!important}
+    .admin-page .badge-modal .badge-since{margin:0!important;padding:5px 7px!important;background:#7b8790!important;color:#fff!important;font:600 11px/1 Poppins,sans-serif!important}
+    .admin-page .badge-modal #badgeModalSub{margin:8px 0 0!important;color:#59656e!important;font:400 12px/1.55 Poppins,sans-serif!important;text-align:justify!important}
+    .admin-page .badge-modal .close{position:absolute!important;top:18px!important;right:18px!important;width:34px!important;height:34px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:#f1f4f5!important;color:#172027!important;font-size:20px!important;line-height:1!important}
   </style>
 </head>
 <body class="admin-page">
@@ -861,7 +880,7 @@
     <div class="receipt-area" id="receiptArea">
       <div class="receipt-brand">
         <div class="receipt-brand-logo">
-          <img src="logo.png" id="rcptLogoImg" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <img src="logo.jpg" id="rcptLogoImg" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
           <span id="rcptLogoFallback" style="display:none;color:#fff;font-weight:900;font-size:13px;">WP</span>
         </div>
         <div class="receipt-brand-name" id="rcptBrandName">Watermark Pro</div>
@@ -883,13 +902,14 @@
         <div class="receipt-stamp-wrap" id="receiptStampWrap">
           <div class="receipt-stamp" id="receiptStampEl">
             <div class="receipt-stamp-logo" id="receiptStampLogo">
-              <img src="logo.png" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:9px;font-weight:900;color:#2f9d5b;\'>WP</span>'">
+              <img src="logo.jpg" alt="" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:9px;font-weight:900;color:#2f9d5b;\'>WP</span>'">
             </div>
             <div class="receipt-stamp-paid" id="receiptStampText">PAID</div>
           </div>
         </div>
         <span class="val" id="rcptAmount">RM3.00</span>
       </div>
+      <div class="receipt-footer">Official receipt from Watermark Pro · Thank you for your support.</div>
     </div>
     <div class="receipt-btn-row">
       <button class="btn btn-dark" onclick="printReceipt()">
@@ -1193,7 +1213,7 @@
     const stamp = document.getElementById('receiptStampEl');stamp.style.setProperty('--stamp-color',stampColor);
     document.getElementById('receiptStampText').style.color=stampColor;
     document.getElementById('receiptStampText').textContent = status === 'granted' ? 'GRANTED' : String(status||'pending').toUpperCase();
-    const logoUrl = new URL('logo.png', document.baseURI).href;
+    const logoUrl = new URL('logo.jpg', document.baseURI).href;
     document.getElementById('rcptLogoImg').src = logoUrl;
     const stampLogo = document.querySelector('#receiptStampLogo img');
     if (stampLogo) stampLogo.src = logoUrl;
@@ -1207,7 +1227,7 @@
     const validUntil = validUntilOverride || addMonths(payDate, 1);
     const rcptNo = 'RCPT-' + ref.replace('PRO-','');
     const receiptStatus = status === 'granted' ? 'GRANTED' : String(status||'pending').toUpperCase();
-    const logoUrl = new URL('logo.png', document.baseURI).href;
+    const logoUrl = new URL('logo.jpg', document.baseURI).href;
     const bgUrl = new URL('bg.jpg', document.baseURI).href;
     const stampColor = status === 'rejected' ? '#d84b55' : status === 'pending' ? '#b57908' : '#2f9d5b';
     const statusHtml = `<span style="display:inline-block;background:${status==='rejected'?'#fff0f1':status==='pending'?'#fff8e7':'#edf8f1'};color:${stampColor};padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;">${receiptStatus}</span>`;
@@ -1411,6 +1431,6 @@
 
   document.addEventListener("DOMContentLoaded", () => { generateQR(); });
 </script>
-<script src="admin-live.js?v=20260827-achievement3"></script>
+<script src="admin-live.js?v=20260827-modal1"></script>
 </body>
 </html>

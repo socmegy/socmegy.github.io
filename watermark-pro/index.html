@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>if(location.hash==='#profile')document.documentElement.classList.add('profile-route');if(location.hash==='#subscription')document.documentElement.classList.add('subscription-route');if(location.hash==='#payment')document.documentElement.classList.add('payment-route');if(location.hash==='#settings')document.documentElement.classList.add('settings-route');if(location.hash==='#top-users')document.documentElement.classList.add('top-users-route')</script>
 <title>Watermark Pro - Free</title>
-<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/jpeg" href="logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-app-compat.js"></script>
@@ -13,7 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
 <script src="firebase-config.js?v=20260826-1"></script>
-<link rel="stylesheet" href="website-account-shell.css?v=20260827r2">
+<link rel="stylesheet" href="website-account-shell.css?v=20260827-counter1">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -200,6 +200,7 @@ body {
 .footer p { font-size:13px; font-weight:400; color:#ffffff; -webkit-text-fill-color:#ffffff; }
 .footer i { color:#ffffff; -webkit-text-fill-color:#ffffff; }
 .social-wrap{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:12px}.social-label{color:#fff;font:700 10px Poppins}.social-links{display:flex;flex-wrap:wrap;gap:6px}.social-links a{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #283139;border-radius:50%;background:#111;color:#fff;text-decoration:none;font-size:12px;transition:.2s}.social-links a:hover{transform:translateY(-1px);border-color:#7b8790;background:#202930;color:#fff}.social-links i{-webkit-text-fill-color:currentColor!important;color:currentColor!important}
+.control-group label{font-size:12px!important}.control-group label i{font-size:13px!important}.footer p,.social-label{font-size:12px!important;line-height:1.5!important}
 
 /* TOP USERS */
 .website-top-users { background:#ffffff; border-radius:16px; margin-top:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); }
@@ -309,7 +310,7 @@ body {
     <div class="header" id="mainHeader">
         <div class="header-watermark-left" id="headerWatermark"></div>
         <div class="header-center">
-            <img src="logo.png" class="header-logo" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <img src="logo.jpg" class="header-logo" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
             <div class="header-logo placeholder" style="display:none;"><i class="fas fa-water"></i></div>
             <div class="header-text">
                 <h1>Watermark Pro</h1>
@@ -324,9 +325,9 @@ body {
         <h2 class="website-profile-title">Profile</h2>
         <section class="website-profile-card" id="websiteProfileCard" aria-live="polite"></section>
         <section class="website-supporter-card-section" id="websiteSupporterCardSection" hidden aria-labelledby="websiteSupporterCardTitle"></section>
-        <section class="website-account-history" aria-labelledby="websiteAccountHistoryTitle">
-            <h3 id="websiteAccountHistoryTitle">Account History <button class="website-history-info" id="websiteHistoryInfo" type="button" aria-label="About Account History">i</button></h3>
-            <div id="websiteAccountHistory"></div>
+        <section class="website-profile-progress" aria-labelledby="websiteProgressTitle">
+            <div class="website-progress-heading"><div><span>YOUR JOURNEY</span><h3 id="websiteProgressTitle">Your Progress</h3></div><div class="website-progress-heading-actions"><p>Every completed download brings you closer to a new milestone.</p><button type="button" id="websiteDownloadProgress">Download as Image</button></div></div>
+            <div id="websiteProfileProgress"></div>
         </section>
     </main>
 
@@ -517,7 +518,7 @@ body {
     <button class="auth-close" id="authClose" type="button" aria-label="Close">&times;</button>
     <div class="auth-intro">
       <div class="auth-welcome">Welcome to</div>
-      <div class="auth-brand"><img src="logo.png" alt=""><strong>Watermark Pro</strong></div>
+      <div class="auth-brand"><img src="logo.jpg" alt=""><strong>Watermark Pro</strong></div>
       <p>All watermark settings remain completely free. Your account records downloads and lets you optionally support the project.</p>
       <div class="auth-tabs"><button type="button" class="active" data-auth-mode="login">Login</button><button type="button" data-auth-mode="register">Register</button></div>
     </div>
@@ -821,17 +822,9 @@ if (window.WMFirebase) WMFirebase.auth.onAuthStateChanged(async user => {
     }
     try { await WMFirebase.ensureUser(user); }
     catch (error) { console.warn('Account profile sync unavailable; watermark tools remain active.', error.code || error.message); }
-    await syncQueuedDownloadActivities(user);
 });
 if (window.WMFirebase) WMFirebase.db.ref('publicProfiles').orderByChild('downloads').limitToLast(10).on('value', renderTopUsers, error => console.warn('Top Users unavailable:', error.code || error.message));
 window.addEventListener('resize', () => { if (latestTopUsersSnapshot) renderTopUsers(latestTopUsersSnapshot); });
-
-async function callRecordDownloadActivity(user, payload) {
-    if (!WMFirebase.functions) throw new Error('Firebase Functions is unavailable');
-    const callable = WMFirebase.functions.httpsCallable('recordDownloadActivity');
-    const result = await callable(payload);
-    return result?.data || {};
-}
 
 async function recordDownloadActivity(files) {
     if (!window.WMFirebase) return;
@@ -839,46 +832,19 @@ async function recordDownloadActivity(files) {
     if (!user || !files.length) return;
     const images = files.filter(file => file.type.startsWith('image/')).length;
     const videos = files.filter(file => file.type.startsWith('video/')).length;
-    const clientId = 'dl-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
-    const payload = { clientId, images, videos, watermarkType: watermarkSettings.font === 'signature' ? 'signature' : 'text', font: String(watermarkSettings.font || 'arial'), position: String(watermarkSettings.position || 'center'), color: String(watermarkSettings.color || 'white') };
+    const total = images + videos;
+    const increment = firebase.database.ServerValue.increment;
     try {
-        await callRecordDownloadActivity(user, payload);
-        window.dispatchEvent(new CustomEvent('wm-local-activity'));
+        await WMFirebase.db.ref().update({
+            ['users/' + user.uid + '/images']: increment(images),
+            ['users/' + user.uid + '/videos']: increment(videos),
+            ['users/' + user.uid + '/downloads']: increment(total),
+            ['publicProfiles/' + user.uid + '/downloads']: increment(total)
+        });
     } catch (error) {
-        const fallbackKey = 'wmActivityFallback:' + user.uid;
-        let stored = [];
-        try { stored = JSON.parse(localStorage.getItem(fallbackKey) || '[]'); } catch {}
-        if (!Array.isArray(stored)) stored = [];
-        if (!stored.some(item => item.clientId === clientId || item.id === clientId)) stored.unshift({ id: clientId, createdAt: Date.now(), ...payload, total: images + videos });
-        localStorage.setItem(fallbackKey, JSON.stringify(stored.slice(0, 100)));
-        window.dispatchEvent(new CustomEvent('wm-local-activity'));
-        console.error('Download record queued for retry:', error.code || error.message);
+        console.error('Download total could not be saved:', error.code || error.message);
         window.showDownloadRecordWarning?.();
     }
-}
-
-async function syncQueuedDownloadActivities(user) {
-    const fallbackKey = 'wmActivityFallback:' + user.uid;
-    let queued = [];
-    try { queued = JSON.parse(localStorage.getItem(fallbackKey) || '[]'); } catch {}
-    if (!Array.isArray(queued) || !queued.length) return;
-    const remaining = [];
-    for (const item of queued) {
-        try {
-            await callRecordDownloadActivity(user, {
-                clientId: item.clientId || item.id,
-                images: Number(item.images || 0),
-                videos: Number(item.videos || 0),
-                watermarkType: item.watermarkType,
-                font: item.font,
-                position: item.position,
-                color: item.color
-            });
-        } catch { remaining.push(item); }
-    }
-    if (remaining.length) localStorage.setItem(fallbackKey, JSON.stringify(remaining.slice(0, 100)));
-    else localStorage.removeItem(fallbackKey);
-    window.dispatchEvent(new CustomEvent('wm-local-activity'));
 }
 
 // ============================================================
@@ -2365,7 +2331,7 @@ downloadBtn.addEventListener('click', async function() {
     }
 
     if (completedFiles.length) {
-        await recordDownloadActivity(completedFiles).catch(error => console.warn('Account history record skipped:', error.message));
+        await recordDownloadActivity(completedFiles).catch(error => console.warn('Download total update skipped:', error.message));
     }
 
     processingOverlay.classList.remove('active');
@@ -2462,6 +2428,6 @@ document.addEventListener('DOMContentLoaded', init);
 </script>
 
 <div class="account-centre-overlay" id="accountCentreOverlay" aria-label="Watermark Pro Account Centre"><iframe class="account-centre-frame" id="accountCentreFrame" title="Watermark Pro Account Centre" src="about:blank"></iframe></div>
-<script src="website-account-shell.js?v=20260827r2"></script>
+<script src="website-account-shell.js?v=20260827-counter1"></script>
 </body>
 </html>
