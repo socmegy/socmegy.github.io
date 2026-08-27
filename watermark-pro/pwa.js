@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register(new URL('sw.js',document.baseURI).href,{scope:'./'}).catch(()=>{}));
   let installPrompt=null;
   const isInstalled=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   function mountInstallButton(){
