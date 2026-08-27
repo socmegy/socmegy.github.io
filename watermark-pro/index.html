@@ -10,7 +10,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Watermark Pro">
-<link rel="manifest" href="manifest.webmanifest?v=20260828-pwa2">
+<link id="pwaManifest" rel="manifest" href="manifest.webmanifest?v=20260828-pwa3">
+<script>if(location.hostname==='watermark-pro-1dada.web.app')document.getElementById('pwaManifest').href='manifest-firebase.webmanifest?v=20260828-pwa3';</script>
 <link rel="apple-touch-icon" href="app-icon-192.png">
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -2433,6 +2434,6 @@ document.addEventListener('DOMContentLoaded', init);
 
 <div class="account-centre-overlay" id="accountCentreOverlay" aria-label="Watermark Pro Account Centre"><iframe class="account-centre-frame" id="accountCentreFrame" title="Watermark Pro Account Centre" src="about:blank"></iframe></div>
 <script src="website-account-shell.js?v=20260828-final8"></script>
-<script src="pwa.js?v=20260828-pwa2"></script>
+<script src="pwa.js?v=20260828-pwa3"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register(new URL('sw.js',document.baseURI).href,{scope:'./'}).catch(()=>{}));
+  if('serviceWorker' in navigator)window.addEventListener('load',()=>{const production=location.hostname==='socmegy.com'||location.hostname==='www.socmegy.com',base=production?'/watermark-pro/':new URL('.',document.baseURI).pathname;navigator.serviceWorker.register(base+'sw.js',{scope:base}).catch(()=>{})});
   let installPrompt=null;
   const isInstalled=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
   function mountInstallButton(){
