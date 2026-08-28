@@ -141,7 +141,8 @@
       context.font='800 27px Poppins, Arial';context.fillText('JOIN ME ON WATERMARK PRO. IT’S FREE!',84,930);
       context.fillStyle='#7b8790';context.font='500 20px Poppins, Arial';context.fillText('Create clean watermarks and build your own download journey.',84,970);
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Unable to create image')),'image/jpeg',.92));
-      const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='my-watermark-pro-progress-'+Number(downloads)+'.jpg';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      const filename='my-watermark-pro-progress-'+Number(downloads)+'.jpg';
+      const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
     }catch(error){console.error('Progress image download failed:',error);alert('Unable to download your progress image. Please try again.')}finally{button.disabled=false;button.textContent=original}
   }
   function cardCanvasSafeImage(image){if(!image)return null;try{const test=document.createElement('canvas'),testContext=test.getContext('2d');test.width=1;test.height=1;testContext.drawImage(image,0,0,1,1);test.toDataURL('image/png');return image}catch(error){console.warn('An external card image was skipped because it cannot be exported:',error);return null}}
