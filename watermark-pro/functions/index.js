@@ -222,6 +222,13 @@ exports.adminReviewPayment = functions.region('asia-southeast1').https.onCall(as
     await paymentRef.update({ status: 'rejected', rejectedAt: reviewedAt, reviewedBy: context.auth.uid, reviewLock: null, reviewStartedAt: null });
     return { status: 'rejected' };
   }
+  const paymentAmount = Number(payment.amount);
+  const paymentOriginalPrice = Number(payment.originalPrice);
+  const validPriceSnapshot = Number.isFinite(paymentAmount) && paymentAmount > 0 && Number.isFinite(paymentOriginalPrice) && paymentOriginalPrice > 0 && paymentOriginalPrice >= paymentAmount;
+  if (!validPriceSnapshot) {
+    await paymentRef.update({ reviewLock: null, reviewStartedAt: null });
+    throw new functions.https.HttpsError('failed-precondition', 'This payment has an invalid price snapshot and cannot be approved.');
+  }
 
   const uid = String(payment.uid);
   const subscription = (await db.ref('subscriptions/' + uid).once('value')).val() || {};
@@ -237,6 +244,9 @@ exports.adminReviewPayment = functions.region('asia-southeast1').https.onCall(as
     approvedAt: reviewedAt,
     expiresAt,
     lastPaymentId: paymentId,
+    lastPaymentAmount: paymentAmount,
+    lastPaymentOriginalPrice: paymentOriginalPrice,
+    lastPaymentPriceLockedAt: Number(payment.submittedAt || reviewedAt),
     supporterNumber
   };
   updates['users/' + uid + '/proSince'] = proSince;
