@@ -128,18 +128,18 @@
       context.fillStyle='#172027';context.fillRect(0,0,1080,1080);
       if(background){const scale=Math.max(1080/background.width,1080/background.height),width=background.width*scale,height=background.height*scale;context.drawImage(background,(1080-width)/2,(1080-height)/2,width,height)}
       context.fillStyle='#fff';context.beginPath();context.roundRect(54,54,972,972,38);context.fill();context.strokeStyle='#dfe5e8';context.lineWidth=2;context.stroke();
-      context.save();context.beginPath();context.arc(120,120,38,0,Math.PI*2);context.clip();if(logo)context.drawImage(logo,82,82,76,76);else{context.fillStyle='#172027';context.fillRect(82,82,76,76)}context.restore();
-      context.textBaseline='middle';context.textAlign='left';context.fillStyle='#172027';context.font='800 34px Poppins, Arial';context.fillText('Watermark Pro',176,120);
-      context.fillStyle='#7b8790';context.font='700 18px Poppins, Arial';context.fillText('MY WATERMARK JOURNEY',84,240);
-      const displayName='@'+String(name).slice(0,20),nameSize=displayName.length<=12?42:displayName.length<=17?34:28;
+      context.save();context.beginPath();context.arc(122,120,42,0,Math.PI*2);context.clip();if(logo)context.drawImage(logo,80,78,84,84);else{context.fillStyle='#172027';context.fillRect(80,78,84,84)}context.restore();
+      context.textBaseline='middle';context.textAlign='left';context.fillStyle='#172027';context.font='800 38px Poppins, Arial';context.fillText('Watermark Pro',182,120);
+      context.fillStyle='#7b8790';context.font='700 20px Poppins, Arial';context.fillText('MY WATERMARK JOURNEY',84,240);
+      const displayName='@'+String(name).slice(0,20),nameSize=displayName.length<=12?46:displayName.length<=17?38:31;
       context.fillStyle='#172027';context.font='800 '+nameSize+'px Poppins, Arial';context.fillText(displayName,84,300,900);
-      context.textAlign='center';context.font='800 176px Poppins, Arial';context.fillText(Number(downloads).toLocaleString('en-US'),540,510,900);
-      context.font='800 30px Poppins, Arial';context.fillText('TOTAL DOWNLOADS',540,630);
+      context.textAlign='center';context.font='800 190px Poppins, Arial';context.fillText(Number(downloads).toLocaleString('en-US'),540,510,900);
+      context.font='800 33px Poppins, Arial';context.fillText('TOTAL DOWNLOADS',540,630);
       context.strokeStyle='#dfe5e8';context.beginPath();context.moveTo(84,700);context.lineTo(996,700);context.stroke();
-      context.textAlign='left';context.fillStyle='#7b8790';context.font='700 16px Poppins, Arial';context.fillText('IMAGES',84,770);context.fillText('VIDEOS',360,770);
-      context.fillStyle='#172027';context.font='800 35px Poppins, Arial';context.fillText(Number(images).toLocaleString('en-US'),84,820);context.fillText(Number(videos).toLocaleString('en-US'),360,820);
-      context.font='800 24px Poppins, Arial';context.fillText('JOIN ME ON WATERMARK PRO. IT’S FREE!',84,930);
-      context.fillStyle='#7b8790';context.font='500 18px Poppins, Arial';context.fillText('Create clean watermarks and build your own download journey.',84,970);
+      context.textAlign='left';context.fillStyle='#7b8790';context.font='700 18px Poppins, Arial';context.fillText('IMAGES',84,770);context.fillText('VIDEOS',360,770);
+      context.fillStyle='#172027';context.font='800 39px Poppins, Arial';context.fillText(Number(images).toLocaleString('en-US'),84,820);context.fillText(Number(videos).toLocaleString('en-US'),360,820);
+      context.font='800 27px Poppins, Arial';context.fillText('JOIN ME ON WATERMARK PRO. IT’S FREE!',84,930);
+      context.fillStyle='#7b8790';context.font='500 20px Poppins, Arial';context.fillText('Create clean watermarks and build your own download journey.',84,970);
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Unable to create image')),'image/jpeg',.92));
       const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='my-watermark-pro-progress-'+Number(downloads)+'.jpg';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
     }catch(error){console.error('Progress image download failed:',error);alert('Unable to download your progress image. Please try again.')}finally{button.disabled=false;button.textContent=original}

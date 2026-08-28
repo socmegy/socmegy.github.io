@@ -115,7 +115,7 @@
 
       ctx.strokeStyle='rgba(255,255,255,.42)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(84,865);ctx.lineTo(1116,865);ctx.stroke();
 
-      ctx.textAlign='left';ctx.font='700 18px Poppins, Arial, sans-serif';ctx.fillStyle='#fff';ctx.fillText('DATA AS OF',84,920);
+      ctx.textAlign='left';ctx.font='700 22px Poppins, Arial, sans-serif';ctx.fillStyle='#fff';ctx.fillText('DATA AS OF',84,920);
       ctx.font='700 31px Poppins, Arial, sans-serif';ctx.fillText(snapshot,84,965);
       ctx.font='800 22px Poppins, Arial, sans-serif';ctx.fillText('THANK YOU',84,1030);
       ctx.font='500 24px Poppins, Arial, sans-serif';ctx.fillText('Every download helps Watermark Pro grow. Thank you for being part of our journey.',84,1070,1032);
