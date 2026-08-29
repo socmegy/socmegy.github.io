@@ -68,7 +68,7 @@
       .login-intro p{margin-top:0;font-size:10px}
       .login-form h1{font-size:19px}
     }
-    .legal-consent{position:relative;z-index:2;display:flex;align-items:flex-start;gap:9px;margin-top:12px;color:#c5ced4;font:500 10px/1.45 Poppins;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}.important+.legal-consent{margin-top:12px}.legal-consent[hidden]{display:none}.legal-consent input{position:relative;z-index:3;width:20px;height:20px;margin:0;accent-color:#fff;flex:none;cursor:pointer;pointer-events:auto;touch-action:manipulation}.legal-consent label{cursor:pointer}.legal-consent button{position:relative;z-index:3;border:0;padding:0;background:transparent;color:#fff;font:700 10px Poppins;text-decoration:underline;cursor:pointer;touch-action:manipulation}.legal-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:#000b;backdrop-filter:blur(6px)}.legal-modal.show{display:flex}.legal-card{position:relative;width:min(560px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:26px;border:1px solid #273139;border-radius:18px;background:#fff;color:#172027}.legal-card .modal-close{position:absolute;right:16px;top:16px}.legal-card h2{padding-right:45px;font-size:19px}.legal-copy{margin-top:10px}.legal-copy h3{margin:10px 0 2px;font-size:12px}.legal-copy p{margin:3px 0;color:#59656e;font-size:10px;line-height:1.6}@media(max-width:650px){.legal-modal{align-items:center;padding:16px}.legal-card{max-height:calc(100dvh - 32px);padding:22px}}
+    .legal-consent{position:relative;z-index:2;display:flex;align-items:flex-start;gap:9px;margin-top:12px;color:#c5ced4;font:500 10px/1.45 Poppins;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}.important+.legal-consent{margin-top:12px}.legal-consent[hidden]{display:none}.legal-consent>input{display:none}.legal-check-toggle{position:relative;z-index:3;width:21px;height:21px;flex:none;border:2px solid #c5ced4;border-radius:5px;background:transparent;color:transparent;cursor:pointer;touch-action:manipulation}.legal-check-toggle:after{content:'✓';display:grid;place-items:center;font:900 14px/1 Arial}.legal-check-toggle.on{border-color:#fff;background:#fff;color:#172027}.legal-consent [data-legal]{position:relative;z-index:3;border:0;padding:0;background:transparent;color:#fff;font:700 10px Poppins;text-decoration:underline;cursor:pointer;touch-action:manipulation}.legal-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;background:#000b;backdrop-filter:blur(6px)}.legal-modal.show{display:flex}.legal-card{position:relative;width:min(560px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:26px;border:1px solid #273139;border-radius:18px;background:#fff;color:#172027}.legal-card .modal-close{position:absolute;right:16px;top:16px}.legal-card h2{padding-right:45px;font-size:19px}.legal-copy{margin-top:10px}.legal-copy h3{margin:10px 0 2px;font-size:12px}.legal-copy p{margin:3px 0;color:#59656e;font-size:10px;line-height:1.6}@media(max-width:650px){.legal-modal{align-items:center;padding:16px}.legal-card{max-height:calc(100dvh - 32px);padding:22px}}
   
     /* Terms & Conditions + Privacy Policy modal copy only */
     .legal-copy,
@@ -117,7 +117,7 @@
       </div>
 
       <div class="important" id="registerImportant" hidden><strong>Important:</strong> Username and email cannot be changed after registration. Account-detail changes require admin support, available exclusively to active Pro Supporters.</div>
-      <div class="legal-consent" id="legalConsent" hidden><input id="acceptLegal" type="checkbox"><span><label for="acceptLegal">I agree to the</label> <button type="button" data-legal="terms">Terms &amp; Conditions</button> and <button type="button" data-legal="privacy">Privacy Policy</button>.</span></div>
+      <div class="legal-consent" id="legalConsent" hidden><input id="acceptLegal" type="checkbox"><button class="legal-check-toggle" id="acceptLegalToggle" type="button" role="checkbox" aria-checked="false" aria-label="Agree to Terms and Privacy"></button><span>I agree to the <button type="button" data-legal="terms">Terms &amp; Conditions</button> and <button type="button" data-legal="privacy">Privacy Policy</button>.</span></div>
       <label class="remember-row" id="rememberRow"><input id="rememberMe" type="checkbox"> Remember me</label>
       <button class="login-button" id="submitButton" type="submit">Login</button>
       <div class="form-error" id="formError" aria-live="polite"></div>
@@ -157,11 +157,17 @@
     const rememberMe = document.getElementById('rememberMe');
     const legalConsent = document.getElementById('legalConsent');
     const acceptLegal = document.getElementById('acceptLegal');
-    legalConsent.addEventListener('click', event => {
-      if (event.target.closest('button') || event.target === acceptLegal) return;
-      event.preventDefault();
+    const acceptLegalToggle = document.getElementById('acceptLegalToggle');
+    function toggleLegalConsent() {
       acceptLegal.checked = !acceptLegal.checked;
-      acceptLegal.dispatchEvent(new Event('change', { bubbles: true }));
+      acceptLegalToggle.classList.toggle('on', acceptLegal.checked);
+      acceptLegalToggle.setAttribute('aria-checked', String(acceptLegal.checked));
+    }
+    acceptLegalToggle.addEventListener('click', toggleLegalConsent);
+    legalConsent.addEventListener('click', event => {
+      if (event.target.closest('button')) return;
+      event.preventDefault();
+      toggleLegalConsent();
     });
     let currentMode = 'login';
     let initialAuthCheck = true;
@@ -185,7 +191,7 @@
       username.required = register;
       important.hidden = !register;
       legalConsent.hidden = !register;
-      acceptLegal.required = register;
+      acceptLegal.required = false;
       rememberRow.hidden = register;
       submitButton.textContent = register ? 'Create account' : 'Login';
       formError.textContent = '';
