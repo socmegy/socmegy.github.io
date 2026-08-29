@@ -428,9 +428,10 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
 }
 .footer.footer-layered{padding:0!important}
 @media(max-width:350px){
-  html,body{max-width:100%;overflow-x:hidden!important}
-  .container{width:100%;max-width:100%;overflow-x:hidden}
-  .header{width:100%;min-width:0;gap:4px!important}
+  html,body{max-width:100%;overflow-x:clip!important}
+  .container{width:100%;max-width:100%;overflow:visible}
+  .header{position:-webkit-sticky!important;position:sticky!important;top:0!important;z-index:11000!important;width:100%;min-width:0;gap:4px!important}
+  .header,.upload-box{box-sizing:border-box!important;width:100%!important;margin-left:0!important;margin-right:0!important}
   .header-center{left:0!important;min-width:0;gap:4px!important;flex:1 1 auto!important}
   .header-logo{width:28px!important;height:28px!important}
   .header-text{min-width:0;column-gap:3px!important}
@@ -447,3 +448,10 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
   img,video,canvas,select,input{max-width:100%}
 }
 @media(max-width:700px){.footer-layered .footer-pro-strip{padding-top:20px!important;padding-bottom:20px!important}}
+
+/* Verified badge spacing only. */
+.header-verified,.website-top-verified{margin-left:3.25px!important}
+/* Half-pixel optical adjustments only. */
+.website-user-main .website-top-verified{transform:translateY(-1.5px)!important}
+.website-verified-name .header-verified{transform:translateY(-.5px)!important}
+@media(max-width:720px){.website-user-main .website-top-verified{transform:translateY(-.5px)!important}}

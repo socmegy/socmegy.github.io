@@ -248,7 +248,7 @@
   window.addEventListener('message',event=>{if(event.origin===location.origin&&event.data?.type==='close-watermark-account-centre')closeAccountCentre();});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&overlay.classList.contains('active'))closeAccountCentre();});
   let shellProfileRef=null,shellSubscriptionRef=null,shellProfile={},shellSubscription={};
-  window.hasWatermarkProAccess=()=>WMFirebase.effectivePlan(shellSubscription)==='pro';
+  window.hasWatermarkProAccess=()=>WMFirebase.effectivePlan(shellSubscription)==='pro'||Number(shellProfile.proExpiresAt||0)>Date.now();
   const publishProAccess=()=>{const active=window.hasWatermarkProAccess();document.documentElement.classList.toggle('has-pro-tool-settings',active);window.dispatchEvent(new CustomEvent('watermark-pro-access-change',{detail:{active}}))};
   function renderAccountHeader(user){
     const profile=shellProfile,sub=shellSubscription;
@@ -277,7 +277,7 @@
     document.documentElement.classList.remove('profile-data-ready');
     if(shellProfileRef)shellProfileRef.off();if(shellSubscriptionRef)shellSubscriptionRef.off();shellProfileRef=null;shellSubscriptionRef=null;shellProfile={};shellSubscription={};
     if(shellPaymentRef)shellPaymentRef.off();shellPaymentRef=null;shellPayments=[];lastPublicTotalSynced=null;
-    if(!user){publishProAccess();const proPlanButton=document.getElementById('websitePlanProButton');if(proPlanButton){proPlanButton.textContent='Pro Supporter';proPlanButton.classList.remove('renew-state','urgent','current','pending')}plans.classList.remove('show');verified.classList.remove('show');avatarModal.classList.remove('show');userReceipt.classList.remove('show');supportConfirm.classList.remove('show');overlay.classList.remove('active');paymentReference=null;activeReceipt=null;document.body.style.overflow='';showWebsiteMain();closeAccountCentre();return;}
+    if(!user){publishProAccess();const proPlanButton=document.getElementById('websitePlanProButton');if(proPlanButton){proPlanButton.textContent='Pro Supporter';proPlanButton.classList.remove('renew-state','urgent','current','pending')}plans.classList.remove('show');verified.classList.remove('show');avatarModal.classList.remove('show');userReceipt.classList.remove('show');supportConfirm.classList.remove('show');overlay.classList.remove('active');paymentReference=null;activeReceipt=null;document.body.style.overflow='';if(location.hash==='#top-users')showWebsiteTopUsers();else showWebsiteMain();closeAccountCentre();return;}
     await WMFirebase.ensureUser(user,user.displayName||user.email?.split('@')[0]||'User').catch(error=>console.warn('User profile sync failed:',error.code||error.message));
     shellProfileRef=WMFirebase.db.ref('users/'+user.uid);shellSubscriptionRef=WMFirebase.db.ref('subscriptions/'+user.uid);
     shellPaymentRef=WMFirebase.db.ref('payments').orderByChild('uid').equalTo(user.uid);
@@ -305,7 +305,7 @@
     renderSubscriptionPage();
     renderSettingsPage();appendLegalSettings();
 
-    shellProfileRef.on('value',snapshot=>{shellProfile=snapshot.val()||{};document.documentElement.classList.add('profile-data-ready');renderAccountHeader(user);renderWebsiteProfile();renderSubscriptionPage();renderSettingsPage();appendLegalSettings()});
+    shellProfileRef.on('value',snapshot=>{shellProfile=snapshot.val()||{};document.documentElement.classList.add('profile-data-ready');publishProAccess();renderAccountHeader(user);renderWebsiteProfile();renderSubscriptionPage();renderSettingsPage();appendLegalSettings()});
     shellSubscriptionRef.on('value',snapshot=>{shellSubscription=snapshot.val()||{};publishProAccess();renderAccountHeader(user);renderWebsiteProfile();renderSubscriptionPage();renderSettingsPage();appendLegalSettings()});
     shellPaymentRef.on('value',snapshot=>{shellPayments=[];snapshot.forEach(child=>shellPayments.push({id:child.key,...child.val()}));renderSubscriptionPage()});
     if(location.hash==='#profile')showWebsiteProfile();else if(location.hash==='#subscription')showWebsiteSubscription();else if(location.hash==='#payment')showWebsitePayment();else if(location.hash==='#settings')showWebsiteSettings();else if(location.hash==='#top-users')showWebsiteTopUsers();
