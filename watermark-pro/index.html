@@ -547,7 +547,7 @@ body {
             <div class="quality-warning">
                 <i class="fas fa-info-circle"></i>
                 <div class="warning-text">
-                    <span><strong>Image:</strong> Quality ~98% (PNG lossless, JPEG high quality)</span>
+                    <span><strong>Image:</strong> PNG lossless · JPEG/WebP optimized to avoid unnecessary file growth</span>
                     <span><strong>Video:</strong> Audio preserved when supported · Original FPS retained where browser decoding allows</span>
                 </div>
             </div>
@@ -2123,13 +2123,36 @@ async function processImage(file) {
                 if (outputType !== 'image/png' && outputType !== 'image/jpeg' && outputType !== 'image/webp') {
                     outputType = 'image/png';
                 }
-                const quality = outputType === 'image/png' ? undefined : 0.98;
+                const encodeImage = quality => new Promise((resolveBlob, rejectBlob) => {
+                    canvas.toBlob(blob => {
+                        if (blob) resolveBlob(blob);
+                        else rejectBlob(new Error('Failed to process image'));
+                    }, outputType, quality);
+                });
 
-                canvas.toBlob(function (blob) {
-                    URL.revokeObjectURL(url);
-                    if (blob) resolve(blob);
-                    else reject(new Error('Failed to process image'));
-                }, outputType, quality);
+                let blob;
+                if (outputType === 'image/png') {
+                    // Preserve transparency and lossless pixels for PNG files.
+                    blob = await encodeImage(undefined);
+                } else {
+                    /*
+                     * Cameras often use a better JPEG/WebP encoder than Canvas.
+                     * Re-encoding at 98% can therefore make a 2 MB photo become
+                     * 4 MB. Keep the highest result that is not materially
+                     * larger than the original; only reduce further when needed.
+                     */
+                    const qualitySteps = [0.94, 0.90, 0.86, 0.82];
+                    const preferredMaxBytes = Math.max(file.size * 1.05, 64 * 1024);
+
+                    for (const quality of qualitySteps) {
+                        const candidate = await encodeImage(quality);
+                        blob = candidate;
+                        if (candidate.size <= preferredMaxBytes) break;
+                    }
+                }
+
+                URL.revokeObjectURL(url);
+                resolve(blob);
 
             } catch (error) {
                 URL.revokeObjectURL(url);
@@ -2160,6 +2183,14 @@ function processVideo(file) {
         video.playsInline = true;
         video.preload = 'auto';
         video.crossOrigin = 'anonymous';
+        /*
+         * Keep the decoder attached to the document while a long export runs.
+         * A detached video element can be deprioritised by Chromium after a
+         * short period, leaving Canvas stuck on its first painted frame.
+         */
+        video.setAttribute('aria-hidden', 'true');
+        video.style.cssText = 'position:fixed;left:-2px;top:-2px;width:1px;height:1px;opacity:.001;pointer-events:none;z-index:-1';
+        document.body.appendChild(video);
 
         let resolved = false;
         let selectedImage = null;
@@ -2170,6 +2201,7 @@ function processVideo(file) {
         let safetyTimer = null;
         let canvas = null;
         let canvasStream = null;
+        let canvasVideoTrack = null;
         let combinedStream = null;
         let audioSource = null;
         let audioDestination = null;
@@ -2187,6 +2219,7 @@ function processVideo(file) {
             }
             if (safetyTimer) clearTimeout(safetyTimer);
             try { video.pause(); } catch (_) {}
+            try { video.remove(); } catch (_) {}
             if (endedHandler) video.removeEventListener('ended', endedHandler);
             const tracks = new Set([
                 ...(combinedStream ? combinedStream.getTracks() : []),
@@ -2446,6 +2479,22 @@ function processVideo(file) {
                 ctx2.imageSmoothingQuality = 'high';
 
                 /*
+                 * Manual Canvas frames preserve the source-frame timeline.
+                 * Falling back to a regular capture FPS keeps compatibility
+                 * with browsers that do not expose requestFrame().
+                 */
+                const createCanvasStream = () => {
+                    canvasStream = canvas.captureStream(0);
+                    canvasVideoTrack = canvasStream.getVideoTracks()[0] || null;
+                    if (!canvasVideoTrack || typeof canvasVideoTrack.requestFrame !== 'function') {
+                        canvasStream.getTracks().forEach(track => track.stop());
+                        canvasStream = canvas.captureStream(sourceFPS);
+                        canvasVideoTrack = canvasStream.getVideoTracks()[0] || null;
+                    }
+                    return canvasStream;
+                };
+
+                /*
                  * Preserve audio through Web Audio. The source video itself
                  * remains the timing master; Canvas only supplies the video
                  * track.
@@ -2458,7 +2507,7 @@ function processVideo(file) {
 
                     audioSource.connect(audioDestination);
 
-                    canvasStream = canvas.captureStream(sourceFPS);
+                    createCanvasStream();
 
                     combinedStream = new MediaStream([
                         ...canvasStream.getVideoTracks(),
@@ -2471,7 +2520,7 @@ function processVideo(file) {
                 } catch (audioError) {
                     console.warn('Audio stream setup failed; recording video only.', audioError);
 
-                    canvasStream = canvas.captureStream(sourceFPS);
+                    createCanvasStream();
                     combinedStream = canvasStream;
                 }
 
@@ -2505,7 +2554,7 @@ function processVideo(file) {
                  * keeping a conservative cap for mobile browsers.
                  */
                 const estimatedVideoBitrate = Math.round(
-                    Math.min(32000000, Math.max(6000000, w * h * sourceFPS * 0.25)) /
+                    Math.min(18000000, Math.max(6000000, w * h * sourceFPS * 0.25)) /
                     1000000
                 ) * 1000000;
 
@@ -2582,6 +2631,7 @@ function processVideo(file) {
 
                     ctx2.drawImage(video, 0, 0, w, h);
                     drawWatermark(ctx2, w, h, selectedImage);
+                    try { canvasVideoTrack?.requestFrame?.(); } catch (_) {}
                 };
 
                 const stopRecorder = () => {
