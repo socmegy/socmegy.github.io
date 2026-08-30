@@ -27,6 +27,58 @@ html,body,*{scrollbar-width:none}*::-webkit-scrollbar{width:0;height:0;display:n
 .admin-live-root .admin{background:transparent!important;color:#172027!important}.admin-live-root .admin-content{padding:0!important}.admin-live-root .admin-stat,.admin-live-root .admin-table,.admin-live-root .price-settings,.admin-live-root .grant-pro-box,.admin-live-root .qr-update-box,.admin-live-root .admin-top,.admin-live-users-list,.admin-live-settings-card{background:#fff!important;border-color:#e1e7ea!important;color:#172027!important}.admin-live-root .admin-stat span,.admin-live-root .top-dl,.admin-live-root .admin-live-user-email,.admin-live-root .admin-live-setting-value{color:#7b8790!important}.admin-live-root .admin-row,.admin-live-root .admin-row-overview,.admin-live-root .admin-top-row,.admin-live-user-row,.admin-live-setting{border-color:#e4e9ed!important}.admin-live-user-name,.admin-live-root .admin-name,.admin-live-settings-card h3{color:#172027!important}.admin-edit-button{background:#eef2f4!important;border-color:#d9e0e4!important;color:#253038!important}.admin-live-details{background:#f5f7f8!important;border-color:#dfe5e8!important;color:#172027!important}.admin-live-details input,.admin-live-setting input,.admin-live-root .admin-input{background:#fff!important;border-color:#d9e0e4!important;color:#172027!important}.admin-live-meta div,.admin-live-history{background:#fff!important;border-color:#dfe5e8!important}.admin-live-meta strong,.admin-live-history h4,.admin-live-history-row strong{color:#172027!important}.admin-live-root .qr-preview-mini{width:100%!important;height:220px!important;max-height:220px!important;padding:8px!important;background:#f5f7f8!important;border-color:#d9e0e4!important}.admin-live-root .qr-preview-mini img{width:100%!important;height:100%!important;object-fit:contain!important}
 @media(max-width:720px){.admin-live-menu{top:58px!important;right:8px!important}.admin-live-back{margin-bottom:10px}.admin-live-root .qr-preview-mini{height:180px!important}.admin-live-dashboard-nav{margin-bottom:12px}.admin-live-setting{align-items:center!important;flex-direction:row!important}.admin-live-setting>div:first-child{min-width:0}.admin-live-setting-action{width:auto!important}.admin-live-setting input{width:min(52vw,280px)!important}}
 
+/* Admin header mirrors the public Watermark Pro header. */
+body.admin-page{padding-top:86px!important}
+.admin-live-header{height:76px!important;border:0!important;background:#000!important;box-shadow:none!important}
+.admin-live-header-inner{width:min(1568px,calc(100% - 32px))!important;height:100%;display:flex;align-items:center;gap:10px}
+.admin-live-brand{display:flex!important;align-items:center!important;gap:10px!important;min-width:0;margin-right:auto!important;color:#fff!important;text-align:left}
+.admin-live-brand img{width:40px!important;height:40px!important;border:0!important;border-radius:50%!important;object-fit:cover}
+.admin-live-brand-copy{display:grid;min-width:0;line-height:1}
+.admin-live-brand-title{display:flex;align-items:center;gap:7px;color:#fff;font:700 19px/1.05 Poppins,sans-serif;white-space:nowrap}
+.admin-live-brand-title b{display:inline-block;padding:3px 8px;border-radius:999px;background:url('bg.jpg') center/cover;color:#fff;font:800 8px/1 Poppins,sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.admin-live-brand-sub{margin-top:3px;color:#fff;font:400 9px/1.2 Poppins,sans-serif;white-space:nowrap}
+.admin-live-identity{gap:7px!important;color:#fff!important;font:700 12px Poppins,sans-serif!important}
+.admin-live-identity span{color:#fff!important}
+.admin-live-avatar{width:32px!important;height:32px!important;background:#eef2f4!important;color:#172027!important;font:800 11px/1 Poppins,sans-serif!important}
+.admin-live-menu-button{width:25px!important;height:30px!important;margin-left:4px!important;padding:0!important;display:grid!important;place-items:center!important;color:#fff!important;background:transparent!important}
+.admin-live-menu-button svg{width:25px!important;height:25px!important}
+.admin-live-menu{top:86px!important;right:max(16px,calc((100vw - 1568px)/2))!important;border-radius:14px!important}
+@media(max-width:720px){
+  body.admin-page{padding-top:70px!important}
+  .admin-live-header{height:60px!important}
+  .admin-live-header-inner{width:calc(100% - 16px)!important;gap:4px}
+  .admin-live-brand{gap:6px!important}
+  .admin-live-brand img{width:32px!important;height:32px!important}
+  .admin-live-brand-title{font-size:13px!important;gap:5px}
+  .admin-live-brand-title b{padding:2px 6px;font-size:6px}
+  .admin-live-brand-sub{display:none}
+  .admin-live-identity span{display:none}
+  .admin-live-avatar{width:28px!important;height:28px!important;font-size:9px!important}
+  .admin-live-menu-button{width:24px!important;height:28px!important;margin-left:2px!important}
+  .admin-live-menu-button svg{width:22px!important;height:22px!important}
+  .admin-live-menu{top:68px!important;right:8px!important}
+}
+
+/* Same No. 5 website menu treatment for the admin header. */
+@keyframes admin-menu-curtain-down{from{clip-path:inset(0 0 100% 0);opacity:.3}to{clip-path:inset(0 0 0 0);opacity:1}}
+.admin-live-header{isolation:isolate!important}
+.admin-live-header:after{content:'';display:none;position:fixed;inset:0;z-index:0;background:rgba(0,0,0,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.admin-live-header.menu-open:after{display:block}
+.admin-live-header-inner{position:relative;z-index:1!important}
+.admin-live-identity{gap:12px!important}
+.admin-live-identity{gap:18px!important}
+.admin-live-menu-button{margin-left:18px!important}
+.admin-live-menu-button{position:relative!important;z-index:3!important;display:grid!important;place-content:center!important;gap:4px!important}
+.admin-live-menu-button svg{display:none!important}
+.admin-live-menu-button span{display:block;width:25px;height:2px;border-radius:999px;background:currentColor;transition:transform .24s ease,opacity .18s ease;transform-origin:center}
+.admin-live-menu-button.is-open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.admin-live-menu-button.is-open span:nth-child(2){opacity:0;transform:scaleX(.3)}
+.admin-live-menu-button.is-open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+.admin-live-menu{position:absolute!important;top:100%!important;right:0!important;left:0!important;z-index:2!important;width:auto!important;padding:14px 16px!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:0 0 16px 16px!important;background:linear-gradient(rgba(6,25,42,.7),rgba(6,25,42,.7)),url('bg.jpg') center/cover!important;box-shadow:none!important;animation:admin-menu-curtain-down .42s cubic-bezier(.2,.75,.25,1)}
+.admin-live-menu button{min-height:42px!important;padding:10px 12px!important;border:0!important;border-radius:0!important;background:transparent!important;color:#fff!important;font:700 11px/1.2 Poppins,sans-serif!important;text-align:left!important}
+.admin-live-menu button:hover{background:rgba(255,255,255,.16)!important;color:#fff!important}
+.admin-live-menu button.active{background:#000!important;color:#fff!important}
+
 /* Final admin spacing and exact R&D QR preview. */
 .admin-live-root>.back-app{display:inline-flex!important;margin:8px 0!important;padding:9px 13px!important;border-radius:10px!important;background:#fff!important;color:#172027!important;font:700 11px Poppins!important}.admin-live-section .admin-header{display:none!important}.admin-live-root .admin-grid{border:0!important}.admin-live-identity{cursor:pointer}.admin-live-root input::placeholder{font-size:10px!important;font-weight:400!important}.admin-live-root .qr-preview-mini{position:relative!important;width:100%!important;height:180px!important;min-height:0!important;max-height:180px!important;overflow:hidden!important;padding:8px!important}.admin-live-root .qr-preview-mini img{position:absolute!important;inset:8px!important;width:calc(100% - 16px)!important;height:calc(100% - 16px)!important;max-width:none!important;max-height:none!important;object-fit:contain!important}.admin-live-root .qr-preview-mini>span{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important}
 @media(max-width:720px){.admin-live-root>.back-app{margin:7px 0!important}.admin-live-settings-card .admin-live-setting:first-of-type{align-items:flex-start!important;flex-direction:column!important;gap:10px!important}.admin-live-settings-card .admin-live-setting:first-of-type .admin-live-setting-action{width:100%!important;display:flex!important}.admin-live-settings-card .admin-live-setting:first-of-type input{width:auto!important;min-width:0!important;flex:1!important}.admin-live-root input::placeholder{font-size:9px!important}}
@@ -247,6 +299,8 @@ html,body,*{scrollbar-width:none}*::-webkit-scrollbar{width:0;height:0;display:n
 /* Exact current Website verified-modal geometry and type. */
 .admin-page .badge-modal{padding:16px!important}.admin-page .badge-modal .modal-card{width:min(480px,100%)!important;padding:24px!important;border-radius:20px!important}.admin-page .badge-modal .modal-head{display:block!important;padding:0 48px 0 0!important}.admin-page .badge-modal .badge-user-row{display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;align-items:start!important;column-gap:8px!important}.admin-page .badge-modal .badge-avatar-column{width:48px!important;gap:8px!important}.admin-page .badge-modal .badge-user-avatar{width:48px!important;height:48px!important;font:800 20px Inter,sans-serif!important}.admin-page .badge-modal .badge-user-copy{min-height:48px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;gap:3px!important}.admin-page .badge-modal .badge-user-name{font:650 16px/1.2 Inter,sans-serif!important}.admin-page .badge-modal .badge-user-name .verified-badge{width:1em!important;height:1em!important;margin-left:4px!important}.admin-page .badge-modal .badge-sub{font:700 10px/1.15 Inter,sans-serif!important;margin:0!important}.admin-page .badge-modal .badge-since{margin:0!important;padding:5px 7px!important;font:600 11px/1 Inter,sans-serif!important}.admin-page .badge-modal #badgeModalSub{margin:4px 0 0!important;font:400 14px/1.65 Poppins,sans-serif!important;text-align:justify!important}.admin-page .badge-modal .close{right:24px!important;top:24px!important}
 @media(max-width:650px){.admin-page .badge-modal .modal-card{padding:20px!important}.admin-page .badge-modal #badgeModalSub{font-size:10px!important}.admin-page .badge-modal .badge-user-name{font-size:16px!important}}
+/* This must follow the shared identity rules: it controls avatar-to-name only. */
+.admin-live-identity{gap:18px!important}
 .admin-download-achievement-btn span{color:#fff!important;-webkit-text-fill-color:#fff!important}
 .admin-auth-card input:focus,.admin-email-local:focus-within{outline:none!important;box-shadow:none!important;border-color:#d7dee3!important}.admin-email-local input:focus{outline:none!important;box-shadow:none!important}
 /* Mobile Users: keep the verified badge inline and optically centered with the name. */
@@ -257,3 +311,15 @@ html,body,*{scrollbar-width:none}*::-webkit-scrollbar{width:0;height:0;display:n
 .admin-page [data-admin-section="top"] .admin-name .verified-badge{position:relative!important;top:auto!important;transform:translateY(-.5px)!important}
 .admin-page .badge-modal .badge-user-name{display:inline-flex!important;align-items:center!important;flex-wrap:nowrap!important}
 .admin-page .badge-modal .badge-user-name .verified-badge{display:inline-flex!important;align-items:center!important;justify-content:center!important;align-self:center!important;position:relative!important;top:-2px!important;transform:none!important;vertical-align:middle!important;flex:none!important}
+
+/* Header items: left identity gap equals the header gap plus hamburger offset. */
+.admin-live-identity{gap:14px!important}
+.admin-live-menu-button{margin-left:4px!important}
+.admin-live-avatar,.admin-live-identity{cursor:pointer!important}
+.admin-live-header{box-sizing:border-box!important;padding:0!important}
+.admin-live-header-inner{box-sizing:border-box!important;height:76px!important;min-height:76px!important;padding:0!important;align-items:center!important}
+@media(max-width:720px){.admin-live-header-inner{height:60px!important;min-height:60px!important}}
+/* Admin chip needs its own vertical breathing room. */
+.admin-live-brand-title b{padding:5px 9px!important;line-height:1!important}
+/* Avatars in every admin view consistently advertise their click target. */
+.admin-page .avatar,.admin-page .admin-avatar,.admin-page .admin-live-avatar,.admin-page .badge-user-avatar,.admin-page .avatar-preview,.admin-page .avatar-url-preview{cursor:pointer!important}

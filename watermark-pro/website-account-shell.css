@@ -558,6 +558,12 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
 .header-account-menu.is-open span:nth-child(2){opacity:0;transform:scaleX(.3);}
 .header-account-menu.is-open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
 
+/* One UI typeface: receipt print markup is generated separately and is untouched. */
+body,
+body *:not(.fa):not(.fas):not(.far):not(.fab):not(.fal):not(.fat):not([class^="fa-"]):not([class*=" fa-"]){
+  font-family:Poppins,sans-serif!important;
+}
+
 /* Desktop header: 10px above and 10px below, matching the requested rhythm. */
 @media(min-width:721px){
   .container{padding-top:10px!important;}

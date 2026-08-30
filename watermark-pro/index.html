@@ -21,7 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
 <script src="firebase-config.js?v=20260826-1"></script>
-<link rel="stylesheet" href="website-account-shell.css?v=20260830-hamburger-edge-align-1">
+<link rel="stylesheet" href="website-account-shell.css?v=20260830-poppins-everywhere-1">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -479,7 +479,7 @@ body {
             <div class="control-group">
                 <label><i class="fas fa-pen-fancy"></i> Font</label>
                 <select id="fontSelect">
-                    <option value="arial">Default / Arial</option>
+                    <option value="poppins">Default / Poppins</option>
                     <option value="signature">Signature</option>
                 </select>
             </div>
@@ -733,7 +733,7 @@ document.addEventListener('keydown', function(e) {
 let uploadedFiles = [];
 let watermarkSettings = {
     size: 8, opacity: 50, padding: 4, position: 'center',
-    font: 'arial', color: 'white', name: '', showAt: true,
+    font: 'poppins', color: 'white', name: '', showAt: true,
     signatureData: null, signatureApplied: false,
     repeatWatermark: false, repeatStyle: 'straight', repeatPosition: 'center', repeatSize: 8, repeatOpacity: 50, repeatPadding: 4, repeatShowAt: true, repeatSpacing: 0, repeatAngle: 0, logoData: null, logoApplied: false, logoPosition: 'center', logoSize: 8, logoOpacity: 50, logoPadding: 4
 };
@@ -906,7 +906,7 @@ repeatAtControl.addEventListener('click', function(event){
 });
 
 const LOCAL_SETTINGS_KEY = 'watermarkProToolSettingsV1';
-const defaultToolSettings = { position:'center', font:'arial', size:8, opacity:50, padding:4, color:'white', showAt:true };
+const defaultToolSettings = { position:'center', font:'poppins', size:8, opacity:50, padding:4, color:'white', showAt:true };
 
 function saveToolSettings() {
     try {
@@ -1678,7 +1678,7 @@ function drawWatermark(ctx, w, h, selectedImage) {
     // TEXT
     const text = getWatermarkText();
     const fontSize = Math.max(6, smaller * sizePercent * 1.2);
-    ctx.font = `700 ${fontSize}px Arial, sans-serif`;
+    ctx.font = `700 ${fontSize}px Poppins, sans-serif`;
 
     const textMetrics = ctx.measureText(text);
     const textWidth = textMetrics.width;

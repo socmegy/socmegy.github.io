@@ -13,7 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
   <script src="firebase-config.js?v=20260826-1"></script>
-  <link rel="stylesheet" href="admin-live.css?v=20260829-admin-modal-inline-2">
+  <link rel="stylesheet" href="admin-live.css?v=20260830-admin-avatar-time-1">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1316,6 +1316,9 @@
   function formatFirebaseDate(timestamp) {
     return timestamp ? new Date(timestamp).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—';
   }
+  function formatFirebaseDateTime(timestamp) {
+    return timestamp ? new Date(timestamp).toLocaleString('en-MY', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true }) : '—';
+  }
 
   function listenToAdminData() {
     WMFirebase.db.ref('users').on('value', async snapshot => {
@@ -1355,7 +1358,7 @@
       list.innerHTML = payments.map(payment => `
         <div class="admin-row" style="position:relative;">
           <div class="admin-sub-user"><div class="admin-avatar"><span class="avatar-letter">${safeText((payment.name || 'U').charAt(0))}</span></div><div class="admin-sub-info"><span class="admin-sub-name">${safeText(payment.name || 'User')}</span><span class="admin-sub-created">${safeText(payment.email || '')}</span></div></div>
-          <div class="sub-date" style="color:#9ca7af;font-size:11px;">${formatFirebaseDate(payment.submittedAt)}</div>
+          <div class="sub-date" style="color:#9ca7af;font-size:11px;">${formatFirebaseDateTime(payment.submittedAt)}</div>
           <div class="sub-ref"><strong style="color:#172027;font-size:12px;">${safeText(payment.reference || payment.id)}</strong></div>
           <div class="admin-action"><button class="btn-approve-new" data-payment-action="approve" data-payment-id="${safeText(payment.id)}" data-uid="${safeText(payment.uid)}">Approve</button><button class="btn-reject-new" data-payment-action="reject" data-payment-id="${safeText(payment.id)}">Reject</button></div>
         </div>`).join('');
