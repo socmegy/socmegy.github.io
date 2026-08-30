@@ -521,6 +521,8 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
   to{clip-path:inset(0 0 0 0);opacity:1;}
 }
 .header{isolation:isolate!important;}
+.header:before{content:'';position:absolute;top:0;bottom:0;left:50%;z-index:0;width:100vw;transform:translateX(-50%);background:#000;pointer-events:none;}
+.header>*{position:relative;z-index:1;}
 .header-center{position:relative!important;z-index:1;}
 .header-account{z-index:1!important;}
 .header.menu-open:after{content:'';position:fixed;inset:0;z-index:0;background:rgba(0,0,0,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
@@ -551,7 +553,7 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
 
 /* Same three hamburger lines animate into the close state. */
 .header-account-menu{position:relative!important;z-index:3!important;display:grid!important;place-content:center!important;gap:4px!important;}
-.header-account-menu span{display:block;width:21px;height:2px;border-radius:999px;background:currentColor;transition:transform .24s ease,opacity .18s ease;transform-origin:center;}
+.header-account-menu span{display:block;width:25px;height:2px;border-radius:999px;background:currentColor;transition:transform .24s ease,opacity .18s ease;transform-origin:center;}
 .header-account-menu.is-open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
 .header-account-menu.is-open span:nth-child(2){opacity:0;transform:scaleX(.3);}
 .header-account-menu.is-open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
