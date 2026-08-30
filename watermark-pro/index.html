@@ -21,7 +21,7 @@
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.17.1/firebase-functions-compat.js"></script>
 <script src="firebase-config.js?v=20260826-1"></script>
-<link rel="stylesheet" href="website-account-shell.css?v=20260829-badge-halfpx-1">
+<link rel="stylesheet" href="website-account-shell.css?v=20260830-menu-active-clean-1">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
@@ -2173,6 +2173,7 @@ function processVideo(file) {
         let combinedStream = null;
         let audioSource = null;
         let audioDestination = null;
+        let endedHandler = null;
         let chunks = [];
         let cleanedUp = false;
 
@@ -2186,6 +2187,7 @@ function processVideo(file) {
             }
             if (safetyTimer) clearTimeout(safetyTimer);
             try { video.pause(); } catch (_) {}
+            if (endedHandler) video.removeEventListener('ended', endedHandler);
             const tracks = new Set([
                 ...(combinedStream ? combinedStream.getTracks() : []),
                 ...(canvasStream ? canvasStream.getTracks() : []),
@@ -2630,7 +2632,24 @@ function processVideo(file) {
                     rafId = requestAnimationFrame(loop);
                 };
 
-                recorder.start(250);
+                /*
+                 * Do not use a MediaRecorder timeslice for MP4. Some Android
+                 * implementations emit fragmented MP4 chunks whose media is
+                 * playable when concatenated, but whose top-level duration
+                 * only describes an early fragment. Gallery apps may scan all
+                 * fragments while social-media uploaders trust that incorrect
+                 * duration and truncate the video. A single final chunk lets
+                 * MediaRecorder finalize one coherent duration at stop().
+                 */
+                recorder.start();
+
+                // `ended` is the authoritative completion signal. A final
+                // video-frame callback is not guaranteed after playback ends.
+                endedHandler = () => {
+                    drawCurrentFrame();
+                    setTimeout(stopRecorder, 100);
+                };
+                video.addEventListener('ended', endedHandler, { once: true });
 
                 // Start video only after recorder is recording.
                 await video.play();

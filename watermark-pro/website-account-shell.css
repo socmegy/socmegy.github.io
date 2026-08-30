@@ -455,3 +455,108 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
 .website-user-main .website-top-verified{transform:translateY(-1.5px)!important}
 .website-verified-name .header-verified{transform:translateY(-.5px)!important}
 @media(max-width:720px){.website-user-main .website-top-verified{transform:translateY(-.5px)!important}}
+
+/* Header rhythm: slightly taller in both resting and sticky states. */
+.header,
+.header.scrolled{
+  min-height:76px!important;
+  padding-top:14px!important;
+  padding-bottom:14px!important;
+  margin-bottom:16px!important;
+}
+.upload-box{
+  margin-top:0!important;
+}
+
+/* Give the first footer block deliberate breathing room. */
+.footer-layered .footer-pro-strip{
+  padding-top:35px!important;
+  padding-bottom:35px!important;
+}
+
+@media(max-width:650px){
+  .header,
+  .header.scrolled{
+    min-height:60px!important;
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+  }
+}
+
+/* Keep the visible header content aligned with the upload-box edge. */
+.header-center{left:0!important;}
+
+/* The header sits directly above the upload box. */
+.header,
+.header.scrolled{margin-bottom:10px!important;}
+
+/* Account menu — Direction 01: quiet white utility panel. */
+.header-user-menu{
+  width:205px!important;
+  padding:10px!important;
+  border:1px solid #dfe5e8!important;
+  border-radius:16px!important;
+  background:#fff!important;
+  box-shadow:0 18px 45px rgba(0,0,0,.2)!important;
+}
+.header-user-menu button{
+  width:100%!important;
+  min-height:40px!important;
+  padding:10px 12px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:#172027!important;
+  font:700 11px/1.2 Poppins,sans-serif!important;
+  text-align:left!important;
+}
+.header-user-menu button:hover{background:#eef2f4!important;transform:none!important;filter:none!important;}
+.header-user-menu button.active{background:#172027!important;color:#fff!important;}
+.header-user-menu .menu-logout{margin-top:5px!important;border-top:1px solid #e7ecee!important;border-radius:0!important;color:#6d787f!important;}
+.header-user-menu .menu-logout:hover{color:#172027!important;}
+
+/* Menu entry 05 — a full-width curtain that unfolds under the header. */
+@keyframes wm-menu-curtain-down{
+  from{clip-path:inset(0 0 100% 0);opacity:.3;}
+  to{clip-path:inset(0 0 0 0);opacity:1;}
+}
+.header{isolation:isolate!important;}
+.header-center{position:relative!important;z-index:1;}
+.header-account{z-index:1!important;}
+.header.menu-open:after{content:'';position:fixed;inset:0;z-index:0;background:rgba(0,0,0,.3);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.header-user-menu{
+  position:absolute!important;
+  top:100%!important;
+  right:0!important;
+  left:0!important;
+  width:auto!important;
+  z-index:2!important;
+  padding:14px 16px!important;
+  border-radius:0 0 16px 16px!important;
+  border-color:rgba(255,255,255,.22)!important;
+  background:linear-gradient(rgba(6,25,42,.7),rgba(6,25,42,.7)),url('bg.jpg') center/cover!important;
+  animation:wm-menu-curtain-down .42s cubic-bezier(.2,.75,.25,1);
+}
+.header-user-menu button{
+  min-height:42px!important;
+  border-radius:0!important;
+  border-bottom:1px solid rgba(255,255,255,.24)!important;
+  color:#fff!important;
+}
+.header-user-menu button:hover{background:rgba(255,255,255,.16)!important;color:#fff!important;}
+.header-user-menu button.active{background:#000!important;color:#fff!important;}
+.header-user-menu button,.header-user-menu button:last-child{border-bottom:0!important;}
+.header-user-menu .menu-logout{margin-top:0!important;border-top:0!important;color:#fff!important;}
+.header-user-menu .menu-logout:hover{color:#fff!important;}
+
+/* Same three hamburger lines animate into the close state. */
+.header-account-menu{position:relative!important;z-index:3!important;display:grid!important;place-content:center!important;gap:4px!important;}
+.header-account-menu span{display:block;width:21px;height:2px;border-radius:999px;background:currentColor;transition:transform .24s ease,opacity .18s ease;transform-origin:center;}
+.header-account-menu.is-open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.header-account-menu.is-open span:nth-child(2){opacity:0;transform:scaleX(.3);}
+.header-account-menu.is-open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+
+/* Desktop header: 10px above and 10px below, matching the requested rhythm. */
+@media(min-width:721px){
+  .container{padding-top:10px!important;}
+}
