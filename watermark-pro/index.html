@@ -988,9 +988,18 @@ async function updateProcessingEstimate() {
     processingEstimate.textContent = 'Calculating estimated video processing time…';
     const durations = await Promise.all(videos.map(readVideoDuration));
     if (request !== estimateRequest) return;
-    const seconds = Math.max(5, Math.ceil(durations.reduce((sum, value) => sum + value, 0) * 1.15 + videos.length * 2));
+    const totalDuration = durations.reduce((sum, value) => sum + value, 0);
+    const longestVideo = Math.max(...durations, 0);
+    const seconds = Math.max(5, Math.ceil(totalDuration * 1.15 + videos.length * 2));
     const label = seconds < 60 ? `about ${seconds} seconds` : `about ${Math.ceil(seconds / 60)} minute${Math.ceil(seconds / 60) === 1 ? '' : 's'}`;
-    processingEstimate.textContent = `Estimated video processing time: ${label}`;
+    let message = `Estimated video processing time: ${label}.`;
+    if (longestVideo >= 10 * 60) {
+        message += ' Long videos are rendered in real time in this browser. Keep this page open, prevent the phone from sleeping, and do not switch apps.';
+    }
+    if (longestVideo >= 20 * 60) {
+        message += ' Videos above 20 minutes may exceed device memory; split the video first for the most reliable result.';
+    }
+    processingEstimate.textContent = message;
 }
 
 const signaturePanel = document.getElementById('signaturePanel');
@@ -2036,11 +2045,19 @@ function clearAllFiles() {
     previewBtn.innerHTML = '<i class="fas fa-eye"></i> Show Preview';
 }
 
-function addFiles(files) {
+async function addFiles(files) {
     const fileArray = files instanceof FileList ? Array.from(files) : files;
     let added = 0;
+    const tooLong = [];
     for (const file of fileArray) {
         if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+            if (file.type.startsWith('video/')) {
+                const duration = await readVideoDuration(file);
+                if (duration > 30 * 60) {
+                    tooLong.push(file.name);
+                    continue;
+                }
+            }
             const exists = uploadedFiles.some(f => f.name === file.name && f.size === file.size);
             if (!exists) {
                 uploadedFiles.push(file);
@@ -2050,6 +2067,9 @@ function addFiles(files) {
     }
     if (added > 0) {
         updateFileList();
+    }
+    if (tooLong.length) {
+        showAppStatus('Not added: videos over 30 minutes are not supported in browser processing. Split the video first.');
     }
 }
 

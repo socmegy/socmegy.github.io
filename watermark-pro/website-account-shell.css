@@ -278,6 +278,22 @@ html:not(.top-users-route) #websiteTopUsersPage{display:none!important}
 /* The main watermark tool establishes 16px as the product's outer-card radius. */
 .website-profile-card,.website-account-history,.website-subscription-intro,.website-plan-option,.website-subscription-history,.website-settings-card,.website-payment-card,.website-top-users,.website-verified-card,.website-plans-card,.website-history-info-card,.website-avatar-card,.website-support-confirm>div,.website-receipt-card,.website-receipt-area{border-radius:16px!important}
 
+/* Verified modal · selected Direction 07. */
+.website-verified-card{width:min(480px,100%)!important;padding:28px!important;border-radius:20px!important;overflow:hidden}
+.website-verified-card::before{content:"";position:absolute;z-index:0;top:-76px;right:-30px;width:150px;height:150px;border-radius:50%;background:url('bg.jpg') center/cover;pointer-events:none}
+.website-verified-card>*{position:relative;z-index:1}
+.website-verified-mark{display:grid;place-items:center;width:42px;height:42px;margin:0 0 17px}
+.website-verified-modal-badge{display:grid!important;width:42px!important;height:42px!important;place-items:center;margin:0!important}
+.website-verified-modal-badge svg{display:block;width:100%;height:100%}
+.website-verified-card>.website-verified-close{position:absolute!important;right:14px!important;top:14px!important;z-index:2!important;background:#f1f4f5!important;color:#172027!important;text-shadow:none}
+.website-verified-copy{margin:16px 0 0!important;color:#59656e!important;font:400 13px/1.6 Poppins,sans-serif!important;text-align:left!important}
+.website-verified-copy strong{color:#172027}
+.website-verified-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.website-verified-facts>div{padding:13px 14px;border-radius:11px;background:#eff5f7}
+.website-verified-facts span{display:block;color:#71818a;font:500 12px/1 Poppins,sans-serif}
+.website-verified-facts strong,.website-verified-facts .website-verified-since{display:block!important;width:auto!important;min-width:0!important;max-width:none!important;margin:7px 0 0!important;padding:0!important;border-radius:0!important;background:transparent!important;color:#173041!important;white-space:normal!important;font:700 12px/1.2 Poppins,sans-serif!important}
+@media(max-width:650px){.website-verified-card{padding:22px!important}.website-verified-card::before{top:-93px;right:-42px;width:155px;height:155px}.website-verified-card>.website-verified-close{top:14px!important;right:14px!important}.website-verified-mark{width:36px;height:36px;margin-bottom:14px}.website-verified-modal-badge{width:36px!important;height:36px!important}.website-verified-copy{margin-top:14px!important;font-size:11px!important;line-height:1.55!important}.website-verified-facts{margin-top:16px;gap:8px}.website-verified-facts>div{padding:11px}.website-verified-facts span{font-size:9px}.website-verified-facts strong,.website-verified-facts .website-verified-since{margin-top:5px!important;font-size:10px!important}}
+
 /* Final grant controls sit compactly at the bottom-right. */
 .website-subscription-history-row:has(.website-subscription-history-right .granted) .website-subscription-history-right{justify-content:flex-end!important;gap:9px!important;margin-top:4px!important}
 .payment-reference-alert{color:#d52d3a!important;font-weight:800!important}

@@ -8,20 +8,15 @@
   const verified=document.createElement('div');
   let openVerifiedProfile=null;
   verified.className='website-verified-overlay';
-  verified.innerHTML='<div class="website-verified-card"><button class="website-verified-close" aria-label="Close">×</button><div class="website-verified-head"><div class="website-verified-avatar-column"><div class="website-verified-avatar"></div><div class="website-verified-since"></div></div><div class="website-verified-copy-column"><div class="website-verified-name"><span></span></div><div class="website-verified-plan">PRO SUPPORTER</div></div></div><p class="website-verified-copy"></p></div>';
+  verified.innerHTML='<div class="website-verified-card"><button class="website-verified-close" aria-label="Close">×</button><div class="website-verified-mark" aria-hidden="true"></div><p class="website-verified-copy"></p><div class="website-verified-facts"><div><span>Plan</span><strong>PRO SUPPORTER</strong></div><div><span>Since</span><strong class="website-verified-since"></strong></div></div></div>';
   document.body.appendChild(verified);
   window.openWebsiteVerifiedModal=function(displayName,fullName,avatarUrl,proSince,context='public'){
     openVerifiedProfile={displayName,fullName,avatarUrl,proSince,context};
-    const avatar=verified.querySelector('.website-verified-avatar');
-    const name=verified.querySelector('.website-verified-name');
+    const mark=verified.querySelector('.website-verified-mark');
     const date=Number(proSince);
-    const validAvatar=validImageUrl(avatarUrl)?String(avatarUrl):'';
-    avatar.replaceChildren();
-    if(validAvatar){const image=document.createElement('img');image.src=validAvatar;image.alt='';image.onerror=()=>{avatar.textContent=String(fullName||'U').charAt(0)};avatar.appendChild(image)}else avatar.textContent=String(fullName||'U').charAt(0);
-    name.innerHTML='<span></span>'+window.createVerifiedBadgeMarkup('modal','header-verified');
-    name.querySelector('span:first-child').textContent=window.matchMedia('(max-width:720px)').matches&&String(displayName).length>=13?String(displayName).slice(0,8)+'..'+String(displayName).charAt(String(displayName).length-1):displayName;
+    mark.innerHTML=window.createVerifiedBadgeMarkup('modal','website-verified-modal-badge');
     const since=date?new Date(date).toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'}):'—';
-    verified.querySelector('.website-verified-since').textContent='Since '+since;
+    verified.querySelector('.website-verified-since').textContent=since;
     verified.querySelector('.website-verified-copy').textContent=context==='user'?'You have supported Watermark Pro since '+since+'. Thank you for helping keep the project available and improving.':displayName+' supports Watermark Pro. Their support helps keep the project available and improving.';
     verified.classList.add('show');
   };
