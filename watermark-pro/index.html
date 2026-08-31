@@ -2483,6 +2483,15 @@ function processVideo(file) {
                 });
 
                 const sourceFPS = await detectSourceFPS();
+                /*
+                 * Long browser-side exports cannot reliably encode every
+                 * 60/120fps source frame while Canvas watermarking. Limiting
+                 * only longer videos to a stable 30fps prevents the recorder
+                 * from falling behind and producing a visibly stuttering file.
+                 */
+                const exportFPS = duration > 90
+                    ? Math.min(sourceFPS, 30)
+                    : sourceFPS;
 
                 canvas = document.createElement('canvas');
                 canvas.width = w;
@@ -2508,7 +2517,7 @@ function processVideo(file) {
                     canvasVideoTrack = canvasStream.getVideoTracks()[0] || null;
                     if (!canvasVideoTrack || typeof canvasVideoTrack.requestFrame !== 'function') {
                         canvasStream.getTracks().forEach(track => track.stop());
-                        canvasStream = canvas.captureStream(sourceFPS);
+                        canvasStream = canvas.captureStream(exportFPS);
                         canvasVideoTrack = canvasStream.getVideoTracks()[0] || null;
                     }
                     return canvasStream;
@@ -2574,7 +2583,7 @@ function processVideo(file) {
                  * keeping a conservative cap for mobile browsers.
                  */
                 const estimatedVideoBitrate = Math.round(
-                    Math.min(18000000, Math.max(6000000, w * h * sourceFPS * 0.25)) /
+                    Math.min(18000000, Math.max(6000000, w * h * exportFPS * 0.25)) /
                     1000000
                 ) * 1000000;
 
@@ -2645,6 +2654,7 @@ function processVideo(file) {
                  */
                 let lastMediaTime = -1;
                 let started = false;
+                let nextExportFrameTime = 0;
 
                 const drawCurrentFrame = () => {
                     if (resolved) return;
@@ -2673,8 +2683,15 @@ function processVideo(file) {
                             lastMediaTime = mediaTime;
                         }
 
-                        // Draw every decoded frame.
-                        drawCurrentFrame();
+                        /*
+                         * Keep the requested canvas frames on the export
+                         * timeline. This avoids queueing 60/120fps work for a
+                         * long export that intentionally targets 30fps.
+                         */
+                        if (mediaTime + 0.0005 >= nextExportFrameTime) {
+                            drawCurrentFrame();
+                            nextExportFrameTime = mediaTime + (1 / exportFPS);
+                        }
                         lastMediaTime = mediaTime;
 
                         if (video.ended || mediaTime >= duration - 0.001) {
@@ -2699,7 +2716,10 @@ function processVideo(file) {
                             return;
                         }
 
-                        drawCurrentFrame();
+                        if (video.currentTime + 0.0005 >= nextExportFrameTime) {
+                            drawCurrentFrame();
+                            nextExportFrameTime = video.currentTime + (1 / exportFPS);
+                        }
 
                         if (video.currentTime >= duration - 0.02) {
                             drawCurrentFrame();
