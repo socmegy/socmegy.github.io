@@ -390,18 +390,19 @@
     .admin-page .badge-modal .close{position:absolute!important;top:18px!important;right:18px!important;width:34px!important;height:34px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:#f1f4f5!important;color:#172027!important;font-size:20px!important;line-height:1!important}
     /* Same selected Verified modal as the website. */
     .admin-page .badge-modal .modal-card{position:relative!important;width:min(480px,100%)!important;padding:28px!important;border-radius:20px!important;overflow:hidden!important;background:#fff!important}
-    .admin-page .badge-modal .modal-card::before{content:"";position:absolute;z-index:0;top:-76px;right:-30px;width:150px;height:150px;border-radius:50%;background:url('../bg.jpg') center/cover;pointer-events:none}
+    .admin-page .badge-modal .modal-card::before{content:"";position:absolute;z-index:0;top:-76px;right:-30px;width:150px;height:150px;border-radius:50%;background-image:url('bg.jpg')!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;pointer-events:none}
     .admin-page .badge-modal .modal-card>*{position:relative;z-index:1}
     .admin-page .badge-modal .close{position:absolute!important;top:14px!important;right:14px!important;z-index:2!important;background:#f1f4f5!important;color:#172027!important}
     .admin-page .badge-modal .admin-verified-mark{display:grid;width:42px;height:42px;place-items:center;margin:0 0 17px}
     .admin-page .badge-modal .admin-verified-mark svg{display:block;width:42px;height:42px}
-    .admin-page .badge-modal #badgeModalSub{margin:16px 0 0!important;color:#59656e!important;font:400 13px/1.6 Poppins,sans-serif!important;text-align:left!important}
+    .admin-page .badge-modal .admin-verified-shape{display:grid;width:42px;height:42px;place-items:center;clip-path:polygon(50% 0,60% 8%,72% 5%,80% 18%,94% 25%,90% 40%,100% 50%,90% 60%,94% 75%,80% 82%,72% 95%,60% 92%,50% 100%,40% 92%,28% 95%,20% 82%,6% 75%,10% 60%,0 50%,10% 40%,6% 25%,20% 18%,28% 5%,40% 8%);background:url('bg.jpg') center/cover;color:#fff;font:800 27px/1 Arial;text-shadow:0 1px 2px #0007}
+    .admin-page .badge-modal #badgeModalSub{margin:16px 0 0!important;color:#59656e!important;font:400 13px/1.6 Poppins,sans-serif!important;text-align:justify!important;text-justify:inter-word}
     .admin-page .badge-modal #badgeModalSub strong{color:#172027}
-    .admin-page .badge-modal .admin-verified-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+    .admin-page .badge-modal .admin-verified-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}
     .admin-page .badge-modal .admin-verified-facts>div{padding:13px 14px;border-radius:11px;background:#eff5f7}
     .admin-page .badge-modal .admin-verified-facts span{display:block;color:#71818a;font:500 12px/1 Poppins,sans-serif}
     .admin-page .badge-modal .admin-verified-facts strong{display:block;margin-top:7px;color:#173041;font:700 12px/1.2 Poppins,sans-serif}
-    @media(max-width:650px){.admin-page .badge-modal .modal-card{padding:22px!important}.admin-page .badge-modal .modal-card::before{top:-93px;right:-42px;width:155px;height:155px}.admin-page .badge-modal .close{top:14px!important;right:14px!important}.admin-page .badge-modal .admin-verified-mark,.admin-page .badge-modal .admin-verified-mark svg{width:36px;height:36px}.admin-page .badge-modal .admin-verified-mark{margin-bottom:14px}.admin-page .badge-modal #badgeModalSub{margin-top:14px!important;font-size:11px!important;line-height:1.55!important}.admin-page .badge-modal .admin-verified-facts{margin-top:16px;gap:8px}.admin-page .badge-modal .admin-verified-facts>div{padding:11px}.admin-page .badge-modal .admin-verified-facts span{font-size:9px}.admin-page .badge-modal .admin-verified-facts strong{margin-top:5px;font-size:10px}}
+    @media(max-width:650px){.admin-page .badge-modal .modal-card{padding:22px!important}.admin-page .badge-modal .modal-card::before{top:-93px;right:-42px;width:155px;height:155px}.admin-page .badge-modal .close{top:14px!important;right:14px!important}.admin-page .badge-modal .admin-verified-mark,.admin-page .badge-modal .admin-verified-mark svg{width:36px;height:36px}.admin-page .badge-modal .admin-verified-mark{margin-bottom:14px}.admin-page .badge-modal #badgeModalSub{margin-top:14px!important;font-size:11px!important;line-height:1.55!important}.admin-page .badge-modal .admin-verified-facts{margin-top:14px;gap:8px}.admin-page .badge-modal .admin-verified-facts>div{padding:11px}.admin-page .badge-modal .admin-verified-facts span{font-size:9px}.admin-page .badge-modal .admin-verified-facts strong{margin-top:5px;font-size:10px}}
   </style>
 </head>
 <body class="admin-page">
@@ -1172,7 +1173,13 @@
     const badgeSource = document.querySelector('.verified-badge svg');
     if (badgeSource) {
       const badge = badgeSource.cloneNode(true);
-      badge.querySelectorAll('image').forEach(image => image.setAttribute('href', '../bg.jpg'));
+      const clipPath = badge.querySelector('clipPath');
+      const clipId = 'adminModalBadge' + Date.now() + Math.random().toString(36).slice(2);
+      if (clipPath) {
+        clipPath.id = clipId;
+        badge.querySelectorAll('image').forEach(image => image.setAttribute('clip-path', 'url(#' + clipId + ')'));
+      }
+      badge.querySelectorAll('image').forEach(image => image.setAttribute('href', 'bg.jpg'));
       mark.appendChild(badge);
     }
     const sub = card.querySelector("#badgeModalSub");
