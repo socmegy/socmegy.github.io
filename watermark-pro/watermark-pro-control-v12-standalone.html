@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ms" data-admin-app>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
+<title>Watermark Pro - Pusat Kawalan · V10</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
+*{box-sizing:border-box}
+:root{--bg:#f4f7fa;--surface:#fff;--text:#111827;--muted:#687383;--line:#e2e8f0;--line-strong:#cbd5e1;--blue:#1478ee;--blue-soft:#edf6ff;--navy:#101827;--green:#16814f;--amber:#a56b00;--red:#b42318;--pink:#d63384;--shadow:0 16px 45px rgba(15,23,42,.08);--sidebar:246px}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:"DM Sans",Arial,sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.5}
+.app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 16px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:24px;z-index:40}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px;font-weight:850;letter-spacing:-.03em}
+.brandmark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#1f67b5;color:#fff;font-weight:850}
+.nav{display:grid;gap:5px}
+.navbtn{position:relative;width:100%;min-height:44px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#4d5b6a;display:flex;align-items:center;gap:11px;text-align:left;font-size:13px;font-weight:700}
+.navbtn svg{width:19px;height:19px;flex:0 0 19px}
+.navbtn:hover{background:#f4f8fc;color:#1b4f78}
+.navbtn.active{background:var(--blue-soft);color:#155886}
+.nav-count{margin-left:auto;min-width:21px;height:21px;padding:0 6px;border-radius:999px;display:inline-grid;place-items:center;background:#fff0f0;color:var(--red);font-size:10px;font-weight:850}
+.sidebar-foot{margin-top:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc;cursor:pointer}.sidebar-foot:hover{border-color:#9fb8d2;background:#f4f9ff}
+.admin-mini{display:flex;align-items:center;gap:9px;min-width:0}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#eaf3ff;color:#155886;font-size:12px;font-weight:850;flex:0 0 34px;background-size:cover;background-position:center}
+.avatar img{width:100%;height:100%;display:block;object-fit:cover}
+.admin-mini-copy{min-width:0}
+.admin-mini strong,.admin-mini span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-mini strong{font-size:12px}.admin-mini span{margin-top:2px;color:var(--muted);font-size:10px}
+.workspace{min-width:0}
+.topbar{position:sticky;top:0;z-index:30;height:68px;border-bottom:1px solid rgba(226,232,240,.9);background:rgba(244,247,250,.9);backdrop-filter:blur(16px)}
+.topbar-inner{height:100%;width:min(1280px,calc(100% - 40px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.topbar-left{display:flex;align-items:center;gap:10px;min-width:0}
+.menu-btn{display:none;width:40px;height:40px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#334155;place-items:center}
+.menu-btn svg{width:20px;height:20px}
+#pageTitle{margin:0;font-size:17px;font-weight:800;letter-spacing:-.025em}
+.top-admin{display:flex;align-items:center;gap:9px}.top-admin .avatar{width:32px;height:32px;flex-basis:32px}
+.top-admin strong{font-size:11px}.top-admin span{display:block;margin-top:2px;color:var(--muted);font-size:9px}
+main{width:min(1280px,calc(100% - 40px));margin:auto;padding:30px 0 56px}
+.view{display:none}.view.active{display:block}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.eyebrow{margin-bottom:7px;color:#657383;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.page-head h1{margin:0;font-size:clamp(26px,4vw,38px);line-height:1.05;letter-spacing:-.045em}
+.page-head p{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{min-height:40px;padding:0 14px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:#243244;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:750}
+.btn:hover{border-color:#aebccc;background:#fbfdff}.btn.primary{border-color:var(--navy);background:var(--navy);color:#fff}.btn.blue{border-color:var(--blue);background:var(--blue);color:#fff}.btn.danger{border-color:#f1c2bc;background:#fff5f3;color:var(--red)}.btn.pink{border-color:#efb1ce;background:#fff3f9;color:var(--pink)}.btn.small{min-height:32px;padding:0 10px;border-radius:8px;font-size:10px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:0 1px 1px rgba(15,23,42,.02)}
+.stat{padding:18px}.stat-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.stat-label{color:var(--muted);font-size:11px;font-weight:700}.stat-icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:#f2f6fa;color:#4c6476}.stat-icon svg{width:17px;height:17px}.stat strong{display:block;margin-top:13px;font-size:28px;letter-spacing:-.04em}.stat small{display:block;margin-top:5px;color:var(--muted);font-size:10px}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:18px;align-items:start}
+.card-head{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px}.card-head h2{margin:0;font-size:14px;letter-spacing:-.02em}.card-head p{margin:4px 0 0;color:var(--muted);font-size:10px}.card-body{padding:18px}
+.export-list{display:grid;gap:10px}.export-item{padding:14px;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:14px}.export-item strong{display:block;font-size:12px}.export-item span{display:block;margin-top:4px;color:var(--muted);font-size:10px}
+.list{display:grid;gap:10px}.data-row{padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;display:grid;align-items:center;gap:12px}.data-row.pending-row{grid-template-columns:minmax(150px,1fr) minmax(130px,.8fr) minmax(120px,.8fr) minmax(110px,.6fr) auto}.data-row.user-row{grid-template-columns:minmax(180px,1.2fr) minmax(160px,1fr) 110px 110px auto}.data-row.history-row{grid-template-columns:minmax(150px,1fr) minmax(120px,.8fr) minmax(130px,.8fr) 100px auto}.data-row.notification-row{grid-template-columns:minmax(200px,1.5fr) minmax(130px,.7fr) minmax(140px,.8fr) auto}.data-row.legal-row{grid-template-columns:minmax(0,1fr) auto}
+.identity{display:flex;align-items:center;gap:10px;min-width:0}.identity-copy{min-width:0}.identity strong,.identity span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.identity strong{font-size:12px}.identity span{margin-top:3px;color:var(--muted);font-size:10px}
+.avatar-preview{width:56px;height:56px;margin-top:10px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:#eaf0f6;color:#28557e;font-size:20px;font-weight:850}.avatar-preview img{width:100%;height:100%;object-fit:cover}
+.cell-label{display:block;margin-bottom:4px;color:#8792a0;font-size:8px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.cell-value{font-size:11px;font-weight:650;overflow-wrap:anywhere}.cell-value.muted{color:var(--muted);font-weight:550}
+.row-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.status{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border:1px solid currentColor;border-radius:999px;font-size:9px;font-weight:850;white-space:nowrap}.status.pending{color:var(--amber);background:#fffaf0}.status.paid,.status.active{color:var(--green);background:#f1fbf6}.status.rejected,.status.removed,.status.inactive{color:var(--red);background:#fff4f2}.status.granted{color:var(--pink);background:#fff2f8}.status.free{color:#5f6b78;background:#f5f7f9}
+.empty{padding:34px 18px;border:1px dashed var(--line-strong);border-radius:12px;text-align:center;color:var(--muted);font-size:11px}
+.section-card{margin-bottom:18px}.section-card>.card-body{padding:18px}
+.filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.search{position:relative;min-width:240px;flex:1}.search svg{position:absolute;left:12px;top:50%;width:17px;height:17px;transform:translateY(-50%);color:#8290a0}.search input{padding-left:38px}
+.field{display:grid;gap:7px}.field label{color:#3d4b5b;font-size:11px;font-weight:750}.field-help{color:var(--muted);font-size:9px;line-height:1.5}.input,.field input,.field textarea,.field select{width:100%;min-height:42px;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:#fff;color:var(--text);outline:0;font-size:12px}.field textarea{min-height:112px;resize:vertical;line-height:1.55}.field input:focus,.field textarea:focus,.field select:focus,.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(20,120,238,.1)}
+.select-wrap{position:relative}.select-wrap:after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:1.5px solid #64748b;border-bottom:1.5px solid #64748b;transform:translateY(-70%) rotate(45deg);pointer-events:none}.select-wrap select{appearance:none;padding-right:35px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field.full{grid-column:1/-1}
+.check{display:flex;align-items:center;gap:9px;min-height:42px}.check input{width:18px;height:18px;accent-color:var(--blue)}.check span{font-size:11px;font-weight:650}
+.plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.plan-card{padding:18px}.plan-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.plan-card h3{margin:0;font-size:18px}.plan-card .price{margin-top:12px;font-size:27px;font-weight:850;letter-spacing:-.04em}.plan-card .price small{font-size:10px;color:var(--muted);font-weight:600}.plan-card .discount{margin-top:5px;color:var(--muted);font-size:10px}.plan-card ul{margin:15px 0 0;padding:14px 0 0 18px;border-top:1px solid var(--line);color:#405064;font-size:11px;line-height:1.8}.plan-card .row-actions{margin-top:16px;justify-content:flex-start}
+.notification-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px}.notification-form .form-actions{grid-column:1/-1}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:3px}
+.legal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.legal-meta{color:var(--muted);font-size:10px}.legal-copy{margin-top:5px;color:#435164;font-size:11px;line-height:1.55;white-space:pre-wrap}
+.settings-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.7fr);gap:18px;align-items:start}.settings-preview{padding:20px;text-align:center}.settings-preview .avatar{width:76px;height:76px;margin:0 auto 12px;font-size:24px}.settings-preview strong{display:block;font-size:15px}.settings-preview span{display:block;margin-top:4px;color:var(--muted);font-size:10px}.qr-preview{max-width:100%;max-height:240px;margin:16px auto 0;display:block;object-fit:contain;border:1px solid var(--line);border-radius:10px}
+.modal{position:fixed;inset:0;z-index:1000;padding:18px;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;overflow:auto}.modal.open{display:flex}.modal-shell{width:min(620px,100%);max-height:calc(100dvh - 36px);border-radius:16px;background:#fff;box-shadow:0 24px 80px rgba(15,23,42,.25);display:flex;flex-direction:column;overflow:hidden}.modal-shell.wide{width:min(820px,100%)}.modal-head{min-height:62px;padding:0 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto}.modal-head h2{margin:0;font-size:15px}.close-btn{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:20px}.modal-body{padding:18px;overflow:auto}.modal-foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;background:#fff;flex:0 0 auto}
+.receipt{padding:30px;border:1px solid var(--line);background:#fff}.receipt-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:20px;border-bottom:1px dashed var(--line-strong)}.receipt-head h3{margin:0;font-size:22px}.receipt-head span{display:block;margin-top:5px;color:var(--muted);font-size:10px}.receipt-meta{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:20px 0;border-bottom:1px dashed var(--line-strong)}.receipt-meta>div:last-child{text-align:right}.receipt-meta label{display:block;color:var(--muted);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.receipt-meta strong{display:block;margin-top:6px;font-size:13px}.receipt-item{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0;border-bottom:1px dashed var(--line-strong)}.receipt-item strong{font-size:13px}.receipt-item span{display:block;margin-top:5px;color:var(--muted);font-size:10px}.stamp{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:0 9px;border:2px solid currentColor;border-radius:5px;font-size:10px;font-weight:900;letter-spacing:.06em;transform:rotate(-6deg)}.stamp.pending{color:var(--amber)}.stamp.paid{color:var(--green)}.stamp.rejected,.stamp.removed{color:var(--red)}.stamp.granted{color:var(--pink)}.receipt-total{display:flex;align-items:center;justify-content:space-between;padding-top:18px;font-size:15px;font-weight:850}.receipt-foot{margin-top:30px;padding-top:14px;border-top:1px dashed var(--line-strong);display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:9px}
+.toast{position:fixed;right:20px;bottom:20px;z-index:2000;max-width:min(360px,calc(100% - 32px));padding:12px 14px;border-radius:11px;background:#101827;color:#fff;box-shadow:var(--shadow);font-size:11px;font-weight:650;transform:translateY(20px);opacity:0;pointer-events:none;transition:.18s ease}.toast.show{transform:none;opacity:1}
+.drawer-backdrop{display:none}
+@media(max-width:1080px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid,.settings-grid{grid-template-columns:1fr}.data-row.pending-row{grid-template-columns:minmax(160px,1fr) minmax(130px,.8fr) minmax(120px,.8fr) auto}.pending-row .payment-time-cell{display:none}}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:0;top:0;width:min(286px,84vw);transform:translateX(-105%);transition:transform .2s ease;box-shadow:0 20px 60px rgba(15,23,42,.18)}.sidebar.open{transform:none}.drawer-backdrop{position:fixed;inset:0;z-index:35;background:rgba(15,23,42,.35)}.drawer-backdrop.show{display:block}.menu-btn{display:grid}.topbar-inner,main{width:min(100% - 24px,1280px)}.top-admin-copy{display:none}.legal-grid{grid-template-columns:1fr}}
+@media(max-width:700px){main{padding-top:22px}.page-head{display:block}.head-actions{margin-top:14px;justify-content:flex-start}.head-actions .btn{flex:1}.stats{grid-template-columns:1fr 1fr;gap:10px}.stat{padding:15px}.stat strong{font-size:23px}.card-head{padding:15px}.card-body{padding:14px}.form-grid,.notification-form,.plan-grid{grid-template-columns:1fr}.notification-form .form-actions,.field.full{grid-column:auto}.data-row,.data-row.pending-row,.data-row.user-row,.data-row.history-row,.data-row.notification-row{grid-template-columns:1fr 1fr}.data-row .identity{grid-column:1/-1}.row-actions{grid-column:1/-1;justify-content:stretch}.row-actions .btn{flex:1}.modal{padding:10px}.modal-shell{max-height:calc(100dvh - 20px)}.modal-body{padding:15px}.modal-foot{padding:12px 15px}.modal-foot .btn{flex:1}.receipt{padding:20px}.receipt-head h3{font-size:18px}.receipt-meta{gap:12px}.export-item{align-items:flex-start;flex-direction:column}.export-item .btn{width:100%}}
+@media(max-width:430px){.stats{grid-template-columns:1fr}.data-row,.data-row.pending-row,.data-row.user-row,.data-row.history-row,.data-row.notification-row{grid-template-columns:1fr}.data-row .identity,.row-actions{grid-column:auto}.form-actions{flex-direction:column-reverse}.form-actions .btn{width:100%}.receipt-meta{grid-template-columns:1fr}.receipt-meta>div:last-child{text-align:left}.receipt-item{align-items:flex-start;flex-direction:column}.receipt-foot{display:block}.receipt-foot span{display:block;margin-top:5px}}
+@media print{body>*{display:none!important}#receiptModal{position:static!important;display:block!important;padding:0!important;background:#fff!important}#receiptModal .modal-shell{width:100%!important;max-height:none!important;box-shadow:none!important}#receiptModal .modal-head,#receiptModal .modal-foot{display:none!important}#receiptModal .modal-body{padding:0!important;overflow:visible!important}.receipt{border:0!important}}
+</style>
+
+<style id="v2-responsive-polish">
+*{font-family:"DM Sans",Arial,sans-serif}
+button,input,textarea,select{font-family:inherit}
+@media(max-width:700px){
+  .topbar{height:60px}.topbar-inner,main{width:calc(100% - 20px)}main{padding:18px 0 34px}
+  .page-head h1{font-size:27px}.page-head p{font-size:12px}.page-head{margin-bottom:16px}
+  .head-actions{display:grid;grid-template-columns:1fr;width:100%}.head-actions .btn{width:100%}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:14px}.stat strong{font-size:22px}
+  .card,.section-card{border-radius:12px}.card-head{align-items:flex-start}.card-body{padding:12px}
+  .data-row,.data-row.pending-row,.data-row.user-row,.data-row.history-row,.data-row.notification-row,.data-row.legal-row{grid-template-columns:1fr!important;padding:13px;gap:10px}
+  .data-row .identity,.row-actions{grid-column:auto!important}.row-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.row-actions .btn{width:100%;min-width:0}
+  .filters,.search{width:100%;min-width:0}.form-grid,.notification-form,.plan-grid,.legal-grid,.settings-grid{grid-template-columns:1fr!important}
+  .form-actions{display:grid;grid-template-columns:1fr;width:100%}.form-actions .btn{width:100%}
+  .modal{padding:0;align-items:flex-end}.modal-shell,.modal-shell.wide{width:100%;max-width:none;max-height:94dvh;border-radius:16px 16px 0 0}.modal-head{min-height:56px;padding:0 14px}.modal-body{padding:14px}.modal-foot{padding:12px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.modal-foot .btn{width:100%}
+  .receipt{padding:16px;border:0}.receipt-head{gap:12px;padding-bottom:16px}.receipt-head h3{font-size:18px}.receipt-meta{grid-template-columns:1fr 1fr;gap:10px;padding:16px 0}.receipt-meta strong{font-size:12px;overflow-wrap:anywhere}.receipt-item{padding:16px 0}.receipt-total{padding-top:15px}.receipt-foot{margin-top:20px}
+}
+@media(max-width:430px){
+  .stats{grid-template-columns:1fr}.row-actions,.modal-foot{grid-template-columns:1fr}.receipt-meta{grid-template-columns:1fr}.receipt-meta>div:last-child{text-align:left}.receipt-head{flex-direction:column}.receipt-item{flex-direction:column;align-items:flex-start}
+}
+@media print{
+  @page{size:A4;margin:10mm}
+  html,body{background:#fff!important;width:100%!important;margin:0!important;padding:0!important}
+  #receiptModal .modal-body{padding:0!important}
+  .receipt{width:100%!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important}
+}
+</style>
+
+
+<style id="v3-legibility-alignment-fix">
+/* Legibility: stop using tiny 8–10px UI copy. */
+.admin-mini strong{font-size:14px!important}.admin-mini span{font-size:12px!important;margin-top:4px!important}
+.top-admin strong{font-size:13px!important}.top-admin span{font-size:11px!important;margin-top:3px!important}
+.eyebrow{font-size:12px!important}.page-head p{font-size:14px!important}
+.btn{font-size:13px!important}.btn.small{font-size:12px!important}
+.stat-label{font-size:13px!important}.stat small{font-size:12px!important}
+.card-head h2{font-size:16px!important}.card-head p{font-size:12px!important}
+.export-item strong{font-size:14px!important}.export-item span{font-size:12px!important}
+.identity strong{font-size:14px!important}.identity span{font-size:12px!important}
+.cell-label{font-size:10px!important;margin-bottom:5px!important}.cell-value{font-size:13px!important;line-height:1.45!important}
+.status{font-size:11px!important;min-height:28px!important;padding:0 10px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;line-height:1!important}
+.empty{font-size:13px!important}.field label{font-size:13px!important}.field-help{font-size:11px!important}
+.input,.field input,.field textarea,.field select{font-size:13px!important}.check span{font-size:13px!important}
+.plan-card .price small,.plan-card .discount,.plan-card ul,.legal-meta{font-size:12px!important}.legal-copy{font-size:13px!important}
+.settings-preview span{font-size:12px!important}.modal-head h2{font-size:16px!important}
+.receipt-head span,.receipt-item span{font-size:12px!important}.receipt-meta label{font-size:10px!important}.receipt-meta strong,.receipt-item strong{font-size:14px!important}.stamp{font-size:11px!important}.receipt-foot{font-size:11px!important}
+/* Notification sender: username and date must breathe, never look glued together. */
+.notification-row>div:nth-child(3){display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:5px!important}
+.notification-row>div:nth-child(3) .cell-value{display:block!important;margin:0!important}
+.notification-row>div:nth-child(3) .cell-value.muted{margin-top:1px!important}
+/* History status (including GRANTED/Diluluskan) centered in its grid cell. */
+.history-row>div:nth-child(4){display:flex!important;align-items:center!important;justify-content:center!important;align-self:stretch!important;text-align:center!important}
+@media(max-width:700px){
+  .cell-label{font-size:11px!important}.cell-value{font-size:14px!important}
+  .identity strong{font-size:15px!important}.identity span{font-size:13px!important}
+  .card-head p,.stat small,.field-help{font-size:12px!important}
+  .history-row>div:nth-child(4){justify-content:flex-start!important;min-height:34px!important}
+}
+</style>
+
+
+<style id="v4-ui-rebuild">
+/* Image controls use direct image URLs only. */
+.image-picker{min-height:82px;border:1px dashed #b8c5d3;border-radius:14px;background:#f8fafc;padding:14px 16px;display:flex!important;align-items:center;gap:13px;cursor:pointer;transition:.16s ease;color:#26384a!important}.image-picker:hover{border-color:#1478ee;background:#f3f8ff}.image-picker input{display:none}.image-picker-icon{width:42px;height:42px;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;font-size:22px;font-weight:500;flex:0 0 42px}.image-picker strong{display:block;font-size:14px}.image-picker small{display:block;margin-top:3px;color:var(--muted);font-size:12px;font-weight:500}.payment-check{min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:#fafbfd}.settings-preview{padding:18px!important;text-align:left!important;overflow:hidden}.settings-profile{display:flex;align-items:center;gap:11px;padding-bottom:16px;border-bottom:1px solid var(--line)}.settings-profile .avatar{width:46px!important;height:46px!important;margin:0!important;font-size:16px!important;flex:0 0 46px}.settings-profile strong{font-size:14px!important}.settings-profile span{font-size:12px!important}.qr-stage{margin-top:16px;min-height:310px;border:1px solid var(--line);border-radius:14px;background:#f8fafc;display:grid;place-items:center;padding:18px;overflow:hidden}.qr-preview{width:100%;height:auto;max-width:290px;max-height:290px;margin:0!important;border:0!important;border-radius:12px!important;object-fit:contain;background:#fff}.qr-empty{text-align:center;max-width:230px;color:var(--muted)}.qr-empty-mark{width:48px;height:48px;margin:0 auto 12px;border-radius:14px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-size:25px;color:#526273}.qr-empty strong{display:block!important;color:#26384a;font-size:14px!important}.qr-empty span:last-child{display:block;margin-top:6px!important;font-size:12px!important;line-height:1.5}
+/* Modal forms must occupy the shell so mobile can scroll to every field and action. */
+.modal-shell>form{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}.modal-shell>form>.modal-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}.modal-shell>form>.modal-foot{flex:0 0 auto}.modal-body.form-grid{align-content:start}
+/* Cleaner image treatment everywhere. */
+.avatar{border:1px solid rgba(15,23,42,.06);box-shadow:0 1px 2px rgba(15,23,42,.04);background:#eef3f8;color:#31465a}.avatar img{object-fit:cover}.qr-preview{box-shadow:0 8px 24px rgba(15,23,42,.08)}
+@media(max-width:700px){.modal.open{align-items:stretch!important}.modal-shell,.modal-shell.wide{height:100dvh!important;max-height:100dvh!important;border-radius:0!important}.modal-head{padding-top:max(0px,env(safe-area-inset-top))}.modal-shell>form>.modal-body{padding-bottom:22px}.modal-foot{padding-bottom:max(12px,env(safe-area-inset-bottom))!important}.settings-grid{gap:12px}.qr-stage{min-height:240px}.image-picker{min-height:76px}.settings-preview{order:-1}.settings-profile{padding-bottom:13px}}
+</style>
+
+<style id="v5-final-visual-fix">
+/* One font only. */
+html,body,button,input,textarea,select,.receipt,.receipt *{font-family:"DM Sans",Arial,sans-serif!important}
+.brandmark{overflow:hidden;background:#fff!important}.brandmark img{width:100%;height:100%;display:block;object-fit:cover}
+/* Receipt typography: readable and deliberately close in scale. */
+.receipt{font-size:13px!important;line-height:1.45!important;padding:24px!important}
+.receipt-head h3{font-size:19px!important;line-height:1.2!important}
+.receipt-head span{font-size:12px!important}
+.receipt-meta label{font-size:11px!important}.receipt-meta strong{font-size:14px!important}.receipt-meta span{font-size:13px!important}
+.receipt-item strong{font-size:14px!important}.receipt-item span{font-size:12px!important}
+.receipt-total{font-size:15px!important}.receipt-foot{font-size:11px!important}
+/* Stamp text is mathematically centered in the box. */
+.stamp{box-sizing:border-box!important;display:inline-grid!important;place-items:center!important;min-width:92px!important;height:34px!important;min-height:34px!important;padding:0 10px!important;line-height:1!important;text-align:center!important;white-space:nowrap!important}
+.history-row>div:nth-child(4){display:flex!important;align-items:center!important;justify-content:center!important;align-self:stretch!important;min-height:44px!important}
+.history-row>div:nth-child(4) .status{margin:auto!important}
+@media(max-width:700px){
+ .receipt{padding:18px!important}.receipt-head h3{font-size:18px!important}
+ .history-row>div:nth-child(4){justify-content:center!important}
+}
+</style>
+
+<style id="v7-receipt-restore">
+/* Receipt restored to the established Watermark Pro document logic. */
+#receiptContent{padding:0!important}.receipt.wp-receipt{position:relative;overflow:hidden;padding:28px!important;border:1px solid #e4e9ed!important;border-radius:16px!important;background:#fff!important;color:#172027!important;font:13px/1.5 "DM Sans",Arial,sans-serif!important}
+.wp-receipt .receipt-brand{display:flex;align-items:center;gap:10px;margin-bottom:20px}.wp-receipt .receipt-brand img{width:34px;height:34px;border-radius:9px;object-fit:cover}.wp-receipt .receipt-brand strong{font-size:18px}.wp-receipt .receipt-divider{border:0;border-top:1px dashed #d0d8de;margin:16px 0}.wp-receipt .receipt-row{display:flex;justify-content:space-between;gap:18px;padding:5px 0;font-size:13px}.wp-receipt .receipt-row span:first-child{color:#7b8790}.wp-receipt .receipt-row strong{text-align:right;font-size:13px}.wp-receipt .receipt-amount{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:16px;padding-right:112px;border-top:2px solid #172027}.wp-receipt .receipt-amount strong{font-size:20px}.wp-receipt .receipt-stamp-wrap{position:absolute;right:24px;bottom:23px;pointer-events:none}.wp-receipt .receipt-stamp{box-sizing:border-box;width:88px;height:88px;border:3px solid #2f9d5b;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transform:rotate(-15deg);color:#2f9d5b;opacity:.86}.wp-receipt .receipt-stamp:before{content:"";position:absolute;inset:5px;border:1.5px dashed currentColor;border-radius:50%}.wp-receipt .receipt-stamp b{position:relative;z-index:1;font-size:12px;line-height:1;letter-spacing:.08em;max-width:68px;white-space:normal;text-align:center}.wp-receipt .receipt-stamp small{position:relative;z-index:1;margin-top:5px;font-size:8px;font-weight:800}.wp-receipt .receipt-stamp.pending{color:#a56b00;border-color:#a56b00}.wp-receipt .receipt-stamp.rejected,.wp-receipt .receipt-stamp.removed{color:#b42318;border-color:#b42318}.wp-receipt .receipt-stamp.granted{color:#d63384;border-color:#d63384}
+@media(max-width:700px){#receiptModal .modal-shell.wide{height:auto!important;max-height:calc(100dvh - 20px)!important;border-radius:16px!important;margin:auto!important}.wp-receipt .receipt-row{gap:10px}.wp-receipt .receipt-amount{padding-right:100px}.wp-receipt .receipt-stamp-wrap{right:16px;bottom:18px}.wp-receipt .receipt-stamp{width:78px;height:78px}.wp-receipt .receipt-stamp b{font-size:10px;max-width:60px}}
+@media print{#receiptModal .modal-body{padding:0!important}.receipt.wp-receipt{width:170mm!important;margin:15mm auto!important;padding:14mm!important;border:0!important;border-radius:0!important}.wp-receipt .receipt-stamp{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+
+<style id="v9-final-ui-auth-receipt">
+/* Satu font, satu skala yang konsisten. */
+html,body,button,input,textarea,select,option{font-family:"DM Sans",Arial,sans-serif!important}
+body{font-size:14px!important}
+.navbtn{font-size:14px!important;min-height:46px!important}.nav-count{font-size:11px!important}
+.admin-mini strong{font-size:13px!important}.admin-mini span{font-size:11px!important;line-height:1.35!important}
+.top-admin strong{font-size:13px!important}.top-admin span{font-size:12px!important;line-height:1.35!important}
+#pageTitle{font-size:18px!important}.eyebrow{font-size:11px!important}.page-head h1{font-size:34px!important}.page-head p{font-size:14px!important}
+.btn{font-size:13px!important;min-height:41px!important}.btn.small{font-size:12px!important;min-height:34px!important}
+.stat-label{font-size:13px!important}.stat strong{font-size:27px!important}.stat small{font-size:12px!important}
+.card-head h2{font-size:16px!important}.card-head p{font-size:12px!important;line-height:1.45!important}
+.export-item strong,.identity strong{font-size:13px!important}.export-item span,.identity span{font-size:12px!important}
+.cell-label{font-size:11px!important;letter-spacing:.045em!important}.cell-value{font-size:13px!important;line-height:1.4!important}
+.status{font-size:11px!important;min-height:28px!important;padding:0 10px!important}
+.field label{font-size:13px!important}.field-help{font-size:11px!important}.input,.field input,.field textarea,.field select{font-size:13.5px!important;min-height:44px!important}
+.check span{font-size:13px!important}.legal-meta{font-size:12px!important}.legal-copy{font-size:13px!important}.settings-preview span{font-size:12px!important}.empty{font-size:12px!important}
+
+/* Header identity and sidebar identity both lead to Settings. */
+.sidebar-foot,.top-admin .admin-avatar,.top-admin-copy{cursor:pointer!important}.top-admin .admin-avatar:hover,.top-admin-copy:hover{opacity:.78}
+
+/* Login page. */
+.control-login-gate{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:22px;background:#f4f7fa}
+.control-login-gate[hidden]{display:none!important}.control-login-card{width:min(430px,100%);padding:28px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 20px 60px rgba(15,23,42,.10)}
+.control-login-brand{display:flex;align-items:center;gap:12px}.control-login-brand img{width:40px;height:40px;border-radius:11px;object-fit:cover}.control-login-brand strong{display:block;font-size:16px}.control-login-brand span{display:block;margin-top:2px;color:var(--muted);font-size:12px}
+.control-login-copy{margin:26px 0 18px}.control-login-copy h1{margin:0;font-size:28px;line-height:1.1;letter-spacing:-.035em}.control-login-copy p{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.control-login-form{display:grid;gap:14px}.control-login-form label{display:grid;gap:7px}.control-login-form label>span{font-size:13px;font-weight:700}.control-login-form input{width:100%;height:45px;padding:0 12px;border:1px solid var(--line-strong);border-radius:10px;outline:0;font-size:14px}.control-login-form input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(20,120,238,.10)}
+.control-login-error{min-height:18px;margin:0;color:var(--red);font-size:12px;line-height:1.45}.control-login-submit{width:100%}
+
+/* Complete receipt, based on the original real-stamp geometry. */
+#receiptModal .modal-shell.wide{width:min(690px,100%)!important}
+#receiptContent{padding:18px!important}.receipt.wp-receipt.receipt-complete{position:relative;overflow:visible!important;padding:28px!important;border:1px solid #e4e9ed!important;border-radius:16px!important;background:#fff!important;color:#172027!important;font:13px/1.5 "DM Sans",Arial,sans-serif!important}
+.receipt-doc-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:20px}.receipt-brand{margin:0!important}.receipt-brand img{width:36px!important;height:36px!important;border-radius:50%!important}.receipt-brand strong{font-size:18px!important}.receipt-brand span,.receipt-title span{display:block;margin-top:3px;color:#7b8790;font-size:12px}.receipt-title{text-align:right}.receipt-title h3{margin:0;font-size:20px;line-height:1.2}
+.receipt-divider{margin:18px 0!important}.receipt-detail-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}.receipt-detail-grid>div:last-child{text-align:right}.receipt-kicker{display:block;color:#7b8790;font-size:11px;font-weight:800;letter-spacing:.055em;text-transform:uppercase}.receipt-detail-grid strong,.receipt-product strong{display:block;margin-top:5px;font-size:14px}.receipt-detail-grid small,.receipt-product small{display:block;margin-top:3px;color:#687383;font-size:12px;overflow-wrap:anywhere}
+.receipt-product{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:5px 0 18px;border-bottom:1px dashed #d0d8de}.receipt-price-zone{display:flex;align-items:center;justify-content:flex-end;gap:0;min-width:0;white-space:nowrap}.receipt-item-price{position:relative;z-index:2;font-size:18px!important;font-weight:850!important;white-space:nowrap}
+.receipt-stamp{box-sizing:border-box!important;position:relative!important;z-index:3!important;width:90px!important;height:90px!important;min-width:90px!important;min-height:90px!important;margin:0 -25px 0 0!important;padding:0!important;border:3.5px solid currentColor!important;border-radius:50%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;background:transparent!important;transform:rotate(-18deg)!important;transform-origin:center!important;opacity:.84!important;color:var(--green)!important;overflow:visible!important}
+.receipt-stamp.pending{color:var(--amber)!important}.receipt-stamp.paid{color:var(--green)!important}.receipt-stamp.rejected,.receipt-stamp.removed{color:var(--red)!important}.receipt-stamp.granted{color:var(--pink)!important}
+.receipt-stamp-ring{position:absolute;inset:4px;border:1.5px dashed currentColor;border-radius:50%;pointer-events:none}.receipt-stamp-logo{position:relative;z-index:1;width:29px;height:29px;margin-bottom:2px;border-radius:50%;overflow:hidden;background:#fff}.receipt-stamp-logo img{width:100%;height:100%;display:block;object-fit:cover}.receipt-stamp-status{position:relative;z-index:1;max-width:74px;font-size:10.5px;font-weight:900;line-height:1;letter-spacing:.075em;text-align:center;white-space:nowrap}
+.receipt-breakdown{margin-top:16px;padding-top:0!important;border-top:0!important}.receipt-breakdown>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:5px 0;font-size:13px}.receipt-breakdown strong{font-size:13px}.receipt-adjustment,.receipt-adjustment strong{color:#b42318}.receipt-total{margin-top:7px;padding-top:13px!important;border-top:1px dashed #d0d8de!important;font-size:15px!important}.receipt-total strong{font-size:18px!important}.receipt-foot{font-size:11px!important;line-height:1.45!important}
+@media(max-width:700px){body{font-size:13.5px!important}.page-head h1{font-size:29px!important}.stats{gap:10px!important}#receiptContent{padding:12px!important}.receipt.wp-receipt.receipt-complete{padding:20px!important}.receipt-doc-head{grid-template-columns:1fr}.receipt-title{text-align:left}.receipt-detail-grid{grid-template-columns:1fr;gap:14px}.receipt-detail-grid>div:last-child{text-align:left}.receipt-product{grid-template-columns:minmax(0,1fr) auto;gap:10px}.receipt-stamp{width:78px!important;height:78px!important;min-width:78px!important;min-height:78px!important;margin-right:-22px!important}.receipt-stamp-logo{width:25px;height:25px}.receipt-stamp-status{font-size:9px;max-width:64px}.receipt-item-price{font-size:16px!important}.receipt-foot{display:grid!important;gap:4px!important}}
+@media print{#receiptModal .modal-body{padding:0!important}.receipt.wp-receipt.receipt-complete{width:170mm!important;margin:14mm auto!important;padding:12mm!important;border:0!important;border-radius:0!important}.receipt-stamp{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style>
+
+</head>
+<body>
+
+<div class="control-login-gate" id="controlLoginGate">
+  <div class="control-login-card">
+    <div class="control-login-brand"><img src="logo.jpg" alt="Watermark Pro" onerror="this.hidden=true;this.nextElementSibling.previousElementSibling?.remove?.()"><div><strong>Watermark Pro</strong><span>Pusat Kawalan</span></div></div>
+    <div class="control-login-copy"><h1>Log masuk</h1><p>Gunakan akaun yang dibenarkan untuk mengurus Watermark Pro.</p></div>
+    <form id="controlLoginForm" class="control-login-form">
+      <label><span>E-mel</span><input id="controlLoginEmail" type="email" autocomplete="username" required></label>
+      <label><span>Kata laluan</span><input id="controlLoginPassword" type="password" autocomplete="current-password" required></label>
+      <p class="control-login-error" id="controlLoginError" role="alert" aria-live="polite"></p>
+      <button class="btn primary control-login-submit" type="submit">Log masuk</button>
+    </form>
+  </div>
+</div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brandmark"><img src="logo.jpg" alt="Watermark Pro"></div><span>Watermark Pro</span></div>
+  <nav class="nav" aria-label="Navigasi Watermark Pro">
+    <button class="navbtn active" data-view="dashboard"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span>Utama</span></button>
+    <button class="navbtn" data-view="submissions"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg><span>Penghantaran</span><span class="nav-count" id="navPendingCount">0</span></button>
+    <button class="navbtn" data-view="users"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M17 8h4M19 6v4"/></svg><span>Pengguna</span></button>
+    <button class="navbtn" data-view="plans"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 10h16M8 15h3"/></svg><span>Pelan</span></button>
+    <button class="navbtn" data-view="notifications"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 6-3 6-3 8h18c0-2-3-2-3-8M10 21h4"/></svg><span>Notis</span></button>
+    <button class="navbtn" data-view="legal"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6zM9 11h6M9 15h6"/></svg><span>Terma dan dasar</span></button>
+    <button class="navbtn" data-view="settings"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.7-1L14.5 3h-5L9 6.1a8 8 0 0 0-1.7 1l-2.4-1-2 3.4L5 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 1.7 1l.4 3.1h5l.4-3.1a8 8 0 0 0 1.7-1l2.4 1 2-3.4-2.1-1.5a7 7 0 0 0 .1-1z"/></svg><span>Tetapan</span></button>
+  </nav>
+  <div class="sidebar-foot"><div class="admin-mini"><div class="avatar admin-avatar">W</div><div class="admin-mini-copy"><strong class="admin-username">@watermarkpro</strong><span>Pusat kawalan</span></div></div></div>
+</aside>
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<section class="workspace">
+  <header class="topbar"><div class="topbar-inner"><div class="topbar-left"><button class="menu-btn" id="menuBtn" aria-label="Buka menu"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><h2 id="pageTitle">Utama</h2></div><div class="top-admin"><div class="avatar admin-avatar">W</div><div class="top-admin-copy"><strong class="admin-username">@watermarkpro</strong><span>Watermark Pro</span></div><button class="btn small" id="controlLogout" type="button">Log keluar</button></div></div></header>
+  <main>
+    <section class="view active" id="view-dashboard">
+      <div class="page-head"><div><div class="eyebrow">Utama</div><h1>Kawalan Watermark Pro</h1><p>Semua angka penting dan tindakan segera berada di sini.</p></div></div>
+      <div class="stats">
+        <article class="card stat"><div class="stat-top"><span class="stat-label">Jumlah pengguna</span><span class="stat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 9h4M18 7v4"/></svg></span></div><strong id="statUsers">0</strong><small>Semua akaun</small></article>
+        <article class="card stat"><div class="stat-top"><span class="stat-label">Pro aktif</span><span class="stat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 7h16v11H4zM8 7V5h8v2M8 12h8"/></svg></span></div><strong id="statPro">0</strong><small>Akses semasa</small></article>
+        <article class="card stat"><div class="stat-top"><span class="stat-label">Belum disemak</span><span class="stat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span></div><strong id="statPending">0</strong><small>Perlu tindakan</small></article>
+        <article class="card stat"><div class="stat-top"><span class="stat-label">Jumlah muat turun</span><span class="stat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4M5 20h14"/></svg></span></div><strong id="statDownloads">0</strong><small>Imej dan video</small></article>
+      </div>
+      <div class="dashboard-grid">
+        <article class="card"><div class="card-head"><div><h2>Penghantaran belum disemak</h2><p>Kiraan hilang selepas tindakan dibuat.</p></div><button class="btn small" data-go="submissions">Lihat semua</button></div><div class="card-body"><div class="list" id="dashboardPending"></div></div></article>
+        <article class="card"><div class="card-head"><div><h2>Muat turun imej data</h2><p>Tarikh dijana dimasukkan dalam imej.</p></div></div><div class="card-body export-list"><div class="export-item"><div><strong>3 pengguna teratas</strong><span>Kedudukan berdasarkan jumlah muat turun.</span></div><button class="btn small" id="downloadTopUsers">Muat turun PNG</button></div><div class="export-item"><div><strong>Jumlah semua muat turun</strong><span>Jumlah keseluruhan, imej dan video.</span></div><button class="btn small" id="downloadTotals">Muat turun PNG</button></div></div></article>
+      </div>
+    </section>
+
+    <section class="view" id="view-submissions">
+      <div class="page-head"><div><div class="eyebrow">Pembayaran</div><h1>Penghantaran pelan</h1><p>Semak tarikh, masa pembayaran, nama pengguna, rujukan dan resit.</p></div></div>
+      <article class="card section-card"><div class="card-head"><div><h2>Belum disemak</h2><p id="pendingSummary">0 penghantaran memerlukan tindakan.</p></div></div><div class="card-body"><div class="list" id="submissionList"></div></div></article>
+      <article class="card"><div class="card-head"><div><h2>Sejarah langganan</h2><p>Termasuk pembayaran, pemberian Pro, penolakan dan pembuangan Pro.</p></div></div><div class="card-body"><div class="list" id="subscriptionHistory"></div></div></article>
+    </section>
+
+    <section class="view" id="view-users">
+      <div class="page-head"><div><div class="eyebrow">Akaun</div><h1>Pengguna</h1><p>Cipta, lihat, kemas kini, padam dan urus akses Pro.</p></div><div class="head-actions"><button class="btn primary" id="addUserBtn">Cipta pengguna</button></div></div>
+      <article class="card"><div class="card-head"><div class="filters"><label class="search"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input class="input" id="userSearch" type="search" placeholder="Cari nama pengguna atau e-mel"></label></div></div><div class="card-body"><div class="list" id="userList"></div></div></article>
+    </section>
+
+    <section class="view" id="view-plans">
+      <div class="page-head"><div><div class="eyebrow">Langganan</div><h1>Pelan</h1><p>Urus harga biasa, harga diskaun, sebab diskaun dan semua ciri.</p></div><div class="head-actions"><button class="btn primary" id="addPlanBtn">Cipta pelan</button></div></div>
+      <div class="plan-grid" id="planList"></div>
+    </section>
+
+    <section class="view" id="view-notifications">
+      <div class="page-head"><div><div class="eyebrow">Mesej</div><h1>Notis pengguna</h1><p>Hantar kepada semua pengguna atau satu nama pengguna.</p></div></div>
+      <article class="card section-card"><div class="card-head"><div><h2 id="notificationFormTitle">Notis baharu</h2><p>Nama dan gambar Watermark Pro dimasukkan secara automatik.</p></div></div><form class="card-body notification-form" id="notificationForm"><input type="hidden" id="notificationId"><div class="field"><label for="notificationTitle">Tajuk</label><input id="notificationTitle" required maxlength="90"></div><div class="field"><label for="notificationText">Teks</label><textarea id="notificationText" required maxlength="500"></textarea></div><div class="field"><label for="notificationAudience">Penerima</label><div class="select-wrap"><select id="notificationAudience"><option value="ALL">Semua pengguna</option><option value="SELECTED">Nama pengguna tertentu</option></select></div></div><div class="field" id="notificationUsernameField" hidden><label for="notificationUsername">Nama pengguna</label><input id="notificationUsername" placeholder="@nama_pengguna"></div><div class="form-actions"><button class="btn" id="cancelNotificationEdit" type="button" hidden>Batal</button><button class="btn primary" type="submit">Hantar notis</button></div></form></article>
+      <article class="card"><div class="card-head"><div><h2>Notis dihantar</h2><p>Notis lama turut menggunakan profil Watermark Pro semasa.</p></div></div><div class="card-body"><div class="list" id="notificationList"></div></div></article>
+    </section>
+
+    <section class="view" id="view-legal">
+      <div class="page-head"><div><div class="eyebrow">Kandungan</div><h1>Terma dan dasar</h1><p>Tarikh pada laman pengguna berubah setiap kali kandungan dikemas kini.</p></div><div class="head-actions"><button class="btn primary" id="addLegalBtn">Tambah bahagian</button></div></div>
+      <div class="legal-grid"><article class="card"><div class="card-head"><div><h2>Terma dan Syarat</h2><p class="legal-meta" id="termsUpdated">-</p></div></div><div class="card-body"><div class="list" id="termsList"></div></div></article><article class="card"><div class="card-head"><div><h2>Dasar Privasi</h2><p class="legal-meta" id="privacyUpdated">-</p></div></div><div class="card-body"><div class="list" id="privacyList"></div></div></article></div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="page-head"><div><div class="eyebrow">Sistem</div><h1>Tetapan</h1><p>Urus profil Watermark Pro, pembayaran dan gambar QR.</p></div></div>
+      <div class="settings-grid"><article class="card"><div class="card-head"><div><h2>Profil dan pembayaran</h2><p>Maklumat yang digunakan pada notis dan pembayaran.</p></div></div><form class="card-body form-grid" id="settingsForm"><div class="field full"><label for="adminUsername">Nama pengguna Watermark Pro</label><input id="adminUsername" required placeholder="@watermarkpro"></div><div class="field full"><label for="adminPhotoUrl">URL gambar profil</label><input id="adminPhotoUrl" type="url" inputmode="url" placeholder="https://contoh.com/profile.jpg"><div class="field-help">Tampal pautan terus gambar profil. Tak perlu muat naik fail.</div></div><div class="field"><label for="supportWhatsapp">Nombor WhatsApp sokongan</label><input id="supportWhatsapp" inputmode="tel" placeholder="60123456789"></div><div class="field"><label>Status pembayaran</label><label class="check payment-check"><input id="paymentsOpen" type="checkbox"><span>Terima penghantaran pembayaran</span></label></div><div class="field full"><label for="qrImageUrl">URL gambar QR pembayaran</label><input id="qrImageUrl" type="url" inputmode="url" placeholder="https://contoh.com/qr.jpg"><div class="field-help">Tampal pautan terus gambar QR. Pratonton akan dikemas kini automatik.</div></div><div class="form-actions field full"><button class="btn primary" type="submit">Simpan tetapan</button></div></form></article><aside class="card settings-preview"><div class="settings-profile"><div class="avatar admin-avatar">A</div><div><strong class="admin-username">@watermarkpro</strong><span>Penghantar notis</span></div></div><div class="qr-stage" id="qrStage"><img class="qr-preview" id="qrPreview" alt="Pratonton gambar QR" hidden><div class="qr-empty" id="qrEmpty"><span class="qr-empty-mark">⌗</span><strong>Belum ada gambar QR</strong><span>Masukkan URL gambar QR untuk melihat pratonton di sini.</span></div></div></aside></div>
+    </section>
+  </main>
+</section>
+</div>
+
+<div class="modal" id="userModal" aria-hidden="true"><div class="modal-shell wide"><div class="modal-head"><h2 id="userModalTitle">Cipta pengguna</h2><button class="close-btn" data-close="userModal" aria-label="Tutup">×</button></div><form id="userForm"><div class="modal-body form-grid"><input type="hidden" id="userId"><div class="field"><label for="userUsername">Nama pengguna</label><input id="userUsername" required placeholder="@nama_pengguna"></div><div class="field"><label for="userEmail">E-mel</label><input id="userEmail" type="email" required></div><div class="field full"><label for="userPhoto">Pautan gambar profil</label><input id="userPhoto" type="text" placeholder="https://... atau logo.jpg"><div class="avatar-preview" id="userPhotoPreview" aria-label="Pratonton avatar">?</div></div><div class="field"><label for="userPlan">Pelan</label><div class="select-wrap"><select id="userPlan"></select></div></div><div class="field"><label for="userStatus">Status akaun</label><div class="select-wrap"><select id="userStatus"><option value="active">Aktif</option><option value="inactive">Tidak aktif</option></select></div></div><div class="field"><label for="userImages">Muat turun imej</label><input id="userImages" type="number" min="0" value="0"></div><div class="field"><label for="userVideos">Muat turun video</label><input id="userVideos" type="number" min="0" value="0"></div></div><div class="modal-foot"><button class="btn" type="button" data-close="userModal">Batal</button><button class="btn primary" type="submit">Simpan pengguna</button></div></form></div></div>
+
+<div class="modal" id="planModal" aria-hidden="true"><div class="modal-shell wide"><div class="modal-head"><h2 id="planModalTitle">Cipta pelan</h2><button class="close-btn" data-close="planModal" aria-label="Tutup">×</button></div><form id="planForm"><div class="modal-body form-grid"><input type="hidden" id="planId"><div class="field"><label for="planName">Nama pelan</label><input id="planName" required></div><div class="field"><label for="planSlug">Pengecam pelan</label><input id="planSlug" required placeholder="pro"></div><div class="field"><label for="planNormalPrice">Harga biasa</label><input id="planNormalPrice" type="number" min="0" step="0.01" required></div><div class="field"><label for="planDiscountPrice">Harga diskaun</label><input id="planDiscountPrice" type="number" min="0" step="0.01" required></div><div class="field"><label for="planDiscountLabel">Sebab diskaun</label><input id="planDiscountLabel" placeholder="Penyokong awal"></div><div class="field"><label for="planBillingLabel">Tempoh harga</label><input id="planBillingLabel" placeholder="bulan atau selamanya"></div><div class="field full"><label for="planDescription">Penerangan</label><input id="planDescription"></div><div class="field full"><label for="planFeatures">Ciri pelan</label><textarea id="planFeatures" required placeholder="Satu ciri pada setiap baris"></textarea></div><div class="field full"><label class="check"><input id="planActive" type="checkbox"><span>Pelan aktif dan boleh dipilih</span></label></div></div><div class="modal-foot"><button class="btn" type="button" data-close="planModal">Batal</button><button class="btn primary" type="submit">Simpan pelan</button></div></form></div></div>
+
+<div class="modal" id="grantModal" aria-hidden="true"><div class="modal-shell"><div class="modal-head"><h2>Berikan akses Pro</h2><button class="close-btn" data-close="grantModal" aria-label="Tutup">×</button></div><form id="grantForm"><div class="modal-body form-grid"><input type="hidden" id="grantUserId"><div class="field full"><label>Pengguna</label><input id="grantUsername" disabled></div><div class="field full"><label for="grantMonths">Tempoh</label><div class="select-wrap"><select id="grantMonths"><option value="1">1 bulan</option><option value="2">2 bulan</option><option value="3">3 bulan</option><option value="4">4 bulan</option><option value="5">5 bulan</option><option value="6">6 bulan</option><option value="12">12 bulan</option></select></div></div></div><div class="modal-foot"><button class="btn" type="button" data-close="grantModal">Batal</button><button class="btn pink" type="submit">Berikan Pro</button></div></form></div></div>
+
+<div class="modal" id="legalModal" aria-hidden="true"><div class="modal-shell"><div class="modal-head"><h2 id="legalModalTitle">Tambah bahagian</h2><button class="close-btn" data-close="legalModal" aria-label="Tutup">×</button></div><form id="legalForm"><div class="modal-body form-grid"><input type="hidden" id="legalSectionId"><div class="field full"><label for="legalType">Dokumen</label><div class="select-wrap"><select id="legalType"><option value="terms">Terma dan Syarat</option><option value="privacy">Dasar Privasi</option></select></div></div><div class="field full"><label for="legalTitle">Tajuk bahagian</label><input id="legalTitle" required></div><div class="field full"><label for="legalText">Teks</label><textarea id="legalText" required></textarea></div></div><div class="modal-foot"><button class="btn" type="button" data-close="legalModal">Batal</button><button class="btn primary" type="submit">Simpan bahagian</button></div></form></div></div>
+
+<div class="modal" id="receiptModal" aria-hidden="true"><div class="modal-shell wide"><div class="modal-head"><h2>Resit</h2><button class="close-btn" data-close="receiptModal" aria-label="Tutup">×</button></div><div class="modal-body" id="receiptContent"></div><div class="modal-foot"><button class="btn" type="button" id="printReceipt">Cetak resit</button><button class="btn primary" type="button" data-close="receiptModal">Tutup</button></div></div></div>
+
+<div class="modal" id="confirmModal" aria-hidden="true"><div class="modal-shell" style="width:min(420px,100%)"><div class="modal-head"><h2 id="confirmTitle">Sahkan tindakan</h2><button class="close-btn" data-close="confirmModal" aria-label="Tutup">×</button></div><div class="modal-body"><p id="confirmText" style="margin:0;color:var(--muted);font-size:12px;line-height:1.6"></p></div><div class="modal-foot"><button class="btn" type="button" data-close="confirmModal">Batal</button><button class="btn danger" type="button" id="confirmAction">Teruskan</button></div></div></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>window.WATERMARK_API_BASE=window.WATERMARK_API_BASE||"https://watermark-pro-api.socmegy.workers.dev";</script>
+<script id="cloudflare-control-inline">
+(()=>{
+  const API_BASE=(window.WATERMARK_API_BASE||'https://watermark-pro-api.socmegy.workers.dev').replace(/\/$/,'');
+  let control=null;
+  const TOKEN_KEY='watermarkProApiToken';
+  const getToken=()=>localStorage.getItem(TOKEN_KEY)||'';
+  const setToken=value=>{if(value)localStorage.setItem(TOKEN_KEY,value);else localStorage.removeItem(TOKEN_KEY)};
+
+  async function api(path,options={}){
+    const response=await fetch(API_BASE+path,{
+      ...options,
+      credentials:'include',
+      headers:{'Content-Type':'application/json',...(getToken()?{'Authorization':'Bearer '+getToken()}:{}),...(options.headers||{})}
+    });
+    let data=null;
+    try{data=await response.json()}catch{}
+    if(!response.ok){
+      const err=new Error(data?.error||`HTTP ${response.status}`);
+      err.status=response.status;
+      throw err;
+    }
+    return data;
+  }
+
+  async function refresh(){
+    const data=await api('/api/control/state');
+    control?.apply(data);
+    return data;
+  }
+
+  async function action(path,options={}){
+    const data=await api(path,options);
+    if(data?.state) control?.apply(data.state); else await refresh();
+    return data;
+  }
+
+  const bridge={
+    apiBase:API_BASE,
+    async init(nextControl){
+      control=nextControl;
+      try{await refresh()}catch(error){if(error.status!==401&&error.status!==403)console.error(error)}
+    },
+    async me(){return (await api('/api/auth/me')).user},
+    async signIn(email,password){
+      const data=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email,password,adminOnly:true})});
+      setToken(data.token||'');
+      await refresh();
+      return data.user;
+    },
+    async signOut(){
+      try{await api('/api/auth/logout',{method:'POST',body:'{}'})}finally{setToken('');location.reload()}
+    },
+    async refresh(){return refresh()},
+    async reviewPayment(id,actionName){return action(`/api/control/submissions/${encodeURIComponent(id)}/review`,{method:'POST',body:JSON.stringify({action:actionName})})},
+    async grantPro(id,months){return action(`/api/control/users/${encodeURIComponent(id)}/grant`,{method:'POST',body:JSON.stringify({months})})},
+    async removePro(id){return action(`/api/control/users/${encodeURIComponent(id)}/remove-pro`,{method:'POST',body:'{}'})},
+    async deleteUser(id){return action(`/api/control/users/${encodeURIComponent(id)}`,{method:'DELETE'})},
+    async saveUser(data){
+      const id=String(data.id||'');
+      const payload={...data};delete payload.id;
+      const result=await action(id?`/api/control/users/${encodeURIComponent(id)}`:'/api/control/users',{method:id?'PUT':'POST',body:JSON.stringify(payload)});
+      if(result?.temporaryPassword){
+        alert(`Pengguna dicipta.\n\nKata laluan sementara: ${result.temporaryPassword}\n\nSalin dan beri kepada pengguna. Pengguna boleh tukar profil selepas log masuk.`);
+      }
+      return result;
+    },
+    async savePlans(plans){return action('/api/control/plans',{method:'PUT',body:JSON.stringify({plans})})},
+    async addNotice(data){
+      const id=String(data.id||'');const payload={...data};delete payload.id;
+      return action(id?`/api/control/notifications/${encodeURIComponent(id)}`:'/api/control/notifications',{method:id?'PUT':'POST',body:JSON.stringify(payload)});
+    },
+    async deleteNotice(id){return action(`/api/control/notifications/${encodeURIComponent(id)}`,{method:'DELETE'})},
+    async saveLegal(legal){return action('/api/control/legal',{method:'PUT',body:JSON.stringify({legal})})},
+    async saveSettings(state){return action('/api/control/settings',{method:'PUT',body:JSON.stringify({admin:state.admin,settings:state.settings})})}
+  };
+
+  window.WPControlCloudflare=bridge;
+})();
+
+</script>
+<script>
+(()=>{
+const STORAGE_KEY="watermarkProAdminStateV1";
+const CHANNEL_NAME="watermark-pro-admin";
+let memoryState=null;
+let confirmHandler=null;
+let adminPhotoData="";
+let qrImageData="";
+let channel=null;
+try{channel=new BroadcastChannel(CHANNEL_NAME)}catch{}
+
+const now=()=>new Date().toISOString();
+const uid=prefix=>prefix+"-"+(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(16).slice(2));
+const normalizeUsername=value=>{
+  const clean=String(value||"").trim().toLowerCase().replace(/^@+/,"").replace(/[^a-z0-9._]/g,"");
+  return clean?"@"+clean:"";
+};
+const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+const formatNumber=value=>new Intl.NumberFormat("ms-MY").format(Number(value||0));
+const formatDateTime=value=>{
+  const date=new Date(value||Date.now());
+  return Number.isNaN(date.getTime())?"-":new Intl.DateTimeFormat("ms-MY",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(date);
+};
+const formatDateLong=value=>{
+  const date=new Date(value||Date.now());
+  return Number.isNaN(date.getTime())?"-":new Intl.DateTimeFormat("ms-MY",{day:"numeric",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"}).format(date);
+};
+const addMonths=(value,months)=>{const date=new Date(value);date.setMonth(date.getMonth()+Number(months));return date.toISOString()};
+const receiptRef=prefix=>prefix+"-"+Date.now().toString(36).toUpperCase();
+
+function seedState(){
+  return {
+    version:1,
+    admin:{username:"@watermarkpro",photo:""},
+    settings:{paymentsOpen:true,qrImage:"",whatsapp:""},
+    plans:[
+      {id:"plan-free",slug:"free",name:"Percuma",normalPrice:0,discountPrice:0,discountLabel:"",billingLabel:"selamanya",description:"Semua fungsi asas tera air kekal percuma.",features:["Muat naik tanpa had","Tera air teks","Tandatangan sendiri","Kedudukan, saiz, kelegapan dan jarak tepi","Banyak fail serentak"],active:true},
+      {id:"plan-pro",slug:"pro",name:"Penyokong Pro",normalPrice:12.9,discountPrice:8.9,discountLabel:"Penyokong awal",billingLabel:"bulan",description:"Harga khas penyokong awal.",features:["Semua ciri pelan Percuma","Tera air logo sendiri","Tera air berulang","Kad Penyokong boleh dimuat turun","Sokongan WhatsApp"],active:true}
+    ],
+    users:[
+      {id:"user-helmi",username:"@helmi",email:"helmi@example.com",photo:"",plan:"pro",status:"active",createdAt:"2026-08-30T04:20:00.000Z",proUntil:"2026-09-30T04:20:00.000Z",downloads:{images:8230,videos:262}},
+      {id:"user-lily",username:"@lily",email:"lily@example.com",photo:"",plan:"pro",status:"active",createdAt:"2026-08-23T08:30:00.000Z",proUntil:"2026-10-23T08:30:00.000Z",downloads:{images:7920,videos:571}},
+      {id:"user-lala",username:"@lala",email:"lala@example.com",photo:"",plan:"pro",status:"active",createdAt:"2026-08-24T09:10:00.000Z",proUntil:"2026-10-24T09:10:00.000Z",downloads:{images:7412,videos:429}},
+      {id:"user-sarah",username:"@sarah",email:"sarah@example.com",photo:"",plan:"free",status:"active",createdAt:"2026-08-26T12:00:00.000Z",proUntil:null,downloads:{images:6720,videos:182}},
+      {id:"user-xo",username:"@xo",email:"xo@example.com",photo:"",plan:"free",status:"active",createdAt:"2026-09-03T03:20:00.000Z",proUntil:null,downloads:{images:18,videos:0}}
+    ],
+    submissions:[
+      {id:"sub-demo",username:"@xo",email:"xo@example.com",planName:"Penyokong Pro",reference:"PRO-L22L6J9VT",amount:8.9,paymentTime:"12:58",submittedAt:"2026-09-03T04:58:00.000Z",status:"PENDING"}
+    ],
+    subscriptions:[
+      {id:"history-paid",username:"@helmi",planName:"Penyokong Pro",reference:"PRO-A8F92K",receiptNo:"WP-A8F92K",amount:8.9,months:1,startsAt:"2026-08-30T04:20:00.000Z",endsAt:"2026-09-30T04:20:00.000Z",createdAt:"2026-08-30T04:20:00.000Z",paymentTime:"12:20",status:"PAID"}
+    ],
+    notifications:[
+      {id:"notice-welcome",title:"Selamat datang ke Watermark Pro",text:"Akaun anda telah berjaya dicipta.",audience:"ALL",senderUsername:"@watermarkpro",senderPhoto:"",createdAt:"2026-09-03T01:00:00.000Z"}
+    ],
+    legal:{
+      terms:{updatedAt:"2026-09-03T00:00:00.000Z",sections:[
+        {id:"terms-use",title:"Penggunaan Watermark Pro",text:"Watermark Pro disediakan untuk membantu pengguna menambah tera air pada imej dan video. Anda bertanggungjawab memastikan fail yang digunakan adalah milik anda atau anda mempunyai kebenaran untuk menggunakannya."},
+        {id:"terms-account",title:"Akaun",text:"Maklumat akaun hendaklah tepat dan anda bertanggungjawab menjaga keselamatan akses akaun anda. Aktiviti yang berlaku melalui akaun anda dianggap sebagai aktiviti pemilik akaun tersebut."},
+        {id:"terms-free-pro",title:"Pelan Percuma dan Penyokong Pro",text:"Ciri Percuma boleh digunakan mengikut fungsi yang tersedia pada semasa penggunaan. Penyokong Pro membuka ciri tambahan yang dinyatakan pada halaman pelan. Ciri, harga atau manfaat boleh dikemas kini dan perubahan akan dipaparkan pada sistem."},
+        {id:"terms-payment",title:"Pembayaran Penyokong Pro",text:"Akses Penyokong Pro hanya diaktifkan selepas penghantaran pembayaran disemak dan diluluskan. Pengguna perlu memastikan rujukan dan maklumat pembayaran yang dihantar adalah betul."},
+        {id:"terms-files",title:"Fail dan kandungan pengguna",text:"Anda tidak boleh menggunakan Watermark Pro untuk kandungan yang melanggar undang-undang atau hak pihak lain. Anda kekal bertanggungjawab terhadap kandungan yang dimuat naik dan hasil yang dimuat turun."},
+        {id:"terms-availability",title:"Ketersediaan sistem",text:"Sistem boleh berubah, tergendala sementara atau menerima penyelenggaraan. Usaha munasabah akan dibuat untuk memastikan fungsi utama terus tersedia."}
+      ]},
+      privacy:{updatedAt:"2026-09-03T00:00:00.000Z",sections:[
+        {id:"privacy-account",title:"Maklumat akaun",text:"Nama pengguna dan e-mel digunakan untuk pendaftaran, log masuk, profil, pengurusan akses dan komunikasi berkaitan akaun."},
+        {id:"privacy-files",title:"Imej dan video",text:"Fail yang dipilih untuk proses tera air digunakan bagi menghasilkan output yang diminta. Watermark Pro tidak menuntut pemilikan terhadap imej, video, tandatangan atau logo pengguna."},
+        {id:"privacy-payment",title:"Maklumat pembayaran",text:"Maklumat penghantaran pembayaran seperti nama pengguna, rujukan, masa pembayaran dan status semakan digunakan untuk mengurus akses Penyokong Pro dan sejarah langganan."},
+        {id:"privacy-device",title:"Data pada peranti",text:"Sesetengah tetapan atau sejarah boleh disimpan pada pelayar atau peranti yang digunakan. Data yang disimpan secara setempat mungkin tidak muncul pada peranti lain."},
+        {id:"privacy-notice",title:"Notis dan komunikasi",text:"Notis dalam sistem boleh digunakan untuk menyampaikan perubahan fungsi, status akaun, maklumat pelan dan pengumuman penting berkaitan Watermark Pro."},
+        {id:"privacy-control",title:"Kawalan pengguna",text:"Pengguna boleh menghubungi saluran sokongan yang dipaparkan dalam sistem untuk pertanyaan berkaitan akaun, pembayaran atau maklumat yang disimpan."}
+      ]}
+    }
+  };
+}
+
+function normalizeState(raw){
+  const base=seedState();
+  if(!raw||typeof raw!=="object") return base;
+  return {
+    ...base,...raw,
+    admin:{...base.admin,...(raw.admin||{})},
+    settings:{...base.settings,...(raw.settings||{})},
+    plans:Array.isArray(raw.plans)?raw.plans:base.plans,
+    users:Array.isArray(raw.users)?raw.users:base.users,
+    submissions:Array.isArray(raw.submissions)?raw.submissions:base.submissions,
+    subscriptions:Array.isArray(raw.subscriptions)?raw.subscriptions:base.subscriptions,
+    notifications:Array.isArray(raw.notifications)?raw.notifications:base.notifications,
+    legal:{
+      terms:{...base.legal.terms,...(raw.legal?.terms||{}),sections:Array.isArray(raw.legal?.terms?.sections)?raw.legal.terms.sections:base.legal.terms.sections},
+      privacy:{...base.legal.privacy,...(raw.legal?.privacy||{}),sections:Array.isArray(raw.legal?.privacy?.sections)?raw.legal.privacy.sections:base.legal.privacy.sections}
+    }
+  };
+}
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    memoryState=normalizeState(raw?JSON.parse(raw):null);
+    if(!raw) localStorage.setItem(STORAGE_KEY,JSON.stringify(memoryState));
+  }catch{memoryState=normalizeState(memoryState)}
+  return memoryState;
+}
+
+function saveState(message){
+  state.version=1;
+  state.updatedAt=now();
+  memoryState=state;
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch{}
+  try{channel?.postMessage({type:"state-updated",at:state.updatedAt})}catch{}
+  renderAll();
+  if(message) showToast(message);
+}
+
+let state=loadState();
+// V4 content migration: older localStorage had only two placeholder legal sections.
+(()=>{const fresh=seedState().legal; if((state.legal?.terms?.sections||[]).length<4) state.legal.terms=fresh.terms; if((state.legal?.privacy?.sections||[]).length<4) state.legal.privacy=fresh.privacy; try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}catch{}})();
+
+function importLegacySubmission(){
+  try{
+    const submission=JSON.parse(localStorage.getItem("wp_current_pending_payment")||"null");
+    if(!submission?.reference||state.submissions.some(item=>item.reference===submission.reference)) return;
+    const pro=state.plans.find(plan=>plan.slug==="pro");
+    state.submissions.unshift({id:uid("sub"),username:normalizeUsername(submission.username),email:submission.email||"",planName:pro?.name||submission.requestedPlan||"Penyokong Pro",reference:submission.reference,amount:Number(pro?.discountPrice??submission.amount??0),paymentTime:submission.paymentTime||"-",submittedAt:submission.submittedAt||now(),status:"PENDING"});
+    if(!state.users.some(user=>normalizeUsername(user.username)===normalizeUsername(submission.username))){
+      state.users.push({id:uid("user"),username:normalizeUsername(submission.username),email:submission.email||"",photo:"",plan:"free",status:"active",createdAt:now(),proUntil:null,downloads:{images:0,videos:0}});
+    }
+    saveState();
+  }catch{}
+}
+
+function showToast(message){
+  const toast=document.getElementById("toast");
+  toast.textContent=message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer=setTimeout(()=>toast.classList.remove("show"),2200);
+}
+function runRemote(task,success){Promise.resolve().then(task).then(()=>{if(success)showToast(success)}).catch(error=>showToast(error?.message?.replace(/^.*?:\s*/,"")||"Tindakan tidak berjaya."))}
+
+function openModal(id){const modal=document.getElementById(id);modal?.classList.add("open");modal?.setAttribute("aria-hidden","false")}
+function closeModal(id){const modal=document.getElementById(id);modal?.classList.remove("open");modal?.setAttribute("aria-hidden","true")}
+function askConfirm(title,text,handler){document.getElementById("confirmTitle").textContent=title;document.getElementById("confirmText").textContent=text;confirmHandler=handler;openModal("confirmModal")}
+
+const statusMap={
+  PENDING:{label:"Menunggu",className:"pending"},PAID:{label:"Lunas",className:"paid"},REJECTED:{label:"Ditolak",className:"rejected"},GRANTED:{label:"Diberikan",className:"granted"},REMOVED:{label:"Ditamatkan",className:"removed"},
+  active:{label:"Aktif",className:"active"},inactive:{label:"Tidak aktif",className:"inactive"},free:{label:"Percuma",className:"free"}
+};
+const statusHtml=status=>{const item=statusMap[status]||{label:status,className:"free"};return '<span class="status '+item.className+'">'+esc(item.label)+'</span>'};
+
+function avatarHtml(user){
+  const name=normalizeUsername(user?.username||"@a");
+  if(user?.photo) return '<div class="avatar"><img alt="" src="'+esc(user.photo)+'"></div>';
+  return '<div class="avatar">'+esc(name.replace("@","").charAt(0).toUpperCase()||"A")+'</div>';
+}
+function updateUserPhotoPreview(){const preview=document.getElementById("userPhotoPreview"),input=document.getElementById("userPhoto"),name=document.getElementById("userUsername")?.value||"@?",url=input?.value.trim()||"";if(!preview)return;preview.innerHTML="";if(url&&!/^(?:javascript:|vbscript:|data:(?!image\/))/i.test(url)){const image=document.createElement("img");image.alt="";image.src=url;preview.appendChild(image)}else preview.textContent=normalizeUsername(name).replace("@","").charAt(0).toUpperCase()||"?"}
+
+function totals(){
+  return state.users.reduce((result,user)=>{result.images+=Number(user.downloads?.images||0);result.videos+=Number(user.downloads?.videos||0);return result},{images:0,videos:0});
+}
+
+function renderAdminIdentity(){
+  const username=normalizeUsername(state.admin.username)||"@watermarkpro";
+  document.querySelectorAll(".admin-username").forEach(node=>node.textContent=username);
+  document.querySelectorAll(".admin-avatar").forEach(node=>{
+    node.innerHTML="";
+    if(state.admin.photo){const image=document.createElement("img");image.alt="";image.src=state.admin.photo;node.appendChild(image)}else node.textContent=username.replace("@","").charAt(0).toUpperCase()||"A";
+  });
+}
+
+function pendingRow(submission,compact=false){
+  const user=state.users.find(item=>normalizeUsername(item.username)===normalizeUsername(submission.username));
+  if(compact){
+    return '<div class="data-row pending-row"><div class="identity">'+avatarHtml(user||submission)+'<div class="identity-copy"><strong>'+esc(submission.username)+'</strong><span>'+esc(submission.reference)+'</span></div></div><div><span class="cell-label">Dihantar</span><span class="cell-value">'+esc(formatDateTime(submission.submittedAt))+'</span></div><div><span class="cell-label">Masa bayaran</span><span class="cell-value">'+esc(submission.paymentTime||"-")+'</span></div><div class="row-actions"><button class="btn small" data-go="submissions">Semak</button></div></div>';
+  }
+  return '<div class="data-row pending-row"><div class="identity">'+avatarHtml(user||submission)+'<div class="identity-copy"><strong>'+esc(submission.username)+'</strong><span>'+esc(submission.email||user?.email||"")+'</span></div></div><div><span class="cell-label">Tarikh dan masa hantar</span><span class="cell-value">'+esc(formatDateTime(submission.submittedAt))+'</span></div><div class="payment-time-cell"><span class="cell-label">Masa pembayaran</span><span class="cell-value">'+esc(submission.paymentTime||"-")+'</span></div><div><span class="cell-label">Rujukan</span><span class="cell-value">'+esc(submission.reference)+'</span></div><div class="row-actions"><button class="btn small" data-receipt-submission="'+esc(submission.id)+'">Resit</button><button class="btn small blue" data-approve="'+esc(submission.id)+'">Luluskan</button><button class="btn small danger" data-reject="'+esc(submission.id)+'">Tolak</button></div></div>';
+}
+
+function renderDashboard(){
+  const pending=state.submissions.filter(item=>item.status==="PENDING");
+  const sum=totals();
+  document.getElementById("statUsers").textContent=formatNumber(state.users.length);
+  document.getElementById("statPro").textContent=formatNumber(state.users.filter(user=>user.plan==="pro"&&user.status==="active").length);
+  document.getElementById("statPending").textContent=formatNumber(pending.length);
+  document.getElementById("statDownloads").textContent=formatNumber(sum.images+sum.videos);
+  document.getElementById("dashboardPending").innerHTML=pending.length?pending.slice(0,4).map(item=>pendingRow(item,true)).join(""):'<div class="empty">Tiada penghantaran yang menunggu tindakan.</div>';
+}
+
+function renderSubmissions(){
+  const pending=state.submissions.filter(item=>item.status==="PENDING").sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
+  const navCount=document.getElementById("navPendingCount");
+  navCount.textContent=pending.length;
+  navCount.hidden=!pending.length;
+  document.getElementById("pendingSummary").textContent=pending.length+" penghantaran memerlukan tindakan.";
+  document.getElementById("submissionList").innerHTML=pending.length?pending.map(item=>pendingRow(item)).join(""):'<div class="empty">Semua penghantaran telah disemak.</div>';
+  const history=[...state.subscriptions].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  document.getElementById("subscriptionHistory").innerHTML=history.length?history.map(item=>'<div class="data-row history-row"><div><span class="cell-label">Pengguna</span><span class="cell-value">'+esc(item.username)+'</span></div><div><span class="cell-label">Tarikh</span><span class="cell-value">'+esc(formatDateTime(item.createdAt))+'</span></div><div><span class="cell-label">Rujukan</span><span class="cell-value">'+esc(item.reference||"-")+'</span></div><div>'+statusHtml(item.status)+'</div><div class="row-actions"><button class="btn small" data-receipt-history="'+esc(item.id)+'">Lihat resit</button></div></div>').join(""):'<div class="empty">Belum ada sejarah langganan.</div>';
+}
+
+function renderUserPlanOptions(selected="free"){
+  const select=document.getElementById("userPlan");
+  select.innerHTML=state.plans.map(plan=>'<option value="'+esc(plan.slug)+'" '+(plan.slug===selected?"selected":"")+'>'+esc(plan.name)+'</option>').join("");
+}
+
+function renderUsers(){
+  const query=document.getElementById("userSearch").value.trim().toLowerCase();
+  const planNames=new Map(state.plans.map(plan=>[plan.slug,plan.name]));
+  const users=state.users.filter(user=>!query||user.username.toLowerCase().includes(query)||user.email.toLowerCase().includes(query));
+  document.getElementById("userList").innerHTML=users.length?users.map(user=>{
+    const total=Number(user.downloads?.images||0)+Number(user.downloads?.videos||0);
+    const planStatus=user.plan==="pro"?statusHtml("active"):statusHtml("free");
+    return '<div class="data-row user-row"><div class="identity">'+avatarHtml(user)+'<div class="identity-copy"><strong>'+esc(user.username)+'</strong><span>'+esc(user.email)+'</span></div></div><div><span class="cell-label">Pelan</span><span class="cell-value">'+esc(planNames.get(user.plan)||user.plan)+'</span></div><div><span class="cell-label">Muat turun</span><span class="cell-value">'+formatNumber(total)+'</span></div><div>'+planStatus+'</div><div class="row-actions"><button class="btn small" data-edit-user="'+esc(user.id)+'">Edit</button><button class="btn small pink" data-grant-user="'+esc(user.id)+'">Beri Pro</button>'+(user.plan==="pro"?'<button class="btn small danger" data-remove-pro="'+esc(user.id)+'">Buang Pro</button>':'')+'<button class="btn small danger" data-delete-user="'+esc(user.id)+'">Padam</button></div></div>';
+  }).join(""):'<div class="empty">Tiada pengguna ditemui.</div>';
+}
+
+function renderPlans(){
+  document.getElementById("planList").innerHTML=state.plans.length?state.plans.map(plan=>{
+    const price=Number(plan.discountPrice??plan.normalPrice??0);
+    return '<article class="card plan-card"><div class="plan-card-head"><div><h3>'+esc(plan.name)+'</h3><span class="status '+(plan.active?"active":"inactive")+'">'+(plan.active?"Aktif":"Tidak aktif")+'</span></div><span class="cell-value muted">'+esc(plan.slug)+'</span></div><div class="price">RM'+price.toFixed(2).replace(".00","")+' <small>/ '+esc(plan.billingLabel||"bulan")+'</small></div><div class="discount">Harga biasa RM'+Number(plan.normalPrice||0).toFixed(2)+' - '+esc(plan.discountLabel||"Tiada diskaun")+'</div><ul>'+plan.features.map(feature=>'<li>'+esc(feature)+'</li>').join("")+'</ul><div class="row-actions"><button class="btn small" data-edit-plan="'+esc(plan.id)+'">Edit</button><button class="btn small danger" data-delete-plan="'+esc(plan.id)+'">Padam</button></div></article>';
+  }).join(""):'<div class="empty">Tiada pelan.</div>';
+}
+
+function renderNotifications(){
+  const items=[...state.notifications].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  document.getElementById("notificationList").innerHTML=items.length?items.map(item=>'<div class="data-row notification-row"><div><strong class="cell-value">'+esc(item.title)+'</strong><div class="legal-copy">'+esc(item.text)+'</div></div><div><span class="cell-label">Penerima</span><span class="cell-value">'+esc(item.audience==="ALL"?"Semua pengguna":item.audience)+'</span></div><div><span class="cell-label">Dihantar oleh</span><span class="cell-value">'+esc(item.senderUsername)+'</span><span class="cell-value muted">'+esc(formatDateTime(item.createdAt))+'</span></div><div class="row-actions"><button class="btn small" data-edit-notice="'+esc(item.id)+'">Edit</button><button class="btn small danger" data-delete-notice="'+esc(item.id)+'">Padam</button></div></div>').join(""):'<div class="empty">Belum ada notis.</div>';
+}
+
+function renderLegalList(type){
+  const documentData=state.legal[type];
+  document.getElementById(type==="terms"?"termsUpdated":"privacyUpdated").textContent="Dikemas kini: "+formatDateTime(documentData.updatedAt);
+  const target=document.getElementById(type==="terms"?"termsList":"privacyList");
+  target.innerHTML=documentData.sections.length?documentData.sections.map(section=>'<div class="data-row legal-row"><div><strong class="cell-value">'+esc(section.title)+'</strong><div class="legal-copy">'+esc(section.text)+'</div></div><div class="row-actions"><button class="btn small" data-edit-legal="'+esc(type)+':'+esc(section.id)+'">Edit</button><button class="btn small danger" data-delete-legal="'+esc(type)+':'+esc(section.id)+'">Padam</button></div></div>').join(""):'<div class="empty">Tiada bahagian dalam dokumen ini.</div>';
+}
+
+function renderSettings(){
+  document.getElementById("adminUsername").value=normalizeUsername(state.admin.username)||"@watermarkpro";
+  document.getElementById("adminPhotoUrl").value=state.admin.photo||"";
+  document.getElementById("qrImageUrl").value=state.settings.qrImage||"";
+  document.getElementById("supportWhatsapp").value=state.settings.whatsapp||"";
+  document.getElementById("paymentsOpen").checked=state.settings.paymentsOpen!==false;
+  
+  const preview=document.getElementById("qrPreview");
+  const empty=document.getElementById("qrEmpty"); if(state.settings.qrImage){preview.src=state.settings.qrImage;preview.hidden=false;if(empty)empty.hidden=true}else{preview.removeAttribute("src");preview.hidden=true;if(empty)empty.hidden=false}
+}
+
+function renderAll(){
+  renderAdminIdentity();renderDashboard();renderSubmissions();renderUsers();renderPlans();renderNotifications();renderLegalList("terms");renderLegalList("privacy");renderSettings();
+}
+
+function findSubmission(id){return state.submissions.find(item=>item.id===id)}
+function findUser(id){return state.users.find(item=>item.id===id)}
+
+function createNotification(title,text,audience){
+  state.notifications.unshift({id:uid("notice"),title,text,audience,senderUsername:normalizeUsername(state.admin.username)||"@watermarkpro",senderPhoto:state.admin.photo||"",createdAt:now()});
+}
+
+function approveSubmission(id){
+  const submission=findSubmission(id);if(!submission||submission.status!=="PENDING") return;
+  const actionAt=now();
+  submission.status="PAID";submission.actionAt=actionAt;
+  let user=state.users.find(item=>normalizeUsername(item.username)===normalizeUsername(submission.username));
+  if(!user){user={id:uid("user"),username:normalizeUsername(submission.username),email:submission.email||"",photo:"",plan:"free",status:"active",createdAt:actionAt,proUntil:null,downloads:{images:0,videos:0}};state.users.push(user)}
+  user.plan="pro";user.status="active";user.proUntil=addMonths(actionAt,1);
+  state.subscriptions.unshift({id:uid("history"),username:user.username,planName:submission.planName||"Penyokong Pro",reference:submission.reference,receiptNo:receiptRef("WP"),amount:Number(submission.amount||0),months:1,startsAt:actionAt,endsAt:user.proUntil,createdAt:actionAt,paymentTime:submission.paymentTime,status:"PAID"});
+  createNotification("Pembayaran diluluskan","Akses Penyokong Pro anda kini aktif selama 1 bulan.",user.username);
+  saveState("Pembayaran diluluskan dan akses Pro diaktifkan.");
+}
+
+function rejectSubmission(id){
+  const submission=findSubmission(id);if(!submission||submission.status!=="PENDING") return;
+  const actionAt=now();submission.status="REJECTED";submission.actionAt=actionAt;
+  state.subscriptions.unshift({id:uid("history"),username:submission.username,planName:submission.planName||"Penyokong Pro",reference:submission.reference,receiptNo:receiptRef("WP"),amount:Number(submission.amount||0),months:0,startsAt:null,endsAt:null,createdAt:actionAt,paymentTime:submission.paymentTime,status:"REJECTED"});
+  createNotification("Pembayaran ditolak","Penghantaran pembayaran anda tidak dapat diluluskan.",submission.username);
+  saveState("Penghantaran ditolak.");
+}
+
+function grantPro(userId,months){
+  const user=findUser(userId);if(!user) return;
+  const start=now();const end=addMonths(start,months);user.plan="pro";user.status="active";user.proUntil=end;
+  state.subscriptions.unshift({id:uid("history"),username:user.username,planName:"Penyokong Pro",reference:receiptRef("GNT"),receiptNo:receiptRef("WP"),amount:0,months:Number(months),startsAt:start,endsAt:end,createdAt:start,paymentTime:"-",status:"GRANTED"});
+  createNotification("Akses Pro diberikan","Watermark Pro memberikan akses Penyokong Pro selama "+months+" bulan kepada anda.",user.username);
+  closeModal("grantModal");saveState("Akses Pro diberikan selama "+months+" bulan.");
+}
+
+function removePro(userId){
+  const user=findUser(userId);if(!user) return;
+  const actionAt=now();user.plan="free";user.proUntil=null;
+  state.subscriptions.unshift({id:uid("history"),username:user.username,planName:"Penyokong Pro",reference:receiptRef("RMV"),receiptNo:receiptRef("WP"),amount:0,months:0,startsAt:null,endsAt:actionAt,createdAt:actionAt,paymentTime:"-",status:"REMOVED"});
+  createNotification("Akses Pro dibuang","Akses Penyokong Pro anda telah dibuang oleh Watermark Pro.",user.username);
+  saveState("Akses Pro dibuang dan direkodkan.");
+}
+
+function openReceipt(record){
+  if(!record) return;
+  const user=state.users.find(item=>normalizeUsername(item.username)===normalizeUsername(record.username));
+  const status=statusMap[record.status]||statusMap.PENDING;
+  const number=record.receiptNo||record.reference||record.id||"-";
+  const months=Math.max(1,Number(record.months||1));
+  const itemTitle=(record.planName||"Penyokong Pro")+" · "+months+" Bulan";
+  const plan=state.plans.find(item=>item.name===(record.planName||"Penyokong Pro"))||state.plans.find(item=>item.slug==="pro");
+  const amount=Math.max(0,Number(record.amount||0));
+  const normalPrice=Math.max(amount,Number(plan?.normalPrice||amount));
+  const adjustment=record.status==="GRANTED"?normalPrice:Math.max(0,normalPrice-amount);
+  const period=record.startsAt&&record.endsAt
+    ? formatDateTime(record.startsAt)+" hingga "+formatDateTime(record.endsAt)
+    : record.status==="REJECTED"?"Akses tidak diaktifkan"
+    : record.status==="PENDING"?"Belum bermula"
+    : record.status==="REMOVED"?"Akses telah ditamatkan"
+    : "-";
+  const statusText=status.label;
+  const statusStamp=status.label.toUpperCase();
+  const adjustmentLabel=record.status==="GRANTED"?"Pemberian":"Diskaun";
+  const totalLabel=record.status==="PAID"?"Jumlah dibayar":record.status==="GRANTED"?"Jumlah":"Jumlah";
+  document.getElementById("receiptContent").innerHTML=`<article class="receipt wp-receipt receipt-complete">
+    <header class="receipt-doc-head">
+      <div class="receipt-brand"><img src="logo.jpg" alt=""><div><strong>Watermark Pro</strong><span>Resit #${esc(number)}</span></div></div>
+      <div class="receipt-title"><h3>Resit</h3><span>${esc(formatDateTime(record.createdAt||record.submittedAt))}</span></div>
+    </header>
+    <hr class="receipt-divider">
+    <section class="receipt-detail-grid">
+      <div><span class="receipt-kicker">Pengguna</span><strong>${esc(record.username||"-")}</strong><small>${esc(record.email||user?.email||"-")}</small></div>
+      <div><span class="receipt-kicker">Pembayaran</span><strong>${esc(statusText)}</strong><small>Rujukan · ${esc(record.reference||"-")}</small><small>Masa · ${esc(record.paymentTime||"-")}</small></div>
+    </section>
+    <hr class="receipt-divider">
+    <section class="receipt-product">
+      <div><span class="receipt-kicker">Item</span><strong>${esc(itemTitle)}</strong><small>${esc(period)}</small></div>
+      <div class="receipt-price-zone">
+        <div class="receipt-stamp ${esc(status.className)}" aria-label="${esc(statusText)}">
+          <span class="receipt-stamp-ring" aria-hidden="true"></span>
+          <span class="receipt-stamp-logo"><img src="logo.jpg" alt=""></span>
+          <span class="receipt-stamp-status">${esc(statusStamp)}</span>
+        </div>
+        <strong class="receipt-item-price">RM${amount.toFixed(2)}</strong>
+      </div>
+    </section>
+    <section class="receipt-breakdown">
+      <div><span>Harga pelan</span><strong>RM${normalPrice.toFixed(2)}</strong></div>
+      <div class="receipt-adjustment"><span>${esc(adjustmentLabel)}</span><strong>${adjustment>0?"− RM"+adjustment.toFixed(2):"RM0.00"}</strong></div>
+      <div class="receipt-total"><span>${esc(totalLabel)}</span><strong>RM${amount.toFixed(2)}</strong></div>
+    </section>
+    <footer class="receipt-foot"><span>Terima kasih kerana menyokong Watermark Pro.</span><span>Dijana secara digital · Tandatangan tidak diperlukan</span></footer>
+  </article>`;
+  openModal("receiptModal");
+}
+
+function openUserForm(user){
+  document.getElementById("userForm").reset();
+  document.getElementById("userModalTitle").textContent=user?"Kemas kini pengguna":"Cipta pengguna";
+  document.getElementById("userId").value=user?.id||"";
+  document.getElementById("userUsername").value=user?.username||"";
+  document.getElementById("userEmail").value=user?.email||"";
+  document.getElementById("userPhoto").value=user?.photo||"";
+  updateUserPhotoPreview();
+  document.getElementById("userStatus").value=user?.status||"active";
+  document.getElementById("userImages").value=Number(user?.downloads?.images||0);
+  document.getElementById("userVideos").value=Number(user?.downloads?.videos||0);
+  renderUserPlanOptions(user?.plan||"free");openModal("userModal");
+}
+
+function openPlanForm(plan){
+  document.getElementById("planForm").reset();
+  document.getElementById("planModalTitle").textContent=plan?"Kemas kini pelan":"Cipta pelan";
+  document.getElementById("planId").value=plan?.id||"";document.getElementById("planName").value=plan?.name||"";document.getElementById("planSlug").value=plan?.slug||"";document.getElementById("planNormalPrice").value=Number(plan?.normalPrice||0);document.getElementById("planDiscountPrice").value=Number(plan?.discountPrice||0);document.getElementById("planDiscountLabel").value=plan?.discountLabel||"";document.getElementById("planBillingLabel").value=plan?.billingLabel||"";document.getElementById("planDescription").value=plan?.description||"";document.getElementById("planFeatures").value=(plan?.features||[]).join("\n");document.getElementById("planActive").checked=plan?.active!==false;openModal("planModal");
+}
+
+function openLegalForm(type="terms",section=null){
+  document.getElementById("legalForm").reset();document.getElementById("legalModalTitle").textContent=section?"Kemas kini bahagian":"Tambah bahagian";document.getElementById("legalSectionId").value=section?.id||"";document.getElementById("legalType").value=type;document.getElementById("legalTitle").value=section?.title||"";document.getElementById("legalText").value=section?.text||"";openModal("legalModal");
+}
+
+async function fileToDataUrl(file){return await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||""));reader.onerror=reject;reader.readAsDataURL(file)})}
+
+function downloadCanvas(canvas,filename){
+  canvas.toBlob(blob=>{if(!blob)return;const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=filename;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(link.href),1000)},"image/png");
+}
+function canvasBase(title){
+  const canvas=document.createElement("canvas");canvas.width=1200;canvas.height=675;const ctx=canvas.getContext("2d");
+  ctx.fillStyle="#f4f7fa";ctx.fillRect(0,0,1200,675);ctx.fillStyle="#ffffff";ctx.beginPath();ctx.roundRect(70,58,1060,559,28);ctx.fill();
+  ctx.fillStyle="#1f67b5";ctx.beginPath();ctx.roundRect(110,100,56,56,16);ctx.fill();ctx.fillStyle="#ffffff";ctx.font="800 28px DM Sans,Arial";ctx.textAlign="center";ctx.fillText("w",138,138);ctx.textAlign="left";
+  ctx.fillStyle="#111827";ctx.font="800 29px DM Sans,Arial";ctx.fillText("Watermark Pro",187,126);ctx.fillStyle="#687383";ctx.font="600 16px DM Sans,Arial";ctx.fillText(title,187,152);
+  const dateText="Dijana: "+formatDateLong(now());ctx.textAlign="right";ctx.fillText(dateText,1088,128);ctx.textAlign="left";
+  return {canvas,ctx,dateText};
+}
+function downloadTopUsersImage(){
+  const {canvas,ctx}=canvasBase("3 pengguna teratas");
+  const top=[...state.users].sort((a,b)=>(Number(b.downloads?.images||0)+Number(b.downloads?.videos||0))-(Number(a.downloads?.images||0)+Number(a.downloads?.videos||0))).slice(0,3);
+  top.forEach((user,index)=>{const y=228+index*104;ctx.fillStyle="#f7f9fc";ctx.beginPath();ctx.roundRect(110,y-38,980,78,16);ctx.fill();ctx.fillStyle="#1f67b5";ctx.font="800 20px DM Sans,Arial";ctx.fillText("#"+(index+1),138,y+7);ctx.fillStyle="#111827";ctx.font="750 22px DM Sans,Arial";ctx.fillText(user.username,210,y);ctx.fillStyle="#687383";ctx.font="500 15px DM Sans,Arial";ctx.fillText(user.plan==="pro"?"Penyokong Pro":"Percuma",210,y+25);const total=Number(user.downloads?.images||0)+Number(user.downloads?.videos||0);ctx.textAlign="right";ctx.fillStyle="#111827";ctx.font="800 24px DM Sans,Arial";ctx.fillText(formatNumber(total),1040,y+2);ctx.fillStyle="#687383";ctx.font="500 14px DM Sans,Arial";ctx.fillText("jumlah muat turun",1040,y+25);ctx.textAlign="left"});
+  downloadCanvas(canvas,"watermark-pro-3-pengguna-teratas-"+new Date().toISOString().slice(0,10)+".png");
+}
+function downloadTotalsImage(){
+  const {canvas,ctx}=canvasBase("Jumlah semua muat turun");const sum=totals();const total=sum.images+sum.videos;
+  const blocks=[{label:"JUMLAH",value:total,color:"#111827"},{label:"IMEJ",value:sum.images,color:"#1478ee"},{label:"VIDEO",value:sum.videos,color:"#d63384"}];
+  blocks.forEach((item,index)=>{const x=110+index*330;ctx.fillStyle="#f7f9fc";ctx.beginPath();ctx.roundRect(x,235,300,190,18);ctx.fill();ctx.fillStyle=item.color;ctx.font="800 48px DM Sans,Arial";ctx.fillText(formatNumber(item.value),x+25,330);ctx.fillStyle="#687383";ctx.font="800 15px DM Sans,Arial";ctx.fillText(item.label,x+25,375)});
+  ctx.fillStyle="#687383";ctx.font="500 16px DM Sans,Arial";ctx.fillText("Jumlah dikira daripada semua akaun pengguna.",110,500);
+  downloadCanvas(canvas,"watermark-pro-jumlah-muat-turun-"+new Date().toISOString().slice(0,10)+".png");
+}
+
+const pageTitles={dashboard:"Utama",submissions:"Penghantaran",users:"Pengguna",plans:"Pelan",notifications:"Notis",legal:"Terma dan dasar",settings:"Tetapan"};
+function goTo(view){document.querySelectorAll(".view").forEach(node=>node.classList.toggle("active",node.id==="view-"+view));document.querySelectorAll(".navbtn").forEach(node=>node.classList.toggle("active",node.dataset.view===view));document.getElementById("pageTitle").textContent=pageTitles[view]||"Watermark Pro";document.getElementById("sidebar").classList.remove("open");document.getElementById("drawerBackdrop").classList.remove("show");window.scrollTo({top:0,behavior:"smooth"})}
+
+document.addEventListener("click",event=>{
+  const close=event.target.closest("[data-close]");if(close){closeModal(close.dataset.close);return}
+  const go=event.target.closest("[data-go]");if(go){goTo(go.dataset.go);return}
+  const editUser=event.target.closest("[data-edit-user]");if(editUser){openUserForm(findUser(editUser.dataset.editUser));return}
+  const deleteUser=event.target.closest("[data-delete-user]");if(deleteUser){const user=findUser(deleteUser.dataset.deleteUser);askConfirm("Padam pengguna","Padam "+user.username+" dan semua data akaunnya?",()=>window.WPControlCloudflare?runRemote(()=>window.WPControlCloudflare.deleteUser(user.id),"Pengguna dipadam."):(state.users=state.users.filter(item=>item.id!==user.id),saveState("Pengguna dipadam.")));return}
+  const grant=event.target.closest("[data-grant-user]");if(grant){const user=findUser(grant.dataset.grantUser);document.getElementById("grantUserId").value=user.id;document.getElementById("grantUsername").value=user.username;document.getElementById("grantMonths").value="1";openModal("grantModal");return}
+  const remove=event.target.closest("[data-remove-pro]");if(remove){const user=findUser(remove.dataset.removePro);askConfirm("Buang akses Pro","Akses Pro "+user.username+" akan ditamatkan.",()=>window.WPControlCloudflare?runRemote(()=>window.WPControlCloudflare.removePro(user.id),"Akses Pro ditamatkan."):removePro(user.id));return}
+  const editPlan=event.target.closest("[data-edit-plan]");if(editPlan){openPlanForm(state.plans.find(item=>item.id===editPlan.dataset.editPlan));return}
+  const deletePlan=event.target.closest("[data-delete-plan]");if(deletePlan){const plan=state.plans.find(item=>item.id===deletePlan.dataset.deletePlan);askConfirm("Padam pelan","Padam pelan "+plan.name+"?",()=>{const next=state.plans.filter(item=>item.id!==plan.id);if(window.WPControlCloudflare)runRemote(()=>window.WPControlCloudflare.savePlans(next),"Pelan dipadam.");else{state.plans=next;saveState("Pelan dipadam.")}});return}
+  const editNotice=event.target.closest("[data-edit-notice]");if(editNotice){const item=state.notifications.find(entry=>entry.id===editNotice.dataset.editNotice);document.getElementById("notificationId").value=item.id;document.getElementById("notificationTitle").value=item.title;document.getElementById("notificationText").value=item.text;const selected=item.audience!=="ALL";document.getElementById("notificationAudience").value=selected?"SELECTED":"ALL";document.getElementById("notificationUsername").value=selected?item.audience:"";document.getElementById("notificationUsernameField").hidden=!selected;document.getElementById("notificationFormTitle").textContent="Kemas kini notis";document.getElementById("cancelNotificationEdit").hidden=false;goTo("notifications");return}
+  const deleteNotice=event.target.closest("[data-delete-notice]");if(deleteNotice){askConfirm("Padam notis","Notis ini akan dibuang daripada semua penerima.",()=>window.WPControlCloudflare?runRemote(()=>window.WPControlCloudflare.deleteNotice(deleteNotice.dataset.deleteNotice),"Notis dipadam."):(state.notifications=state.notifications.filter(item=>item.id!==deleteNotice.dataset.deleteNotice),saveState("Notis dipadam.")));return}
+  const editLegal=event.target.closest("[data-edit-legal]");if(editLegal){const [type,id]=editLegal.dataset.editLegal.split(":");openLegalForm(type,state.legal[type].sections.find(item=>item.id===id));return}
+  const deleteLegal=event.target.closest("[data-delete-legal]");if(deleteLegal){const [type,id]=deleteLegal.dataset.deleteLegal.split(":");askConfirm("Padam bahagian","Bahagian ini akan dibuang daripada laman pengguna.",()=>{const legal=structuredClone(state.legal);legal[type].sections=legal[type].sections.filter(item=>item.id!==id);legal[type].updatedAt=now();if(window.WPControlCloudflare)runRemote(()=>window.WPControlCloudflare.saveLegal(legal),"Bahagian dipadam.");else{state.legal=legal;saveState("Bahagian dipadam dan tarikh dikemas kini.")}});return}
+  const receiptSubmission=event.target.closest("[data-receipt-submission]");if(receiptSubmission){openReceipt(findSubmission(receiptSubmission.dataset.receiptSubmission));return}
+  const receiptHistory=event.target.closest("[data-receipt-history]");if(receiptHistory){openReceipt(state.subscriptions.find(item=>item.id===receiptHistory.dataset.receiptHistory));return}
+  const approve=event.target.closest("[data-approve]");if(approve){const item=findSubmission(approve.dataset.approve);askConfirm("Luluskan pembayaran","Luluskan pembayaran "+item.reference+" dan aktifkan Pro selama 1 bulan?",()=>window.WPControlCloudflare?runRemote(()=>window.WPControlCloudflare.reviewPayment(item.id,"approve"),"Pembayaran diluluskan."):approveSubmission(item.id));return}
+  const reject=event.target.closest("[data-reject]");if(reject){const item=findSubmission(reject.dataset.reject);askConfirm("Tolak pembayaran","Tolak penghantaran "+item.reference+"?",()=>window.WPControlCloudflare?runRemote(()=>window.WPControlCloudflare.reviewPayment(item.id,"reject"),"Penghantaran ditolak."):rejectSubmission(item.id));return}
+});
+
+document.querySelectorAll(".navbtn").forEach(button=>button.addEventListener("click",()=>goTo(button.dataset.view)));
+document.getElementById("menuBtn").addEventListener("click",()=>{document.getElementById("sidebar").classList.add("open");document.getElementById("drawerBackdrop").classList.add("show")});
+document.getElementById("drawerBackdrop").addEventListener("click",()=>{document.getElementById("sidebar").classList.remove("open");document.getElementById("drawerBackdrop").classList.remove("show")});
+document.querySelectorAll(".modal").forEach(modal=>modal.addEventListener("click",event=>{if(event.target===modal)closeModal(modal.id)}));
+document.addEventListener("keydown",event=>{if(event.key==="Escape")document.querySelectorAll(".modal.open").forEach(modal=>closeModal(modal.id))});
+document.getElementById("confirmAction").addEventListener("click",()=>{const handler=confirmHandler;confirmHandler=null;closeModal("confirmModal");handler?.()});
+document.getElementById("addUserBtn").addEventListener("click",()=>openUserForm());
+document.getElementById("addPlanBtn").addEventListener("click",()=>openPlanForm());
+document.getElementById("addLegalBtn").addEventListener("click",()=>openLegalForm());
+document.getElementById("userSearch").addEventListener("input",renderUsers);
+document.getElementById("downloadTopUsers").addEventListener("click",downloadTopUsersImage);
+document.getElementById("downloadTotals").addEventListener("click",downloadTotalsImage);
+document.getElementById("printReceipt").addEventListener("click",()=>window.print());
+
+document.getElementById("userForm").addEventListener("submit",event=>{
+  event.preventDefault();const id=document.getElementById("userId").value;const username=normalizeUsername(document.getElementById("userUsername").value);const email=document.getElementById("userEmail").value.trim().toLowerCase();
+  if(!username){showToast("Masukkan nama pengguna yang sah.");return}
+  if(state.users.some(user=>user.id!==id&&normalizeUsername(user.username)===username)){showToast("Nama pengguna sudah digunakan.");return}
+  const data={username,email,photo:document.getElementById("userPhoto").value.trim(),plan:document.getElementById("userPlan").value,status:document.getElementById("userStatus").value,downloads:{images:Number(document.getElementById("userImages").value||0),videos:Number(document.getElementById("userVideos").value||0)}};
+  if(window.WPControlCloudflare){data.id=id;closeModal("userModal");runRemote(()=>window.WPControlCloudflare.saveUser(data),id?"Pengguna dikemas kini.":"Pengguna dicipta. Tetapkan kata laluan melalui e-mel pemulihan.");return}
+  if(id){Object.assign(findUser(id),data)}else state.users.push({id:uid("user"),...data,createdAt:now(),proUntil:null});closeModal("userModal");saveState(id?"Pengguna dikemas kini.":"Pengguna dicipta.");
+});
+
+document.getElementById("planForm").addEventListener("submit",event=>{
+  event.preventDefault();const id=document.getElementById("planId").value;const slug=document.getElementById("planSlug").value.trim().toLowerCase().replace(/[^a-z0-9-]/g,"-");
+  if(state.plans.some(plan=>plan.id!==id&&plan.slug===slug)){showToast("Pengecam pelan sudah digunakan.");return}
+  const data={slug,name:document.getElementById("planName").value.trim(),normalPrice:Number(document.getElementById("planNormalPrice").value||0),discountPrice:Number(document.getElementById("planDiscountPrice").value||0),discountLabel:document.getElementById("planDiscountLabel").value.trim(),billingLabel:document.getElementById("planBillingLabel").value.trim(),description:document.getElementById("planDescription").value.trim(),features:document.getElementById("planFeatures").value.split("\n").map(value=>value.trim()).filter(Boolean),active:document.getElementById("planActive").checked};
+  if(window.WPControlCloudflare){const next=id?state.plans.map(plan=>plan.id===id?{...plan,...data}:plan):[...state.plans,{id:uid("plan"),...data}];closeModal("planModal");runRemote(()=>window.WPControlCloudflare.savePlans(next),id?"Pelan dikemas kini.":"Pelan dicipta.");return}
+  if(id){Object.assign(state.plans.find(plan=>plan.id===id),data)}else state.plans.push({id:uid("plan"),...data});closeModal("planModal");saveState(id?"Pelan dikemas kini.":"Pelan dicipta.");
+});
+
+document.getElementById("grantForm").addEventListener("submit",event=>{event.preventDefault();const id=document.getElementById("grantUserId").value,months=Number(document.getElementById("grantMonths").value);if(window.WPControlCloudflare){closeModal("grantModal");runRemote(()=>window.WPControlCloudflare.grantPro(id,months),"Akses Pro diberikan.")}else grantPro(id,months)});
+document.getElementById("userPhoto").addEventListener("input",updateUserPhotoPreview);document.getElementById("userUsername").addEventListener("input",updateUserPhotoPreview);
+document.querySelector(".sidebar-foot").addEventListener("click",()=>goTo("settings"));
+document.getElementById("controlLogout").addEventListener("click",()=>window.WPControlCloudflare?.signOut());
+
+function resetNotificationForm(){document.getElementById("notificationForm").reset();document.getElementById("notificationId").value="";document.getElementById("notificationUsernameField").hidden=true;document.getElementById("notificationFormTitle").textContent="Notis baharu";document.getElementById("cancelNotificationEdit").hidden=true}
+document.getElementById("notificationAudience").addEventListener("change",event=>document.getElementById("notificationUsernameField").hidden=event.target.value!=="SELECTED");
+document.getElementById("cancelNotificationEdit").addEventListener("click",resetNotificationForm);
+document.getElementById("notificationForm").addEventListener("submit",event=>{
+  event.preventDefault();const id=document.getElementById("notificationId").value;const audienceType=document.getElementById("notificationAudience").value;const audience=audienceType==="ALL"?"ALL":normalizeUsername(document.getElementById("notificationUsername").value);
+  if(audienceType!=="ALL"&&!state.users.some(user=>normalizeUsername(user.username)===audience)){showToast("Nama pengguna penerima tidak ditemui.");return}
+  const data={title:document.getElementById("notificationTitle").value.trim(),text:document.getElementById("notificationText").value.trim(),audience,senderUsername:normalizeUsername(state.admin.username)||"@watermarkpro",senderPhoto:state.admin.photo||""};
+  if(window.WPControlCloudflare){data.id=id;resetNotificationForm();runRemote(()=>window.WPControlCloudflare.addNotice(data),id?"Notis dikemas kini.":"Notis dihantar.");return}
+  if(id){Object.assign(state.notifications.find(item=>item.id===id),data)}else state.notifications.unshift({id:uid("notice"),...data,createdAt:now()});resetNotificationForm();saveState(id?"Notis dikemas kini.":"Notis dihantar.");
+});
+
+document.getElementById("legalForm").addEventListener("submit",event=>{
+  event.preventDefault();const type=document.getElementById("legalType").value;const id=document.getElementById("legalSectionId").value;const data={title:document.getElementById("legalTitle").value.trim(),text:document.getElementById("legalText").value.trim()};
+  if(window.WPControlCloudflare){const legal=structuredClone(state.legal),doc=legal[type];if(id)Object.assign(doc.sections.find(item=>item.id===id),data);else doc.sections.push({id:uid(type),...data});doc.updatedAt=now();closeModal("legalModal");runRemote(()=>window.WPControlCloudflare.saveLegal(legal),"Kandungan disimpan.");return}
+  if(id){Object.assign(state.legal[type].sections.find(item=>item.id===id),data)}else state.legal[type].sections.push({id:uid(type),...data});state.legal[type].updatedAt=now();closeModal("legalModal");saveState("Kandungan disimpan dan tarikh dikemas kini.");
+});
+
+document.getElementById("qrImageUrl").addEventListener("input",event=>{const url=event.target.value.trim();const preview=document.getElementById("qrPreview");const empty=document.getElementById("qrEmpty");if(url){preview.src=url;preview.hidden=false;if(empty)empty.hidden=true}else{preview.removeAttribute("src");preview.hidden=true;if(empty)empty.hidden=false}});
+document.getElementById("adminPhotoUrl").addEventListener("input",event=>{const url=event.target.value.trim();document.querySelectorAll(".admin-avatar").forEach(el=>{el.style.backgroundImage=url?`url("${url.replace(/"/g,"%22")}")`:"";el.textContent=url?"":"A"})});
+document.getElementById("settingsForm").addEventListener("submit",event=>{
+  event.preventDefault();const username=normalizeUsername(document.getElementById("adminUsername").value);if(!username){showToast("Masukkan nama pengguna Watermark Pro yang sah.");return}
+  const photo=document.getElementById("adminPhotoUrl").value.trim();state.admin={username,photo};state.notifications.forEach(item=>{item.senderUsername=username;item.senderPhoto=photo});
+  state.settings.whatsapp=document.getElementById("supportWhatsapp").value.trim();state.settings.paymentsOpen=document.getElementById("paymentsOpen").checked;state.settings.qrImage=document.getElementById("qrImageUrl").value.trim();if(window.WPControlCloudflare)runRemote(()=>window.WPControlCloudflare.saveSettings(state),"Tetapan disimpan.");else saveState("Tetapan disimpan.");
+});
+
+window.addEventListener("storage",event=>{if(event.key===STORAGE_KEY){state=normalizeState(JSON.parse(event.newValue||"null"));renderAll()}});
+try{channel?.addEventListener("message",()=>{state=loadState();renderAll()})}catch{}
+window.WPControl={apply(next){state=normalizeState(next);renderAll()},defaults:seedState,format:formatDateTime,escape:esc};
+if(window.WPControlCloudflare){window.WPControlCloudflare.init(window.WPControl)}else{importLegacySubmission();renderAll()}
+})();
+</script>
+
+<script id="v9-cloudflare-auth-navigation">
+(()=>{
+  const gate=document.getElementById("controlLoginGate");
+  const form=document.getElementById("controlLoginForm");
+  const error=document.getElementById("controlLoginError");
+  const app=document.querySelector(".app");
+  const setLocked=locked=>{if(gate)gate.hidden=!locked;if(app)app.style.display=locked?"none":""};
+  const settingsButton=()=>document.querySelector('.navbtn[data-view="settings"]');
+  const goSettings=()=>settingsButton()?.click();
+  document.querySelector('.top-admin .admin-avatar')?.addEventListener('click',goSettings);
+  document.querySelector('.top-admin-copy')?.addEventListener('click',goSettings);
+  const sidebarFoot=document.querySelector('.sidebar-foot');
+  if(sidebarFoot){sidebarFoot.tabIndex=0;sidebarFoot.setAttribute('role','button');sidebarFoot.setAttribute('aria-label','Buka Tetapan');sidebarFoot.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();goSettings()}})}
+
+  const api=window.WPControlCloudflare;
+  async function check(){
+    setLocked(true);
+    if(!api){if(error)error.textContent='Sambungan Cloudflare belum dimuatkan.';return}
+    try{const user=await api.me();if(user?.role!=="admin")throw new Error('Akaun ini tiada akses Pusat Kawalan.');setLocked(false);if(error)error.textContent='';await api.refresh()}
+    catch(err){setLocked(true);if(error&&err?.status!==401)error.textContent=err?.message||'Log masuk diperlukan.'}
+  }
+  form?.addEventListener('submit',async event=>{
+    event.preventDefault();if(error)error.textContent='';
+    const button=form.querySelector('button[type="submit"]');if(button){button.disabled=true;button.textContent='Sedang log masuk…'}
+    try{if(!api||typeof api.signIn!=='function')throw new Error('Sambungan Cloudflare belum tersedia. Buka halaman ini melalui domain Watermark Pro, bukan pratonton fail lokal.');await api.signIn(document.getElementById('controlLoginEmail').value.trim(),document.getElementById('controlLoginPassword').value);setLocked(false);if(error)error.textContent='';await api.refresh()}
+    catch(err){if(error)error.textContent=err?.message||'Log masuk tidak berjaya.'}
+    finally{if(button){button.disabled=false;button.textContent='Log masuk'}}
+  });
+  document.getElementById('controlLogout')?.addEventListener('click',async event=>{event.stopPropagation();try{await api.signOut()}catch{setLocked(true)}});
+  check();
+})();
+</script>
+</body>
+</html>
