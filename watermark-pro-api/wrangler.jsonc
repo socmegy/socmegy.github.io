@@ -1,0 +1,7 @@
+{
+  "name": "watermark-pro-api",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-03",
+  "account_id": "ad172b4a727ee43ae13ee0649fcd65c6",
+  "d1_databases": [{"binding":"DB","database_name":"watermark-pro-db","database_id":"bca828e6-78f3-4b04-a5f8-fa39bbbb3ae8"}]
+}
