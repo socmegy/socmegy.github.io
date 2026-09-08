@@ -24,6 +24,13 @@ html body #passwordChangeStatus:not(:empty){display:block!important;padding:12px
 @media(max-width:800px){html body .topbar .header-brand-logo{width:40px!important;height:40px!important;min-width:40px!important;flex-basis:40px!important}.auth-main-v51.auth-style1-actual{padding-top:0!important;padding-bottom:0!important}.page>.hero{margin-top:-8px!important}.avatar-save-help{white-space:normal!important;display:inline!important}.avatar-save-help strong{display:inline!important}}
 `;
 style.textContent+=`
+html body .topbar #pageTitle.header-brand{height:40px!important;min-height:40px!important;padding:0!important;overflow:visible!important}
+html body .topbar #pageTitle.header-brand .header-brand-logo{width:40px!important;height:40px!important;max-width:none!important;max-height:none!important;padding:0!important;transform:none!important;object-fit:cover!important}
+@media(min-width:648px) and (max-width:1100px){
+html body.auth-mode #authPage .auth-main-v51.auth-style1-actual{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto!important;gap:24px!important;align-items:center!important}
+html body.auth-mode #authPage .auth-intro-v132{grid-column:1!important;grid-row:1!important;min-width:0!important}
+html body.auth-mode #authPage .auth-panel-v131{grid-column:2!important;grid-row:1!important;min-width:0!important}
+}
 html body.auth-mode #authPage .auth-main-v51.auth-style1-actual{padding-top:0!important;padding-bottom:0!important}
 html body .page>.hero{margin-top:-8px!important}
 html body #headerProfileAvatar::after,html body #avatarPreview::after{content:none!important;display:none!important}
@@ -35,7 +42,7 @@ html body.pro-account .mobile-nav .wp-nav-art>img,html body.pro-account .mobile-
 `;
 document.head.append(style);
 const viewer=q('#mediaLightbox'),viewerImage=q('#mediaLightboxImage');
-const positionClose=()=>{if(!viewerImage||!viewer?.classList.contains('open'))return;const r=viewerImage.getBoundingClientRect();viewer.style.setProperty('--viewer-close-x',(r.left+r.width/2)+'px');viewer.style.setProperty('--viewer-close-y',r.bottom+'px')};
+const positionClose=()=>{if(!viewerImage||!viewer?.classList.contains('open'))return;const r=viewerImage.getBoundingClientRect();viewer.style.setProperty('--viewer-close-x',r.right+'px');viewer.style.setProperty('--viewer-close-y',r.bottom+'px')};
 if(viewer){new MutationObserver(positionClose).observe(viewer,{attributes:true,attributeFilter:['class','data-viewer-kind']});new ResizeObserver(positionClose).observe(viewerImage);viewerImage.addEventListener('load',positionClose);addEventListener('resize',positionClose)}
 document.querySelectorAll('.mobile-nav .navbtn').forEach(button=>{
  const icon=button.querySelector('img,svg');if(!icon)return;

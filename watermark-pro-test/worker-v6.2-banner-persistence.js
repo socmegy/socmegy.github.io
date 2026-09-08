@@ -2,21 +2,6 @@ const SESSION_COOKIE = 'wp_session';
 const SESSION_DAYS = 30;
 const encoder = new TextEncoder();
 
-let schemaReadyPromise=null;
-async function ensureSchema(env) {
-  if (!env.DB) return;
-  if (!schemaReadyPromise) schemaReadyPromise=(async()=>{
-    const columns=async table=>((await env.DB.prepare(`PRAGMA table_info(${table})`).all()).results||[]).map(row=>String(row.name||''));
-    const users=await columns('users');
-    if (!users.includes('public_profile')) await env.DB.prepare('ALTER TABLE users ADD COLUMN public_profile INTEGER NOT NULL DEFAULT 1').run();
-    const settings=await columns('settings');
-    if (!settings.includes('community_url')) await env.DB.prepare("ALTER TABLE settings ADD COLUMN community_url TEXT NOT NULL DEFAULT ''").run();
-    if (!settings.includes('auth_banners')) await env.DB.prepare("ALTER TABLE settings ADD COLUMN auth_banners TEXT NOT NULL DEFAULT '[]'").run();
-    if (!settings.includes('overview_banners')) await env.DB.prepare("ALTER TABLE settings ADD COLUMN overview_banners TEXT NOT NULL DEFAULT '[]'").run();
-  })().catch(error=>{schemaReadyPromise=null;throw error});
-  return schemaReadyPromise;
-}
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -46,7 +31,6 @@ export default {
         return json({ error: 'Origin tidak dibenarkan.' }, 403, cors);
       }
 
-      await ensureSchema(env);
       await cleanupExpiredSessions(env);
 
       // Public/auth
@@ -192,7 +176,7 @@ function addMonthsIso(base, months) {
 }
 
 function parseOrigins(env) {
-  return String(env.ALLOWED_ORIGINS || 'https://socmegy.com,https://www.socmegy.com,https://control.socmegy.com,https://socmegy.github.io,http://localhost:4173,http://127.0.0.1:4173,null')
+  return String(env.ALLOWED_ORIGINS || 'https://socmegy.com,https://www.socmegy.com,https://control.socmegy.com,https://socmegy.github.io,http://localhost:4173,http://127.0.0.1:4173')
     .split(',').map(v => v.trim()).filter(Boolean);
 }
 function originAllowed(origin, env) {

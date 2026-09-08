@@ -910,7 +910,7 @@ document.getElementById("settingsForm").addEventListener("submit",event=>{
 
 window.addEventListener("storage",event=>{if(event.key===STORAGE_KEY){state=normalizeState(JSON.parse(event.newValue||"null"));renderAll()}});
 try{channel?.addEventListener("message",()=>{state=loadState();renderAll()})}catch{}
-window.WPControl={apply(next){state=normalizeState(next);renderAll()},get state(){return state},defaults:seedState,format:formatDateTime,escape:esc};
+window.WPControl={apply(next){state=normalizeState(next);renderAll()},get state(){return state},defaults:seedState,format:formatDateTime,escape:esc,isProUser};
 if(window.WPControlCloudflare){window.WPControlCloudflare.init(window.WPControl)}else{importLegacySubmission();renderAll()}
 })();
 </script>
@@ -1109,6 +1109,7 @@ function printControlReceipt(){
   const justifiedLine=(x,text,left,y,width)=>{const words=String(text).split(" ");if(words.length<2){x.fillText(text,left,y);return}const natural=words.reduce((n,w)=>n+x.measureText(w).width,0),space=Math.max(0,(width-natural)/(words.length-1));let px=left;words.forEach((word,i)=>{x.fillText(word,px,y);px+=x.measureText(word).width+(i<words.length-1?space:0)})};
   async function top3(){
     await Promise.all([document.fonts.ready,window.WPWMarkReady,bg.decode().catch(()=>{})]);
+    const isProUser=window.WPControl.isProUser;
     const {c,x}=base(),L=72,R=1128;
     const top=[...state().users].filter(u=>u.status==="active").sort((a,b)=>(Number(b.downloads?.images||0)+Number(b.downloads?.videos||0))-(Number(a.downloads?.images||0)+Number(a.downloads?.videos||0))).slice(0,3);
     x.textBaseline="alphabetic";x.fillStyle="#fff";x.font="900 38px DM Sans,Arial";x.fillText("WATERMARK PRO",L,98);
@@ -1121,7 +1122,7 @@ function printControlReceipt(){
       const y=startY+i*(rowH+gap);x.fillStyle="rgba(255,255,255,.15)";x.beginPath();x.roundRect(L,y,R-L,rowH,28);x.fill();
       if(i===0)trophy(x,L+27,y+47,88);else{x.fillStyle="rgba(255,255,255,.94)";x.font="900 38px DM Sans,Arial";x.fillText("#"+(i+1),L+38,y+112)}
       const ax=L+128,ay=y+32,as=118;x.fillStyle="rgba(255,255,255,.17)";x.beginPath();x.arc(ax+as/2,ay+as/2,as/2,0,Math.PI*2);x.fill();const photo=await loadImage(u.photo?new URL(u.photo,location.href).href:"");if(photo){x.save();x.beginPath();x.arc(ax+as/2,ay+as/2,as/2,0,Math.PI*2);x.clip();x.drawImage(photo,ax,ay,as,as);x.restore()}else{x.fillStyle="#fff";x.textAlign="center";x.font="900 48px DM Sans,Arial";x.fillText(String(u.username||"?").replace(/^@/,"").charAt(0).toUpperCase()||"?",ax+as/2,ay+77);x.textAlign="left";}
-      const name=String(u.username||"@user"),isPro=isProUser(u),nameSize=fit(x,name,isPro?405:455,50,32,850),shown=ell(x,name,isPro?405:455);x.fillStyle="#fff";x.fillText(shown,L+286,y+82);await window.WPDrawWMark(x,shown,L+286,y+82,nameSize,'alphabetic',isPro);x.font="700 30px DM Sans,Arial";x.fillStyle="rgba(255,255,255,.79)";x.fillText(isPro?"Penyokong Pro":"Percuma",L+286,y+132);
+      const name=String(u.username||"@user"),isPro=isProUser(u),nameSize=fit(x,name,isPro?405:455,60,32,500),shown=ell(x,name,isPro?405:455);x.fillStyle="#fff";x.fillText(shown,L+286,y+82);await window.WPDrawWMark(x,shown,L+286,y+82,nameSize,'alphabetic',isPro);x.font="700 30px DM Sans,Arial";x.fillStyle="rgba(255,255,255,.79)";x.fillText(isPro?"Penyokong Pro":"Percuma",L+286,y+132);
       const v=fmt(Number(u.downloads?.images||0)+Number(u.downloads?.videos||0));x.textAlign="right";fit(x,v,220,66,38,900);x.fillStyle="#fff";x.fillText(v,R-30,y+88);x.font="800 26px DM Sans,Arial";x.fillStyle="rgba(255,255,255,.78)";x.fillText("MUAT TURUN",R-30,y+132);x.textAlign="left";
     }
     x.strokeStyle="rgba(255,255,255,.29)";x.lineWidth=2;x.beginPath();x.moveTo(L,1068);x.lineTo(R,1068);x.stroke();x.font="750 28px DM Sans,Arial";x.fillStyle="rgba(255,255,255,.85)";x.fillText("socmegy.com/watermark-pro",L,1126);x.textAlign="right";x.font="900 28px DM Sans,Arial";x.fillStyle="#fff";x.fillText("03 TERATAS",R,1126);
