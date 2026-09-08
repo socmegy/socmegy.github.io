@@ -1,0 +1,6 @@
+const CACHE='watermark-pro-shell-v146';
+const BASE=new URL('./',self.location.href).pathname;
+const SHELL=['','index.html','control.html','manifest.webmanifest','logo.jpg','bg.jpg','icon-192.png','icon-512.png'].map(p=>BASE+p);
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url))))));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('watermark-pro-shell-')&&k!==CACHE).map(k=>caches.delete(k))))));
+self.addEventListener('fetch',event=>{const req=event.request,url=new URL(req.url);if(req.method!=='GET'||url.origin!==self.location.origin||!url.pathname.startsWith(BASE))return;const leaf=url.pathname.slice(BASE.length).replace(/\/$/,'');const isPage=req.mode==='navigate'&&['','index.html','profil','sokongan','tetapan','control','control.html'].includes(leaf);if(!isPage&&!SHELL.includes(url.pathname))return;event.respondWith((async()=>{try{const response=await fetch(req);if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(c=>c.put(req,copy)))}return response}catch(error){const cached=await caches.match(req)||(isPage?await caches.match(BASE):null);if(cached)return cached;throw error}})())});

@@ -1,0 +1,12 @@
+WATERMARK PRO — FINAL PUBLISH
+
+1. Deploy worker-v6.2-banner-persistence.js using the included wrangler.jsonc FIRST.
+   - It keeps the same DB binding/database_id. Do NOT create a new D1 database.
+   - This release adds Origin: null so index.html/control.html opened directly with file:// can read the live Worker.
+2. After Worker deployment, you can double-click/open index.html and control.html directly to verify live D1 data without localhost.
+3. Upload index.html and control.html to the existing /watermark-pro/ folder. Production does NOT use localhost.
+4. Upload sw.js and manifest.webmanifest.
+5. Keep the existing static assets in the live folder: logo.jpg, bg.jpg, icon-192.png, icon-512.png, threads.svg, ogmage.jpg and other existing media.
+6. Replacing these code files does not erase D1 account data as long as the same D1 binding/database is retained.
+
+Direct file preview note: the currently-live old Worker will still block file:// until step 1 is deployed. That is browser CORS, not missing D1 data.
