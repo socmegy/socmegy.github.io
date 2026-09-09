@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /watermark-pro/
+
+Sitemap: https://socmegy.com/watermark-pro/sitemap.xml
