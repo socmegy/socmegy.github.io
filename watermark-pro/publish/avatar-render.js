@@ -3,15 +3,15 @@
  window.WPStableAvatar=(node,user)=>{
   if(!node||!user)return;
   const draft=window.wpAvatarDraft;
-  const raw=String(draft!==undefined?draft:(user.photo||user.avatar||user.avatarUrl||user.profilePhoto||''));
+  const raw=String(draft!==undefined?draft:(user.photo||user.avatar||user.avatarUrl||user.profilePhoto||'')).trim();
   let src='';try{if(raw)src=new URL(raw,document.baseURI).href}catch{}
   const identity=String(user.id||user.username||''),name=String(user.username||'?'),letter=name.replace(/^@/,'').charAt(0).toLowerCase()||'?';
-  const key=identity+'|'+src;
+  const key=identity+'|'+name+'|'+src;
   node.classList.toggle('is-pro-avatar',(user.plan==='pro'||user.role==='admin'));
   if(node.dataset.stableAvatar===key&&(node.dataset.stableAvatarFailed===key||node.__wpAvatarPending||(!src&&node.querySelector('.wp-avatar-letter'))||node.querySelector('img')?.src===src))return;
   const sameUser=node.dataset.stableAvatarUser===identity;
   node.dataset.stableAvatar=key;node.dataset.stableAvatarUser=identity;
-  const fallback=()=>{const image=new Image();image.alt=name;image.className='wp-avatar-ready';image.src=new URL('logo.jpg',document.baseURI).href;image.onerror=()=>{const span=document.createElement('span');span.className='wp-avatar-letter';span.textContent=letter;node.replaceChildren(span)};node.replaceChildren(image)};
+  const fallback=()=>{const span=document.createElement('span');span.className='wp-avatar-letter';span.textContent=letter;node.replaceChildren(span)};
   if(!src){node.dataset.stableAvatarFailed=key;fallback();return}
   const existing=node.querySelector('img');
   if(existing?.src===src&&existing.naturalWidth){existing.hidden=false;existing.classList.add('wp-avatar-ready');node.querySelectorAll('.wp-avatar-letter').forEach(n=>n.hidden=true);return}

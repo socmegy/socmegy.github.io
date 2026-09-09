@@ -52,7 +52,7 @@ const versionCard=document.querySelector('#page-settings .version-section');if(p
 const finalStyle=document.createElement('style');finalStyle.textContent=`
 html body #page-subscriptions .plan.pro::before,html body #authPricingModal .plan.pro::before{content:none!important;display:none!important}
 html body #page-subscriptions .plan.pro,html body #authPricingModal .plan.pro{box-shadow:none!important;outline:0!important;border-image:none!important;border-radius:22px!important}
-html:root{--wp-pro-ring:2px!important}
+html:root{--wp-pro-ring:2.5px!important}
 html body .sidebar .is-pro-avatar,html body .topuser-avatar-action.is-pro-avatar{border-width:2px!important;box-shadow:none!important}
 html body.pro-account .sidebar .user-avatar{border-width:2px!important;padding:0!important}
 html body.pro-account .sidebar .user-avatar>img,html body .topuser-avatar-action.is-pro-avatar>img{inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}
@@ -125,12 +125,16 @@ window.addEventListener('click',async e=>{
 let receiptPrinting=false;
 window.printReceiptIsolated=async()=>{
  if(receiptPrinting)return;const sheet=q('#receiptSheet');if(!sheet)return;receiptPrinting=true;
+ // Retire legacy whole-page print rules, including fixed A4 height/padding.
+ document.querySelectorAll('style').forEach(node=>{const css=node.sheet;if(!css)return;for(let i=css.cssRules.length-1;i>=0;i--){const rule=css.cssRules[i];if(rule.type===6||(rule.type===4&&/print/.test(rule.conditionText)))css.deleteRule(i)}});
+ const printRoot=document.createElement('div');printRoot.className='wp-print-root';printRoot.append(sheet.cloneNode(true));document.body.append(printRoot);document.body.classList.add('wp-receipt-printing');
  const frame=document.createElement('iframe');frame.title='Resit Watermark Pro';frame.style.cssText='position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0';document.body.append(frame);
  const doc=frame.contentDocument;doc.open();doc.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title></head><body></body></html>');doc.close();
- document.querySelectorAll('style,link[rel="stylesheet"]').forEach(n=>doc.head.append(n.cloneNode(true)));
+ document.querySelectorAll('style,link[rel="stylesheet"]').forEach(n=>{const clone=n.cloneNode(true);if(n.tagName==='STYLE'&&n.sheet)clone.textContent=[...n.sheet.cssRules].map(r=>r.cssText).join('\n');doc.head.append(clone)});
  const base=doc.createElement('base');base.href=document.baseURI;doc.head.prepend(base);doc.body.append(sheet.cloneNode(true));
- const css=doc.createElement('style');css.textContent='@page{size:A4;margin:4mm}html,body{width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;display:block!important}body>*{visibility:visible!important}#receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:8px!important;box-shadow:none!important;break-after:auto!important;page-break-after:auto!important}';doc.head.append(css);
- const cleanup=()=>{frame.remove();receiptPrinting=false};
+ const css=doc.createElement('style');css.textContent='@page{size:A4;margin:4mm!important}html,body{width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;display:block!important}body>*{visibility:visible!important}#receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-shadow:none!important;break-after:auto!important;page-break-after:auto!important}';doc.head.append(css);
+ const cleanup=()=>{frame.remove();printRoot.remove();document.body.classList.remove('wp-receipt-printing');receiptPrinting=false};
+ window.addEventListener('afterprint',cleanup,{once:true});
  // The shared receipt grid keeps the stamp next to the price in print too.
  frame.contentWindow.addEventListener('afterprint',cleanup,{once:true});
  try{await doc.fonts.ready;await Promise.all([...doc.images].map(i=>i.decode().catch(()=>{})));frame.contentWindow.focus();frame.contentWindow.print()}catch{cleanup()}

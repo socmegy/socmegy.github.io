@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="manifest" href="/adminnntesttt.webmanifest">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>Socmegy · Custom Package</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #1d1d1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background 0.3s;
+        }
+        ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #e8e8e8;
+        }
+
+        .container {
+            max-width: 560px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            color: #b8860b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .gold { color: #b8860b; }
+
+        #custom .section-title,
+        #custom .section-title .gold,
+        #custom .section-title .gold-icon {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        #custom .section-title .gold-icon {
+            font-size: 22px;
+            display: inline-block;
+            vertical-align: middle;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: none;
+            position: relative;
+        }
+
+        /* Wand bergerak - guna element yang sama dari title */
+        #wandMoving {
+            position: fixed;
+            z-index: 9999;
+            font-size: 22px;
+            pointer-events: none;
+            display: none;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            will-change: left, top;
+            transition: none;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.2); }
+            56% { transform: scale(1); }
+            100% { transform: scale(1); }
+        }
+        #wandMoving.beating {
+            animation: heartbeat 0.6s ease-in-out 1;
+        }
+
+        .custom-wrap {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            padding: 16px;
+            width: 100%;
+        }
+        .custom-wrap .custom-card {
+            background: #ffffff;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border-radius: 16px;
+            padding: 12px 14px;
+            position: relative;
+        }
+        body.dark-mode .custom-wrap .custom-card {
+            background: #2a2a2a;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .custom-wrap .custom-card .desc {
+            font-size: 13px;
+            color: #b8860b;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        body.dark-mode .custom-wrap .custom-card .desc {
+            color: #d4a017;
+        }
+
+        .custom-wrap .custom-card .picker {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .custom-wrap .custom-card .picker .opt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: #ffffff;
+            border-radius: 10px;
+            flex-wrap: wrap;
+            gap: 4px;
+            position: relative;
+            border: 1px solid #eaeaee;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt {
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .custom-wrap .custom-card .picker .opt .left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #b8860b;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .left {
+            color: #d4a017;
+        }
+
+        .custom-wrap .custom-card .picker .opt .left .discount-badge {
+            background: #b8860b;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 30px;
+        }
+        .custom-wrap .custom-card .picker .opt .right {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .custom-wrap .custom-card .picker .opt .right .original-price {
+            font-size: 10px;
+            color: #8e8e93;
+            text-decoration: line-through;
+        }
+        .custom-wrap .custom-card .picker .opt .right .final-price {
+            font-weight: 700;
+            font-size: 12px;
+            color: #b8860b;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .final-price {
+            color: #d4a017;
+        }
+
+        .custom-wrap .custom-card .picker .opt .right .qty-btn {
+            background: #e8e8ed;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            color: #b8860b;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-btn {
+            background: #3a3a3a;
+            color: #d4a017;
+        }
+        .custom-wrap .custom-card .picker .opt .right .qty-btn:active {
+            background: #cdcdd2;
+        }
+
+        .custom-wrap .custom-card .picker .opt .right .qty-num {
+            min-width: 22px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+            color: #b8860b;
+            transition: all 0.2s ease;
+        }
+        body.dark-mode .custom-wrap .custom-card .picker .opt .right .qty-num {
+            color: #d4a017;
+        }
+
+        .custom-wrap .custom-card .summary {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 12px;
+            position: sticky;
+            bottom: 0;
+            z-index: 5;
+            border: 1px solid #eaeaee;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .custom-wrap .custom-card .summary {
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .custom-wrap .custom-card .summary .empty {
+            color: #8e8e93;
+            font-size: 12px;
+        }
+        .custom-wrap .custom-card .summary .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px solid #eaeaee;
+            color: #b8860b;
+            font-size: 12px;
+            animation: fadeInItem 0.3s ease;
+        }
+        body.dark-mode .custom-wrap .custom-card .summary .item {
+            color: #d4a017;
+            border-bottom-color: rgba(255,255,255,0.05);
+        }
+        .custom-wrap .custom-card .summary .item:last-child {
+            border-bottom: none;
+        }
+        .custom-wrap .custom-card .summary .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-weight: 600;
+            border-top: 1px solid #d2d2d7;
+            margin-top: 2px;
+            color: #b8860b;
+            font-size: 12px;
+        }
+        body.dark-mode .custom-wrap .custom-card .summary .total-row {
+            color: #d4a017;
+            border-top-color: rgba(255,255,255,0.1);
+        }
+        .custom-wrap .custom-card .summary .total-row.discount {
+            color: #b8860b;
+            font-weight: 500;
+        }
+
+        /* ===== ZOOM ===== */
+        .summary.zoom-active {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(1.25) !important;
+            max-height: 80vh !important;
+            width: 420px !important;
+            max-width: 92vw !important;
+            z-index: 99999 !important;
+            border-color: #b8860b !important;
+            border-width: 2px !important;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.2) !important;
+            overflow-y: auto !important;
+            padding: 16px 20px !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+            cursor: pointer !important;
+            opacity: 0;
+            animation: fadeInZoom 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        .summary.zoom-active::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+        body.dark-mode .summary.zoom-active {
+            background: #2a2a2a !important;
+            border-color: #d4a017 !important;
+        }
+
+        @keyframes fadeInZoom {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+        }
+
+        .custom-wrap .custom-card .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .custom-wrap .custom-card .actions .btn {
+            flex: 1;
+            padding: 7px 0;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .custom-wrap .custom-card .actions .btn-primary {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #ffffff !important;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .custom-wrap .custom-card .actions .btn-primary:hover {
+            opacity: 0.85;
+        }
+        .custom-wrap .custom-card .actions .btn-secondary {
+            background: #e8e8ed;
+            color: #1d1d1f;
+        }
+        body.dark-mode .custom-wrap .custom-card .actions .btn-secondary {
+            background: #3a3a3a;
+            color: #d4a017;
+        }
+
+        @keyframes fadeInItem {
+            0% { opacity: 0; transform: translateX(-10px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .qty-btn.pulse-glow {
+            animation: btnPulse 0.3s ease 1;
+            background: #b8860b !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(184,134,11,0.5);
+        }
+        @keyframes btnPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        .qty-num.bounce-num {
+            animation: bounceNum 0.25s ease;
+        }
+        @keyframes bounceNum {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.7); }
+            100% { transform: scale(1); }
+        }
+
+        .sparkle-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 10px;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: sparkleFly 0.6s ease forwards;
+        }
+        @keyframes sparkleFly {
+            0% { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(180deg); }
+        }
+
+        .dark-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.04);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            color: #b8860b;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .dark-toggle:hover { background: rgba(0,0,0,0.08); }
+        body.dark-mode .dark-toggle { background: rgba(255,255,255,0.08); }
+        body.dark-mode .dark-toggle:hover { background: rgba(255,255,255,0.15); }
+
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .section-title { font-size: 20px; }
+            .custom-wrap { padding: 8px; }
+            .custom-wrap .custom-card { padding: 8px 10px; }
+            .custom-wrap .custom-card .picker .opt { padding: 4px 8px; }
+            .custom-wrap .custom-card .summary { max-height: 90px; padding: 6px 8px; }
+            .custom-wrap .custom-card .actions { flex-direction: column; gap: 5px; }
+            .custom-wrap .custom-card .actions .btn { padding: 6px 0; font-size: 12px; }
+            #wandMoving { font-size: 18px; }
+            .summary.zoom-active {
+                width: 92vw !important;
+                max-width: 92vw !important;
+                padding: 12px 14px !important;
+                transform: translate(-50%, -50%) scale(1.1) !important;
+            }
+            @keyframes fadeInZoom {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+                100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+            }
+        }
+
+        @media (max-width: 380px) {
+            .summary.zoom-active {
+                transform: translate(-50%, -50%) scale(1) !important;
+                padding: 10px 12px !important;
+            }
+            @keyframes fadeInZoom {
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+                100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            }
+        }
+    </style>
+</head>
+<body>
+
+<button class="dark-toggle" id="darkToggle" title="Toggle Dark Mode"><i class="fas fa-moon"></i></button>
+
+<div class="container">
+    <section id="custom">
+        <div class="section-title">
+            Package <span class="gold">Customization</span>
+            <i class="fas fa-wand-magic-sparkles gold-icon" id="titleWand"></i>
+        </div>
+
+        <div class="custom-wrap">
+            <div class="custom-card">
+                <div class="desc" id="customDesc">Decide your own package, it's all yours. Select services and quantities. <strong>30% OFF for orders RM20+</strong></div>
+                <div class="picker" id="customPicker"></div>
+                <div class="summary" id="customSummary"><div class="empty">No services selected yet</div></div>
+                <div class="actions">
+                    <button class="btn btn-secondary" id="clearCustom">Clear All</button>
+                    <button class="btn btn-primary" id="addCustomCart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Wand bergerak - ambil dari title -->
+<div id="wandMoving"><i class="fas fa-wand-magic-sparkles"></i></div>
+
+<script>
+    const servicesData = [
+        { id: 's1', label: '1K Instagram Followers', price: 10.00, discount: 0 },
+        { id: 's2', label: '1K Instagram Video Views', price: 1.00, discount: 0 },
+        { id: 's3', label: '500 Instagram Story Views', price: 3.00, discount: 0 }
+    ];
+
+    let customSelections = {};
+    let isBeating = false;
+    let beatCount = 0;
+    let isMoving = false;
+    let animFrameId = null;
+    let isZoomed = false;
+    let isProcessing = false;
+    let currentWandPos = null;
+    let scrollTimeout = null;
+
+    const titleWand = document.getElementById('titleWand');
+    const wandMoving = document.getElementById('wandMoving');
+
+    // ===== AMBIL WAND DARI TITLE =====
+    function grabWandFromTitle() {
+        // Copy style dari title wand ke moving wand
+        wandMoving.style.backgroundImage = titleWand.style.backgroundImage || 'url("bg.jpg")';
+        wandMoving.style.backgroundSize = 'cover';
+        wandMoving.style.backgroundPosition = 'center';
+        wandMoving.style.webkitBackgroundClip = 'text';
+        wandMoving.style.backgroundClip = 'text';
+        wandMoving.style.color = 'transparent';
+        wandMoving.style.fontSize = '22px';
+
+        // Position wand exactly at title wand
+        const rect = titleWand.getBoundingClientRect();
+        wandMoving.style.left = (rect.left + rect.width / 2 - 11) + 'px';
+        wandMoving.style.top = (rect.top + rect.height / 2 - 11) + 'px';
+        wandMoving.style.display = 'block';
+        currentWandPos = { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
+    }
+
+    function renderCustomPicker() {
+        const container = document.getElementById('customPicker');
+        container.innerHTML = servicesData.map((item, index) => {
+            const qty = customSelections[item.id] || 0;
+            const finalPrice = item.discount ? Math.round(item.price * (1 - item.discount / 100) * 100) / 100 : item.price;
+            const hasDiscount = item.discount > 0;
+            return `
+                <div class="opt" data-id="${item.id}" data-index="${index}" id="opt_${item.id}">
+                    <div class="left">
+                        <span>${item.label}</span>
+                        ${hasDiscount ? `<span class="discount-badge">-${item.discount}%</span>` : ''}
+                    </div>
+                    <div class="right">
+                        ${hasDiscount ? `<span class="original-price">RM${item.price.toFixed(2)}</span>` : ''}
+                        <span class="final-price">RM${finalPrice.toFixed(2)}</span>
+                        <button class="qty-btn" data-id="${item.id}" data-dir="-1">−</button>
+                        <span class="qty-num" id="qtyNum_${item.id}">${qty}</span>
+                        <button class="qty-btn plus-btn" data-id="${item.id}" data-dir="1" id="plusBtn_${item.id}">+</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.dataset.id;
+                const dir = parseInt(this.dataset.dir);
+                const current = customSelections[id] || 0;
+                const newQty = Math.max(0, current + dir);
+                if (newQty === 0) delete customSelections[id];
+                else customSelections[id] = newQty;
+                renderCustomPicker();
+                updateCustomSummary();
+                if (isZoomed) closeZoom();
+            });
+        });
+    }
+
+    function updateCustomSummary() {
+        const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
+        const container = document.getElementById('customSummary');
+
+        if (entries.length === 0) {
+            container.innerHTML = '<div class="empty">No services selected yet</div>';
+            return;
+        }
+
+        let total = 0;
+        let html = '';
+        entries.forEach(([id, qty]) => {
+            const item = servicesData.find(s => s.id === id);
+            if (!item) return;
+            const price = item.discount ? Math.round(item.price * (1 - item.discount / 100) * 100) / 100 : item.price;
+            const subtotal = price * qty;
+            total += subtotal;
+            html += `<div class="item"><span>${item.label} x${qty}</span><span>RM${subtotal.toFixed(2)}</span></div>`;
+        });
+
+        let discount = 0;
+        const minPurchase = 20;
+        const discountPercent = 30;
+        if (total >= minPurchase && discountPercent > 0) {
+            discount = Math.round(total * (discountPercent / 100) * 100) / 100;
+        }
+        const finalTotal = total - discount;
+
+        html += `<div class="total-row"><span>Subtotal</span><span>RM${total.toFixed(2)}</span></div>`;
+        if (discount > 0) {
+            html += `<div class="total-row discount"><span>Discount ${discountPercent}%</span><span>-RM${discount.toFixed(2)}</span></div>`;
+        }
+        html += `<div class="total-row"><span>Total</span><span>RM${finalTotal.toFixed(2)}</span></div>`;
+        container.innerHTML = html;
+    }
+
+    function getPlusButtonPosition(serviceId) {
+        const btn = document.querySelector(`#opt_${serviceId} .plus-btn`);
+        if (!btn) return null;
+        const rect = btn.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2 - 11, y: rect.top + rect.height / 2 - 11 };
+    }
+
+    function createSparklesAtElement(el, count = 10) {
+        const rect = el.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+
+        for (let i = 0; i < count; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle-particle';
+            const symbols = ['✦', '✧', '✦', '✧', '✦', '✧', '✦', '✧', '✦', '✧'];
+            sparkle.textContent = symbols[i % symbols.length];
+            const angle = (i / count) * Math.PI * 2 + Math.random() * 0.2;
+            const distance = 25 + Math.random() * 40;
+            sparkle.style.left = (x + (Math.random() - 0.5) * 8) + 'px';
+            sparkle.style.top = (y + (Math.random() - 0.5) * 8) + 'px';
+            sparkle.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+            sparkle.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+            sparkle.style.fontSize = (8 + Math.random() * 12) + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => { if (sparkle.parentNode) sparkle.remove(); }, 700);
+        }
+    }
+
+    function addToPackage(serviceId) {
+        const current = customSelections[serviceId] || 0;
+        customSelections[serviceId] = current + 1;
+        renderCustomPicker();
+        updateCustomSummary();
+
+        wandMoving.classList.remove('beating');
+        void wandMoving.offsetWidth;
+        wandMoving.classList.add('beating');
+
+        const qtyEl = document.getElementById('qtyNum_' + serviceId);
+        if (qtyEl) {
+            qtyEl.classList.remove('bounce-num');
+            void qtyEl.offsetWidth;
+            qtyEl.classList.add('bounce-num');
+        }
+
+        const btn = document.querySelector(`.plus-btn[data-id="${serviceId}"]`);
+        if (btn) {
+            btn.classList.remove('pulse-glow');
+            void btn.offsetWidth;
+            btn.classList.add('pulse-glow');
+            setTimeout(() => btn.classList.remove('pulse-glow'), 400);
+            createSparklesAtElement(btn, 8);
+        }
+
+        const pos = getPlusButtonPosition(serviceId);
+        if (pos) {
+            wandMoving.style.left = pos.x + 'px';
+            wandMoving.style.top = pos.y + 'px';
+            currentWandPos = pos;
+        }
+    }
+
+    function zoomSummary() {
+        if (isZoomed) return;
+        isZoomed = true;
+
+        wandMoving.style.display = 'none';
+        titleWand.style.display = 'none';
+
+        summaryEl.classList.add('zoom-active');
+
+        setTimeout(() => {
+            const scrollHeight = summaryEl.scrollHeight;
+            const step = 8;
+            const delay = 25;
+            let currentScroll = 0;
+
+            function smoothScroll() {
+                if (currentScroll < scrollHeight) {
+                    currentScroll += step;
+                    summaryEl.scrollTop = currentScroll;
+                    scrollTimeout = setTimeout(smoothScroll, delay);
+                }
+            }
+
+            smoothScroll();
+        }, 2000);
+
+        summaryEl.onclick = function(e) {
+            e.stopPropagation();
+            closeZoom();
+        };
+    }
+
+    function closeZoom() {
+        if (!isZoomed) return;
+        isZoomed = false;
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = null;
+        }
+        summaryEl.classList.remove('zoom-active');
+        summaryEl.onclick = null;
+        summaryEl.style.animation = '';
+        summaryEl.scrollTop = 0;
+        titleWand.style.display = 'inline-block';
+        wandMoving.style.display = 'block';
+        grabWandFromTitle();
+    }
+
+    function slideWandToPosition(targetPos, callback) {
+        if (isMoving) return;
+        isMoving = true;
+
+        const startPos = currentWandPos;
+
+        if (!startPos || !targetPos) {
+            isMoving = false;
+            if (callback) callback();
+            return;
+        }
+
+        wandMoving.style.display = 'block';
+        wandMoving.style.fontSize = '22px';
+        wandMoving.style.opacity = '1';
+
+        wandMoving.style.left = startPos.x + 'px';
+        wandMoving.style.top = startPos.y + 'px';
+
+        const startTime = performance.now();
+        const duration = 800;
+
+        function animateMove(time) {
+            const elapsed = time - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+            const x = startPos.x + (targetPos.x - startPos.x) * ease;
+            const y = startPos.y + (targetPos.y - startPos.y) * ease;
+
+            wandMoving.style.left = x + 'px';
+            wandMoving.style.top = y + 'px';
+
+            if (progress < 1) {
+                animFrameId = requestAnimationFrame(animateMove);
+            } else {
+                wandMoving.style.left = targetPos.x + 'px';
+                wandMoving.style.top = targetPos.y + 'px';
+                currentWandPos = targetPos;
+                isMoving = false;
+                animFrameId = null;
+                if (callback) callback();
+            }
+        }
+
+        animFrameId = requestAnimationFrame(animateMove);
+    }
+
+    function slideWandToButton(serviceId, callback) {
+        const targetPos = getPlusButtonPosition(serviceId);
+        if (!targetPos) {
+            if (callback) callback();
+            return;
+        }
+        slideWandToPosition(targetPos, callback);
+    }
+
+    function doHeartbeat(serviceId, count, callback) {
+        if (isBeating) return;
+        isBeating = true;
+        beatCount = 0;
+
+        customSelections[serviceId] = 0;
+        renderCustomPicker();
+        updateCustomSummary();
+
+        function beat() {
+            beatCount++;
+            addToPackage(serviceId);
+
+            const pos = getPlusButtonPosition(serviceId);
+            if (pos) {
+                wandMoving.style.left = pos.x + 'px';
+                wandMoving.style.top = pos.y + 'px';
+                currentWandPos = pos;
+            }
+
+            if (beatCount < count) {
+                setTimeout(beat, 600);
+            } else {
+                isBeating = false;
+                if (callback) callback();
+            }
+        }
+
+        setTimeout(beat, 500);
+    }
+
+    function startSequence() {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        customSelections = {};
+        renderCustomPicker();
+        updateCustomSummary();
+
+        // Ambil wand dari title
+        grabWandFromTitle();
+        titleWand.style.display = 'none';
+
+        setTimeout(function() {
+            slideWandToButton('s1', function() {
+                setTimeout(function() {
+                    doHeartbeat('s1', 5, function() {
+                        setTimeout(function() {
+                            slideWandToButton('s2', function() {
+                                setTimeout(function() {
+                                    doHeartbeat('s2', 1, function() {
+                                        setTimeout(function() {
+                                            slideWandToButton('s3', function() {
+                                                setTimeout(function() {
+                                                    doHeartbeat('s3', 1, function() {
+                                                        setTimeout(function() {
+                                                            zoomSummary();
+                                                            isProcessing = false;
+                                                        }, 600);
+                                                    });
+                                                }, 400);
+                                            });
+                                        }, 400);
+                                    });
+                                }, 400);
+                            });
+                        }, 400);
+                    });
+                }, 400);
+            });
+        }, 600);
+    }
+
+    document.getElementById('clearCustom').addEventListener('click', function() {
+        if (animFrameId) {
+            cancelAnimationFrame(animFrameId);
+            animFrameId = null;
+        }
+        isMoving = false;
+        isBeating = false;
+        isProcessing = false;
+        closeZoom();
+
+        customSelections = {};
+        renderCustomPicker();
+        updateCustomSummary();
+
+        titleWand.style.display = 'inline-block';
+        wandMoving.style.display = 'block';
+        grabWandFromTitle();
+
+        setTimeout(function() {
+            startSequence();
+        }, 1200);
+    });
+
+    document.getElementById('addCustomCart').addEventListener('click', function() {
+        const entries = Object.entries(customSelections).filter(([_, q]) => q > 0);
+        if (entries.length === 0) {
+            alert('No services selected');
+            return;
+        }
+        alert('Package added to cart! 🎉');
+    });
+
+    document.getElementById('darkToggle').addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const icon = this.querySelector('i');
+        if (document.body.classList.contains('dark-mode')) {
+            icon.className = 'fas fa-sun';
+        } else {
+            icon.className = 'fas fa-moon';
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isZoomed) {
+            closeZoom();
+        }
+    });
+
+    renderCustomPicker();
+    updateCustomSummary();
+
+    // Ambil wand dari title
+    setTimeout(function() {
+        grabWandFromTitle();
+    }, 300);
+
+    setTimeout(function() {
+        startSequence();
+    }, 1200);
+
+    console.log('✅ Wand ambil dari title');
+    console.log('✅ Start dari title');
+    console.log('✅ Professional untuk screen record');
+</script>
+
+</body>
+</html>

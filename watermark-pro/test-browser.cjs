@@ -90,9 +90,23 @@ module.exports=async({worker,env,req,admin})=>{
   const printPage=await context.newPage();await printPage.setViewportSize({width:718,height:1047});await printPage.setContent(await printFrame.content());await printPage.emulateMedia({media:'print'});
   await printPage.screenshot({path:'test-receipt-print.png',fullPage:true});
   const stampLayout=await printPage.locator('.lr-total').evaluate(e=>{const s=e.querySelector('.lr-stamp').getBoundingClientRect(),p=e.querySelector('.lr-total-price').getBoundingClientRect();return {gap:p.left-s.right,dy:Math.abs(s.y+s.height/2-p.y-p.height/2)}});
-  assert(stampLayout.gap<20&&stampLayout.gap>-20&&stampLayout.dy<2,'stamp beside price '+JSON.stringify(stampLayout));
+  assert(stampLayout.gap<-8&&stampLayout.gap>-40&&stampLayout.dy<2,'stamp beside price '+JSON.stringify(stampLayout));
   const printHeight=await printPage.locator('#receiptSheet').evaluate(e=>e.getBoundingClientRect().height);assert(printHeight>100&&printHeight<1047,'A4 receipt height '+printHeight);
-  await printPage.close();await page.evaluate(()=>{document.querySelector('iframe[title="Resit Watermark Pro"]').contentWindow.dispatchEvent(new Event('afterprint'));window.__restorePrintGetter();document.querySelector('#receiptModal').classList.remove('open')});
+  await page.setViewportSize({width:412,height:915});await page.emulateMedia({media:'print'});
+  assert.equal(await page.locator('#wpInstallApp').isVisible(),false,'install omitted from parent-document mobile print');
+  assert.equal(await page.locator('.app').isVisible(),false,'only isolated receipt is printed');
+  assert.equal(await page.locator('.wp-print-root').isVisible(),true);
+  await page.screenshot({path:'test-mobile-parent-print.png',fullPage:true});
+
+  await printPage.locator('#receiptSheet').evaluate(e=>e.dataset.receiptStatus='granted');
+  assert.equal(await printPage.locator('.lr-status').evaluate(e=>getComputedStyle(e).color),'rgb(255, 0, 136)','printed grant pink remains exact');
+  assert.equal(await page.locator('.wp-print-root #receiptSheet').evaluate(e=>Math.round(e.getBoundingClientRect().left)),0,'mobile print has no nested left margins');
+  fs.mkdirSync('tmp/pdfs',{recursive:true});
+  await printPage.pdf({path:'tmp/pdfs/desktop-receipt.pdf',format:'A4',preferCSSPageSize:true,printBackground:true});
+  if(!await page.locator('.wp-print-root').count())await page.evaluate(()=>window.printReceiptIsolated());
+  await page.locator('.wp-print-root #receiptSheet').evaluate(e=>e.dataset.receiptStatus='granted');
+  await page.pdf({path:'tmp/pdfs/mobile-receipt.pdf',format:'A4',preferCSSPageSize:true,printBackground:true});
+  await page.emulateMedia({media:'screen'});await page.setViewportSize({width:1366,height:900});await printPage.close();await page.evaluate(()=>{document.querySelector('iframe[title="Resit Watermark Pro"]')?.contentWindow.dispatchEvent(new Event('afterprint'));window.__restorePrintGetter();document.querySelector('#receiptModal').classList.remove('open')});
   await page.locator('[data-page="profile"]').first().click();
   await page.evaluate(()=>window.WPCloudflare.api('/api/account/profile',{method:'PATCH',body:JSON.stringify({photo:new URL('logo.jpg',document.baseURI).href})}));
   await page.evaluate(()=>window.WPCloudflare.sync());
@@ -125,7 +139,7 @@ module.exports=async({worker,env,req,admin})=>{
   for(const owner of [false,true]){
    await page.evaluate(owner=>document.body.classList.toggle('owner-account',owner),owner);
    const ring=await page.locator('#avatarPreview').evaluate(e=>{const a=e.getBoundingClientRect(),i=e.querySelector('img').getBoundingClientRect();return {border:parseFloat(getComputedStyle(e).borderTopWidth),dx:Math.abs(a.x+a.width/2-i.x-i.width/2),dy:Math.abs(a.y+a.height/2-i.y-i.height/2)}});
-   assert(ring.border>0&&ring.border<=2&&ring.dx<1&&ring.dy<1,'centered thin Pro/owner ring '+JSON.stringify(ring));
+   assert(ring.border>0&&ring.border<=2.5&&ring.dx<1&&ring.dy<1,'centered thin Pro/owner ring '+JSON.stringify(ring));
    assert(await page.locator('.sidebar-user .wp-wmark').count()>0,'Pro and owner W mark');
   }
   await page.evaluate(()=>document.body.classList.remove('owner-account'));
@@ -190,17 +204,23 @@ module.exports=async({worker,env,req,admin})=>{
    assert.equal(await page.evaluate(()=>new URL('release-ui.js',document.baseURI).pathname),'/published/watermark-pro/release-ui.js');
   }
   assert.deepEqual(dialogs,[]);assert.deepEqual(errors,[]);
-  const fileContext=await browser.newContext({viewport:{width:390,height:844}});
+  const fileContext=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3});
   await fileContext.addInitScript(base=>window.WATERMARK_API_BASE=base,origin);
   const filePage=await fileContext.newPage();
   await filePage.goto(require('node:url').pathToFileURL(path.join(__dirname,'index.html')).href);
   await filePage.waitForFunction(()=>typeof window.drawSupporterCard==='function'&&Boolean(window.WPExportAssets));
+  await filePage.evaluate(()=>{const modal=document.getElementById('authTopUsersModal');modal.innerHTML='<div class="topuser-row is-pro"><button class="topuser-avatar-action is-pro-avatar"><img src="'+window.WPExportAssets['logo.jpg']+'"></button></div>';modal.classList.add('open')});
+  await filePage.locator('#authTopUsersModal .topuser-avatar-action img').evaluate(e=>e.decode());
+  const mobileRing=await filePage.locator('#authTopUsersModal .topuser-avatar-action').evaluate(e=>{const r=e.getBoundingClientRect(),i=e.querySelector('img').getBoundingClientRect(),b=parseFloat(getComputedStyle(e).borderLeftWidth);return {b,dx:Math.abs(r.x+r.width/2-i.x-i.width/2),dy:Math.abs(r.y+r.height/2-i.y-i.height/2),gap:r.width-i.width-2*b}});
+  assert(mobileRing.b>=2&&mobileRing.b<=2.5&&mobileRing.dx<.5&&mobileRing.dy<.5&&Math.abs(mobileRing.gap)<.5,'mobile DPR3 top-user ring '+JSON.stringify(mobileRing));
+  await filePage.evaluate(()=>document.getElementById('authTopUsersModal').classList.remove('open'));
   const exported=await filePage.evaluate(async()=>{savedUsername='@filepreview';currentAvatarDataURL=window.WPExportAssets['logo.jpg'];document.body.classList.add('pro-account');const canvas=await window.drawSupporterCard();await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve():reject(new Error('Missing PNG'))));return canvas.toDataURL('image/png')});
   fs.writeFileSync('test-file-supporter.png',Buffer.from(exported.split(',')[1],'base64'));
   assert.equal(await filePage.locator('.sidebar .brand>span').evaluate(e=>getComputedStyle(e).backgroundClip),'text','sidebar Pro brand fill');
   await filePage.locator('#wpInstallApp').click();await filePage.locator('#wpInstallHelp[open]').waitFor();
   assert(await filePage.locator('#wpInstallHelp .wp-install-primary').isVisible(),'file install has actionable website link');
   await filePage.screenshot({path:'test-install-modal-mobile.png'});
+  const nativeCalls=await filePage.evaluate(async()=>{let calls=0;const e=new Event('beforeinstallprompt');e.prompt=async()=>{calls++};e.userChoice=Promise.resolve({outcome:'accepted'});window.dispatchEvent(e);document.querySelector('#wpInstallNative').click();await Promise.resolve();return calls});assert.equal(nativeCalls,1,'modal invokes native installation');
   await filePage.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));await filePage.reload();await filePage.waitForFunction(()=>Boolean(window.WatermarkProInstall));
   assert.equal(await filePage.locator('#wpInstallApp').count(),0,'installed state survives reload');
   await fileContext.close();

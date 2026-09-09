@@ -38,5 +38,13 @@
       "short_name": "Watermark Tools",
       "url": "./index.html"
     }
-  ]
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://socmegy.com/watermark-pro/manifest.webmanifest",
+      "id": "https://socmegy.com/watermark-pro/"
+    }
+  ],
+  "prefer_related_applications": false
 }
