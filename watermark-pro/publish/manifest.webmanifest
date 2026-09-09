@@ -1,17 +1,23 @@
 {
-  "id": "./",
+  "id": "/watermark-pro/",
   "name": "Watermark Pro",
   "short_name": "Watermark Pro",
   "description": "Letakkan tera air pada imej dan video serta urus akaun Watermark Pro.",
   "lang": "ms-MY",
-  "start_url": "./?app=watermark-pro",
-  "scope": "./",
+  "start_url": "/watermark-pro/?app=watermark-pro",
+  "scope": "/watermark-pro/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
+  "display_override": [
+    "standalone"
+  ],
   "orientation": "any",
   "background_color": "#f7f9fb",
-  "theme_color": "#f7f9fb",
-  "categories": ["photo", "video", "utilities"],
+  "theme_color": "#143d68",
+  "categories": [
+    "photo",
+    "video",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "./app-icon-192.png",
@@ -19,7 +25,12 @@
       "type": "image/png",
       "purpose": "any"
     },
-    {"src":"./app-icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+    {
+      "src": "./app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ],
   "shortcuts": [
     {

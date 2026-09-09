@@ -14,7 +14,7 @@ module.exports=async({worker,env,req,admin})=>{
    if(pathname.startsWith('/published/watermark-pro/')){relative='publish/'+pathname.slice('/published/watermark-pro/'.length);if(relative.endsWith('/'))relative+='index.html';}
    const file=path.resolve(__dirname,relative);
    if(!file.startsWith(__dirname+path.sep)||!fs.existsSync(file)){out.writeHead(404);out.end();return;}
-   const types={'.html':'text/html','.js':'text/javascript','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
+   const types={'.css':'text/css','.html':'text/html','.js':'text/javascript','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
    out.writeHead(200,{'Content-Type':types[path.extname(file)]||'text/plain'});out.end(fs.readFileSync(file));
   }catch(e){out.writeHead(500);out.end(e.message)}
  });
@@ -59,6 +59,9 @@ module.exports=async({worker,env,req,admin})=>{
   await page.waitForFunction(()=>document.querySelector('.wp-live-notice').dataset.unread==='false');
   await page.reload();await page.waitForFunction(()=>!document.body.classList.contains('auth-mode'));
   await page.waitForFunction(()=>document.querySelector('.wp-live-notice')?.dataset.unread==='false');
+  await page.locator('#logoWatermarkGroup > .tool-toggle').scrollIntoViewIfNeeded();const logoBox=await page.locator('#logoWatermarkGroup > .tool-toggle').boundingBox();await page.mouse.click(logoBox.x+20,logoBox.y+logoBox.height/2);
+  assert(await page.locator('#proUpsellModal').isVisible(),'free logo opens Pro modal');
+  await page.evaluate(()=>window.setProUpsellOpen(false));
   const payment=await page.evaluate(()=>window.WPCloudflare.api('/api/payments',{method:'POST',body:JSON.stringify({paymentTime:'12:30'})}));
   for(const width of [390,1366]){
    await page.setViewportSize({width,height:900});
@@ -86,6 +89,8 @@ module.exports=async({worker,env,req,admin})=>{
   const printFrame=page.frames().find(f=>f!==page.mainFrame());assert(printFrame);
   const printPage=await context.newPage();await printPage.setViewportSize({width:718,height:1047});await printPage.setContent(await printFrame.content());await printPage.emulateMedia({media:'print'});
   await printPage.screenshot({path:'test-receipt-print.png',fullPage:true});
+  const stampLayout=await printPage.locator('.lr-total').evaluate(e=>{const s=e.querySelector('.lr-stamp').getBoundingClientRect(),p=e.querySelector('.lr-total-price').getBoundingClientRect();return {gap:p.left-s.right,dy:Math.abs(s.y+s.height/2-p.y-p.height/2)}});
+  assert(stampLayout.gap<20&&stampLayout.gap>-20&&stampLayout.dy<2,'stamp beside price '+JSON.stringify(stampLayout));
   const printHeight=await printPage.locator('#receiptSheet').evaluate(e=>e.getBoundingClientRect().height);assert(printHeight>100&&printHeight<1047,'A4 receipt height '+printHeight);
   await printPage.close();await page.evaluate(()=>{document.querySelector('iframe[title="Resit Watermark Pro"]').contentWindow.dispatchEvent(new Event('afterprint'));window.__restorePrintGetter();document.querySelector('#receiptModal').classList.remove('open')});
   await page.locator('[data-page="profile"]').first().click();
@@ -117,6 +122,13 @@ module.exports=async({worker,env,req,admin})=>{
   await page.locator('[name="currentPassword"]').fill('12345678');await page.locator('[name="newPassword"]').fill('short');await page.locator('#passwordChangeForm [type="submit"]').click();await page.waitForFunction(()=>document.querySelector('#passwordChangeStatus').textContent.includes('8 hingga 256'));
   await page.locator('[name="newPassword"]').fill('Changed123');await page.locator('#passwordChangeForm [type="submit"]').click();await page.waitForFunction(()=>document.querySelector('#passwordChangeStatus').textContent.includes('berjaya'));
   await page.setViewportSize({width:390,height:844});await page.screenshot({path:'test-account-mobile.png'});
+  for(const owner of [false,true]){
+   await page.evaluate(owner=>document.body.classList.toggle('owner-account',owner),owner);
+   const ring=await page.locator('#avatarPreview').evaluate(e=>{const a=e.getBoundingClientRect(),i=e.querySelector('img').getBoundingClientRect();return {border:parseFloat(getComputedStyle(e).borderTopWidth),dx:Math.abs(a.x+a.width/2-i.x-i.width/2),dy:Math.abs(a.y+a.height/2-i.y-i.height/2)}});
+   assert(ring.border>0&&ring.border<=2&&ring.dx<1&&ring.dy<1,'centered thin Pro/owner ring '+JSON.stringify(ring));
+   assert(await page.locator('.sidebar-user .wp-wmark').count()>0,'Pro and owner W mark');
+  }
+  await page.evaluate(()=>document.body.classList.remove('owner-account'));
   const layout=await page.evaluate(()=>{
    const logo=document.querySelector('.topbar .header-brand-logo').getBoundingClientRect();
    return {logo:[logo.width,logo.height],border:getComputedStyle(document.querySelector('.topbar')).borderBottomWidth,headerBadge:getComputedStyle(document.querySelector('#headerProfileAvatar'),'::after').content,settingsBadge:getComputedStyle(document.querySelector('#avatarPreview'),'::after').content,community:document.body.innerText.includes('Pautan komuniti akan tersedia tidak lama lagi.')};
@@ -133,6 +145,8 @@ module.exports=async({worker,env,req,admin})=>{
   assert.equal(await page.locator('#wpInstallApp svg').count(),1);
   assert.equal(await page.locator('#wpInstallApp').evaluate(e=>getComputedStyle(e).position),'fixed');
   await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));
+  assert.equal(await page.locator('#wpInstallApp').count(),0,'install button disappears after install');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('wp-installed:/watermark-pro/')),'1');
   assert.equal(await page.locator('#wpAccountInstallButton').count(),0);
   const geometry=await page.evaluate(async()=>{
    const viewer=document.querySelector('#mediaLightbox'),image=document.querySelector('#mediaLightboxImage');
@@ -147,7 +161,18 @@ module.exports=async({worker,env,req,admin})=>{
   await control.addInitScript(token=>localStorage.setItem('watermarkProControlApiToken',token),admin);
   await control.goto(origin+'/watermark-pro/control.html');
   const topDownload=control.waitForEvent('download');await control.locator('#downloadTopUsers').click();const topFile=await topDownload;assert.equal(await topFile.failure(),null);assert.match(topFile.suggestedFilename(),/\.png$/i);
-  await control.locator('[data-view="users"]').first().click();await control.locator('#addUserBtn').click();await control.locator('#userModal.open').waitFor();assert.equal(await control.locator('#resetPasswordSection').isVisible(),false);
+  await topFile.saveAs('test-top3-export.png');
+  await control.evaluate(()=>{window.__originalState=structuredClone(window.WPControl.state);const s=structuredClone(window.WPControl.state);s.users[0].username='@username20characters';s.users[0].plan='pro';s.users[0].proUntil=null;s.users[0].downloads={images:999,videos:0};window.WPControl.apply(s)});
+  await control.setViewportSize({width:412,height:915});
+  const aligned=await control.locator('.top-user-row .identity-copy strong').first().evaluate(e=>{const a=e.querySelector('.identity-name').getBoundingClientRect(),b=e.querySelector('img').getBoundingClientRect();return Math.abs(a.y+a.height/2-b.y-b.height/2)<1});assert(aligned,'mobile control W mark stays centered');
+  await control.locator('#dashboardTopUsers').scrollIntoViewIfNeeded();await control.screenshot({path:'test-control-mobile.png'});
+  const controlRing=await control.locator('#dashboardTopUsers .is-pro-avatar img').first().evaluate(e=>{const a=e.parentElement.getBoundingClientRect(),b=e.getBoundingClientRect(),border=parseFloat(getComputedStyle(e.parentElement).borderLeftWidth);return {dx:Math.abs(a.x+a.width/2-b.x-b.width/2),dy:Math.abs(a.y+a.height/2-b.y-b.height/2),gap:a.width-b.width-2*border}});
+  assert(controlRing.dx<.6&&controlRing.dy<.6&&Math.abs(controlRing.gap)<.6,'control image fills ring '+JSON.stringify(controlRing));
+  await control.setViewportSize({width:1366,height:900});await control.locator('[data-view="users"]').first().click();
+  assert(await control.locator('.user-row').first().evaluate(e=>{const a=e.children[0].getBoundingClientRect(),b=e.children[1].getBoundingClientRect();return a.right<=b.left}),'identity does not overlap created date');
+  await control.screenshot({path:'test-control-users.png'});
+  await control.evaluate(()=>window.WPControl.apply(window.__originalState));
+  await control.locator('#addUserBtn').click();await control.locator('#userModal.open').waitFor();assert.equal(await control.locator('#resetPasswordSection').isVisible(),false);
   await control.locator('#userUsername').fill('browsercreated');await control.locator('#userEmail').fill('browsercreated@example.invalid');await control.locator('#userForm [type="submit"]').click();await control.locator('#temporaryPasswordModal.open').waitFor();
   const temporary=await control.locator('#temporaryPasswordValue').inputValue();assert(temporary.length>=8);
   await control.locator('#copyTemporaryPassword').click();await control.screenshot({path:'test-control-result.png'});await control.locator('#closeTemporaryPassword').click();assert.equal(await control.locator('#temporaryPasswordValue').count(),0);
@@ -158,11 +183,27 @@ module.exports=async({worker,env,req,admin})=>{
   await page.goto(origin+'/index.html');await page.waitForFunction(()=>typeof window.WPCloudflare==='object');
   assert.equal(await page.evaluate(()=>new URL('release-ui.js',document.baseURI).pathname),'/release-ui.js');
   if(fs.existsSync(path.join(__dirname,'publish/profil/index.html'))){
-   await page.goto(origin+'/published/watermark-pro/profil/');await page.waitForFunction(()=>!document.body.classList.contains('auth-mode'));
-   assert.equal(await page.locator('#page-profile').isVisible(),true);
+   for(const [route,id] of [['profil','profile'],['pelan','subscriptions'],['tetapan','settings']]){
+    await page.goto(origin+'/published/watermark-pro/'+route+'/');await page.reload();await page.waitForFunction(()=>!document.body.classList.contains('auth-mode'));
+    assert.equal(await page.locator('#page-'+id).isVisible(),true,'static refresh '+route);
+   }
    assert.equal(await page.evaluate(()=>new URL('release-ui.js',document.baseURI).pathname),'/published/watermark-pro/release-ui.js');
   }
   assert.deepEqual(dialogs,[]);assert.deepEqual(errors,[]);
+  const fileContext=await browser.newContext({viewport:{width:390,height:844}});
+  await fileContext.addInitScript(base=>window.WATERMARK_API_BASE=base,origin);
+  const filePage=await fileContext.newPage();
+  await filePage.goto(require('node:url').pathToFileURL(path.join(__dirname,'index.html')).href);
+  await filePage.waitForFunction(()=>typeof window.drawSupporterCard==='function'&&Boolean(window.WPExportAssets));
+  const exported=await filePage.evaluate(async()=>{savedUsername='@filepreview';currentAvatarDataURL=window.WPExportAssets['logo.jpg'];document.body.classList.add('pro-account');const canvas=await window.drawSupporterCard();await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve():reject(new Error('Missing PNG'))));return canvas.toDataURL('image/png')});
+  fs.writeFileSync('test-file-supporter.png',Buffer.from(exported.split(',')[1],'base64'));
+  assert.equal(await filePage.locator('.sidebar .brand>span').evaluate(e=>getComputedStyle(e).backgroundClip),'text','sidebar Pro brand fill');
+  await filePage.locator('#wpInstallApp').click();await filePage.locator('#wpInstallHelp[open]').waitFor();
+  assert(await filePage.locator('#wpInstallHelp .wp-install-primary').isVisible(),'file install has actionable website link');
+  await filePage.screenshot({path:'test-install-modal-mobile.png'});
+  await filePage.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));await filePage.reload();await filePage.waitForFunction(()=>Boolean(window.WatermarkProInstall));
+  assert.equal(await filePage.locator('#wpInstallApp').count(),0,'installed state survives reload');
+  await fileContext.close();
   console.log('PASS browser: revealed registration, Malay errors, notifications, persisted toggle, logout/back/login, Control create/copy/reset, root/subfolder assets; no JS errors or dialogs');
  }finally{await browser?.close();await new Promise(resolve=>server.close(resolve))}
 };

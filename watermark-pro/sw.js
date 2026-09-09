@@ -1,6 +1,6 @@
-const CACHE='watermark-pro-shell-v150-'+new URL('./',self.location.href).pathname;
+const CACHE='watermark-pro-shell-v152-'+new URL('./',self.location.href).pathname;
 const BASE=new URL('./',self.location.href).pathname;
-const SHELL=['','index.html','control.html','manifest.webmanifest','logo.jpg','bg.jpg','pwa.js','avatar-render.js','wmark-shared.js','release-ui.js','control-release.js'].map(p=>BASE+p);
+const SHELL=['','index.html','control.html','manifest.webmanifest','logo.jpg','bg.jpg','pwa.js','avatar-render.js','wmark-shared.js','release-ui.js','control-release.js','request-layout.css','export-assets.js'].map(p=>BASE+p);
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url))))));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.endsWith('-'+BASE)&&k!==CACHE).map(k=>caches.delete(k))))));
 // Only shell files: API, uploads, blobs and processed media bypass the worker.

@@ -6,6 +6,7 @@
 // Resolve legacy clean routes to the same directory as the published files.
 {const base=document.createElement('base');base.href=new URL(location.pathname.replace(/(?:profil|pelan|sokongan|tetapan)\/?$/, '').replace(/[^/]*\.html$/, ''),location.href).href;document.head.append(base);}
 </script>
+<script src="export-assets.js"></script>
 <script src="avatar-render.js"></script>
 <style>html:root body #wpSessionBoot #wpSessionBootText{font-weight:400!important}</style>
 <style>html body #wpSessionBoot{gap:18px!important}html body #wpSessionBoot .wp-boot-logo{width:96px!important;height:96px!important}html body #wpSessionBoot #wpSessionBootText{font:800 19px/1.25 Arial,sans-serif!important;color:#536171!important}@media(max-width:700px){html body #wpSessionBoot .wp-boot-logo{width:84px!important;height:84px!important}html body #wpSessionBoot #wpSessionBootText{font-size:18px!important}}</style>
@@ -79,7 +80,7 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta name="description" content="Watermark Pro memudahkan anda meletakkan tera air pada banyak imej dan video sebelum disiarkan, dengan teks, tandatangan sendiri, logo dan tetapan tambahan.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="application-name" content="Watermark Pro">
-<meta name="theme-color" content="#f7f9fb">
+<meta name="theme-color" content="#143d68">
 <meta name="color-scheme" content="light">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
@@ -10183,7 +10184,7 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
 #wpWMarkDialog::backdrop{background:rgba(15,23,42,.6)}
 #wpWMarkDialog .heading{display:flex;align-items:center;gap:10px}
 #wpWMarkDialog img{width:42px;height:auto}#wpWMarkDialog h3{font-size:21px;margin:0}
-#wpWMarkDialog p{margin:14px 0 0;text-align:justify;font-size:13px;line-height:1.6}
+#wpWMarkDialog p{margin:14px 0 0;text-align:left;font-size:13px;line-height:1.6}
 #wpWMarkDialog .close{display:block;margin:16px 0 0 auto}
 `;
   document.head.append(style);
@@ -10200,7 +10201,7 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
     try {
       document.querySelectorAll('.lab-home-uname,.lab-profile-uname,.lab-topuser-uname,#supporterCardUsername,.sidebar-user strong').forEach(name=>{
         const row=name.closest('.topuser-row');
-        const pro=row?row.classList.contains('is-pro'):document.body.classList.contains('pro-account')&&!document.body.classList.contains('owner-account')&&!document.body.classList.contains('auth-mode');
+        const pro=row?row.classList.contains('is-pro'):document.body.classList.contains('pro-account')&&!document.body.classList.contains('auth-mode');
         const host=name.parentElement;
         const existing=host.querySelector(':scope > .wp-wmark');
         if(pro){host.classList.add('wp-wmark-name');if(!existing)name.after(mark())}
@@ -12769,7 +12770,7 @@ function getBadgeDataUrl(){
   if(match[1].startsWith("data:")) return match[1];
   return new URL(match[1],document.baseURI).href;
 }
-function loadCanvasImage(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function loadCanvasImage(src){return new Promise((res,rej)=>{const i=new Image();let safe=src;try{const url=new URL(src,document.baseURI),local=new URL('./',document.baseURI);if(url.href===new URL('bg.jpg',local).href||url.href===new URL('logo.jpg',local).href)safe=window.WPExportAssets?.[url.pathname.split('/').pop()]||src;}catch{}if(!/^(data:|blob:)/i.test(safe))i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=()=>rej(new Error('Imej tidak dapat dimuatkan untuk eksport. Cuba semula.'));i.src=safe;});}
 async function tryStoreAvatarDataUrl(url){
   if(tryStoreAvatarDataUrl.lastUrl===url&&currentAvatarDataURL)return;
   tryStoreAvatarDataUrl.lastUrl=url;
@@ -13538,7 +13539,7 @@ function printReceiptIsolated(){
 /* Header profile avatar: same visual weight as Top Users / Notifications. */
 .header-profile-avatar{width:40px;height:40px;min-width:40px;padding:0;border:1px solid var(--line);border-radius:50%;background:#eef3f8;overflow:hidden;display:grid;place-items:center;color:#172027;font:850 13px/1 "DM Sans",Arial,sans-serif;cursor:pointer}.header-profile-avatar img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}.header-profile-avatar:hover{border-color:#a9bacb;background:#f6f9fc}
 /* Pro avatar ring uses bg.jpg, not a flat color. Owner is deliberately excluded. */
-body.pro-account:not(.owner-account) .header-profile-avatar,body.pro-account:not(.owner-account) #page-home .user-avatar,body.pro-account:not(.owner-account) #page-profile .user-avatar,.topuser-row.is-pro .topuser-avatar-action{border:2px solid transparent!important;background:linear-gradient(#e9eef4,#e9eef4) padding-box,url("bg.jpg") center/cover border-box!important}
+body.pro-account .header-profile-avatar,body.pro-account #page-home .user-avatar,body.pro-account #page-profile .user-avatar,.topuser-row.is-pro .topuser-avatar-action{border:2px solid transparent!important;background:linear-gradient(#e9eef4,#e9eef4) padding-box,url("bg.jpg") center/cover border-box!important}
 /* Avatar viewer always keeps avatar geometry circular. */
 #mediaLightbox[data-viewer-kind="photo-avatar"] #mediaLightboxImage,#mediaLightbox[data-viewer-kind="default-avatar"] #mediaLightboxImage{border-radius:50%!important;aspect-ratio:1/1!important;object-fit:cover!important}
 /* Pro plan: old attached top-right promo badge + real bg.jpg tick mask. */
@@ -14385,6 +14386,8 @@ drawSupporterCard = async function(){
       ctx.textAlign='left';
 
       const ax=168,ay=455,ar=82;
+      const ring=await loadCanvasImage(window.WPExportAssets?.['bg.jpg']||new URL('bg.jpg',document.baseURI).href);
+      ctx.save();ctx.beginPath();ctx.arc(ax,ay,ar+4,0,Math.PI*2);ctx.clip();ctx.drawImage(ring,ax-ar-4,ay-ar-4,(ar+4)*2,(ar+4)*2);ctx.restore();
       ctx.save();ctx.beginPath();ctx.arc(ax,ay,ar,0,Math.PI*2);ctx.clip();
       let drewAvatar=false;
       if(typeof currentAvatarDataURL!=='undefined' && currentAvatarDataURL){
@@ -18569,7 +18572,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       if(node.closest?.(".demo-account-row"))return;
       const signature=String(user?.id||"")+"|"+photo+"|"+String(user?.plan||"");
       if(node.dataset.avatarSignature===signature)return;
-      node.dataset.avatarSignature=signature;node.classList.toggle("is-pro-avatar",user?.plan==="pro"&&user?.role!=="admin");
+      node.dataset.avatarSignature=signature;node.classList.toggle("is-pro-avatar",(user?.plan==="pro"||user?.role==="admin"));
       const existing=node.querySelector("img");if(photo&&existing?.src===photo)return;
       node.style.backgroundImage="none";node.style.backgroundSize="";node.style.backgroundPosition="";
       if(node.querySelector("img")?.src===photo)return;
@@ -18772,7 +18775,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
 #page-subscriptions .plan.pro .tick-icon,#authPricingModal .plan.pro .tick-icon{display:inline-block!important;width:15px!important;height:15px!important;min-width:15px!important;min-height:15px!important;border:0!important;border-radius:0!important;background-image:url("bg.jpg"),url("https://socmegy.com/watermark-pro/bg.jpg")!important;background-size:cover!important;background-position:center!important;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5 9.2 16.7 19 7' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat!important;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5 9.2 16.7 19 7' fill='none' stroke='black' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat!important}
 #page-subscriptions .plan.pro .tick-icon svg,#authPricingModal .plan.pro .tick-icon svg{display:none!important}
 
-body.owner-account .supporter-card-section{display:none!important}body.owner-account #currentPlanCountdown,body.owner-account #renewalNotice{display:none!important}body.owner-account #freePlanButton,body.owner-account #proPaymentBtn{pointer-events:none!important;opacity:.72!important}
+body.owner-account .supporter-card-section{display:block!important}body.owner-account #currentPlanCountdown,body.owner-account #renewalNotice{display:none!important}body.owner-account #freePlanButton,body.owner-account #proPaymentBtn{pointer-events:none!important;opacity:.72!important}
 .wp-live-banner-empty{min-height:180px;display:grid;place-items:center;text-align:center;border:1px dashed var(--line);border-radius:inherit;background:#f8fafc;color:#7a8490;font-size:12px;font-weight:650;padding:20px}
 #authShowcase.wp-banner-controlled .auth-showcase-counter,#forYouCarousel.wp-banner-controlled .for-you-arrow,#forYouCarousel.wp-banner-controlled .for-you-counter{display:none!important}
 
@@ -18818,7 +18821,7 @@ body.owner-account .supporter-card-section{display:none!important}body.owner-acc
 /* Header profile avatar: same visual weight as Top Users / Notifications. */
 .header-profile-avatar{width:40px;height:40px;min-width:40px;padding:0;border:1px solid var(--line);border-radius:50%;background:#eef3f8;overflow:hidden;display:grid;place-items:center;color:#172027;font:850 13px/1 "DM Sans",Arial,sans-serif;cursor:pointer}.header-profile-avatar img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}.header-profile-avatar:hover{border-color:#a9bacb;background:#f6f9fc}
 /* Pro avatar ring uses bg.jpg, not a flat color. Owner is deliberately excluded. */
-body.pro-account:not(.owner-account) .header-profile-avatar,body.pro-account:not(.owner-account) #page-home .user-avatar,body.pro-account:not(.owner-account) #page-profile .user-avatar,.topuser-row.is-pro .topuser-avatar-action{border:2px solid transparent!important;background:linear-gradient(#e9eef4,#e9eef4) padding-box,url("bg.jpg") center/cover border-box!important}
+body.pro-account .header-profile-avatar,body.pro-account #page-home .user-avatar,body.pro-account #page-profile .user-avatar,.topuser-row.is-pro .topuser-avatar-action{border:2px solid transparent!important;background:linear-gradient(#e9eef4,#e9eef4) padding-box,url("bg.jpg") center/cover border-box!important}
 /* Avatar viewer always keeps avatar geometry circular. */
 #mediaLightbox[data-viewer-kind="photo-avatar"] #mediaLightboxImage,#mediaLightbox[data-viewer-kind="default-avatar"] #mediaLightboxImage{border-radius:50%!important;aspect-ratio:1/1!important;object-fit:cover!important}
 /* Pro plan: old attached top-right promo badge + real bg.jpg tick mask. */
@@ -18932,12 +18935,12 @@ body.auth-mode .auth-card-v51{display:contents!important;width:auto!important;ma
 #page-subscriptions .plan.pro .features .tick-icon svg,#authPricingModal .plan.pro .features .tick-icon svg{display:none!important}
 
 /* One exact Pro avatar ring everywhere in the website: 2px bg.jpg, perfectly flush to the avatar. */
-body.pro-account:not(.owner-account) .user-avatar,.topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{position:relative!important;box-sizing:border-box!important;border:0!important;border-radius:50%!important;padding:2px!important;overflow:hidden!important;background-image:url("bg.jpg"),url("https://socmegy.com/watermark-pro/bg.jpg")!important;background-size:cover,cover!important;background-position:center!important;background-repeat:no-repeat!important}
-body.pro-account:not(.owner-account) .user-avatar::before,.topuser-row.is-pro .topuser-avatar-action::before,.topuser-avatar-action.is-pro-avatar::before{content:"";position:absolute;inset:2px;border-radius:50%;background:#e9eef4;z-index:0;pointer-events:none}
-body.pro-account:not(.owner-account) .user-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{position:relative!important;z-index:1!important;width:100%!important;height:100%!important;display:block!important;object-fit:cover!important;border-radius:50%!important;margin:0!important}
-body.pro-account:not(.owner-account) .user-avatar>.wp-avatar-letter,body.pro-account:not(.owner-account) .user-avatar>span,.topuser-row.is-pro .topuser-avatar-action>span,.topuser-avatar-action.is-pro-avatar>span{position:relative!important;z-index:1!important;width:100%!important;height:100%!important;display:grid!important;place-items:center!important;border-radius:50%!important;background:#e9eef4!important;color:inherit!important}
+body.pro-account .user-avatar,.topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{position:relative!important;box-sizing:border-box!important;border:0!important;border-radius:50%!important;padding:2px!important;overflow:hidden!important;background-image:url("bg.jpg"),url("https://socmegy.com/watermark-pro/bg.jpg")!important;background-size:cover,cover!important;background-position:center!important;background-repeat:no-repeat!important}
+body.pro-account .user-avatar::before,.topuser-row.is-pro .topuser-avatar-action::before,.topuser-avatar-action.is-pro-avatar::before{content:"";position:absolute;inset:2px;border-radius:50%;background:#e9eef4;z-index:0;pointer-events:none}
+body.pro-account .user-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{position:relative!important;z-index:1!important;width:100%!important;height:100%!important;display:block!important;object-fit:cover!important;border-radius:50%!important;margin:0!important}
+body.pro-account .user-avatar>.wp-avatar-letter,body.pro-account .user-avatar>span,.topuser-row.is-pro .topuser-avatar-action>span,.topuser-avatar-action.is-pro-avatar>span{position:relative!important;z-index:1!important;width:100%!important;height:100%!important;display:grid!important;place-items:center!important;border-radius:50%!important;background:#e9eef4!important;color:inherit!important}
 /* Header ring uses the exact same 2px geometry; do not add an extra border. */
-body.pro-account:not(.owner-account) .header-profile-avatar{border:0!important;padding:2px!important}
+body.pro-account .header-profile-avatar{border:0!important;padding:2px!important}
 #mediaLightbox[data-pro-avatar="1"] #mediaLightboxImage{box-sizing:border-box!important;padding:2px!important;background-image:url("bg.jpg"),url("https://socmegy.com/watermark-pro/bg.jpg")!important;background-size:cover,cover!important;background-position:center!important;background-repeat:no-repeat!important}
 
 @media(max-width:800px){body.auth-mode .auth-page.active{grid-template-rows:68px auto auto!important}.auth-page-header-v53,.auth-main-v51,.auth-page-footer-inner{width:calc(100% - 24px)!important}.auth-page-header-v53{height:68px!important}.auth-page-brand-v53 .brandmark{width:38px!important;height:38px!important;min-width:38px!important}.auth-main-v51{padding:18px 0 28px!important;grid-template-columns:1fr!important;grid-template-rows:auto auto auto auto!important;gap:14px!important;align-content:start!important}.auth-showcase{grid-column:1!important;grid-row:1!important}.auth-login-register-title{grid-column:1!important;grid-row:2!important;margin-top:8px!important;font-size:27px!important}.auth-tabs{grid-column:1!important;grid-row:3!important}.auth-form{grid-column:1!important;grid-row:4!important}.auth-page-footer-inner{padding:16px 0!important;align-items:flex-start!important;flex-direction:column!important}}
@@ -18967,7 +18970,7 @@ body.pro-account:not(.owner-account) .header-profile-avatar{border:0!important;p
   const authTitle=document.querySelector(".auth-login-register-title");if(authTitle)authTitle.textContent="Akaun Watermark Pro";
 
   /* Any Pro avatar opened in the viewer keeps the same circular crop. */
-  document.addEventListener("click",event=>{const a=event.target.closest?.(".topuser-avatar-action,.user-avatar");if(!a)return;const box=document.getElementById("mediaLightbox");if(!box)return;const topRow=a.closest?.(".topuser-row");const pro=Boolean(topRow?.classList.contains("is-pro")||(!topRow&&document.body.classList.contains("pro-account")&&!document.body.classList.contains("owner-account")));box.dataset.proAvatar=pro?"1":"0";if(a.classList.contains("topuser-avatar-action"))box.dataset.viewerKind=a.dataset.avatarSrc?"photo-avatar":"default-avatar"},true);
+  document.addEventListener("click",event=>{const a=event.target.closest?.(".topuser-avatar-action,.user-avatar");if(!a)return;const box=document.getElementById("mediaLightbox");if(!box)return;const topRow=a.closest?.(".topuser-row");const pro=Boolean(topRow?.classList.contains("is-pro")||(!topRow&&document.body.classList.contains("pro-account")));box.dataset.proAvatar=pro?"1":"0";if(a.classList.contains("topuser-avatar-action"))box.dataset.viewerKind=a.dataset.avatarSrc?"photo-avatar":"default-avatar"},true);
 })();
 </script>
 
@@ -18999,12 +19002,12 @@ body.auth-mode .auth-page.active{position:fixed!important;inset:0!important;z-in
 
 /* One Pro avatar ring system: no padding, no pseudo filler, image is absolutely flush inside the 2px ring. */
 .user-avatar,.topuser-avatar-action{position:relative!important;border-radius:50%!important;overflow:hidden!important;box-sizing:border-box!important}
-body.pro-account:not(.owner-account) .user-avatar,.topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{padding:0!important;border:0!important;background:url("bg.jpg") center/cover no-repeat!important}
-body.pro-account:not(.owner-account) .user-avatar::before,.topuser-row.is-pro .topuser-avatar-action::before,.topuser-avatar-action.is-pro-avatar::before{display:none!important;content:none!important}
+body.pro-account .user-avatar,.topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{padding:0!important;border:0!important;background:url("bg.jpg") center/cover no-repeat!important}
+body.pro-account .user-avatar::before,.topuser-row.is-pro .topuser-avatar-action::before,.topuser-avatar-action.is-pro-avatar::before{display:none!important;content:none!important}
 .user-avatar>img,.topuser-avatar-action>img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;display:block!important;object-fit:cover!important;border:0!important;border-radius:50%!important}
-body.pro-account:not(.owner-account) .user-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{inset:2px!important;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important;border-radius:50%!important}
+body.pro-account .user-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{inset:2px!important;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important;border-radius:50%!important}
 .user-avatar>.wp-avatar-letter,.topuser-avatar-action>.wp-avatar-letter,.topuser-avatar-action>span{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:grid!important;place-items:center!important;margin:0!important;padding:0!important;border-radius:50%!important;background:#e9eef4!important}
-body.pro-account:not(.owner-account) .user-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-avatar-action>.wp-avatar-letter,.topuser-avatar-action.is-pro-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-avatar-action>span{inset:2px!important;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important}
+body.pro-account .user-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-avatar-action>.wp-avatar-letter,.topuser-avatar-action.is-pro-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-avatar-action>span{inset:2px!important;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important}
 .topuser-avatar-action img[hidden],.topuser-avatar-action span[hidden]{display:none!important}
 #mediaLightbox[data-pro-avatar="1"] #mediaLightboxImage{padding:0!important;border:3px solid transparent!important;background:linear-gradient(#fff,#fff) padding-box,url("bg.jpg") center/cover border-box!important;border-radius:50%!important}
 
@@ -19093,12 +19096,12 @@ body.auth-mode .auth-card-v51{display:contents!important;width:auto!important;ma
 
 /* One clearly visible bg.jpg ring recipe for every Pro avatar. */
 .user-avatar,.topuser-avatar-action,.header-profile-avatar{box-sizing:border-box!important;position:relative!important;padding:0!important;border-radius:50%!important;overflow:hidden!important;background:#e9eef4!important;background-clip:padding-box!important}
-body.pro-account:not(.owner-account) .user-avatar,.user-avatar.is-pro-avatar,.header-profile-avatar.is-pro-avatar,.topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{border:3px solid transparent!important;background-image:linear-gradient(#e9eef4,#e9eef4),url("bg.jpg")!important;background-position:center,center!important;background-size:auto,cover!important;background-repeat:no-repeat!important;background-origin:padding-box,border-box!important;background-clip:padding-box,border-box!important;box-shadow:none!important}
-body.pro-account:not(.owner-account) .user-avatar::before,.user-avatar.is-pro-avatar::before,.header-profile-avatar.is-pro-avatar::before,.topuser-row.is-pro .topuser-avatar-action::before,.topuser-avatar-action.is-pro-avatar::before{display:none!important;content:none!important}
+body.pro-account .user-avatar,.user-avatar.is-pro-avatar,.header-profile-avatar.is-pro-avatar,.topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{border:3px solid transparent!important;background-image:linear-gradient(#e9eef4,#e9eef4),url("bg.jpg")!important;background-position:center,center!important;background-size:auto,cover!important;background-repeat:no-repeat!important;background-origin:padding-box,border-box!important;background-clip:padding-box,border-box!important;box-shadow:none!important}
+body.pro-account .user-avatar::before,.user-avatar.is-pro-avatar::before,.header-profile-avatar.is-pro-avatar::before,.topuser-row.is-pro .topuser-avatar-action::before,.topuser-avatar-action.is-pro-avatar::before{display:none!important;content:none!important}
 .user-avatar>img,.topuser-avatar-action>img,.header-profile-avatar>img{position:static!important;inset:auto!important;width:100%!important;height:100%!important;display:block!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;object-fit:cover!important;background:transparent!important}
 .user-avatar>.wp-avatar-letter,.topuser-avatar-action>.wp-avatar-letter,.topuser-avatar-action>span{position:static!important;inset:auto!important;width:100%!important;height:100%!important;display:grid!important;place-items:center!important;margin:0!important;padding:0!important;border-radius:50%!important;background:#e9eef4!important}
-body.pro-account:not(.owner-account) .user-avatar>img,.user-avatar.is-pro-avatar>img,.header-profile-avatar.is-pro-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{position:static!important;inset:auto!important;width:100%!important;height:100%!important;margin:0!important;object-fit:cover!important;object-position:center!important}
-body.pro-account:not(.owner-account) .user-avatar>.wp-avatar-letter,.user-avatar.is-pro-avatar>.wp-avatar-letter,.header-profile-avatar.is-pro-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-avatar-action>.wp-avatar-letter,.topuser-avatar-action.is-pro-avatar>.wp-avatar-letter{position:static!important;inset:auto!important;width:100%!important;height:100%!important;margin:0!important}
+body.pro-account .user-avatar>img,.user-avatar.is-pro-avatar>img,.header-profile-avatar.is-pro-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{position:static!important;inset:auto!important;width:100%!important;height:100%!important;margin:0!important;object-fit:cover!important;object-position:center!important}
+body.pro-account .user-avatar>.wp-avatar-letter,.user-avatar.is-pro-avatar>.wp-avatar-letter,.header-profile-avatar.is-pro-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-avatar-action>.wp-avatar-letter,.topuser-avatar-action.is-pro-avatar>.wp-avatar-letter{position:static!important;inset:auto!important;width:100%!important;height:100%!important;margin:0!important}
 .topuser-avatar-action img[hidden],.topuser-avatar-action span[hidden]{display:none!important}
 #mediaLightbox[data-pro-avatar="1"] #mediaLightboxImage{box-sizing:border-box!important;padding:0!important;border:3px solid transparent!important;background-image:linear-gradient(#e9eef4,#e9eef4),url("bg.jpg")!important;background-position:center,center!important;background-size:auto,cover!important;background-repeat:no-repeat!important;background-origin:padding-box,border-box!important;background-clip:padding-box,border-box!important;border-radius:50%!important;object-fit:cover!important}
 #headerProfileAvatar,#headerProfileAvatar *{cursor:pointer!important}
@@ -19323,26 +19326,26 @@ body.auth-mode .auth-page-footer-inner{width:min(1280px,calc(100% - 40px))!impor
 #authPricingModal,#authTopUsersModal,#termsModal,#privacyModal{z-index:2147483000!important}
 #authPricingModal.open,#authTopUsersModal.open,#termsModal.open,#privacyModal.open{display:flex!important;opacity:1!important;visibility:visible!important;pointer-events:auto!important}
 :root{--wp-pro-ring:3px}
-body.pro-account:not(.owner-account) .user-avatar,
-body.pro-account:not(.owner-account) .header-profile-avatar,
-body.pro-account:not(.owner-account) #page-home .user-avatar,
-body.pro-account:not(.owner-account) #page-profile .user-avatar,
-body.pro-account:not(.owner-account) #page-settings .user-avatar,
-body.pro-account:not(.owner-account) .supporter-card-avatar,
+body.pro-account .user-avatar,
+body.pro-account .header-profile-avatar,
+body.pro-account #page-home .user-avatar,
+body.pro-account #page-profile .user-avatar,
+body.pro-account #page-settings .user-avatar,
+body.pro-account .supporter-card-avatar,
 .user-avatar.is-pro-avatar,
 .header-profile-avatar.is-pro-avatar{position:relative!important;box-sizing:border-box!important;border:var(--wp-pro-ring) solid transparent!important;border-radius:50%!important;padding:0!important;overflow:hidden!important;background-image:linear-gradient(#e9eef4,#e9eef4),url("bg.jpg")!important;background-origin:padding-box,border-box!important;background-clip:padding-box,border-box!important;background-position:center,center!important;background-size:auto,cover!important;background-repeat:no-repeat!important;box-shadow:none!important}
-body.pro-account:not(.owner-account) .user-avatar::before,
-body.pro-account:not(.owner-account) .header-profile-avatar::before,
+body.pro-account .user-avatar::before,
+body.pro-account .header-profile-avatar::before,
 .user-avatar.is-pro-avatar::before,
 .header-profile-avatar.is-pro-avatar::before{display:none!important;content:none!important}
 .user-avatar>img,.header-profile-avatar>img,.avatar-setting-preview>img,.supporter-card-avatar>img{position:absolute!important;inset:var(--wp-pro-ring)!important;width:calc(100% - (var(--wp-pro-ring) * 2))!important;height:calc(100% - (var(--wp-pro-ring) * 2))!important;display:block!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important;background:#e9eef4!important}
 .user-avatar>.wp-avatar-letter,.user-avatar>span,.header-profile-avatar>.wp-avatar-letter,.header-profile-avatar>span{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:grid!important;place-items:center!important;margin:0!important;padding:0!important;border-radius:50%!important;background:#e9eef4!important}
-body.pro-account:not(.owner-account) .user-avatar>img,
-body.pro-account:not(.owner-account) .header-profile-avatar>img,
-body.pro-account:not(.owner-account) .user-avatar>.wp-avatar-letter,
-body.pro-account:not(.owner-account) .user-avatar>span,
-body.pro-account:not(.owner-account) .header-profile-avatar>.wp-avatar-letter,
-body.pro-account:not(.owner-account) .header-profile-avatar>span,
+body.pro-account .user-avatar>img,
+body.pro-account .header-profile-avatar>img,
+body.pro-account .user-avatar>.wp-avatar-letter,
+body.pro-account .user-avatar>span,
+body.pro-account .header-profile-avatar>.wp-avatar-letter,
+body.pro-account .header-profile-avatar>span,
 .user-avatar.is-pro-avatar>img,
 .header-profile-avatar.is-pro-avatar>img,
 .user-avatar.is-pro-avatar>.wp-avatar-letter,
@@ -19369,19 +19372,19 @@ body.pro-account:not(.owner-account) .header-profile-avatar>span,
 </script>
 <style id="v137-avatar-ring-authoritative">
 :root{--wp-pro-ring:3px}
-body.pro-account:not(.owner-account) .user-avatar,
-body.pro-account:not(.owner-account) .header-profile-avatar,
-body.pro-account:not(.owner-account) #page-home .user-avatar,
-body.pro-account:not(.owner-account) #page-profile .user-avatar,
-body.pro-account:not(.owner-account) #page-settings .user-avatar,
-body.pro-account:not(.owner-account) .supporter-card-avatar,
+body.pro-account .user-avatar,
+body.pro-account .header-profile-avatar,
+body.pro-account #page-home .user-avatar,
+body.pro-account #page-profile .user-avatar,
+body.pro-account #page-settings .user-avatar,
+body.pro-account .supporter-card-avatar,
 .user-avatar.is-pro-avatar,.header-profile-avatar.is-pro-avatar,
 .topuser-row.is-pro .topuser-avatar-action,.topuser-avatar-action.is-pro-avatar{
   border:var(--wp-pro-ring) solid transparent!important;box-sizing:border-box!important;border-radius:50%!important;padding:0!important;overflow:hidden!important;
   background-image:linear-gradient(#e9eef4,#e9eef4),url("bg.jpg")!important;background-origin:padding-box,border-box!important;background-clip:padding-box,border-box!important;background-position:center!important;background-size:auto,cover!important;background-repeat:no-repeat!important
 }
-body.pro-account:not(.owner-account) .user-avatar>img,
-body.pro-account:not(.owner-account) .header-profile-avatar>img,
+body.pro-account .user-avatar>img,
+body.pro-account .header-profile-avatar>img,
 .user-avatar.is-pro-avatar>img,.header-profile-avatar.is-pro-avatar>img,
 .topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img{
   position:absolute!important;inset:var(--wp-pro-ring)!important;width:calc(100% - (var(--wp-pro-ring) * 2))!important;height:calc(100% - (var(--wp-pro-ring) * 2))!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important
@@ -19436,7 +19439,7 @@ body.auth-mode .auth-page-header-v53.is-scrolled{background:rgba(247,249,251,.96
 <style id="v139-each-issue-final-fix">
 /* Avatar geometry: free avatars fill the circle; Pro avatars reserve the same 3px ring everywhere. */
 .user-avatar>img,.header-profile-avatar>img,.topuser-avatar-action>img,.supporter-card-avatar>img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important}
-body.pro-account:not(.owner-account) .user-avatar>img,body.pro-account:not(.owner-account) .header-profile-avatar>img,.user-avatar.is-pro-avatar>img,.header-profile-avatar.is-pro-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img,.supporter-card-avatar.is-pro-avatar>img{inset:var(--wp-pro-ring)!important;width:calc(100% - (var(--wp-pro-ring) * 2))!important;height:calc(100% - (var(--wp-pro-ring) * 2))!important}
+body.pro-account .user-avatar>img,body.pro-account .header-profile-avatar>img,.user-avatar.is-pro-avatar>img,.header-profile-avatar.is-pro-avatar>img,.topuser-row.is-pro .topuser-avatar-action>img,.topuser-avatar-action.is-pro-avatar>img,.supporter-card-avatar.is-pro-avatar>img{inset:var(--wp-pro-ring)!important;width:calc(100% - (var(--wp-pro-ring) * 2))!important;height:calc(100% - (var(--wp-pro-ring) * 2))!important}
 .user-avatar>img:not(.wp-avatar-ready),.header-profile-avatar>img:not(.wp-avatar-ready),.topuser-avatar-action>img:not(.wp-avatar-ready),.supporter-card-avatar>img:not(.wp-avatar-ready){opacity:0!important}
 .user-avatar>.wp-avatar-letter,.header-profile-avatar>.wp-avatar-letter,.topuser-avatar-action>.wp-avatar-letter,.supporter-card-avatar>.wp-avatar-letter{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:grid!important;place-items:center!important;border-radius:50%!important}
 /* Banner lightbox uses the banner's rectangle; only avatar lightboxes are circular. */
@@ -19633,4 +19636,5 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   addEventListener('resize',sync,{passive:true});
 })();
 </script>
+<link rel="stylesheet" href="request-layout.css">
 </html>

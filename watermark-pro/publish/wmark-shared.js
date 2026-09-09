@@ -5,11 +5,12 @@
   window.WPWMarkAsset=asset;
   window.WPWMarkReady=new Promise((resolve,reject)=>{badge.onload=()=>resolve(badge);badge.onerror=()=>reject(new Error('W Mark tidak dapat dimuatkan.'));});
   badge.src=asset;
-  window.WPDrawLoadedWMark=(ctx,name,x,y,size=60,baseline='alphabetic',pro=document.body.classList.contains('pro-account')&&!document.body.classList.contains('owner-account'))=>{
+  window.WPDrawLoadedWMark=(ctx,name,x,y,size=60,baseline='alphabetic',pro=document.body.classList.contains('pro-account'))=>{
     if(!pro)return;
     if(!badge.complete||!badge.naturalWidth)throw new Error('W Mark belum sedia.');
-    const scale=size/60,h=46*scale,w=h*1702/1722;
-    ctx.drawImage(badge,x+ctx.measureText(name).width+11.25*scale,baseline==='top'?y+6*scale:y-h*.78-5*scale,w,h);
+    const w=size*13/16,h=w*badge.naturalHeight/badge.naturalWidth;
+    const metrics=ctx.measureText(name),center=y+(metrics.actualBoundingBoxDescent-metrics.actualBoundingBoxAscent)/2;
+    ctx.drawImage(badge,x+metrics.width+size*3/16,center-h/2,w,h);
   };
   window.WPDrawWMark=async(...args)=>{await window.WPWMarkReady;window.WPDrawLoadedWMark(...args);};
 })();

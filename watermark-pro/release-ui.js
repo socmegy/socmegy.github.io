@@ -10,7 +10,7 @@ html body #proPaymentModal .payment-column{min-width:0!important}
 html body #proPaymentModal .payment-qr-wrap img[hidden]{display:none!important}
 @media(max-width:600px){html body #proPaymentModal .payment-layout{grid-template-columns:minmax(0,1fr)!important;gap:16px!important}}
 html body .topbar .header-brand-logo,html body #authPage .auth-page-brand-v53 .brandmark{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;flex:0 0 40px!important;aspect-ratio:1!important;border-radius:11px!important;object-fit:contain!important}
-html body.pro-account:not(.owner-account) #headerProfileAvatar::after,html body.pro-account:not(.owner-account) #avatarPreview::after{content:none!important;display:none!important}
+html body.pro-account #headerProfileAvatar::after,html body.pro-account #avatarPreview::after{content:none!important;display:none!important}
 html body #mediaLightbox[data-viewer-kind="banner"] #closeMediaViewer,html body #mediaLightbox[data-viewer-kind="photo-banner"] #closeMediaViewer{left:50%!important;right:auto!important;transform:translateX(-50%)!important}
 .wp-password-wrap{position:relative;display:block;min-width:0;width:100%}
 html body .wp-password-wrap input{padding-right:76px!important;width:100%;box-sizing:border-box}
@@ -54,11 +54,11 @@ html body #page-subscriptions .plan.pro::before,html body #authPricingModal .pla
 html body #page-subscriptions .plan.pro,html body #authPricingModal .plan.pro{box-shadow:none!important;outline:0!important;border-image:none!important;border-radius:22px!important}
 html:root{--wp-pro-ring:2px!important}
 html body .sidebar .is-pro-avatar,html body .topuser-avatar-action.is-pro-avatar{border-width:2px!important;box-shadow:none!important}
-html body.pro-account:not(.owner-account) .sidebar .user-avatar{border-width:2px!important;padding:0!important}
-html body.pro-account:not(.owner-account) .sidebar .user-avatar>img,html body .topuser-avatar-action.is-pro-avatar>img{inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}
+html body.pro-account .sidebar .user-avatar{border-width:2px!important;padding:0!important}
+html body.pro-account .sidebar .user-avatar>img,html body .topuser-avatar-action.is-pro-avatar>img{inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}
 html body #supporterCardUsername{color:#fff!important}
-html body.pro-account:not(.owner-account) #headerProfileAvatar,html body.pro-account:not(.owner-account) #avatarPreview,html body .topuser-row.is-pro .topuser-avatar-action,html body.pro-account:not(.owner-account) .supporter-card-avatar{border:2px solid transparent!important;padding:0!important;box-sizing:border-box!important;background:linear-gradient(#e9eef4,#e9eef4) padding-box,url('bg.jpg') center/cover border-box!important;border-radius:50%!important;overflow:hidden!important}
-html body.pro-account:not(.owner-account) #headerProfileAvatar>img,html body.pro-account:not(.owner-account) #avatarPreview>img,html body .topuser-row.is-pro .topuser-avatar-action>img,html body.pro-account:not(.owner-account) .supporter-card-avatar>img{inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}
+html body.pro-account #headerProfileAvatar,html body.pro-account #avatarPreview,html body .topuser-row.is-pro .topuser-avatar-action,html body.pro-account .supporter-card-avatar{border:2px solid transparent!important;padding:0!important;box-sizing:border-box!important;background:linear-gradient(#e9eef4,#e9eef4) padding-box,url('bg.jpg') center/cover border-box!important;border-radius:50%!important;overflow:hidden!important}
+html body.pro-account #headerProfileAvatar>img,html body.pro-account #avatarPreview>img,html body .topuser-row.is-pro .topuser-avatar-action>img,html body.pro-account .supporter-card-avatar>img{inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important}
 html body #wpSessionBoot{gap:18px!important}html body #wpSessionBoot .wp-boot-logo{width:96px!important;height:96px!important}html body #wpSessionBoot #wpSessionBootText{font:800 19px/1.25 'DM Sans',Arial,sans-serif!important;color:#536171!important}
 @media(max-width:700px){html body #wpSessionBoot .wp-boot-logo{width:84px!important;height:84px!important}html body #wpSessionBoot #wpSessionBootText{font-size:18px!important}}
 html body #receiptPaymentStatus[data-receipt-status='granted']{color:#ff0088!important;border-color:#ff0088!important}
@@ -119,8 +119,8 @@ mountPasswords();
 window.addEventListener('click',async e=>{
  const button=e.target.closest?.('#downloadSupporterCard');if(!button)return;e.preventDefault();e.stopImmediatePropagation();if(button.disabled)return;
  let status=q('#supporterExportStatus');if(!status){status=document.createElement('p');status.id='supporterExportStatus';status.setAttribute('role','status');button.after(status)}
- button.disabled=true;status.textContent='Menyediakan Kad Penyokong...';
- try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.textContent='Kad Penyokong berjaya dimuat turun.'}catch(error){status.textContent=error.message||'Kad Penyokong tidak dapat dimuat turun.'}finally{button.disabled=false}
+ button.disabled=true;status.dataset.state='loading';status.textContent='Menyediakan Kad Penyokong...';
+ try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.dataset.state='success';status.textContent='Kad Penyokong berjaya dimuat turun.'}catch(error){console.error('Supporter PNG export:',error);status.dataset.state='error';status.textContent='Kad belum dapat dimuat turun. Cuba sekali lagi. Jika masih gagal, buka Watermark Pro melalui laman web dan cuba semula.'}finally{button.disabled=false}
 },true);
 let receiptPrinting=false;
 window.printReceiptIsolated=async()=>{
@@ -129,9 +129,9 @@ window.printReceiptIsolated=async()=>{
  const doc=frame.contentDocument;doc.open();doc.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title></head><body></body></html>');doc.close();
  document.querySelectorAll('style,link[rel="stylesheet"]').forEach(n=>doc.head.append(n.cloneNode(true)));
  const base=doc.createElement('base');base.href=document.baseURI;doc.head.prepend(base);doc.body.append(sheet.cloneNode(true));
- const css=doc.createElement('style');css.textContent='@page{size:A4;margin:10mm}html,body{width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;display:block!important}body>*{visibility:visible!important}#receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;box-shadow:none!important;break-after:auto!important;page-break-after:auto!important}';doc.head.append(css);
+ const css=doc.createElement('style');css.textContent='@page{size:A4;margin:4mm}html,body{width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;display:block!important}body>*{visibility:visible!important}#receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:8px!important;box-shadow:none!important;break-after:auto!important;page-break-after:auto!important}';doc.head.append(css);
  const cleanup=()=>{frame.remove();receiptPrinting=false};
- css.textContent+='@media print{#receiptSheet .lr-stamp{right:130px!important;bottom:72px!important}}';
+ // The shared receipt grid keeps the stamp next to the price in print too.
  frame.contentWindow.addEventListener('afterprint',cleanup,{once:true});
  try{await doc.fonts.ready;await Promise.all([...doc.images].map(i=>i.decode().catch(()=>{})));frame.contentWindow.focus();frame.contentWindow.print()}catch{cleanup()}
 };
@@ -201,3 +201,7 @@ document.addEventListener('click',e=>{
 addEventListener('popstate',()=>{if(document.body.classList.contains('auth-mode'))window.WPLogoutRoute();else if(typeof openPage==='function')openPage(fromPath());});
 addEventListener('pageshow',()=>{if(!localStorage.getItem('watermarkProUserApiToken')){document.documentElement.classList.remove('account-authenticated');if(typeof showAuthScreen==='function')showAuthScreen('login');window.WPLogoutRoute();}});
 })();
+
+window.addEventListener('click',event=>{if(!document.body.classList.contains('pro-account')&&event.target.closest?.('#logoWatermarkGroup > .tool-toggle')){event.preventDefault();event.stopImmediatePropagation();window.setProUpsellOpen(true)}},true);
+const logoAccess=document.querySelector('#logoWatermarkGroup > .tool-toggle');
+if(logoAccess){logoAccess.tabIndex=0;logoAccess.addEventListener('keydown',event=>{if(!document.body.classList.contains('pro-account')&&(event.key==='Enter'||event.key===' ')){event.preventDefault();window.setProUpsellOpen(true)}})}
