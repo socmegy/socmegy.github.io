@@ -31,17 +31,25 @@ let state=await req('/api/account/state','GET',null,token);assert.equal(state.da
  console.log('PASS read status shared by independent sessions, idempotent and scoped');
 }
 {
- const photo='https://uploadsimage.org/i/c1f29f801b8ba07491bc.png',originalFetch=globalThis.fetch;
+ let photo='https://arbitrary-photo-provider.example/avatar',originalFetch=globalThis.fetch;
  db.prepare('UPDATE users SET photo=? WHERE id=?').run(photo,id);
  const proxy=()=>worker.fetch(new Request('https://test.invalid/api/account/image-proxy?url='+encodeURIComponent(photo),{headers:{Authorization:'Bearer '+token,Origin:'http://localhost:4173'}}),env);
  try{
   globalThis.fetch=async(url,options)=>{assert.equal(url,photo);assert.equal(options.redirect,'manual');assert.equal(options.headers.Authorization,undefined);return new Response(new Uint8Array([255,216,255]),{headers:{'Content-Type':'image/jpeg'}})};
   const image=await proxy();assert.equal(image.status,200);assert.equal((await image.arrayBuffer()).byteLength,3);
   assert.equal((await req('/api/account/image-proxy?url=https://127.0.0.1/','GET',null,token)).status,403);
-  globalThis.fetch=async()=>new Response('redirect',{status:302,headers:{Location:'http://127.0.0.1/'}});assert.equal((await proxy()).status,502);
+  globalThis.fetch=async()=>new Response('redirect',{status:302,headers:{Location:'http://127.0.0.1/'}});assert.equal((await proxy()).status,400);
   globalThis.fetch=async()=>new Response('not an image',{headers:{'Content-Type':'text/html'}});assert.equal((await proxy()).status,502);
+  const redirected='http://different-cdn.example:8080/photo';let calls=0;
+  globalThis.fetch=async(url,options)=>{calls++;assert.equal(options.headers.Authorization,undefined);return url===photo?new Response(null,{status:302,headers:{Location:redirected}}):new Response(Buffer.from('GIF89a'),{headers:{'Content-Type':'application/octet-stream'}})};
+  const gif=await proxy();assert.equal(gif.status,200);assert.equal(gif.headers.get('Content-Type'),'image/gif');assert.equal(calls,2);
+  globalThis.fetch=async()=>new Response(null,{status:307,headers:{Location:'/loop'}});assert.equal((await proxy()).status,502);
+  for(const blocked of ['http://localhost/a','http://10.0.0.1/a','http://2130706433/a','http://[::1]/a','http://[::ffff:127.0.0.1]/a','file:///photo.png','https://user:pass@photos.example/a']){
+   photo=blocked;db.prepare('UPDATE users SET photo=? WHERE id=?').run(photo,id);
+   globalThis.fetch=async()=>{throw new Error('Blocked destination must never be fetched')};assert.equal((await proxy()).status,400,blocked);
+  }
  }finally{globalThis.fetch=originalFetch;db.prepare("UPDATE users SET photo='' WHERE id=?").run(id)}
- console.log('PASS avatar export: stored-photo authorization, raster response, redirect rejection');
+ console.log('PASS avatar export: arbitrary public hosts, cross-host HTTP redirects, GIF sniffing, stored-photo authorization, private destination and redirect-loop rejection');
 }
 r=await req('/api/payments','POST',{paymentTime:'12:30'},token);assert.equal(r.status,201);const sub=r.data.submission.id;
 state=await req('/api/account/state','GET',null,token);assert(state.data.notifications.some(n=>n.title==='Pembayaran Pro dihantar'));console.log('PASS payment -> pending notification');

@@ -35,9 +35,11 @@ uploading HTML alone does not fix Control account notifications on the server.
 No production Worker or database was modified during this repair.
 
 Avatar PNG export uses an authenticated endpoint restricted to the user's stored
-photo and approved HTTPS hosts (www.jisoo.io, jisoo.io, socmegy.com,
-www.socmegy.com, uploadsimage.org). AVATAR_EXPORT_HOSTS can add trusted public hosts explicitly.
-Redirects are rejected; raster images only, 5 MB maximum and an 8-second timeout.
+photo from any public HTTP/HTTPS host, without a domain allowlist.
+Up to five redirects are followed, checking each destination and never forwarding
+credentials. Local/private literal addresses are rejected. PNG, JPEG, WebP, GIF,
+AVIF, BMP, ICO and SVG are supported, with a 10 MB limit and 15-second timeout.
+Raster formats are detected from their bytes, including generic binary responses.
 Deploy this Worker endpoint for cross-origin avatar export to function.
 
 The installation icon references logo.jpg rather than the old screenshot PNGs.
