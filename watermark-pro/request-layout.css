@@ -55,6 +55,17 @@ html body #receiptSheet,html body #receiptSheet *{-webkit-print-color-adjust:exa
  html body #authPage .auth-intro-v132>h1>span{display:block!important;white-space:nowrap!important}
  html body #authPage .auth-intro-v132>h1>br{display:none!important}
 }
+html body #authShowcase .auth-showcase-media{position:relative!important}
+html body #authPage #authShowcase .wp-banner-slogan{position:absolute!important;left:24px!important;bottom:22px!important;z-index:2!important;margin:0!important;padding:0!important;color:#fff!important;font:700 clamp(24px,2.4vw,34px)/1.15 'DM Sans',Arial,sans-serif!important;letter-spacing:-.025em!important;text-shadow:0 2px 8px #0009;pointer-events:none}
+html body #authPage #authShowcase .wp-banner-slogan>span{display:block;white-space:nowrap}
+html body .version-section,html body .legacy-version-section{display:none!important}
+@media(max-width:700px){html body #authPage #authShowcase .wp-banner-slogan{left:18px!important;bottom:16px!important;font-size:26px!important}}
+@media(min-width:701px){
+ html body .wp-wmark-name.wp-wmark-normal{display:inline-flex!important;align-items:center!important;gap:3px!important;line-height:1.2!important;vertical-align:middle!important;padding:1px 0 2px!important}
+ html body .wp-wmark-name.wp-wmark-normal>.wp-wmark{display:inline-grid!important;place-items:center!important;position:static!important;flex:0 0 13px!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;margin:0!important;padding:0!important;transform:none!important;line-height:0!important}
+ html body .wp-wmark-name.wp-wmark-normal>.wp-wmark img{display:block!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;margin:0!important;transform:none!important}
+}
+@media(display-mode:standalone){html:root,html:root body{background:#f7f9fb!important;color-scheme:light}html:root body{padding-bottom:env(safe-area-inset-bottom,0px)}}
 body>.wp-print-root{display:none}
 @media print{
  @page{size:A4 portrait;margin:4mm!important}

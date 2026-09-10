@@ -80,7 +80,7 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta name="description" content="Watermark Pro memudahkan anda meletakkan tera air pada banyak imej dan video sebelum disiarkan, dengan teks, tandatangan sendiri, logo dan tetapan tambahan.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="application-name" content="Watermark Pro">
-<meta name="theme-color" content="#143d68">
+<meta name="theme-color" content="#f7f9fb">
 <meta name="color-scheme" content="light">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14352,6 +14352,7 @@ drawSupporterCard = async function(){
   /* True 16:9 Supporter Card export. Keep the established card language, just use a full 1600×900 canvas. */
   try{
     drawSupporterCard=async function(){
+      const account=window.WPCloudflare?.user;if(!account||(account.plan!=='pro'&&account.role!=='admin'))throw new Error('Kad Penyokong hanya untuk akaun Pro.');
       const avatarSource=window.WPCloudflare?.user?.photo;
       if(avatarSource)await tryStoreAvatarDataUrl(avatarSource);
       if(avatarSource&&!currentAvatarDataURL)await tryStoreAvatarDataUrl(new URL('logo.jpg',document.baseURI).href);

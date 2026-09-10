@@ -54,6 +54,7 @@ module.exports=async({worker,env,req,admin})=>{
   await page.locator('#registerPassword').fill('12345678');await page.locator('#registerPassword').locator('..').locator('button').click();
   assert.equal(await page.locator('#registerPassword').getAttribute('type'),'text');
   await page.locator('#registerForm [type="submit"]').click();await page.waitForFunction(()=>!document.body.classList.contains('auth-mode'));
+  assert.equal(await page.evaluate(async()=>{try{await window.drawSupporterCard();return false}catch{return true}}),true,'free user cannot export supporter card');
   await page.waitForFunction(()=>document.querySelector('#notificationPanel').textContent.includes('Akaun dicipta'));
   await page.evaluate(()=>document.querySelector('.wp-live-notice').click());
   await page.waitForFunction(()=>document.querySelector('.wp-live-notice').dataset.unread==='false');
@@ -79,34 +80,23 @@ module.exports=async({worker,env,req,admin})=>{
   assert.equal(new URL(page.url()).pathname,'/watermark-pro/profil');
   await page.locator('[data-page="subscriptions"]').first().click();
   await page.locator('.admin-history-receipt').first().click();
-  await page.evaluate(()=>{
-   window.__printCalls=0;const descriptor=Object.getOwnPropertyDescriptor(HTMLIFrameElement.prototype,'contentWindow');
-   window.__restorePrintGetter=()=>Object.defineProperty(HTMLIFrameElement.prototype,'contentWindow',descriptor);
-   Object.defineProperty(HTMLIFrameElement.prototype,'contentWindow',{...descriptor,get(){const w=descriptor.get.call(this);if(w)w.print=()=>{window.__printCalls++};return w}});
-  });
+  await page.evaluate(()=>{window.__printCalls=0;window.print=()=>window.__printCalls++});
   await page.locator('#printReceipt').click();await page.waitForFunction(()=>window.__printCalls===1);
   await page.locator('#printReceipt').click();assert.equal(await page.evaluate(()=>window.__printCalls),1);
-  const printFrame=page.frames().find(f=>f!==page.mainFrame());assert(printFrame);
-  const printPage=await context.newPage();await printPage.setViewportSize({width:718,height:1047});await printPage.setContent(await printFrame.content());await printPage.emulateMedia({media:'print'});
-  await printPage.screenshot({path:'test-receipt-print.png',fullPage:true});
-  const stampLayout=await printPage.locator('.lr-total').evaluate(e=>{const s=e.querySelector('.lr-stamp').getBoundingClientRect(),p=e.querySelector('.lr-total-price').getBoundingClientRect();return {gap:p.left-s.right,dy:Math.abs(s.y+s.height/2-p.y-p.height/2)}});
-  assert(stampLayout.gap<-8&&stampLayout.gap>-40&&stampLayout.dy<2,'stamp beside price '+JSON.stringify(stampLayout));
-  const printHeight=await printPage.locator('#receiptSheet').evaluate(e=>e.getBoundingClientRect().height);assert(printHeight>100&&printHeight<1047,'A4 receipt height '+printHeight);
-  await page.setViewportSize({width:412,height:915});await page.emulateMedia({media:'print'});
-  assert.equal(await page.locator('#wpInstallApp').isVisible(),false,'install omitted from parent-document mobile print');
-  assert.equal(await page.locator('.app').isVisible(),false,'only isolated receipt is printed');
-  assert.equal(await page.locator('.wp-print-root').isVisible(),true);
-  await page.screenshot({path:'test-mobile-parent-print.png',fullPage:true});
-
-  await printPage.locator('#receiptSheet').evaluate(e=>e.dataset.receiptStatus='granted');
-  assert.equal(await printPage.locator('.lr-status').evaluate(e=>getComputedStyle(e).color),'rgb(255, 0, 136)','printed grant pink remains exact');
-  assert.equal(await page.locator('.wp-print-root #receiptSheet').evaluate(e=>Math.round(e.getBoundingClientRect().left)),0,'mobile print has no nested left margins');
+  assert.equal(page.frames().length,1,'no second print document');
   fs.mkdirSync('tmp/pdfs',{recursive:true});
-  await printPage.pdf({path:'tmp/pdfs/desktop-receipt.pdf',format:'A4',preferCSSPageSize:true,printBackground:true});
-  if(!await page.locator('.wp-print-root').count())await page.evaluate(()=>window.printReceiptIsolated());
-  await page.locator('.wp-print-root #receiptSheet').evaluate(e=>e.dataset.receiptStatus='granted');
-  await page.pdf({path:'tmp/pdfs/mobile-receipt.pdf',format:'A4',preferCSSPageSize:true,printBackground:true});
-  await page.emulateMedia({media:'screen'});await page.setViewportSize({width:1366,height:900});await printPage.close();await page.evaluate(()=>{document.querySelector('iframe[title="Resit Watermark Pro"]')?.contentWindow.dispatchEvent(new Event('afterprint'));window.__restorePrintGetter();document.querySelector('#receiptModal').classList.remove('open')});
+  for(const [name,width] of [['desktop',1366],['mobile',412]]){
+   if(!await page.locator('#wpReceiptPrintRoot').count())await page.evaluate(()=>window.printReceiptIsolated());
+   await page.setViewportSize({width,height:915});await page.emulateMedia({media:'print'});
+   assert.equal(await page.locator('.app').isVisible(),false,await page.evaluate(()=>JSON.stringify({body:document.body.className,root:!!document.querySelector('#wpReceiptPrintRoot'),app:getComputedStyle(document.querySelector('.app')).display,styles:[...document.querySelectorAll('style')].slice(-1).map(n=>n.textContent.slice(0,120))}))); 
+   assert.equal(await page.locator('#receiptModal').isVisible(),false,'original modal hidden');
+   assert.equal(await page.locator('.wp-print-root').count(),1);
+   const sheet=page.locator('.wp-print-root #receiptSheet');await sheet.evaluate(e=>e.dataset.receiptStatus='granted');
+   assert.equal(await sheet.evaluate(e=>getComputedStyle(e).boxShadow),'none');
+   assert.equal(await sheet.locator('.lr-status').evaluate(e=>getComputedStyle(e).color),'rgb(255, 0, 136)');
+   await page.pdf({path:'tmp/pdfs/'+name+'-receipt.pdf',format:'A4',preferCSSPageSize:true,printBackground:true});
+  }
+  await page.emulateMedia({media:'screen'});await page.setViewportSize({width:1366,height:900});await page.evaluate(()=>{window.dispatchEvent(new Event('afterprint'));document.querySelector('#receiptModal').classList.remove('open')});
   await page.locator('[data-page="profile"]').first().click();
   await page.evaluate(()=>window.WPCloudflare.api('/api/account/profile',{method:'PATCH',body:JSON.stringify({photo:new URL('logo.jpg',document.baseURI).href})}));
   await page.evaluate(()=>window.WPCloudflare.sync());
@@ -123,13 +113,13 @@ module.exports=async({worker,env,req,admin})=>{
   await page.locator('[data-page="settings"]').first().click();
   assert.equal(await page.locator('.sidebar .navbtn svg').count(),4);
   assert.equal(await page.locator('.sidebar .navbtn>img').count(),0);
-  assert.equal(await page.evaluate(()=>{const cards=[...document.querySelectorAll('#page-settings .card')];const policy=cards.find(n=>[...n.querySelectorAll('h2,h3')].some(h=>h.textContent.trim()==='Dasar dan Syarat'));const version=document.querySelector('#page-settings .version-section');return Boolean(policy&&version&&(policy.compareDocumentPosition(version)&Node.DOCUMENT_POSITION_FOLLOWING))}),true,'policy card precedes version card');
+  assert.equal(await page.locator('.version-section:visible').count(),0,'version removed');
   await page.locator('#publicProfileSwitch').click();await page.waitForFunction(()=>!window.wpVisibilitySaving&&!document.querySelector('#publicProfileSwitch').classList.contains('on'));
   await page.reload();await page.waitForFunction(()=>!document.body.classList.contains('auth-mode'));
   await page.locator('[data-page="settings"]').first().click();assert.equal(await page.locator('#publicProfileSwitch').evaluate(e=>e.classList.contains('on')),false);
   await page.locator('#publicProfileSwitch').click();await page.waitForFunction(()=>!window.wpVisibilitySaving&&document.querySelector('#publicProfileSwitch').classList.contains('on'));
   await page.screenshot({path:'test-account-desktop.png'});
-  await page.locator('#logoutBtn').click();await page.waitForFunction(()=>document.body.classList.contains('auth-mode'));assert.equal(new URL(page.url()).hash,'');
+  await page.locator('#logoutBtn').click();await page.waitForFunction(()=>document.body.classList.contains('auth-mode'));assert.equal(new URL(page.url()).hash,'');assert.equal(await page.locator('#supporterExportStatus').count(),0,'logout clears export status');
   await page.goBack();assert.equal(await page.locator('.app').isVisible(),false);assert.equal(new URL(page.url()).hash,'');
   await page.locator('#loginEmail').fill('browser@example.invalid');await page.locator('#loginPassword').fill('12345678');await page.locator('#loginForm [type="submit"]').click();await page.waitForFunction(()=>!document.body.classList.contains('auth-mode'));
   await page.locator('[data-page="settings"]').first().click();assert.equal(await page.locator('#publicProfileSwitch').evaluate(e=>e.classList.contains('on')),true);
@@ -214,7 +204,7 @@ module.exports=async({worker,env,req,admin})=>{
   const mobileRing=await filePage.locator('#authTopUsersModal .topuser-avatar-action').evaluate(e=>{const r=e.getBoundingClientRect(),i=e.querySelector('img').getBoundingClientRect(),b=parseFloat(getComputedStyle(e).borderLeftWidth);return {b,dx:Math.abs(r.x+r.width/2-i.x-i.width/2),dy:Math.abs(r.y+r.height/2-i.y-i.height/2),gap:r.width-i.width-2*b}});
   assert(mobileRing.b>=2&&mobileRing.b<=2.5&&mobileRing.dx<.5&&mobileRing.dy<.5&&Math.abs(mobileRing.gap)<.5,'mobile DPR3 top-user ring '+JSON.stringify(mobileRing));
   await filePage.evaluate(()=>document.getElementById('authTopUsersModal').classList.remove('open'));
-  const exported=await filePage.evaluate(async()=>{savedUsername='@filepreview';currentAvatarDataURL=window.WPExportAssets['logo.jpg'];document.body.classList.add('pro-account');const canvas=await window.drawSupporterCard();await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve():reject(new Error('Missing PNG'))));return canvas.toDataURL('image/png')});
+  const exported=await filePage.evaluate(async()=>{Object.defineProperty(window.WPCloudflare,'user',{configurable:true,value:{id:'filetest',username:'filepreview',plan:'pro'}});savedUsername='@filepreview';currentAvatarDataURL=window.WPExportAssets['logo.jpg'];document.body.classList.add('pro-account');const canvas=await window.drawSupporterCard();await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve():reject(new Error('Missing PNG'))));return canvas.toDataURL('image/png')});
   fs.writeFileSync('test-file-supporter.png',Buffer.from(exported.split(',')[1],'base64'));
   assert.equal(await filePage.locator('.sidebar .brand>span').evaluate(e=>getComputedStyle(e).backgroundClip),'text','sidebar Pro brand fill');
   await filePage.locator('#wpInstallApp').click();await filePage.locator('#wpInstallHelp[open]').waitFor();

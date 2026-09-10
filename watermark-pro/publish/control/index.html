@@ -241,7 +241,7 @@ body{font-size:14px!important}
 
 <div class="control-login-gate" id="controlLoginGate">
   <div class="control-login-card">
-    <div class="control-login-brand"><span class="control-login-logo"><img src="logo.jpg" alt="" onerror="this.remove();this.parentElement.textContent='W'"></span><div><strong>Watermark Pro</strong><span>Pusat Kawalan</span></div></div>
+    <div class="control-login-brand"><span class="control-login-logo"><img src="logo.jpg" alt="" onerror="this.parentElement.textContent='W'"></span><div><strong>Watermark Pro</strong><span>Pusat Kawalan</span></div></div>
     <div class="control-login-copy"><h1>Log masuk</h1><p>Log masuk menggunakan akaun pemilik Pusat Kawalan. Data selepas log masuk datang terus daripada Cloudflare Worker dan D1.</p></div>
     <form id="controlLoginForm" class="control-login-form">
       <label><span>E-mel</span><input id="controlLoginEmail" type="email" autocomplete="username" required></label>
@@ -1109,14 +1109,14 @@ function printControlReceipt(){
   const state=()=>window.WPControl?.state||{users:[]};
   const totals=()=>state().users.reduce((r,u)=>{r.images+=Number(u.downloads?.images||0);r.videos+=Number(u.downloads?.videos||0);return r},{images:0,videos:0});
   const loadImage=async src=>{
-    src=src||window.WPExportAssets?.['logo.jpg']||new URL('logo.jpg',document.baseURI).href;
+    if(!src)return null;
     if(src===new URL('logo.jpg',document.baseURI).href)src=window.WPExportAssets?.['logo.jpg']||src;
     const decode=url=>new Promise(resolve=>{const image=new Image();const timer=setTimeout(()=>resolve(null),8000);image.crossOrigin='anonymous';image.onload=()=>{clearTimeout(timer);resolve(image)};image.onerror=()=>{clearTimeout(timer);resolve(null)};image.src=url});
     const direct=await decode(src);if(direct)return direct;
     const user=state().users.find(u=>u.photo&&new URL(u.photo,location.href).href===src);
     if(!user)return null;
     const response=await fetch(window.WATERMARK_API_BASE+'/api/control/image-proxy?userId='+encodeURIComponent(user.id)+'&url='+encodeURIComponent(user.photo),{headers:{Authorization:'Bearer '+(sessionStorage.getItem('watermarkProControlApiToken')||localStorage.getItem('watermarkProControlApiToken'))},signal:AbortSignal.timeout(10000)}).catch(()=>({ok:false}));
-    if(!response.ok)return await decode(new URL('logo.jpg',document.baseURI).href);
+    if(!response.ok)return null;
     const url=URL.createObjectURL(await response.blob());try{return await decode(url)}finally{URL.revokeObjectURL(url)}
   };
   const justifiedLine=(x,text,left,y,width)=>{const words=String(text).split(" ");if(words.length<2){x.fillText(text,left,y);return}const natural=words.reduce((n,w)=>n+x.measureText(w).width,0),space=Math.max(0,(width-natural)/(words.length-1));let px=left;words.forEach((word,i)=>{x.fillText(word,px,y);px+=x.measureText(word).width+(i<words.length-1?space:0)})};
@@ -1134,7 +1134,7 @@ function printControlReceipt(){
     for(const [i,u] of top.entries()){
       const y=startY+i*(rowH+gap);x.fillStyle="rgba(255,255,255,.15)";x.beginPath();x.roundRect(L,y,R-L,rowH,28);x.fill();
       if(i===0)trophy(x,L+27,y+47,88);else{x.fillStyle="rgba(255,255,255,.94)";x.font="900 38px DM Sans,Arial";x.fillText("#"+(i+1),L+38,y+112)}
-      const ax=L+128,ay=y+32,as=118;if(isProUser(u)){x.save();x.beginPath();x.arc(ax+as/2,ay+as/2,as/2+3,0,Math.PI*2);x.clip();x.drawImage(bg,ax-3,ay-3,as+6,as+6);x.restore()}x.fillStyle="rgba(255,255,255,.17)";x.beginPath();x.arc(ax+as/2,ay+as/2,as/2,0,Math.PI*2);x.fill();const photo=await loadImage(u.photo?new URL(u.photo,location.href).href:"");if(photo){x.save();x.beginPath();x.arc(ax+as/2,ay+as/2,as/2,0,Math.PI*2);x.clip();x.drawImage(photo,ax,ay,as,as);x.restore()}else{x.fillStyle="#fff";x.textAlign="center";x.font="900 48px DM Sans,Arial";x.fillText(String(u.username||"?").replace(/^@/,"").charAt(0).toUpperCase()||"?",ax+as/2,ay+77);x.textAlign="left";}
+      const ax=L+128,ay=y+32,as=118;if(isProUser(u)){x.save();x.beginPath();x.arc(ax+as/2,ay+as/2,as/2+3,0,Math.PI*2);x.clip();x.drawImage(bg,ax-3,ay-3,as+6,as+6);x.restore()}x.fillStyle="rgba(255,255,255,.17)";x.beginPath();x.arc(ax+as/2,ay+as/2,as/2,0,Math.PI*2);x.fill();const photo=await loadImage(u.photo?new URL(u.photo,location.href).href:"");if(photo){x.save();x.beginPath();x.arc(ax+as/2,ay+as/2,as/2,0,Math.PI*2);x.clip();const side=Math.min(photo.naturalWidth,photo.naturalHeight);x.drawImage(photo,(photo.naturalWidth-side)/2,(photo.naturalHeight-side)/2,side,side,ax,ay,as,as);x.restore()}else{x.fillStyle="#fff";x.textAlign="center";x.font="900 48px DM Sans,Arial";x.fillText(String(u.username||"?").replace(/^@/,"").charAt(0).toUpperCase()||"?",ax+as/2,ay+77);x.textAlign="left";}
       const name=String(u.username||"@user"),isPro=isProUser(u),nameSize=fit(x,name,isPro?405:455,60,32,500),shown=ell(x,name,isPro?405:455);x.fillStyle="#fff";x.fillText(shown,L+286,y+82);await window.WPDrawWMark(x,shown,L+286,y+82,nameSize,'alphabetic',isPro);x.font="700 30px DM Sans,Arial";x.fillStyle="rgba(255,255,255,.79)";x.fillText(isPro?"Penyokong Pro":"Percuma",L+286,y+132);
       const v=fmt(Number(u.downloads?.images||0)+Number(u.downloads?.videos||0));x.textAlign="right";fit(x,v,220,66,38,900);x.fillStyle="#fff";x.fillText(v,R-30,y+88);x.font="800 26px DM Sans,Arial";x.fillStyle="rgba(255,255,255,.78)";x.fillText("MUAT TURUN",R-30,y+132);x.textAlign="left";
     }

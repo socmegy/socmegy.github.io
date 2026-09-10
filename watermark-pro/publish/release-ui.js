@@ -90,7 +90,9 @@ document.querySelector('.sidebar-user')?.setAttribute('data-page','settings');
 const sidebarIdentity=q('.sidebar-user');if(sidebarIdentity){sidebarIdentity.setAttribute('role','button');sidebarIdentity.tabIndex=0;sidebarIdentity.addEventListener('click',()=>window.openPage?.('settings'));sidebarIdentity.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sidebarIdentity.click()}})}
 // Use stable line icons, independent of legacy image visibility rules and Pro state.
 const navPaths={home:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',profile:'M12 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0M3.5 19a5.5 5.5 0 0 1 11 0M17 8h4M19 6v4',subscriptions:'M4 6h16v12H4zM4 10h16M8 15h3',settings:'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.7-1L14.5 3h-5L9 6.1a8 8 0 0 0-1.7 1l-2.4-1-2 3.4L5 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.4-1a8 8 0 0 0 1.7 1l.4 3.1h5l.4-3.1a8 8 0 0 0 1.7-1l2.4 1 2-3.4-2.1-1.5a7 7 0 0 0 .1-1z'};
-q('#authPage .auth-intro-v132>h1')?.replaceChildren(document.createTextNode('Watermark dulu. Baru post.'));
+const slogan=q('#authPage .auth-intro-v132>h1'),banner=q('#authShowcase .auth-showcase-media');
+if(slogan&&banner){slogan.classList.add('wp-banner-slogan');slogan.innerHTML='<span>Watermark dulu.</span><span>Baru post.</span>';banner.append(slogan);}
+document.querySelectorAll('.version-section,.legacy-version-section').forEach(n=>n.remove());
 finalStyle.textContent+=`html body .wp-wmark-name.wp-wmark-normal{line-height:1.2!important}html body .wp-wmark-name.wp-wmark-normal>.lab-uname,html body .wp-wmark-name.wp-wmark-normal>strong{font:400 16px/1.22 'DM Sans',Arial,sans-serif!important}html body .wp-wmark-name.wp-wmark-normal>.wp-wmark,html body .wp-wmark-name.wp-wmark-normal>.wp-wmark img{height:auto!important;align-self:center!important;object-fit:contain!important}`;
 document.querySelectorAll('.mobile-nav .navbtn').forEach(b=>{const p=navPaths[b.dataset.page];if(!p)return;b.querySelectorAll('svg,img,.wp-nav-art').forEach(n=>n.remove());b.insertAdjacentHTML('afterbegin','<span class="wp-nav-art"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="'+p+'"/></svg></span>')});
 const viewer=q('#mediaLightbox'),viewerImage=q('#mediaLightboxImage');
@@ -118,26 +120,29 @@ function mountPasswords(){
 mountPasswords();
 window.addEventListener('click',async e=>{
  const button=e.target.closest?.('#downloadSupporterCard');if(!button)return;e.preventDefault();e.stopImmediatePropagation();if(button.disabled)return;
+ const user=window.WPCloudflare?.user;if(!user||(user.plan!=='pro'&&user.role!=='admin')){window.setProUpsellOpen?.(true);return;}
+ const accountId=user.id;
  let status=q('#supporterExportStatus');if(!status){status=document.createElement('p');status.id='supporterExportStatus';status.setAttribute('role','status');button.after(status)}
  button.disabled=true;status.dataset.state='loading';status.textContent='Menyediakan Kad Penyokong...';
- try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.dataset.state='success';status.textContent='Kad Penyokong berjaya dimuat turun.'}catch(error){console.error('Supporter PNG export:',error);status.dataset.state='error';status.textContent='Kad belum dapat dimuat turun. Cuba sekali lagi. Jika masih gagal, buka Watermark Pro melalui laman web dan cuba semula.'}finally{button.disabled=false}
+ try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));if(window.WPCloudflare?.user?.id!==accountId)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.dataset.state='success';status.textContent='Kad Penyokong berjaya dimuat turun.';setTimeout(()=>{if(status.dataset.state==='success')status.textContent=''},5000)}catch(error){console.error('Supporter PNG export:',error);status.dataset.state='error';status.textContent='Kad belum dapat dimuat turun. Cuba sekali lagi. Jika masih gagal, buka Watermark Pro melalui laman web dan cuba semula.'}finally{const u=window.WPCloudflare?.user;button.disabled=!u||(u.plan!=='pro'&&u.role!=='admin');if(window.WPCloudflare?.user?.id!==accountId)status.textContent='';}
 },true);
 let receiptPrinting=false;
 window.printReceiptIsolated=async()=>{
  if(receiptPrinting)return;const sheet=q('#receiptSheet');if(!sheet)return;receiptPrinting=true;
- // Retire legacy whole-page print rules, including fixed A4 height/padding.
+ // Print one document only; Android also prints this same isolated root.
  document.querySelectorAll('style').forEach(node=>{const css=node.sheet;if(!css)return;for(let i=css.cssRules.length-1;i>=0;i--){const rule=css.cssRules[i];if(rule.type===6||(rule.type===4&&/print/.test(rule.conditionText)))css.deleteRule(i)}});
- const printRoot=document.createElement('div');printRoot.className='wp-print-root';printRoot.append(sheet.cloneNode(true));document.body.append(printRoot);document.body.classList.add('wp-receipt-printing');
- const frame=document.createElement('iframe');frame.title='Resit Watermark Pro';frame.style.cssText='position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0';document.body.append(frame);
- const doc=frame.contentDocument;doc.open();doc.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title></head><body></body></html>');doc.close();
- document.querySelectorAll('style,link[rel="stylesheet"]').forEach(n=>{const clone=n.cloneNode(true);if(n.tagName==='STYLE'&&n.sheet)clone.textContent=[...n.sheet.cssRules].map(r=>r.cssText).join('\n');doc.head.append(clone)});
- const base=doc.createElement('base');base.href=document.baseURI;doc.head.prepend(base);doc.body.append(sheet.cloneNode(true));
- const css=doc.createElement('style');css.textContent='@page{size:A4;margin:4mm!important}html,body{width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important;display:block!important}body>*{visibility:visible!important}#receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;box-shadow:none!important;break-after:auto!important;page-break-after:auto!important}';doc.head.append(css);
- const cleanup=()=>{frame.remove();printRoot.remove();document.body.classList.remove('wp-receipt-printing');receiptPrinting=false};
+ document.querySelectorAll('.wp-print-root').forEach(n=>n.remove());
+ const root=document.createElement('div');root.className='wp-print-root';root.id='wpReceiptPrintRoot';root.append(sheet.cloneNode(true));document.body.append(root);document.body.classList.add('wp-receipt-printing');
+ const printStyle=document.createElement('style');printStyle.textContent=`@media print{
+ @page{size:A4 portrait;margin:12mm!important}
+ html:root,html:root body{display:block!important;position:static!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important}
+ html:root body:has(#wpReceiptPrintRoot)>:not(.wp-print-root){display:none!important}
+ html:root body.wp-receipt-printing>.wp-print-root{display:block!important;position:static!important;visibility:visible!important;margin:0!important;padding:0!important;width:100%!important;height:auto!important;min-height:0!important;transform:none!important}
+ html:root body.wp-receipt-printing>.wp-print-root #receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:white!important;overflow:visible!important;break-after:auto!important;page-break-after:auto!important}
+ }`;document.head.append(printStyle);
+ const cleanup=()=>{root.remove();printStyle.remove();document.body.classList.remove('wp-receipt-printing');receiptPrinting=false};
  window.addEventListener('afterprint',cleanup,{once:true});
- // The shared receipt grid keeps the stamp next to the price in print too.
- frame.contentWindow.addEventListener('afterprint',cleanup,{once:true});
- try{await doc.fonts.ready;await Promise.all([...doc.images].map(i=>i.decode().catch(()=>{})));frame.contentWindow.focus();frame.contentWindow.print()}catch{cleanup()}
+ try{await document.fonts.ready;await Promise.all([...root.querySelectorAll('img')].map(i=>i.decode().catch(()=>{})));window.print()}catch(error){cleanup();throw error}
 };
 window.addEventListener('click',e=>{if(!e.target.closest?.('#printReceipt'))return;e.preventDefault();e.stopImmediatePropagation();window.printReceiptIsolated()},true);
 const f=q('#passwordChangeForm');
@@ -178,7 +183,7 @@ window.addEventListener('DOMContentLoaded',()=>{document.getElementById('wpInsta
 const routeMap={home:'',profile:'profil',subscriptions:'pelan',settings:'tetapan'};
 const authURL=new URL(location.protocol==='file:'?'index.html':'./',document.baseURI);
 const fromPath=()=>{const slug=(location.hash?location.hash.replace(/^#\/?/,''):location.pathname.match(/\/(profil|pelan|sokongan|tetapan)\/?$/)?.[1]||'');return Object.keys(routeMap).find(k=>routeMap[k]===(slug==='sokongan'?'pelan':slug))||'home'};
-window.WPLogoutRoute=()=>{routeApplied=false;history.replaceState({},'',authURL.pathname);};
+window.WPLogoutRoute=()=>{q('#supporterExportStatus')?.remove();routeApplied=false;history.replaceState({},'',authURL.pathname);};
 let routeApplied=false;
 const apply=window.WPApplyLiveState;
 window.WPNoticeReadAuthority=true;
@@ -193,7 +198,8 @@ const paintNotices=()=>{
 q('#notificationPanel')?.addEventListener('click',async e=>{const item=e.target.closest('.wp-live-notice[data-id]');if(!item||!noticeAccount?.user)return;const account=noticeAccount;try{await window.WPCloudflare.api('/api/account/notifications/read',{method:'POST',body:JSON.stringify({id:item.dataset.id})});const n=account.notifications.find(n=>n.id===item.dataset.id);if(n)n.readAt=new Date().toISOString();paintNotices()}catch(error){console.warn('Status baca belum disimpan:',error.message)}},true);
 if(q('#notificationPanel'))new MutationObserver(paintNotices).observe(q('#notificationPanel'),{childList:true,subtree:true});
 if(typeof apply==='function')window.WPApplyLiveState=(pub,acc)=>{
- noticeAccount=acc;apply(pub,acc);community(pub?.settings);mountPasswords();paintNotices();
+ if(noticeAccount?.user?.id!==acc?.user?.id){q('#supporterExportStatus')?.remove();}
+ noticeAccount=acc;apply(pub,acc);const cardButton=q('#downloadSupporterCard');if(cardButton)cardButton.disabled=!acc?.user||(acc.user.plan!=='pro'&&acc.user.role!=='admin');community(pub?.settings);mountPasswords();paintNotices();
  if(acc?.user&&!routeApplied){routeApplied=true;const page=fromPath();if(location.protocol!=='file:')history.replaceState({page},'',authURL.pathname+routeMap[page]);queueMicrotask(()=>{if(typeof openPage==='function')openPage(page)});}
  if(!acc?.user&&!localStorage.getItem('watermarkProUserApiToken'))window.WPLogoutRoute();
 };
