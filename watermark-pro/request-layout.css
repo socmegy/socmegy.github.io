@@ -63,12 +63,19 @@ html body .version-section,html body .legacy-version-section{display:none!import
 @media(min-width:701px){
  html body .wp-wmark-name.wp-wmark-normal{display:inline-flex!important;align-items:center!important;gap:3px!important;line-height:1.2!important;vertical-align:middle!important;padding:1px 0 2px!important}
  html body .wp-wmark-name.wp-wmark-normal>.wp-wmark{display:inline-grid!important;place-items:center!important;position:static!important;flex:0 0 13px!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;margin:0!important;padding:0!important;transform:none!important;line-height:0!important}
- html body .wp-wmark-name.wp-wmark-normal>.wp-wmark img{display:block!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;margin:0!important;transform:none!important}
+ html body .wp-wmark-name.wp-wmark-normal>.wp-wmark img{display:block!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;aspect-ratio:3660/3418!important;object-fit:contain!important;margin:0!important;transform:none!important}
+ html body .wp-wmark-name.wp-wmark-normal>.lab-uname,html body .wp-wmark-name.wp-wmark-normal>strong{padding:1px 0 2px!important;margin:-1px 0 -2px!important;letter-spacing:0!important}
 }
-@media(display-mode:standalone){html:root,html:root body{background:#f7f9fb!important;color-scheme:light}html:root body{padding-bottom:env(safe-area-inset-bottom,0px)}}
+/* The bottom gesture area takes the page background; theme-color owns the top status bar. */
+@media screen and (display-mode:standalone){
+ html:root,html:root body{background:#f7f9fb!important;color-scheme:only light}
+ html:root body{padding-bottom:env(safe-area-max-inset-bottom,36px)}
+ html:root body::after{content:'';display:block;position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom,0px);background:#f7f9fb;pointer-events:none;z-index:2147483647}
+ html:root body .mobile-nav{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
+}
 body>.wp-print-root{display:none}
 @media print{
- @page{size:A4 portrait;margin:4mm!important}
+ @page{size:A4 portrait;margin:12mm!important}
  html:root,html:root body{width:auto!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important;background:white!important}
  html:root body.wp-receipt-printing>:not(.wp-print-root){display:none!important}
  html:root body.wp-receipt-printing>.wp-print-root{display:block!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;visibility:visible!important}

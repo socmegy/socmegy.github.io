@@ -31,7 +31,7 @@ let state=await req('/api/account/state','GET',null,token);assert.equal(state.da
  console.log('PASS read status shared by independent sessions, idempotent and scoped');
 }
 {
- const photo='https://www.jisoo.io/assets/test.jpg',originalFetch=globalThis.fetch;
+ const photo='https://uploadsimage.org/i/c1f29f801b8ba07491bc.png',originalFetch=globalThis.fetch;
  db.prepare('UPDATE users SET photo=? WHERE id=?').run(photo,id);
  const proxy=()=>worker.fetch(new Request('https://test.invalid/api/account/image-proxy?url='+encodeURIComponent(photo),{headers:{Authorization:'Bearer '+token,Origin:'http://localhost:4173'}}),env);
  try{

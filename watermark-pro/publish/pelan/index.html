@@ -75,12 +75,12 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta charset="utf-8"/>
 <link rel="icon" type="image/jpeg" href="logo.jpg?v=2">
 <link rel="shortcut icon" type="image/jpeg" href="logo.jpg?v=2">
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- V132 SEO START -->
 <meta name="description" content="Watermark Pro memudahkan anda meletakkan tera air pada banyak imej dan video sebelum disiarkan, dengan teks, tandatangan sendiri, logo dan tetapan tambahan.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="application-name" content="Watermark Pro">
-<meta name="theme-color" content="#f7f9fb">
+<meta name="theme-color" content="#143d68">
 <meta name="color-scheme" content="light">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
@@ -743,7 +743,6 @@ th:last-child,td:last-child{text-align:right}
  .receipt-foot{margin-top:54px;flex-direction:column;gap:4px}
 }
 @media print{
- @page{size:A4;margin:0}
  html,body{width:210mm!important;height:297mm!important;margin:0!important;padding:0!important;background:#fff!important;overflow:hidden!important}
  body>.app,body>.mobile-nav{display:none!important}
  #receiptModal{display:block!important;position:static!important;width:210mm!important;height:297mm!important;padding:0!important;margin:0!important;background:#fff!important;overflow:hidden!important}
@@ -1365,7 +1364,6 @@ body.free-account .custom-option[data-pro-only="true"]{
   .receipt-footer-clean{display:grid;gap:5px}
 }
 @media print{
-  @page{size:A4;margin:14mm}
   body *{visibility:hidden!important}
   #receiptSheet,#receiptSheet *{visibility:visible!important}
   #receiptSheet{
@@ -2197,10 +2195,6 @@ body.free-account .custom-option[data-pro-only="true"]{
 
 /* V32 - tighter FINAL receipt page margins */
 @media print{
-  @page{
-    size:A4;
-    margin:7mm 7mm 10mm!important;
-  }
   #receiptModal .receipt-sheet{
     padding:8mm 8mm 10mm!important;
   }
@@ -7477,7 +7471,6 @@ body.free-account #page-profile .lab-profile-badge{
    Receipt is INSIDE .app > .content > .main-inner, so hiding .app made print blank.
    Keep that ancestor visible and hide only its non-receipt siblings. */
 @media print{
-  @page{size:A4;margin:7mm 7mm 10mm!important}
 
   html,body{
     width:auto!important;

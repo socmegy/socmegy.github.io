@@ -127,23 +127,58 @@ window.addEventListener('click',async e=>{
  try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));if(window.WPCloudflare?.user?.id!==accountId)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.dataset.state='success';status.textContent='Kad Penyokong berjaya dimuat turun.';setTimeout(()=>{if(status.dataset.state==='success')status.textContent=''},5000)}catch(error){console.error('Supporter PNG export:',error);status.dataset.state='error';status.textContent='Kad belum dapat dimuat turun. Cuba sekali lagi. Jika masih gagal, buka Watermark Pro melalui laman web dan cuba semula.'}finally{const u=window.WPCloudflare?.user;button.disabled=!u||(u.plan!=='pro'&&u.role!=='admin');if(window.WPCloudflare?.user?.id!==accountId)status.textContent='';}
 },true);
 let receiptPrinting=false;
+let restoreReceipt=null;
+const receiptPrintCSS=`
+@page wpReceipt{size:A4 portrait;margin:12mm!important}
+html:root,html:root body{display:block!important;position:static!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important}
+html:root body.wp-receipt-printing>:not(#wpReceiptPrintRoot){display:none!important}
+html:root body.wp-receipt-printing::before,html:root body.wp-receipt-printing::after{display:none!important}
+html:root body #wpReceiptPrintRoot{page:wpReceipt!important;display:block!important;position:static!important;visibility:visible!important;margin:0!important;padding:0!important;width:186mm!important;max-width:none!important;height:auto!important;min-height:0!important;transform:none!important}
+html:root body #wpReceiptPrintRoot #receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;color:#172027!important;overflow:visible!important;font:11.5px/1.45 'DM Sans',Arial,sans-serif!important;break-inside:avoid-page!important;break-after:auto!important;page-break-after:auto!important}
+#wpReceiptPrintRoot #receiptSheet *{visibility:visible!important;box-sizing:border-box!important;min-width:0!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+#wpReceiptPrintRoot .lr-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important;align-items:start!important}
+#wpReceiptPrintRoot .lr-brand{display:flex!important;align-items:center!important;gap:9px!important}
+#wpReceiptPrintRoot .lr-brand img{width:32px!important;height:32px!important;border-radius:50%!important;object-fit:cover!important}
+#wpReceiptPrintRoot .lr-brand strong,#wpReceiptPrintRoot .lr-title h2{display:block!important;margin:0!important;font-size:16px!important}
+#wpReceiptPrintRoot .lr-brand span,#wpReceiptPrintRoot .lr-title span,#wpReceiptPrintRoot .lr-meta small,#wpReceiptPrintRoot .lr-item small{display:block!important;margin-top:3px!important;color:#667085!important;font-size:9.5px!important;overflow-wrap:anywhere!important}
+#wpReceiptPrintRoot .lr-title,#wpReceiptPrintRoot .lr-meta>div:last-child{text-align:right!important}
+#wpReceiptPrintRoot .lr-rule{border:0!important;border-top:1px dashed #d0d8de!important;margin:14px 0!important}
+#wpReceiptPrintRoot .lr-meta{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:18px!important}
+#wpReceiptPrintRoot .lr-label{display:block!important;color:#667085!important;font-size:8.5px!important;font-weight:800!important;letter-spacing:0!important;text-transform:uppercase!important}
+#wpReceiptPrintRoot .lr-meta strong,#wpReceiptPrintRoot .lr-item strong{display:block!important;margin-top:4px!important;font-size:11.5px!important}
+#wpReceiptPrintRoot .lr-item{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important;align-items:center!important}
+#wpReceiptPrintRoot .lr-item-price{font-size:12.5px!important;font-weight:850!important;white-space:nowrap!important}
+#wpReceiptPrintRoot .lr-summary{margin-top:12px!important}
+#wpReceiptPrintRoot .lr-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important;padding:4px 0!important;font-size:11px!important}
+#wpReceiptPrintRoot .lr-row strong{white-space:nowrap!important}
+#wpReceiptPrintRoot .lr-total{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 66px auto!important;align-items:center!important;gap:0!important;min-height:76px!important;margin-top:6px!important;padding-top:12px!important;border-top:1px dashed #d0d8de!important;font-size:12.5px!important;font-weight:850!important}
+#wpReceiptPrintRoot .lr-total-price{position:relative!important;z-index:2!important;font-size:16px!important;white-space:nowrap!important}
+#wpReceiptPrintRoot .lr-stamp{position:relative!important;inset:auto!important;z-index:3!important;width:66px!important;height:66px!important;margin:0!important;transform:translateX(18px) rotate(-16deg)!important;border:2.5px solid currentColor!important;border-radius:50%!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;opacity:1!important}
+#wpReceiptPrintRoot .lr-stamp::before{content:''!important;position:absolute!important;inset:4px!important;border:1px dashed currentColor!important;border-radius:50%!important}
+#wpReceiptPrintRoot .lr-stamp img{position:relative!important;z-index:1!important;width:20px!important;height:20px!important;border-radius:50%!important;object-fit:cover!important}
+#wpReceiptPrintRoot .lr-stamp b{position:relative!important;z-index:1!important;margin-top:3px!important;width:50px!important;font-size:7px!important;line-height:1!important;letter-spacing:0!important;text-align:center!important;overflow-wrap:anywhere!important}
+#wpReceiptPrintRoot .lr-foot{display:flex!important;justify-content:space-between!important;gap:12px!important;margin-top:18px!important;padding-top:10px!important;border-top:1px dashed #d0d8de!important;color:#667085!important;font-size:8.5px!important}
+@media print{html:root body #wpReceiptPrintRoot{width:100%!important}}
+`;
+function prepareReceiptPrint(){
+ if(receiptPrinting)return q('#wpReceiptPrintRoot');
+ const sheet=q('#receiptSheet');if(!sheet)return null;receiptPrinting=true;
+ // Move the real sheet so Android can never print a modal copy alongside it.
+ const placeholder=document.createComment('receipt print position');sheet.before(placeholder);
+ const root=document.createElement('div');root.className='wp-print-root';root.id='wpReceiptPrintRoot';root.append(sheet);
+ const hidden=[...document.body.children].map(node=>({node,value:node.style.getPropertyValue('display'),priority:node.style.getPropertyPriority('display')}));
+ hidden.forEach(({node})=>node.style.setProperty('display','none','important'));
+ const printStyle=document.createElement('style');printStyle.textContent=receiptPrintCSS;document.head.append(printStyle);
+ document.body.append(root);document.body.classList.add('wp-receipt-printing');
+ restoreReceipt=()=>{placeholder.replaceWith(sheet);root.remove();printStyle.remove();hidden.forEach(({node,value,priority})=>value?node.style.setProperty('display',value,priority):node.style.removeProperty('display'));document.body.classList.remove('wp-receipt-printing');receiptPrinting=false;restoreReceipt=null};
+ return root;
+}
 window.printReceiptIsolated=async()=>{
- if(receiptPrinting)return;const sheet=q('#receiptSheet');if(!sheet)return;receiptPrinting=true;
- // Print one document only; Android also prints this same isolated root.
- document.querySelectorAll('style').forEach(node=>{const css=node.sheet;if(!css)return;for(let i=css.cssRules.length-1;i>=0;i--){const rule=css.cssRules[i];if(rule.type===6||(rule.type===4&&/print/.test(rule.conditionText)))css.deleteRule(i)}});
- document.querySelectorAll('.wp-print-root').forEach(n=>n.remove());
- const root=document.createElement('div');root.className='wp-print-root';root.id='wpReceiptPrintRoot';root.append(sheet.cloneNode(true));document.body.append(root);document.body.classList.add('wp-receipt-printing');
- const printStyle=document.createElement('style');printStyle.textContent=`@media print{
- @page{size:A4 portrait;margin:12mm!important}
- html:root,html:root body{display:block!important;position:static!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important}
- html:root body:has(#wpReceiptPrintRoot)>:not(.wp-print-root){display:none!important}
- html:root body.wp-receipt-printing>.wp-print-root{display:block!important;position:static!important;visibility:visible!important;margin:0!important;padding:0!important;width:100%!important;height:auto!important;min-height:0!important;transform:none!important}
- html:root body.wp-receipt-printing>.wp-print-root #receiptSheet{display:block!important;visibility:visible!important;position:static!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:white!important;overflow:visible!important;break-after:auto!important;page-break-after:auto!important}
- }`;document.head.append(printStyle);
- const cleanup=()=>{root.remove();printStyle.remove();document.body.classList.remove('wp-receipt-printing');receiptPrinting=false};
- window.addEventListener('afterprint',cleanup,{once:true});
- try{await document.fonts.ready;await Promise.all([...root.querySelectorAll('img')].map(i=>i.decode().catch(()=>{})));window.print()}catch(error){cleanup();throw error}
+ if(receiptPrinting)return;const root=prepareReceiptPrint();if(!root)return;
+ try{await document.fonts.ready;await Promise.all([...root.querySelectorAll('img')].map(i=>i.decode().catch(()=>{})));window.print()}catch(error){restoreReceipt?.();throw error}
 };
+window.addEventListener('beforeprint',()=>{if(q('#receiptModal.open'))prepareReceiptPrint()});
+window.addEventListener('afterprint',()=>restoreReceipt?.());
 window.addEventListener('click',e=>{if(!e.target.closest?.('#printReceipt'))return;e.preventDefault();e.stopImmediatePropagation();window.printReceiptIsolated()},true);
 const f=q('#passwordChangeForm');
 if(f)f.noValidate=true;

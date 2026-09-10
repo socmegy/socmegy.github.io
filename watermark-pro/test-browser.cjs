@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http'),path=require('node:path');
-module.exports=async({worker,env,req,admin})=>{
+module.exports=async({worker,env,db,req,admin})=>{
  let playwright;try{playwright=require('playwright')}catch{playwright=require(path.join(process.env.USERPROFILE,'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright'))}
  const server=http.createServer(async(incoming,out)=>{
   try{
@@ -82,12 +82,16 @@ module.exports=async({worker,env,req,admin})=>{
   await page.locator('.admin-history-receipt').first().click();
   await page.evaluate(()=>{window.__printCalls=0;window.print=()=>window.__printCalls++});
   await page.locator('#printReceipt').click();await page.waitForFunction(()=>window.__printCalls===1);
-  await page.locator('#printReceipt').click();assert.equal(await page.evaluate(()=>window.__printCalls),1);
+  await page.evaluate(()=>window.printReceiptIsolated());assert.equal(await page.evaluate(()=>window.__printCalls),1);
   assert.equal(page.frames().length,1,'no second print document');
+  assert.equal(await page.locator('#receiptSheet').count(),1,'only one receipt exists, including screen capture printing');
   fs.mkdirSync('tmp/pdfs',{recursive:true});
   for(const [name,width] of [['desktop',1366],['mobile',412]]){
    if(!await page.locator('#wpReceiptPrintRoot').count())await page.evaluate(()=>window.printReceiptIsolated());
-   await page.setViewportSize({width,height:915});await page.emulateMedia({media:'print'});
+   await page.setViewportSize({width,height:915});await page.emulateMedia({media:'screen'});
+   const capture=await page.locator('#wpReceiptPrintRoot #receiptSheet').evaluate(e=>{const r=e.getBoundingClientRect(),css=getComputedStyle(e);return {x:r.x,y:r.y,width:r.width,shadow:css.boxShadow,radius:css.borderRadius,columns:getComputedStyle(e.querySelector('.lr-meta')).gridTemplateColumns}});
+   assert.equal(capture.x,0);assert.equal(capture.y,0);assert.equal(capture.shadow,'none');assert.equal(capture.radius,'0px');assert(capture.width>700&&capture.width<710,JSON.stringify(capture));assert.equal(capture.columns.split(' ').length,2,'screen capture uses desktop receipt columns');
+   await page.emulateMedia({media:'print'});
    assert.equal(await page.locator('.app').isVisible(),false,await page.evaluate(()=>JSON.stringify({body:document.body.className,root:!!document.querySelector('#wpReceiptPrintRoot'),app:getComputedStyle(document.querySelector('.app')).display,styles:[...document.querySelectorAll('style')].slice(-1).map(n=>n.textContent.slice(0,120))}))); 
    assert.equal(await page.locator('#receiptModal').isVisible(),false,'original modal hidden');
    assert.equal(await page.locator('.wp-print-root').count(),1);
@@ -97,9 +101,21 @@ module.exports=async({worker,env,req,admin})=>{
    await page.pdf({path:'tmp/pdfs/'+name+'-receipt.pdf',format:'A4',preferCSSPageSize:true,printBackground:true});
   }
   await page.emulateMedia({media:'screen'});await page.setViewportSize({width:1366,height:900});await page.evaluate(()=>{window.dispatchEvent(new Event('afterprint'));document.querySelector('#receiptModal').classList.remove('open')});
+  assert.equal(await page.locator('#receiptModal #receiptSheet').count(),1,'receipt restored after printing');
+  await page.evaluate(()=>{document.querySelector('#receiptModal').classList.add('open');window.dispatchEvent(new Event('beforeprint'))});
+  assert.equal(await page.locator('#wpReceiptPrintRoot #receiptSheet').count(),1,'browser-menu printing isolates receipt too');
+  await page.evaluate(()=>{window.dispatchEvent(new Event('afterprint'));document.querySelector('#receiptModal').classList.remove('open')});
   await page.locator('[data-page="profile"]').first().click();
   await page.evaluate(()=>window.WPCloudflare.api('/api/account/profile',{method:'PATCH',body:JSON.stringify({photo:new URL('logo.jpg',document.baseURI).href})}));
   await page.evaluate(()=>window.WPCloudflare.sync());
+  const reference=await context.newPage();await reference.goto(origin+'/preview.html');await reference.evaluate(()=>document.fonts.ready);
+  const profileName=page.locator('#page-profile .wp-wmark-name').first();
+  await reference.locator('.lab-profile-uname').first().evaluate((e,name)=>e.textContent=name,await profileName.locator('.lab-profile-uname').innerText());
+  const nameGeometry=el=>{const name=el.querySelector('.lab-profile-uname'),img=el.querySelector('button img'),a=name.getBoundingClientRect(),b=img.getBoundingClientRect(),s=getComputedStyle(name);return {font:s.fontFamily,size:s.fontSize,weight:s.fontWeight,line:s.lineHeight,gap:b.left-a.right,dy:(b.top+b.height/2)-(a.top+a.height/2),badgeWidth:b.width,badgeHeight:b.height}};
+  const actualMark=await profileName.evaluate(nameGeometry),expectedMark=await reference.locator('.lab-inline-name').first().evaluate(nameGeometry);
+  for(const key of ['font','size','weight','line'])assert.equal(actualMark[key],expectedMark[key],'preview name '+key);
+  for(const key of ['gap','dy','badgeWidth','badgeHeight'])assert(Math.abs(actualMark[key]-expectedMark[key])<.2,'preview badge '+key+': '+JSON.stringify({actualMark,expectedMark}));
+  await profileName.screenshot({path:'tmp/wmark-desktop.png'});await reference.locator('.lab-inline-name').first().screenshot({path:'tmp/wmark-preview.png'});await reference.close();
   for(const selector of ['#downloadProgressImage','#downloadSupporterCard']){
    const downloaded=page.waitForEvent('download');await page.locator(selector).click();const file=await downloaded;assert.equal(await file.failure(),null);assert.match(file.suggestedFilename(),/\.png$/i);
    if(selector==='#downloadSupporterCard')await file.saveAs('test-supporter-export.png');
@@ -164,8 +180,23 @@ module.exports=async({worker,env,req,admin})=>{
   const control=await context.newPage();control.on('pageerror',e=>errors.push(e.message));control.on('dialog',async d=>{dialogs.push(d.message());await d.dismiss()});
   await control.addInitScript(token=>localStorage.setItem('watermarkProControlApiToken',token),admin);
   await control.goto(origin+'/watermark-pro/control.html');
+  await control.waitForFunction(()=>window.WPControl?.state?.users?.length>0);
+  const externalUser=await control.evaluate(()=>window.WPControl.state.users.find(u=>u.username==='@browseruser'));
+  const fixtureUser=externalUser||await control.evaluate(()=>window.WPControl.state.users.find(u=>u.role!=='admin'));
+  const priorPhoto=fixtureUser.photo,priorImages=fixtureUser.downloads.images;
+  const avatarURL='https://uploadsimage.org/i/c1f29f801b8ba07491bc.png';
+  const liveAvatar=process.argv.includes('--live-avatar');
+  const avatarBytes=liveAvatar?Buffer.from(await (await fetch(avatarURL)).arrayBuffer()):fs.readFileSync('logo.jpg');
+  db.prepare('UPDATE users SET photo=?,downloads_images=999999 WHERE id=?').run(avatarURL,fixtureUser.id);
+  const originalFetch=globalThis.fetch;let avatarProxyCalls=0;
+  globalThis.fetch=async(url,options)=>{if(String(url)===avatarURL){avatarProxyCalls++;if(!liveAvatar)return new Response(avatarBytes,{headers:{'Content-Type':'image/jpeg'}})}return originalFetch(url,options)};
+  await control.route('https://uploadsimage.org/**',route=>route.fulfill({contentType:liveAvatar?'image/png':'image/jpeg',body:avatarBytes}));
   const topDownload=control.waitForEvent('download');await control.locator('#downloadTopUsers').click();const topFile=await topDownload;assert.equal(await topFile.failure(),null);assert.match(topFile.suggestedFilename(),/\.png$/i);
   await topFile.saveAs('test-top3-export.png');
+  globalThis.fetch=originalFetch;assert(avatarProxyCalls>0,'external saved avatar uses the Worker proxy');
+  const avatarPixels=await control.evaluate(async({pngData,photoData})=>{const png=new Image();png.src=pngData;await png.decode();const logo=new Image();logo.src=photoData;await logo.decode();const actual=document.createElement('canvas'),expected=document.createElement('canvas');actual.width=expected.width=118;actual.height=expected.height=118;actual.getContext('2d').drawImage(png,200,417,118,118,0,0,118,118);const side=Math.min(logo.naturalWidth,logo.naturalHeight);expected.getContext('2d').drawImage(logo,(logo.naturalWidth-side)/2,(logo.naturalHeight-side)/2,side,side,0,0,118,118);const a=actual.getContext('2d').getImageData(30,30,58,58).data,b=expected.getContext('2d').getImageData(30,30,58,58).data;return a.reduce((sum,v,i)=>sum+Math.abs(v-b[i]),0)/a.length},{pngData:'data:image/png;base64,'+fs.readFileSync('test-top3-export.png').toString('base64'),photoData:'data:'+(liveAvatar?'image/png':'image/jpeg')+';base64,'+avatarBytes.toString('base64')});
+  assert(avatarPixels<2,'Top 3 PNG contains the saved photo pixels, not an initial: '+avatarPixels);
+  db.prepare('UPDATE users SET photo=?,downloads_images=? WHERE id=?').run(priorPhoto,priorImages,fixtureUser.id);await control.evaluate(()=>window.WPControlCloudflare.refresh());
   await control.evaluate(()=>{window.__originalState=structuredClone(window.WPControl.state);const s=structuredClone(window.WPControl.state);s.users[0].username='@username20characters';s.users[0].plan='pro';s.users[0].proUntil=null;s.users[0].downloads={images:999,videos:0};window.WPControl.apply(s)});
   await control.setViewportSize({width:412,height:915});
   const aligned=await control.locator('.top-user-row .identity-copy strong').first().evaluate(e=>{const a=e.querySelector('.identity-name').getBoundingClientRect(),b=e.querySelector('img').getBoundingClientRect();return Math.abs(a.y+a.height/2-b.y-b.height/2)<1});assert(aligned,'mobile control W mark stays centered');

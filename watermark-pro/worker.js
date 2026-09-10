@@ -174,7 +174,7 @@ async function exportAvatar(request, env, cors, user) {
   let target;
   try { target = new URL(requested); } catch { throw new HttpError(400, 'Pautan avatar tidak sah.'); }
   // Explicit approved origins: never fetch arbitrary/private hosts or follow redirects.
-  const hosts = String(env.AVATAR_EXPORT_HOSTS || 'www.jisoo.io,jisoo.io,socmegy.com,www.socmegy.com').split(',').map(s=>s.trim()).filter(Boolean);
+  const hosts = ['www.jisoo.io','jisoo.io','socmegy.com','www.socmegy.com','uploadsimage.org',...String(env.AVATAR_EXPORT_HOSTS || '').split(',')].map(s=>s.trim()).filter(Boolean);
   if (target.protocol !== 'https:' || target.port || target.username || target.password || !hosts.includes(target.hostname)) throw new HttpError(400, 'Hos avatar belum dibenarkan untuk eksport.');
   const controller = new AbortController(), timer = setTimeout(()=>controller.abort(),8000);
   try {

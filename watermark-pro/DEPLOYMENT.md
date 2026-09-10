@@ -36,7 +36,7 @@ No production Worker or database was modified during this repair.
 
 Avatar PNG export uses an authenticated endpoint restricted to the user's stored
 photo and approved HTTPS hosts (www.jisoo.io, jisoo.io, socmegy.com,
-www.socmegy.com). AVATAR_EXPORT_HOSTS can add trusted public hosts explicitly.
+www.socmegy.com, uploadsimage.org). AVATAR_EXPORT_HOSTS can add trusted public hosts explicitly.
 Redirects are rejected; raster images only, 5 MB maximum and an 8-second timeout.
 Deploy this Worker endpoint for cross-origin avatar export to function.
 
