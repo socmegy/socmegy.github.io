@@ -1,0 +1,18 @@
+{
+  "id": "/admintest",
+  "name": "Socmegy Admin",
+  "short_name": "Socmegy Admin",
+  "start_url": "/admintest",
+  "scope": "/admintest",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#143d68",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}
