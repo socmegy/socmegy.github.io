@@ -12552,7 +12552,9 @@ function applyAccountState(plan,user,email){
   if(profileRank) profileRank.textContent=downloadStats.rank;
   if(profileCreated) profileCreated.textContent=downloadStats.created;
   const watermarkText=document.getElementById("watermarkText");
-  if(watermarkText) watermarkText.value=user;
+  /* Account refreshes happen in the background. Only seed the watermark once;
+     never overwrite text the user is currently editing. */
+  if(watermarkText && !watermarkText.value) watermarkText.value=user;
   const receiptUsername=document.getElementById("receiptUsername");
   const receiptEmail=document.getElementById("receiptEmail");
   if(receiptUsername) receiptUsername.textContent=user;
@@ -15587,7 +15589,9 @@ select.browser-native-select{
     if(!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
     /* Do not force the old Baseline AVC codec string: generic MP4 lets the
        browser choose the H.264 profile appropriate for the source size. */
-    const types=['video/mp4','video/mp4;codecs=h264,aac','video/mp4;codecs=avc1,mp4a.40.2'];
+    /* Prefer an explicit AAC audio track before the browser's generic MP4
+       profile. Generic MP4 encoders can silently return video-only output. */
+    const types=['video/mp4;codecs="avc1.42E01E,mp4a.40.2"','video/mp4;codecs=avc1,mp4a.40.2','video/mp4;codecs=h264,aac','video/mp4'];
     return types.find(t=>MediaRecorder.isTypeSupported(t))||'';
   }
 
@@ -15945,7 +15949,7 @@ select.browser-native-select{
 
     releasePreviewDecoder();
     const url=URL.createObjectURL(file),video=document.createElement('video');
-    video.src=url;video.playsInline=true;video.preload='metadata';video.muted=true;
+    video.src=url;video.playsInline=true;video.preload='metadata';video.muted=false;
     let sourceStream=null,audioCtx=null,combined=null,recorder=null,raf=0,vfc=0,drawing=true;
     try{
       video.load();
@@ -15959,10 +15963,12 @@ select.browser-native-select{
       if(capture){
         try{
           sourceStream=capture.call(video);
-          audioTracks=sourceStream.getAudioTracks();
           reportedFps=Number(sourceStream.getVideoTracks()[0]?.getSettings?.().frameRate)||0;
         }catch{}
       }
+      /* Web Audio is the reliable path here: captureStream can expose no audio
+         until playback has begun. The media node is connected only to the
+         recorder destination, so processing does not play sound aloud. */
       if(!audioTracks.length){
         try{
           audioCtx=new(window.AudioContext||window.webkitAudioContext)();await audioCtx.resume();
@@ -15970,6 +15976,7 @@ select.browser-native-select{
           source.connect(dest);audioTracks=dest.stream.getAudioTracks();
         }catch{}
       }
+      if(!audioTracks.length) audioTracks=sourceStream?.getAudioTracks?.()||[];
 
       const canvas=document.createElement('canvas');canvas.width=video.videoWidth;canvas.height=video.videoHeight;
       const ctx=canvas.getContext('2d',{alpha:false});if(!ctx)throw new Error('Canvas video processing is unavailable.');
@@ -15977,10 +15984,18 @@ select.browser-native-select{
       const canvasStream=canvas.captureStream(fps);
       combined=new MediaStream([...canvasStream.getVideoTracks(),...audioTracks]);
 
-      /* Do not force bitrate/profile. The previous forced configuration is
-         what triggered "encoder configuration is not supported" on some MP4s. */
-      try{recorder=new MediaRecorder(combined,{mimeType:mime})}
-      catch{throw new Error('The browser MP4 encoder rejected this source configuration.');}
+      /* Preserve detail up to the encoder/device capability. Start from the
+         source's average rate with a resolution-aware floor; retain the old
+         browser-selected fallback for devices that reject bitrate hints. */
+      const sourceBps=Math.max(1_000_000,Math.round((file.size*8)/meta.duration));
+      const pixels=canvas.width*canvas.height;
+      const floorBps=pixels>=3840*2160?24_000_000:pixels>=2560*1440?16_000_000:pixels>=1920*1080?10_000_000:pixels>=1280*720?6_000_000:4_000_000;
+      const targetBps=Math.min(60_000_000,Math.max(floorBps,Math.round(sourceBps*1.08)));
+      try{recorder=new MediaRecorder(combined,{mimeType:mime,videoBitsPerSecond:targetBps,audioBitsPerSecond:192000})}
+      catch{
+        try{recorder=new MediaRecorder(combined,{mimeType:mime})}
+        catch{throw new Error('The browser MP4 encoder rejected this source configuration.');}
+      }
 
       const chunks=[];let encoderError=null;
       recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
@@ -19628,6 +19643,35 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   sync();
   new MutationObserver(sync).observe(document.body,{subtree:true,childList:true,characterData:true});
   addEventListener('resize',sync,{passive:true});
+})();
+</script>
+<style id="v143-request-fixes">
+/* The desktop sidebar badge was optically high beside the username. */
+@media (min-width:761px){
+  .sidebar-user .wp-wmark{transform:translateY(1px)!important}
+}
+</style>
+<script id="v143-request-fixes-script">
+(()=>{
+  /* A receipt printed inside about:blank cannot resolve logo.jpg reliably.
+     Serialize absolute image URLs and wait for them before opening print. */
+  window.printReceiptIsolated=()=>{
+    const sheet=document.querySelector('#receiptSheet');if(!sheet)return;
+    const clone=sheet.cloneNode(true);
+    clone.querySelectorAll('img').forEach(img=>{
+      const raw=img.getAttribute('src')||'logo.jpg';
+      try{img.setAttribute('src',new URL(raw,document.baseURI).href)}catch{}
+    });
+    const frame=document.createElement('iframe');
+    frame.title='Resit Watermark Pro';frame.setAttribute('aria-hidden','true');
+    frame.style.cssText='position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0;visibility:hidden';
+    document.body.append(frame);
+    const doc=frame.contentDocument,css=[...document.querySelectorAll('style')].map(s=>s.textContent).join('');
+    doc.open();doc.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title><style>'+css+'@page{size:A4;margin:10mm}html,body{margin:0!important;background:#fff!important}#receiptSheet{display:block!important;width:100%!important;margin:0!important;border:0!important;box-shadow:none!important}</style></head><body>'+clone.outerHTML+'</body></html>');doc.close();
+    let done=false;
+    const print=async()=>{if(done)return;done=true;const images=[...doc.images];await Promise.race([Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve}))),new Promise(resolve=>setTimeout(resolve,1800))]);frame.contentWindow.focus();frame.contentWindow.print();setTimeout(()=>frame.remove(),1500)};
+    frame.onload=()=>setTimeout(print,100);setTimeout(print,900);
+  };
 })();
 </script>
 <link rel="stylesheet" href="request-layout.css">

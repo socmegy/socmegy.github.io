@@ -168,23 +168,62 @@ class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
 }
 
+function publicAvatarUrl(value, base) {
+  let url;
+  try { url = new URL(value, base); } catch { throw new HttpError(400, 'Pautan avatar tidak sah.'); }
+  const host = url.hostname.replace(/^\[|\]$/g, '').replace(/\.$/, '').toLowerCase();
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) throw new HttpError(400, 'Gunakan pautan imej HTTP atau HTTPS awam.');
+  const ipv4 = /^\d+\.\d+\.\d+\.\d+$/.test(host) ? host.split('.').map(Number) : null;
+  const privateIPv4 = ipv4 && (ipv4[0] === 0 || ipv4[0] === 10 || ipv4[0] === 127 || ipv4[0] >= 224 ||
+    (ipv4[0] === 100 && ipv4[1] >= 64 && ipv4[1] <= 127) || (ipv4[0] === 169 && ipv4[1] === 254) ||
+    (ipv4[0] === 172 && ipv4[1] >= 16 && ipv4[1] <= 31) || (ipv4[0] === 192 && ipv4[1] === 168));
+  if (privateIPv4 || (host.includes(':') && !/^[23][0-9a-f]{3}:/.test(host)) ||
+      (!host.includes('.') && !host.includes(':')) || /(?:^|\.)(localhost|local|internal|home|lan|invalid)$/.test(host)) {
+    throw new HttpError(400, 'Pautan avatar mesti boleh diakses melalui internet awam.');
+  }
+  return url;
+}
+
+function avatarMediaType(bytes, declared) {
+  const starts = values => values.every((value, index) => bytes[index] === value);
+  const ascii = (start, end) => String.fromCharCode(...bytes.subarray(start, end));
+  if (starts([137,80,78,71,13,10,26,10])) return 'image/png';
+  if (starts([255,216,255])) return 'image/jpeg';
+  if (/^GIF8[79]a$/.test(ascii(0,6))) return 'image/gif';
+  if (ascii(0,4) === 'RIFF' && ascii(8,12) === 'WEBP') return 'image/webp';
+  if (ascii(4,8) === 'ftyp' && /avif|avis/.test(ascii(8,40))) return 'image/avif';
+  if (ascii(0,2) === 'BM') return 'image/bmp';
+  if (starts([0,0,1,0])) return 'image/x-icon';
+  if (declared === 'image/svg+xml' && /<svg[\s>]/i.test(new TextDecoder().decode(bytes.subarray(0,4096)))) return declared;
+  throw new HttpError(502, 'Pautan avatar tidak mengembalikan fail imej yang boleh dibaca.');
+}
+
 async function exportAvatar(request, env, cors, user) {
   const requested = new URL(request.url).searchParams.get('url');
   if (!requested || requested !== user.photo) throw new HttpError(403, 'Hanya avatar akaun yang disimpan boleh dieksport.');
-  let target;
-  try { target = new URL(requested); } catch { throw new HttpError(400, 'Pautan avatar tidak sah.'); }
-  // Explicit approved origins: never fetch arbitrary/private hosts or follow redirects.
-  const hosts = ['www.jisoo.io','jisoo.io','socmegy.com','www.socmegy.com','uploadsimage.org',...String(env.AVATAR_EXPORT_HOSTS || '').split(',')].map(s=>s.trim()).filter(Boolean);
-  if (target.protocol !== 'https:' || target.port || target.username || target.password || !hosts.includes(target.hostname)) throw new HttpError(400, 'Hos avatar belum dibenarkan untuk eksport.');
-  const controller = new AbortController(), timer = setTimeout(()=>controller.abort(),8000);
+  let target = publicAvatarUrl(requested);
+  const controller = new AbortController(), timer = setTimeout(()=>controller.abort(),15000);
   try {
-    const response = await fetch(target.href,{redirect:'manual',signal:controller.signal,headers:{Accept:'image/png,image/jpeg,image/webp'}});
-    const type = (response.headers.get('Content-Type')||'').split(';')[0].trim();
-    if (!response.ok || !['image/png','image/jpeg','image/webp'].includes(type)) throw new HttpError(502,'Imej avatar tidak dapat dimuat turun.');
+    let response;
+    for (let hop = 0; hop <= 5; hop++) {
+      // Never forward account credentials; validate every redirect destination independently.
+      response = await fetch(target.href,{redirect:'manual',signal:controller.signal,headers:{Accept:'image/avif,image/webp,image/*,*/*;q=0.8'}});
+      if (![301,302,303,307,308].includes(response.status)) break;
+      const next = response.headers.get('Location');await response.body?.cancel();
+      if (!next || hop === 5) throw new HttpError(502, 'Terlalu banyak redirect pada pautan avatar.');
+      target = publicAvatarUrl(next, target);
+    }
+    if (!response.ok || !response.body) throw new HttpError(502,'Hos foto menolak muat turun avatar (HTTP '+response.status+').');
+    const declared = (response.headers.get('Content-Type')||'').split(';')[0].trim().toLowerCase();
     const reader=response.body.getReader(), chunks=[];let bytes=0;
-    while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>5*1024*1024){await reader.cancel();throw new HttpError(413,'Avatar melebihi 5 MB.');}chunks.push(value);}
+    while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>10*1024*1024){await reader.cancel();throw new HttpError(413,'Avatar melebihi 10 MB.');}chunks.push(value);}
+    const blob = new Blob(chunks),type = avatarMediaType(new Uint8Array(await blob.slice(0,4096).arrayBuffer()), declared);
     const headers=new Headers(cors);headers.set('Content-Type',type);headers.set('X-Content-Type-Options','nosniff');headers.set('Cache-Control','private, no-store');
-    return new Response(new Blob(chunks,{type}),{headers});
+    headers.set('Content-Security-Policy',"sandbox; default-src 'none'");headers.set('Content-Disposition','attachment; filename="avatar"');
+    return new Response(blob,{headers});
+  } catch (error) {
+    if (error instanceof HttpError) throw error;
+    throw new HttpError(502, controller.signal.aborted ? 'Hos foto mengambil masa terlalu lama untuk membalas.' : 'Sambungan ke hos foto gagal.');
   } finally { clearTimeout(timer); }
 }
 
@@ -370,10 +409,13 @@ async function registerUser(request, env, cors) {
   const body = await readBody(request);
   const username = normalizeUsername(body.username);
   const usernameBody = username.replace(/^@/, '');
-  const email = normalizeEmail(body.email);
+  // The new UI is username-only. Keep the legacy e-mail path intact while
+  // giving username-only accounts a private, deterministic login identity.
+  const suppliedEmail = String(body.email || '').trim();
+  const email = normalizeEmail(suppliedEmail || `${usernameBody}@username.watermark-pro.local`);
   const password = String(body.password || '');
   if (usernameBody.length < 2 || usernameBody.length > 20) throw new HttpError(400, 'Nama pengguna mestilah 2 hingga 20 aksara.');
-  if (!validEmail(email)) throw new HttpError(400, 'E-mel tidak sah.');
+  if (suppliedEmail && !validEmail(email)) throw new HttpError(400, 'E-mel tidak sah.');
   validatePassword(password);
   const exists = await env.DB.prepare('SELECT id FROM users WHERE username=? OR email=?').bind(username, email).first();
   if (exists) throw new HttpError(409, 'Nama pengguna atau e-mel sudah digunakan.');
@@ -392,11 +434,14 @@ async function registerUser(request, env, cors) {
 
 async function loginUser(request, env, cors) {
   const body = await readBody(request);
+  const suppliedUsername = normalizeUsername(body.username);
   const email = normalizeEmail(body.email);
   const password = String(body.password || '');
   const adminOnly = Boolean(body.adminOnly);
-  const user = await env.DB.prepare('SELECT * FROM users WHERE email=?').bind(email).first();
-  if (!user || !(await verifyPassword(password, user.password_hash, user.password_salt))) throw new HttpError(401, 'E-mel atau kata laluan tidak betul.');
+  const user = suppliedUsername
+    ? await env.DB.prepare('SELECT * FROM users WHERE username=?').bind(suppliedUsername).first()
+    : await env.DB.prepare('SELECT * FROM users WHERE email=?').bind(email).first();
+  if (!user || !(await verifyPassword(password, user.password_hash, user.password_salt))) throw new HttpError(401, suppliedUsername ? 'Nama pengguna atau kata laluan tidak betul.' : 'E-mel atau kata laluan tidak betul.');
   if (user.status !== 'active') throw new HttpError(403, 'Akaun tidak aktif.');
   if (adminOnly && user.role !== 'admin') throw new HttpError(403, 'Akaun ini tiada akses Pusat Kawalan.');
   const token = await createSession(env, user.id);

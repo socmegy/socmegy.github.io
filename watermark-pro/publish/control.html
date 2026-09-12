@@ -736,7 +736,7 @@ function openReceipt(record){
   const subtotal=normal*months,promo=Math.max(0,(normal-unit)*months),status=String(record.status||"PENDING").toUpperCase();
   let total=Math.max(0,Number(record.amount||0)),grant=0;if(status==="GRANTED"){grant=unit*months;total=0}else if(status==="REMOVED"){total=0}else if(total<=0&&status!=="REJECTED")total=unit*months;
   const number=record.receiptNo||record.reference||record.id||"-";
-  const receiptLogo=(()=>{try{return location.protocol==="file:"?new URL("logo.jpg",document.baseURI).href:new URL("logo.jpg?v=2",window.location.origin).href}catch{return "logo.jpg"}})();
+  const receiptLogo=(()=>{try{return new URL("logo.jpg?v=2",document.baseURI).href}catch{return "logo.jpg?v=2"}})();
   const period=record.startsAt&&record.endsAt?formatDateTime(record.startsAt)+" hingga "+formatDateTime(record.endsAt):status==="REJECTED"?"Akses tidak diaktifkan":status==="PENDING"?"Belum bermula":status==="REMOVED"?"Akses telah ditamatkan":"-";
   const promoRow=promo>0?'<div class="cr-row cr-discount"><span>'+esc(record.discountLabel||plan.discountLabel||"Diskaun")+'</span><strong>− RM'+promo.toFixed(2)+'</strong></div>':"";
   const grantRow=status==="GRANTED"?'<div class="cr-row cr-grant"><span>Pemberian Watermark Pro</span><strong>− RM'+grant.toFixed(2)+'</strong></div>':"";
@@ -1114,16 +1114,19 @@ function printControlReceipt(){
     if(src===new URL('logo.jpg',document.baseURI).href)src=window.WPExportAssets?.['logo.jpg']||src;
     const decode=url=>new Promise(resolve=>{const image=new Image();const done=value=>{clearTimeout(timer);image.onload=image.onerror=null;resolve(value)};const timer=setTimeout(()=>done(null),8000);image.crossOrigin='anonymous';image.onload=()=>done(image);image.onerror=()=>done(null);image.src=url});
     // External photos may display in HTML but still need the authenticated proxy for canvas.
-    if(/^https:/i.test(src)&&new URL(src).origin!==location.origin){
+    let proxyError='';
+    if(/^https?:/i.test(src)&&new URL(src).origin!==location.origin){
       const base=window.WPControlCloudflare.apiBase.replace(/\/$/,'');
-      const response=await fetch(base+'/api/control/image-proxy?userId='+encodeURIComponent(user.id)+'&url='+encodeURIComponent(user.photo),{headers:{Authorization:'Bearer '+(sessionStorage.getItem('watermarkProControlApiToken')||localStorage.getItem('watermarkProControlApiToken'))},signal:AbortSignal.timeout(10000)}).catch(()=>null);
+      const response=await fetch(base+'/api/control/image-proxy?userId='+encodeURIComponent(user.id)+'&url='+encodeURIComponent(user.photo),{headers:{Authorization:'Bearer '+(sessionStorage.getItem('watermarkProControlApiToken')||localStorage.getItem('watermarkProControlApiToken'))},signal:AbortSignal.timeout(18000)}).catch(()=>null);
       if(response?.ok){const url=URL.createObjectURL(await response.blob());try{const image=await decode(url);if(image)return image}finally{URL.revokeObjectURL(url)}}
+      else if(response){proxyError=(await response.json().catch(()=>null))?.error||'HTTP '+response.status}
     }
     const direct=await decode(src);if(direct)return direct;
-    const error=new Error('Saved avatar could not be loaded for '+user.username);error.userMessage='Foto '+user.username+' belum dapat dimuatkan. Cuba muat turun sekali lagi.';throw error;
+    const error=new Error('Saved avatar could not be loaded for '+user.username+': '+proxyError);error.userMessage='Foto '+user.username+' belum dapat dimuatkan. '+(proxyError||'Cuba muat turun sekali lagi.');throw error;
   };
   const justifiedLine=(x,text,left,y,width)=>{const words=String(text).split(" ");if(words.length<2){x.fillText(text,left,y);return}const natural=words.reduce((n,w)=>n+x.measureText(w).width,0),space=Math.max(0,(width-natural)/(words.length-1));let px=left;words.forEach((word,i)=>{x.fillText(word,px,y);px+=x.measureText(word).width+(i<words.length-1?space:0)})};
   async function top3(){
+    document.getElementById('controlExportStatus')?.remove();
     await Promise.all([document.fonts.ready,window.WPWMarkReady,bg.decode().catch(()=>{}),window.WPControlCloudflare.refresh()]);
     const isProUser=window.WPControl.isProUser;
     const {c,x}=base(),L=72,R=1128;
@@ -1172,6 +1175,22 @@ function printControlReceipt(){
 (()=>{
   const rerender=()=>{try{if(window.WPWMarkAsset&&window.WPControl?.state){window.WPControl.apply(window.WPControl.state)}}catch(error){console.error(error)}};
   if(window.WPWMarkReady&&typeof window.WPWMarkReady.then==='function')window.WPWMarkReady.then(rerender).catch(()=>{});else setTimeout(rerender,0);
+})();
+</script>
+<script id="v23-control-receipt-logo-fix">
+(()=>{
+  const previous=window.printControlReceipt;
+  window.printControlReceipt=function(){
+    const receipt=document.querySelector('#receiptContent .control-live-receipt');
+    if(!receipt){previous?.();return}
+    const clone=receipt.cloneNode(true);
+    clone.querySelectorAll('img').forEach(img=>{try{img.src=new URL(img.getAttribute('src')||'logo.jpg',document.baseURI).href}catch{}});
+    const popup=window.open('','_blank','width=900,height=1100');if(!popup){window.print();return}
+    const css=[...document.querySelectorAll('style')].map(style=>style.textContent).join('');
+    popup.document.open();popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title><style>'+css+'@page{size:A4 portrait;margin:12mm}html,body{margin:0!important;background:#fff!important}.control-live-receipt{width:100%!important;margin:0!important;border:0!important;box-shadow:none!important}</style></head><body>'+clone.outerHTML+'</body></html>');popup.document.close();
+    let fired=false;const go=async()=>{if(fired)return;fired=true;const images=[...popup.document.images];await Promise.race([Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve}))),new Promise(resolve=>setTimeout(resolve,1800))]);popup.focus();popup.print()};
+    popup.onload=()=>setTimeout(go,100);setTimeout(go,900);
+  };
 })();
 </script>
 </body>
