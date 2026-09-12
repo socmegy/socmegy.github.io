@@ -19732,7 +19732,9 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
     if(canvas){const box=document.getElementById('mediaLightbox');if(box)box.dataset.viewerKind='preview-media'}
   },true);
   const lower=()=>document.querySelectorAll('.wp-avatar-letter,.admin-notification-avatar').forEach(node=>{
-    const text=node.textContent.trim();if(text)node.textContent=text.toLowerCase();
+    if(node.children.length)return;
+    const text=node.textContent,lowercase=text.toLowerCase();
+    if(text!==lowercase)node.textContent=lowercase;
   });
   lower();new MutationObserver(lower).observe(document.body,{subtree:true,childList:true,characterData:true});
 })();
