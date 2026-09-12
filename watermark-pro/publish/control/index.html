@@ -1186,8 +1186,11 @@ function printControlReceipt(){
     const clone=receipt.cloneNode(true);
     clone.querySelectorAll('img').forEach(img=>{try{img.src=new URL(img.getAttribute('src')||'logo.jpg',document.baseURI).href}catch{}});
     const popup=window.open('','_blank','width=900,height=1100');if(!popup){window.print();return}
-    const css=[...document.querySelectorAll('style')].map(style=>style.textContent).join('');
-    popup.document.open();popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title><style>'+css+'@page{size:A4 portrait;margin:12mm}html,body{margin:0!important;background:#fff!important}.control-live-receipt{width:100%!important;margin:0!important;border:0!important;box-shadow:none!important}</style></head><body>'+clone.outerHTML+'</body></html>');popup.document.close();
+    /* Only copy receipt styles. Page-wide print rules hide body children and
+       previously caused the generated PDF to be completely blank. */
+    const css=['v14-control-final-style','v15-control-authoritative-fix']
+      .map(id=>document.getElementById(id)?.textContent||'').join('');
+    popup.document.open();popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title><style>'+css+'@page{size:A4 portrait;margin:12mm}html,body{margin:0!important;padding:0!important;background:#fff!important}.control-live-receipt{display:block!important;visibility:visible!important;width:100%!important;margin:0!important;border:0!important;box-shadow:none!important}@media print{body>*{display:none!important}body>.control-live-receipt{display:block!important;visibility:visible!important}}</style></head><body>'+clone.outerHTML+'</body></html>');popup.document.close();
     let fired=false;const go=async()=>{if(fired)return;fired=true;const images=[...popup.document.images];await Promise.race([Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve}))),new Promise(resolve=>setTimeout(resolve,1800))]);popup.focus();popup.print()};
     popup.onload=()=>setTimeout(go,100);setTimeout(go,900);
   };

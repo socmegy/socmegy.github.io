@@ -181,6 +181,21 @@ module.exports=async({worker,env,db,req,admin})=>{
   await control.addInitScript(token=>localStorage.setItem('watermarkProControlApiToken',token),admin);
   await control.goto(origin+'/watermark-pro/control.html');
   await control.waitForFunction(()=>window.WPControl?.state?.users?.length>0);
+  /* Control receipt printing must not inherit the page-wide rule that hides
+     every body child in print media. Keep this regression test close to the
+     real print serializer that previously produced a blank PDF. */
+  const controlReceiptPrint=await control.evaluate(async()=>{
+   const record=window.WPControl.state.subscriptions[0]||window.WPControl.state.submissions[0];
+   if(!record)return {skipped:true};
+   openReceipt(record);
+   let printed=false;const printDoc=document.implementation.createHTMLDocument('print');
+   const fake={document:printDoc,focus(){},print(){printed=true},closed:false};
+   const originalOpen=window.open;window.open=()=>fake;
+   try{window.printControlReceipt();await new Promise(resolve=>setTimeout(resolve,1000))}finally{window.open=originalOpen}
+   const receipt=printDoc.body.querySelector('.control-live-receipt'),logo=receipt?.querySelector('img');
+   return {skipped:false,receipt:!!receipt,text:receipt?.textContent.trim().length||0,logo:logo?.getAttribute('src')||'',css:[...printDoc.querySelectorAll('style')].map(n=>n.textContent).join(''),printed};
+  });
+  if(!controlReceiptPrint.skipped){assert(controlReceiptPrint.receipt&&controlReceiptPrint.text>30,'control printable receipt has content');assert(controlReceiptPrint.css.includes('body>.control-live-receipt{display:block!important'),'control printable receipt remains visible in print media');assert.match(controlReceiptPrint.logo,/\/watermark-pro\/logo\.jpg/,'control printable receipt resolves logo beside the app')}
   const externalUser=await control.evaluate(()=>window.WPControl.state.users.find(u=>u.username==='@browseruser'));
   const fixtureUser=externalUser||await control.evaluate(()=>window.WPControl.state.users.find(u=>u.role!=='admin'));
   const priorPhoto=fixtureUser.photo,priorImages=fixtureUser.downloads.images;
