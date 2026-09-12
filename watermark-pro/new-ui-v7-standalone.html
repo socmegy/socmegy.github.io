@@ -1,0 +1,1122 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b416f">
+  <title>Watermark Pro — Textured Blueprint</title>
+  <style>
+    :root {
+      --ink: #f7fbff;
+      --muted: rgba(236, 246, 255, .68);
+      --line: rgba(220, 241, 255, .18);
+      --glass: rgba(16, 82, 132, .54);
+      --glass-strong: rgba(8, 55, 99, .78);
+      --accent: #57a9ff;
+      --accent-strong: #2388e7;
+      --dark: #062b50;
+      --white: #fff;
+      --radius: 23px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      min-height: 100dvh;
+      color: var(--ink);
+      background-color: #052d52;
+      background-image: linear-gradient(rgba(101,190,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(101,190,255,.07) 1px, transparent 1px), radial-gradient(circle at 18% 10%, rgba(60,151,219,.38), transparent 35%), linear-gradient(145deg, #0b5689, #041f3d 72%);
+      background-size: 28px 28px, 28px 28px, auto, auto;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid rgba(93, 184, 255, .8); outline-offset: 2px; }
+
+    .app-shell {
+      position: relative;
+      width: min(100%, 430px);
+      min-height: 100dvh;
+      margin: 0 auto;
+      overflow: hidden;
+      background-color: #073a65;
+      background-image: linear-gradient(rgba(114,204,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(114,204,255,.07) 1px, transparent 1px), linear-gradient(180deg, rgba(11, 86, 139, .42), rgba(2, 31, 61, .86));
+      background-size: 24px 24px, 24px 24px, auto;
+      box-shadow: 0 0 0 1px rgba(212, 239, 255, .16), 0 24px 80px rgba(0, 12, 31, .38);
+    }
+    .app-shell::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      background: rgba(2, 26, 53, .2);
+      pointer-events: none;
+    }
+    .safe-top { padding-top: max(18px, env(safe-area-inset-top)); }
+    .safe-bottom { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+
+    .screen {
+      display: none;
+      min-height: 100dvh;
+      padding: 30px 24px 28px;
+      animation: screen-in .25s ease both;
+    }
+    .screen.active { display: flex; }
+    @keyframes screen-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* Shared controls */
+    .primary-btn, .ghost-btn, .icon-btn, .type-card, .feature-card, .nav-btn, .position-btn { transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease; }
+    .primary-btn:active, .ghost-btn:active, .icon-btn:active, .type-card:active, .feature-card:active, .nav-btn:active, .position-btn:active { transform: scale(.97); }
+    .primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 22px;
+      border-radius: 999px;
+      color: #173350;
+      background: #fff;
+      box-shadow: 0 10px 24px rgba(0, 18, 44, .19);
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .primary-btn:hover { box-shadow: 0 14px 28px rgba(0, 18, 44, .27); }
+    .primary-btn .arrow { font-size: 21px; line-height: 0; }
+    .ghost-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .ghost-btn:hover { background: rgba(255, 255, 255, .15); }
+    .icon-btn {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .11);
+      border: 1px solid var(--line);
+      border-radius: 50%;
+    }
+    .icon-btn:hover { background: rgba(255, 255, 255, .2); }
+    .icon { width: 21px; height: 21px; display: block; }
+    .icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Welcome / auth */
+    #screen-welcome {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 48px;
+      padding-bottom: 48px;
+    }
+    .welcome-logo { width: min(78vw, 248px); height: auto; filter: drop-shadow(0 12px 20px rgba(2, 21, 48, .25)); }
+    .welcome-copy { margin-top: 38px; }
+    .welcome-copy h1 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+    .welcome-copy p { max-width: 250px; margin: 8px auto 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .welcome-actions { display: grid; gap: 14px; width: min(100%, 245px); margin-top: 38px; }
+    .welcome-actions .primary-btn { width: 100%; }
+    .text-btn { color: rgba(243, 250, 255, .82); background: none; font-size: 13px; font-weight: 650; }
+    .text-btn:hover { color: #fff; }
+    .welcome-tagline { margin-top: auto; padding-top: 58px; color: rgba(239, 248, 255, .74); font-size: 13px; font-style: italic; letter-spacing: .08em; }
+
+    #screen-auth { flex-direction: column; }
+    .auth-top { display: flex; align-items: center; justify-content: space-between; }
+    .auth-top .welcome-logo { width: 108px; }
+    .auth-panel { margin: auto 0; padding: 28px 0; }
+    .auth-panel h1 { margin: 0; font-size: 31px; letter-spacing: -.055em; }
+    .auth-panel > p { margin: 9px 0 25px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; margin-bottom: 20px; background: rgba(1, 28, 57, .35); border: 1px solid var(--line); border-radius: 15px; }
+    .auth-tab { min-height: 39px; color: var(--muted); background: transparent; border-radius: 11px; font-size: 13px; font-weight: 750; }
+    .auth-tab.active { color: #174064; background: #fff; box-shadow: 0 5px 12px rgba(3, 25, 52, .16); }
+    .field { display: grid; gap: 8px; margin-top: 16px; }
+    .field label { color: rgba(244, 251, 255, .8); font-size: 12px; font-weight: 700; }
+    .field input {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 16px;
+      color: #f7fbff;
+      background: rgba(5, 42, 77, .53);
+      border: 1px solid rgba(220, 241, 255, .28);
+      border-radius: 15px;
+    }
+    .field input::placeholder { color: rgba(234, 247, 255, .48); }
+    .auth-submit { width: 100%; margin-top: 24px; }
+    .auth-note { min-height: 20px; margin: 12px 0 0; color: #a8ddff; font-size: 12px; text-align: center; }
+    .auth-bottom { margin-top: auto; color: rgba(240, 249, 255, .56); font-size: 11px; line-height: 1.5; text-align: center; }
+
+    /* Home */
+    #screen-home, #screen-profile, #screen-support, #screen-settings { flex-direction: column; padding-bottom: 103px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .small-logo { width: 116px; height: auto; }
+    .avatar-btn { position: relative; overflow: hidden; width: 42px; height: 42px; padding: 0; border-radius: 50%; border: 1px solid rgba(221, 243, 255, .26); background: rgba(255, 255, 255, .1); }
+    .avatar-btn .icon { width: 20px; margin: auto; }
+    .avatar-btn::after { position: absolute; right: 4px; top: 4px; width: 7px; height: 7px; content: ""; border-radius: 50%; background: #70c8ff; box-shadow: 0 0 0 3px rgba(9, 56, 95, .65); }
+    .home-heading { margin: 29px 0 21px; }
+    .home-heading h1 { max-width: 270px; margin: 0; font-size: 35px; line-height: .99; letter-spacing: -.07em; }
+    .home-heading p { margin: 12px 0 0; color: var(--muted); font-size: 14px; }
+    .upload-card {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 153px;
+      padding: 20px;
+      border: 1px dashed rgba(227, 247, 255, .46);
+      border-radius: 20px;
+      background: rgba(18, 104, 165, .32);
+      text-align: center;
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+    }
+    .upload-card.dragging { border-color: #a6e2ff; background: rgba(49, 151, 220, .46); transform: scale(1.015); }
+    .upload-card input { position: absolute; inset: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0; }
+    .upload-plus { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 10px; color: #fff; border-radius: 50%; background: rgba(117, 185, 255, .7); font-size: 28px; font-weight: 250; line-height: 1; box-shadow: 0 6px 15px rgba(2, 39, 74, .2); }
+    .upload-card strong { display: block; font-size: 13px; }
+    .upload-card small { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin: 23px 0 11px; }
+    .section-head h2 { margin: 0; font-size: 14px; }
+    .section-head button { color: var(--muted); background: none; font-size: 11px; }
+    .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .type-card { display: grid; place-items: center; gap: 7px; min-height: 91px; padding: 12px 6px; color: var(--ink); background: rgba(27, 109, 169, .45); border: 1px solid rgba(215, 241, 255, .13); border-radius: 15px; }
+    .type-card:hover { background: rgba(57, 143, 205, .55); border-color: rgba(215, 241, 255, .3); }
+    .type-card .icon { width: 27px; height: 27px; }
+    .type-card span:last-child { font-size: 11px; font-weight: 650; }
+    .mobile-nav { position: absolute; z-index: 3; right: 15px; bottom: 17px; left: 15px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px; background: rgba(4, 48, 88, .84); border: 1px solid rgba(216, 241, 255, .19); border-radius: 20px; box-shadow: 0 13px 28px rgba(0, 22, 48, .25); backdrop-filter: blur(18px); }
+    .nav-btn { display: grid; place-items: center; gap: 4px; min-height: 52px; color: rgba(233, 247, 255, .58); background: transparent; border-radius: 14px; font-size: 10px; }
+    .nav-btn .icon { width: 19px; height: 19px; }
+    .nav-btn.active { color: #fff; background: rgba(74, 163, 236, .55); box-shadow: inset 0 0 0 1px rgba(216, 241, 255, .13); }
+
+    /* Editor */
+    #screen-editor { flex-direction: column; padding-bottom: 25px; }
+    .editor-top { display: flex; align-items: center; gap: 14px; }
+    .editor-top h1 { margin: 0; font-size: 22px; letter-spacing: -.045em; }
+    .editor-top p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .editor-heading { flex: 1; }
+    .preview-card { position: relative; min-height: 279px; margin-top: 23px; padding: 13px; overflow: hidden; border: 1px solid rgba(225, 246, 255, .25); border-radius: 20px; background: rgba(121, 185, 220, .42); box-shadow: 0 13px 28px rgba(2, 27, 58, .2); }
+    .sample-image { position: relative; min-height: 253px; overflow: hidden; border-radius: 14px; background: linear-gradient(180deg, #9bc5df 0 50%, #a1b8bd 50% 59%, #d8d6ce 59% 100%); }
+    .sample-image::before { position: absolute; right: 10%; bottom: 20%; width: 71%; height: 47%; content: ""; transform: skewY(-10deg); background: linear-gradient(135deg, #fff 0 52%, #d5d6d1 52%); box-shadow: -28px 15px 0 -1px rgba(195, 196, 190, .64); }
+    .sample-image::after { position: absolute; right: 0; bottom: 0; left: 0; height: 45%; content: ""; background: linear-gradient(180deg, transparent, rgba(19, 78, 102, .14)); }
+    .sample-image.has-image { background-position: center; background-size: cover; }
+    .sample-image.has-image::before, .sample-image.has-image::after { display: none; }
+    .watermark-layer { position: absolute; z-index: 2; inset: 13px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); align-items: center; justify-items: center; gap: 12px; color: #fff; transform: rotate(-17deg) scale(1.18); pointer-events: none; }
+    .watermark-layer.logo-mode { transform: rotate(0) scale(1); }
+    .watermark-layer span { white-space: nowrap; font-size: 15px; font-weight: 700; letter-spacing: -.04em; text-shadow: 0 2px 7px rgba(8, 53, 83, .4); }
+    .watermark-layer img { width: 56px; height: auto; opacity: .84; filter: drop-shadow(0 2px 6px rgba(8, 53, 83, .35)); }
+    .preview-badge { position: absolute; z-index: 5; right: 25px; bottom: 23px; padding: 5px 9px; color: #fff; background: rgba(8, 42, 73, .48); border: 1px solid rgba(255, 255, 255, .2); border-radius: 999px; font-size: 9px; font-weight: 700; }
+    .control-card { margin-top: 14px; padding: 12px 14px 15px; background: rgba(5, 45, 83, .59); border: 1px solid rgba(218, 242, 255, .14); border-radius: 18px; }
+    .control-input { display: flex; align-items: center; gap: 7px; padding: 0 12px; min-height: 41px; color: #f3faff; background: rgba(118, 187, 231, .22); border: 1px solid rgba(224, 246, 255, .14); border-radius: 12px; }
+    .control-input input { min-width: 0; flex: 1; color: #fff; background: none; border: 0; outline: 0; font-size: 12px; }
+    .control-input button { color: rgba(255, 255, 255, .7); background: none; font-size: 15px; }
+    .signature-pad { display: none; width: 100%; height: 92px; margin-top: 10px; touch-action: none; background: rgba(232, 247, 255, .88); border-radius: 10px; }
+    .signature-pad.show { display: block; }
+    .control-tabs { display: flex; gap: 18px; overflow: auto; margin: 15px -2px 10px; padding-bottom: 3px; }
+    .control-tab { position: relative; flex: 0 0 auto; padding: 0 0 7px; color: rgba(232, 246, 255, .63); background: none; font-size: 11px; }
+    .control-tab.active { color: #fff; font-weight: 750; }
+    .control-tab.active::after { position: absolute; right: 0; bottom: 0; left: 0; height: 2px; content: ""; border-radius: 5px; background: #fff; }
+    .slider-row { display: grid; grid-template-columns: 47px 1fr 37px; align-items: center; gap: 10px; margin-top: 12px; color: rgba(242, 250, 255, .86); font-size: 11px; }
+    .slider-row input { width: 100%; accent-color: #fff; }
+    .slider-value { color: rgba(242, 250, 255, .72); text-align: right; }
+    .position-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 10px; }
+    .position-btn { min-height: 31px; color: rgba(240, 251, 255, .68); background: rgba(128, 190, 229, .16); border: 1px solid transparent; border-radius: 9px; font-size: 10px; }
+    .position-btn.active { color: #fff; background: rgba(107, 184, 241, .43); border-color: rgba(235, 250, 255, .54); }
+    .use-btn { width: 100%; margin-top: 15px; }
+    .action-grid { display:grid; grid-template-columns:1fr 2fr; gap:8px; margin-top:15px; }
+    .action-grid .use-btn { margin-top:0; }
+    .process-message { min-height:18px; margin-top:10px; color:#bfe8ff; font-size:11px; }
+    .standalone-results { display:none; margin-top:14px; padding-top:13px; border-top:1px solid rgba(220,242,255,.12); }
+    .standalone-results.show { display:block; }
+    .results-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .results-head strong { font-size:12px; }
+    .result-list { display:grid; gap:8px; margin-top:10px; }
+    .result-row { display:flex; align-items:center; gap:10px; padding:9px; background:rgba(111,190,235,.12); border-radius:10px; }
+    .result-row span { min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; }
+    .result-row a { padding:7px 9px; color:#08345a; background:#fff; border-radius:8px; font-size:10px; font-weight:800; text-decoration:none; }
+    .tool-option { display: grid; gap: 9px; margin-top: 14px; padding-top: 13px; border-top: 1px solid rgba(220, 242, 255, .1); }
+    .tool-option-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11px; font-weight: 750; }
+    .tool-option-head small { color: var(--muted); font-size: 10px; font-weight: 500; }
+    .tool-option select, .tool-option input[type="file"] { width: 100%; min-height: 36px; padding: 0 10px; color: #fff; background: rgba(118, 187, 231, .18); border: 1px solid rgba(224, 246, 255, .14); border-radius: 10px; font-size: 11px; }
+    .tool-option input[type="file"] { padding: 8px 10px; }
+    .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .checkline { display: flex; align-items: center; gap: 8px; color: rgba(242, 250, 255, .86); font-size: 11px; }
+    .checkline input { accent-color: #fff; }
+    .back-btn { flex: 0 0 auto; }
+
+    /* Profile, support and settings */
+    .page-title { margin-top: 31px; }
+    .page-title .eyebrow { display: block; margin-bottom: 8px; color: rgba(230, 246, 255, .62); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .page-title h1 { margin: 0; font-size: 32px; letter-spacing: -.07em; }
+    .page-title p { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+    .page-card { margin-top: 19px; padding: 17px; background: rgba(6, 49, 87, .64); border: 1px solid rgba(221, 243, 255, .14); border-radius: 18px; box-shadow: 0 12px 25px rgba(1, 25, 50, .16); }
+    .card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .card-heading h2 { margin: 0; font-size: 16px; }
+    .card-heading p { margin: 6px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .profile-identity { display: flex; align-items: center; gap: 13px; }
+    .profile-avatar { display: grid; place-items: center; width: 58px; height: 58px; flex: 0 0 auto; overflow: hidden; color: #fff; border: 1px solid rgba(220, 243, 255, .3); border-radius: 50%; background: linear-gradient(145deg, #75b8e7, #164b7e); font-size: 20px; font-weight: 800; }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-size: 17px; font-weight: 800; }
+    .profile-plan { margin-top: 5px; color: #b9e2ff; font-size: 11px; }
+    .meta-grid { display: grid; gap: 10px; margin-top: 18px; }
+    .meta-cell { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid rgba(220, 242, 255, .1); font-size: 11px; }
+    .meta-cell span { color: var(--muted); }
+    .meta-cell strong { text-align: right; }
+    .progress-total { text-align: right; }
+    .progress-total strong { display: block; font-size: 24px; }
+    .progress-total span { color: var(--muted); font-size: 10px; }
+    .progress-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 18px; }
+    .progress-stat { padding: 10px; background: rgba(124, 191, 231, .12); border-radius: 12px; }
+    .progress-stat span { display: block; color: var(--muted); font-size: 10px; }
+    .progress-stat strong { display: block; margin-top: 4px; font-size: 14px; }
+    .progress-track-row { display: flex; align-items: center; gap: 9px; margin-top: 15px; }
+    .progress-track { height: 7px; flex: 1; overflow: hidden; border-radius: 99px; background: rgba(224, 244, 255, .15); }
+    .progress-track-fill { width: 0; height: 100%; border-radius: inherit; background: #bfe9ff; }
+    .progress-percent { color: var(--muted); font-size: 10px; }
+    .milestones { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+    .milestones span { padding: 5px 7px; color: var(--muted); background: rgba(124, 191, 231, .12); border-radius: 7px; font-size: 10px; }
+    .supporter-preview { margin-top: 15px; padding: 15px; background: linear-gradient(135deg, rgba(25, 111, 172, .7), rgba(5, 42, 77, .75)); border: 1px solid rgba(220, 242, 255, .2); border-radius: 14px; }
+    .supporter-preview strong { display: block; }
+    .supporter-preview small { display: block; margin-top: 8px; color: var(--muted); }
+    .card-action { width: 100%; margin-top: 14px; }
+    .plan-list { display: grid; gap: 12px; margin-top: 19px; }
+    .plan-card { padding: 16px; background: rgba(6, 49, 87, .64); border: 1px solid rgba(221, 243, 255, .14); border-radius: 18px; }
+    .plan-card.pro { border-color: rgba(159, 211, 255, .55); box-shadow: inset 0 0 0 1px rgba(159, 211, 255, .08); }
+    .plan-card h2 { margin: 0; font-size: 17px; }
+    .plan-price { margin-top: 12px; font-size: 24px; font-weight: 800; }
+    .plan-price span { color: var(--muted); font-size: 11px; font-weight: 500; }
+    .plan-copy { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .plan-features { display: grid; gap: 7px; margin: 15px 0 0; padding: 0; list-style: none; color: rgba(246, 252, 255, .82); font-size: 11px; }
+    .plan-features li::before { margin-right: 7px; color: #bfe9ff; content: "✓"; }
+    .history-list { display: grid; gap: 9px; margin-top: 15px; }
+    .history-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; padding: 11px 0; border-top: 1px solid rgba(220, 242, 255, .1); font-size: 11px; }
+    .history-row small { color: var(--muted); }
+    .settings-list { display: grid; gap: 13px; margin-top: 19px; }
+    .settings-card { padding: 16px; background: rgba(6, 49, 87, .64); border: 1px solid rgba(221, 243, 255, .14); border-radius: 18px; }
+    .settings-card h2 { margin: 0; font-size: 15px; }
+    .settings-card p { margin: 6px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; padding-top: 13px; border-top: 1px solid rgba(220, 242, 255, .1); }
+    .settings-label strong { display: block; font-size: 12px; }
+    .settings-label small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .toggle { position: relative; width: 42px; height: 24px; flex: 0 0 auto; padding: 0; border-radius: 999px; background: rgba(226, 244, 255, .23); }
+    .toggle::after { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; content: ""; border-radius: 50%; background: #fff; transition: transform .2s ease; }
+    .toggle.on { background: #398fe4; }
+    .toggle.on::after { transform: translateX(18px); }
+    .settings-grid { display: grid; gap: 12px; margin-top: 15px; }
+    .settings-field { display: grid; gap: 7px; }
+    .settings-field label { color: rgba(244, 251, 255, .8); font-size: 11px; font-weight: 700; }
+    .settings-field input { min-height: 42px; padding: 0 12px; color: #fff; background: rgba(5, 42, 77, .53); border: 1px solid rgba(220, 241, 255, .2); border-radius: 11px; }
+    .settings-field input:disabled { color: var(--muted); opacity: .8; }
+    .settings-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .settings-actions > * { flex: 1; }
+    .settings-link { display: flex; justify-content: space-between; width: 100%; padding: 12px 0; color: #fff; background: transparent; border-top: 1px solid rgba(220, 242, 255, .1); font-size: 12px; text-align: left; }
+    .danger-card { border-color: rgba(255, 173, 164, .35); }
+    .danger-btn { color: #ffd0c9; background: transparent; border: 1px solid rgba(255, 173, 164, .35); }
+    .modal { position:fixed; z-index:50; inset:0; display:none; place-items:center; padding:20px; background:rgba(1,18,36,.76); backdrop-filter:blur(12px); }
+    .modal.open { display:grid; }
+    .modal-panel { width:min(100%,430px); max-height:90dvh; overflow:auto; padding:20px; color:#fff; background:#07365e; background-image:linear-gradient(rgba(112,204,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(112,204,255,.06) 1px,transparent 1px); background-size:22px 22px; border:1px solid rgba(202,237,255,.28); border-radius:20px; box-shadow:0 28px 80px rgba(0,8,25,.5); }
+    .modal-panel h2 { margin:0; font-size:22px; }
+    .modal-panel > p { color:var(--muted); font-size:12px; line-height:1.5; }
+    .payment-qr { display:grid; place-items:center; min-height:180px; margin:15px 0; padding:14px; background:#fff; border-radius:14px; }
+    .payment-qr img { max-width:100%; max-height:240px; object-fit:contain; }
+    .payment-reference { padding:10px; background:rgba(115,195,241,.14); border-radius:10px; font-size:12px; text-align:center; }
+
+    .toast { position: fixed; z-index: 30; right: 20px; bottom: 86px; left: 20px; max-width: 390px; margin: auto; padding: 12px 15px; color: #0f3454; background: #fff; border-radius: 14px; box-shadow: 0 12px 28px rgba(0, 18, 45, .3); font-size: 12px; font-weight: 700; text-align: center; transform: translateY(18px); opacity: 0; pointer-events: none; transition: opacity .22s ease, transform .22s ease; }
+    .toast.show { opacity: 1; transform: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .desktop-sidebar { display: none; }
+    .account-summary, .sync-status { display: none; }
+    .account-summary { grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0 2px; }
+    .summary-card { padding: 13px 14px; background: rgba(7, 57, 100, .56); border: 1px solid rgba(220, 242, 255, .14); border-radius: 15px; }
+    .summary-card strong { display: block; font-size: 18px; letter-spacing: -.04em; }
+    .summary-card small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .sync-status { display: none; min-height: 16px; margin-top: 6px; color: rgba(233, 248, 255, .56); font-size: 10px; }
+    .sync-status.error { color: #ffd0c9; }
+    .empty-state { padding: 28px 18px; color: var(--muted); background: rgba(7, 57, 100, .42); border: 1px dashed rgba(220, 242, 255, .2); border-radius: 16px; font-size: 12px; text-align: center; }
+    .main-bridge { position: fixed; z-index: -10; left: -10000px; width: 1px; height: 1px; border: 0; opacity: 0; pointer-events: none; }
+
+    @media (min-width: 700px) and (max-width: 899px) {
+      body { display: grid; place-items: center; padding: 24px; }
+      .app-shell { min-height: min(850px, calc(100dvh - 48px)); height: min(850px, calc(100dvh - 48px)); border-radius: 36px; }
+      .screen { min-height: 100%; }
+    }
+
+    @media (min-width: 900px) {
+      body { min-height: 100dvh; background: #edf3f8; }
+      .app-shell { width: 100%; max-width: none; min-height: 100dvh; margin: 0; overflow: visible; background: linear-gradient(135deg, rgba(9, 62, 101, .96), rgba(4, 38, 71, .98)); box-shadow: none; }
+      .app-shell::before { position: fixed; z-index: 0; background-color:#06365d; background-image:linear-gradient(rgba(112,204,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(112,204,255,.06) 1px,transparent 1px),radial-gradient(circle at 75% 15%,rgba(52,145,211,.28),transparent 38%); background-size:32px 32px,32px 32px,auto; }
+      .desktop-sidebar { position: fixed; z-index: 10; inset: 0 auto 0 0; display: flex; flex-direction: column; width: 254px; padding: 28px 18px 22px; background: rgba(2, 29, 54, .72); border-right: 1px solid rgba(220, 242, 255, .13); backdrop-filter: blur(20px); }
+      .desktop-brand { display: flex; align-items: center; padding: 0 10px 34px; }
+      .desktop-brand img { width: 155px; height: auto; }
+      .desktop-nav { display: grid; gap: 8px; }
+      .desktop-nav button { display: flex; align-items: center; gap: 12px; min-height: 47px; padding: 0 13px; color: rgba(232, 247, 255, .64); background: transparent; border-radius: 13px; font-size: 13px; font-weight: 700; text-align: left; }
+      .desktop-nav button:hover, .desktop-nav button.active { color: #fff; background: rgba(75, 160, 229, .3); }
+      .desktop-nav .icon { width: 19px; height: 19px; }
+      .desktop-user { display: flex; align-items: center; gap: 11px; margin-top: auto; padding: 12px; background: rgba(125, 190, 227, .12); border: 1px solid rgba(220, 242, 255, .13); border-radius: 15px; }
+      .desktop-user-avatar { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; color: #fff; border-radius: 50%; background: linear-gradient(145deg, #6eb5eb, #135284); font-size: 13px; font-weight: 800; }
+      .desktop-user-copy { min-width: 0; }
+      .desktop-user-copy strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+      .desktop-user-copy small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+      .screen { position: relative; z-index: 1; width: calc(100% - 254px); min-height: 100dvh; margin-left: 254px; padding: 36px clamp(32px, 5vw, 82px) 54px; }
+      .screen.active { display: flex; }
+      #screen-welcome, #screen-auth { width: calc(100% - 254px); max-width: none; margin-left: 254px; margin-right: 0; }
+      #screen-home, #screen-profile, #screen-support, #screen-settings { align-items: stretch; }
+      .topbar { width: 100%; }
+      .home-heading { margin-top: 48px; }
+      .home-heading h1 { max-width: 760px; font-size: clamp(38px, 4vw, 58px); }
+      .home-heading p { font-size: 16px; }
+      .account-summary { display: grid; max-width: 770px; }
+      .sync-status { display: block; }
+      .upload-card { width: min(100%, 820px); min-height: 206px; }
+      .type-grid { max-width: 730px; }
+      .type-card { min-height: 108px; }
+      .section-head { max-width: 730px; }
+      .mobile-nav { display: none; }
+      .editor-top { grid-column: 1 / -1; }
+      #screen-editor { display: grid; grid-template-columns: minmax(0, 1fr) 360px; align-content: start; gap: 20px; }
+      #screen-editor .preview-card { grid-column: 1; margin-top: 0; min-height: 490px; }
+      #screen-editor .sample-image { min-height: 462px; }
+      #screen-editor .control-card { grid-column: 2; grid-row: 2; margin-top: 0; }
+      #screen-editor .watermark-layer span { font-size: 19px; }
+      .page-title { margin-top: 48px; }
+      .page-title h1 { font-size: clamp(38px, 4vw, 56px); }
+      .settings-list, .plan-list, .page-card { max-width: 830px; }
+      .plan-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .settings-actions { max-width: 360px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell" id="app">
+    <aside class="desktop-sidebar" aria-label="Navigasi desktop">
+      <div class="desktop-brand"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NDkgMzgzIiB3aWR0aD0iOTQ5IiBoZWlnaHQ9IjM4MyI+CiAgPHBhdGggZD0iTSA4MjAgMzMzIEwgODIwIDM0NyBMIDgyNyAzNjEgTCA4MzYgMzY5IEwgODQ4IDM3NSBMIDg1NCAzNzYgTCA4NTUgMzc3IEwgODU5IDM3NyBMIDg2MCAzNzggTCA4NjggMzc4IEwgODY5IDM3OSBMIDg3OCAzNzkgTCA4NzkgMzc4IEwgODkzIDM3NyBMIDg5NyAzNzUgTCA5MDAgMzc1IEwgOTA5IDM3MiBMIDkyMyAzNjUgTCA5MjkgMzYxIEwgOTQwIDM1MCBMIDk0NCAzNDMgTCA5NDUgMzM1IEwgOTQ2IDMzNCBMIDk0NSAzMjcgTCA5NDMgMzIzIEwgOTM2IDMxNiBMIDkyOCAzMTIgTCA5MTcgMzA5IEwgOTExIDMwNCBMIDkwMCAzMDIgTCA4OTIgMjk5IEwgODg3IDI5OSBMIDg4NiAyOTggTCA4NjUgMjk4IEwgODY0IDI5OSBMIDg2MCAyOTkgTCA4NTkgMzAwIEwgODUzIDMwMSBMIDg0MCAzMDcgTCA4MzQgMzExIEwgODI4IDMxNyBMIDgyNCAzMjMgWiBNIDgzOSAzNDIgTCA4MzkgMzM4IEwgODQxIDMzMyBMIDg1MCAzMjQgTCA4NjQgMzE4IEwgODcyIDMxOCBMIDg3NCAzMjAgTCA4ODkgMzIwIEwgODkwIDMyMSBMIDg5NCAzMjEgTCA5MDkgMzI4IEwgOTE2IDMyOCBMIDkxOSAzMjkgTCA5MjUgMzMzIEwgOTI1IDMzNiBMIDkyMyAzMzkgTCA5MTIgMzQ4IEwgOTAwIDM1NCBMIDg5NCAzNTUgTCA4OTAgMzU3IEwgODg1IDM1NyBMIDg4NCAzNTggTCA4NzUgMzU4IEwgODc0IDM1OSBMIDg3MyAzNTggTCA4NjMgMzU4IEwgODYyIDM1NyBMIDg1OCAzNTcgTCA4NDcgMzUyIEwgODQxIDM0NiBaIE0gMTYxIDM0NyBMIDE2MSAzNDMgTCAxNTkgMzM5IEwgMTU1IDMzNiBMIDE1MiAzMzUgTCAxNTEgMzM2IEwgMTMxIDMzNiBMIDEyOCAzMzQgTCAxMzEgMzI3IEwgMTMyIDMxOSBMIDEzMyAzMTggTCAxMzMgMjk2IEwgMTMyIDI5NSBMIDEzMiAyOTAgTCAxMzAgMjg0IEwgMTI1IDI3NSBMIDExOCAyNjggTCAxMDkgMjYzIEwgMTAzIDI2MSBMIDg3IDI2MSBMIDg2IDI2MiBMIDc4IDI2MyBMIDc1IDI2NSBMIDY4IDI2NyBMIDU2IDI3NCBMIDQ4IDI4MCBMIDMzIDI5NiBMIDI0IDMxMCBMIDIxIDMyMCBMIDkgMzI1IEwgMiAzMzMgTCAyIDM0MCBMIDQgMzQ0IEwgNyAzNDYgTCAxNSAzNDYgTCAyMSAzNDEgTCAyNyAzNDAgTCAyOCAzMzkgTCAzNyAzMzkgTCAzOCAzNDAgTCA0OCAzNDEgTCA1MyAzNDMgTCA1NyAzNDMgTCA2NiAzNDYgTCA3MCAzNDYgTCA3MSAzNDcgTCA3NSAzNDcgTCA3NiAzNDggTCA4MCAzNDggTCA4NiAzNTAgTCA5MSAzNTAgTCA5MiAzNTEgTCA5NyAzNTEgTCA5OCAzNTIgTCAxMDMgMzUyIEwgMTA0IDM1MyBMIDExMSAzNTMgTCAxMTIgMzU0IEwgMTE5IDM1NCBMIDEyMCAzNTUgTCAxMzMgMzU1IEwgMTM0IDM1NiBMIDE1MyAzNTYgTCAxNTggMzUzIFogTSAxMTIgMjkzIEwgMTEzIDMwMCBMIDExNCAzMDEgTCAxMTMgMzE4IEwgMTEyIDMxOSBMIDExMiAzMjIgTCAxMTAgMzI4IEwgMTA3IDMzMiBMIDEwMSAzMzIgTCAxMDAgMzMxIEwgOTQgMzMxIEwgOTMgMzMwIEwgNzkgMzI4IEwgNzggMzI3IEwgNzAgMzI2IEwgNjUgMzI0IEwgNjEgMzI0IEwgNjAgMzIzIEwgNTYgMzIzIEwgNTEgMzIxIEwgNDcgMzIxIEwgNDMgMzE5IEwgNDMgMzE3IEwgNDcgMzExIEwgNjIgMjk1IEwgNzMgMjg3IEwgNzkgMjg0IEwgODUgMjgyIEwgODggMjgyIEwgODkgMjgxIEwgMTAwIDI4MSBMIDEwNiAyODQgTCAxMDkgMjg3IFogTSA0MDkgMjI5IEwgNDA3IDIyOCBMIDQwMCAyMjggTCAzOTQgMjMyIEwgMzkyIDIzNyBMIDM5MiAyNDQgTCAzOTEgMjQ1IEwgMzkxIDI2MiBMIDM5MCAyNjMgTCAzODkgMzE5IEwgMzg4IDMyMCBMIDM4NyAzNDQgTCAzODYgMzQ1IEwgMzg2IDM1MSBMIDM4NSAzNTIgTCAzODIgMzUxIEwgMzgyIDM0OSBMIDM3OSAzNDUgTCAzNzMgMzMzIEwgMzczIDMzMSBMIDM1MiAyOTAgTCAzNDIgMjc1IEwgMzMyIDI2NSBMIDMyNCAyNjEgTCAzMTYgMjYxIEwgMzExIDI2MyBMIDMwNiAyNjggTCAzMDQgMjcxIEwgMzAyIDI3NyBMIDMwMiAyODAgTCAzMDEgMjgxIEwgMzAxIDI5MCBMIDMwMCAyOTEgTCAzMDAgMjk4IEwgMjk5IDI5OSBMIDI5NyAyOTYgTCAyOTcgMjkyIEwgMjk2IDI5MSBMIDI5NSAyNzggTCAyOTQgMjc3IEwgMjk0IDI2NSBMIDI5MyAyNjMgTCAyOTAgMjYwIEwgMjg1IDI1OCBMIDI4MCAyNTkgTCAyNzYgMjYyIEwgMjc0IDI2NyBMIDI3NCAyNzggTCAyNzUgMjc5IEwgMjc1IDI4NiBMIDI3NiAyODcgTCAyNzcgMjk3IEwgMjc4IDI5OCBMIDI3OCAzMDIgTCAyNzkgMzAzIEwgMjgxIDMxNCBMIDI4NSAzMjYgTCAyODcgMzI5IEwgMjg4IDMzNCBMIDI5MyAzNDQgTCAyOTMgMzQ2IEwgMjk4IDM1NiBMIDMwNiAzNjYgTCAzMTIgMzY4IEwgMzE3IDM2NyBMIDMyMSAzNjQgTCAzMjMgMzYwIEwgMzIzIDM0NyBMIDMyMiAzNDYgTCAzMjEgMzIzIEwgMzIwIDMyMiBMIDMyMCAyODYgTCAzMjIgMjg0IEwgMzI0IDI4NSBMIDMzMiAyOTcgTCAzNTUgMzQzIEwgMzU3IDM0NSBMIDM2NyAzNjQgTCAzNzMgMzczIEwgMzc3IDM3NyBMIDM4MiAzODAgTCAzOTEgMzgwIEwgMzk2IDM3NyBMIDQwMSAzNjkgTCA0MDQgMzYwIEwgNDA1IDM0OSBMIDQwNiAzNDggTCA0MDYgMzQxIEwgNDA3IDM0MCBMIDQwNyAzMzAgTCA0MDggMzI5IEwgNDA5IDI5MiBMIDQxMSAyOTEgTCA0MTMgMjk0IEwgNDEzIDI5NyBMIDQxOSAzMTUgTCA0MjggMzMyIEwgNDMxIDMzNSBMIDQzNSAzMzcgTCA0MzkgMzM3IEwgNDQyIDMzNiBMIDQ0NyAzMzEgTCA0NDggMzI2IEwgNDQ2IDMyMSBMIDQ0MiAzMTcgTCA0NDEgMzE0IEwgNDM5IDMxMiBMIDQzNiAzMDIgTCA0MzQgMjk5IEwgNDMzIDI5MyBMIDQyOSAyODMgTCA0MjkgMjgwIEwgNDI2IDI3MyBMIDQyNSAyNjYgTCA0MjMgMjYyIEwgNDIzIDI1OSBMIDQyMSAyNTUgTCA0MjEgMjUyIEwgNDE4IDI0MyBMIDQxNCAyMzQgWiBNIDcwMCAxOTYgTCA2OTUgMTk0IEwgNjgyIDE5NCBMIDY4MSAxOTUgTCA2NzQgMTk2IEwgNjYyIDIwMyBMIDY1NCAyMTEgTCA2NDggMjIwIEwgNjQ4IDIyMiBMIDY0NCAyMjkgTCA2NDQgMjMyIEwgNjQyIDIzNSBMIDY0MiAyMzggTCA2NDAgMjQwIEwgNjM4IDIzOCBMIDYzOCAyMzUgTCA2MzcgMjM0IEwgNjM3IDIzMSBMIDYzNiAyMzAgTCA2MzYgMjI3IEwgNjMzIDIxOCBMIDYzMyAyMTEgTCA2MzIgMjA5IEwgNjI1IDIwNSBMIDYyMSAyMDUgTCA2MTUgMjA5IEwgNjEzIDIxNiBMIDYxNCAyMTcgTCA2MTUgMjI3IEwgNjE2IDIyOCBMIDYxNyAyMzYgTCA2MjEgMjQ4IEwgNjIxIDI1MSBMIDYzMiAyODQgTCA2MzggMjk3IEwgNjM4IDI5OSBMIDY0MCAzMDIgTCA2NDMgMzA0IEwgNjUwIDMwNSBMIDY1MyAzMDQgTCA2NTggMjk5IEwgNjU4IDI4NCBMIDY1NyAyODMgTCA2NTcgMjYyIEwgNjU4IDI2MSBMIDY1OCAyNTMgTCA2NTkgMjUyIEwgNjU5IDI0OCBMIDY2MCAyNDcgTCA2NjEgMjQwIEwgNjY2IDIyOSBMIDY3NiAyMTggTCA2ODQgMjE0IEwgNjk3IDIxNCBMIDY5OSAyMTMgTCA3MDMgMjA5IEwgNzAzIDIwNiBMIDcwNCAyMDUgTCA3MDMgMjAwIFogTSA3NDcgMTE1IEwgNzQ2IDExNiBMIDc0MyAxMTYgTCA3NDAgMTE4IEwgNzM3IDEyNCBMIDczNyAxMzIgTCA3MzYgMTMzIEwgNzM2IDE0MiBMIDczNSAxNDMgTCA3MzUgMTU2IEwgNzM0IDE1NyBMIDczNCAyMDMgTCA3MzUgMjA0IEwgNzM1IDIyMCBMIDczNiAyMjEgTCA3MzcgMjQyIEwgNzM4IDI0MyBMIDczOCAyNDkgTCA3MzkgMjUwIEwgNzM5IDI1NyBMIDc0MCAyNTggTCA3NDAgMjY0IEwgNzQyIDI3MCBMIDc0MiAyNzUgTCA3NDMgMjc2IEwgNzQ0IDI4NCBMIDc0NSAyODUgTCA3NDUgMjg4IEwgNzQ2IDI4OSBMIDc0NiAyOTIgTCA3NDcgMjkzIEwgNzQ3IDI5NiBMIDc0OCAyOTcgTCA3NDggMzAwIEwgNzUxIDMwOSBMIDc1MyAzMTIgTCA3NTUgMzE5IEwgNzYxIDMyOSBMIDc2NCAzMzIgTCA3NjggMzM0IEwgNzc0IDMzNSBMIDc4MSAzMzIgTCA3ODMgMzMwIEwgNzg3IDMyMSBMIDc4NyAzMTcgTCA3ODggMzE2IEwgNzg5IDMwNyBMIDc5MCAzMDYgTCA3OTEgMjkxIEwgNzkyIDI5MCBMIDc5MyAyNzIgTCA3OTUgMjY3IEwgNzk4IDI2NyBMIDc5OSAyNjggTCA4MjUgMjY4IEwgODI2IDI2NyBMIDgzNSAyNjcgTCA4MzYgMjY2IEwgODQxIDI2NiBMIDg0MiAyNjUgTCA4NDcgMjY1IEwgODUyIDI2MyBMIDg1NiAyNjMgTCA4NjAgMjYxIEwgODY3IDI2MCBMIDg3NSAyNTcgTCA4NzggMjU0IEwgODc5IDI0NiBMIDg3MyAyMzkgTCA4NjUgMjM5IEwgODYyIDI0MSBMIDg1OSAyNDEgTCA4NTggMjQyIEwgODU1IDI0MiBMIDg0NiAyNDUgTCA4NDIgMjQ1IEwgODQxIDI0NiBMIDgzNiAyNDYgTCA4MzUgMjQ3IEwgODI3IDI0NyBMIDgyNiAyNDggTCA3OTggMjQ4IEwgNzk2IDI0NiBMIDc5NiAyMzUgTCA4MDMgMjI1IEwgODA3IDIyMSBMIDgwOSAyMTcgTCA4MDkgMjEyIEwgODA3IDIwOCBMIDgwMSAyMDQgTCA3OTMgMjA1IEwgNzkwIDIwNyBMIDc4NCAyMTQgTCA3NjYgMjQ3IEwgNzY2IDI1NiBMIDc2OCAyNjAgTCA3NzUgMjY0IEwgNzc0IDI3NiBMIDc3MyAyNzcgTCA3NzMgMjg1IEwgNzcyIDI4NiBMIDc3MiAyOTQgTCA3NzEgMjk1IEwgNzcxIDI5OCBMIDc2OSAyOTkgTCA3NjggMjk4IEwgNzY3IDI5MSBMIDc2MyAyNzkgTCA3NjMgMjc1IEwgNzYxIDI2OSBMIDc2MSAyNjQgTCA3NjAgMjYzIEwgNzYwIDI1OCBMIDc1OSAyNTcgTCA3NTkgMjUwIEwgNzU4IDI0OSBMIDc1OCAyNDIgTCA3NTcgMjQxIEwgNzU3IDIzMyBMIDc1NiAyMzIgTCA3NTYgMjIyIEwgNzU1IDIyMSBMIDc1NSAyMDggTCA3NTQgMjA3IEwgNzU0IDE1NiBMIDc1NSAxNTUgTCA3NTUgMTQzIEwgNzU2IDE0MiBMIDc1NiAxMzMgTCA3NTcgMTMyIEwgNzU3IDEyMiBMIDc1MiAxMTYgWiBNIDI4NCA4NSBMIDI3NyA4MSBMIDI2NyA4MCBMIDI2MiA4MiBMIDI1OSA4NiBMIDI1OCA5MiBMIDI2MCA5NyBMIDI2NSAxMDAgTCAyNzAgMTAwIEwgMjczIDEwMyBMIDI3NSAxMDkgTCAyNzUgMTMyIEwgMjc0IDEzMyBMIDI3NCAxMzcgTCAyNjcgMTU5IEwgMjU5IDE3MyBMIDI0NSAxODggTCAyMzQgMTk0IEwgMjMxIDE5NCBMIDIzMCAxOTUgTCAyMTggMTk1IEwgMjExIDE5MiBMIDIwNyAxODkgTCAxOTkgMTgwIEwgMTk0IDE3MSBMIDE5MSAxNjAgTCAxODkgMTU3IEwgMTg5IDE1NCBMIDE4NyAxNTAgTCAxODQgMTM1IEwgMTgyIDEzMSBMIDE3NyAxMjcgTCAxNzAgMTI3IEwgMTY4IDEyOCBMIDE2NCAxMzIgTCAxNjQgMTM0IEwgMTYyIDEzNyBMIDE2MiAxNDEgTCAxNjEgMTQyIEwgMTYxIDE0NiBMIDE1OSAxNTEgTCAxNTkgMTU1IEwgMTU4IDE1NiBMIDE1OCAxNTkgTCAxNTUgMTY4IEwgMTU1IDE3MiBMIDE1MyAxNzYgTCAxNTMgMTgwIEwgMTUwIDE4OCBMIDE0OCAxOTkgTCAxMzggMjI5IEwgMTM0IDIzNSBMIDEzMiAyMzIgTCAxMzIgMjI5IEwgMTI5IDIyMCBMIDEyOSAyMTYgTCAxMjggMjE1IEwgMTI3IDIwNSBMIDEyNiAyMDQgTCAxMjUgMTkyIEwgMTI0IDE5MSBMIDEyNCAxODMgTCAxMjMgMTgyIEwgMTIzIDE3NSBMIDEyMiAxNzQgTCAxMjIgMTY0IEwgMTIxIDE2MyBMIDEyMSAxNDAgTCAxMjAgMTM5IEwgMTIwIDEyOSBMIDEyMSAxMjggTCAxMjEgMTA2IEwgMTIyIDEwNSBMIDEyMiA5NiBMIDEyMSA5NCBMIDExNiA5MCBMIDEwOSA5MCBMIDEwMyA5NSBMIDEwMiA5OCBMIDEwMiAxMDYgTCAxMDEgMTA3IEwgMTAwIDEzNCBMIDEwMSAxMzUgTCAxMDEgMTYyIEwgMTAyIDE2MyBMIDEwMiAxNzMgTCAxMDMgMTc0IEwgMTA1IDE5OSBMIDEwNiAyMDAgTCAxMDggMjE3IEwgMTA5IDIxOCBMIDExMCAyMjYgTCAxMTMgMjM0IEwgMTEzIDIzNyBMIDExOSAyNTEgTCAxMjQgMjU3IEwgMTMxIDI2MCBMIDEzNiAyNjAgTCAxMzcgMjU5IEwgMTQwIDI1OSBMIDE0MyAyNTcgTCAxNDkgMjUxIEwgMTU5IDIzMCBMIDE2NSAyMTIgTCAxNjUgMjA5IEwgMTY2IDIwOCBMIDE2NiAyMDUgTCAxNjcgMjA0IEwgMTY3IDIwMSBMIDE2OCAyMDAgTCAxNjggMTk3IEwgMTY5IDE5NiBMIDE2OSAxOTMgTCAxNzAgMTkyIEwgMTcwIDE4OSBMIDE3MSAxODggTCAxNzEgMTg1IEwgMTc0IDE3NiBMIDE3NiAxNzcgTCAxODEgMTg4IEwgMTkxIDIwMiBMIDIwMiAyMTAgTCAyMTIgMjE0IEwgMjE3IDIxNCBMIDIxOCAyMTUgTCAyMzAgMjE1IEwgMjMxIDIxNCBMIDIzNiAyMTQgTCAyNTEgMjA4IEwgMjU3IDIwNCBMIDI2OCAxOTQgTCAyNzkgMTc5IEwgMjg3IDE2MyBMIDI5MiAxNDggTCAyOTIgMTQ0IEwgMjk0IDEzOCBMIDI5NCAxMzIgTCAyOTUgMTMxIEwgMjk1IDExMSBMIDI5NCAxMTAgTCAyOTQgMTA0IEwgMjg5IDkxIFogTSAzMzcgODQgTCAzMjggOTMgTCAzMTkgMTA1IEwgMzEwIDEyMiBMIDMwOSAxMjcgTCAzMDUgMTM2IEwgMzA1IDE0MCBMIDMwMyAxNDYgTCAzMDMgMTUzIEwgMzAyIDE1NCBMIDMwMiAxNzIgTCAzMDMgMTczIEwgMzAzIDE3OSBMIDMwNCAxODAgTCAzMDQgMTg0IEwgMzA1IDE4NSBMIDMwNiAxOTEgTCAzMTMgMjA0IEwgMzIyIDIxMiBMIDMyNiAyMTQgTCAzMzYgMjE1IEwgMzM3IDIxNiBMIDMzOCAyMTUgTCAzNDcgMjE0IEwgMzU2IDIwOSBMIDM2NyAxOTggTCAzNzIgMTkxIEwgMzgxIDE3NSBMIDM4MSAxNzMgTCAzODcgMTYyIEwgMzkxIDE1MCBMIDM5NSAxNDQgTCAzOTYgMTQ1IEwgMzk5IDE2MCBMIDQwMSAxNjQgTCA0MDEgMTY3IEwgNDA0IDE3NiBMIDQxNSAyMDAgTCA0MjIgMjA5IEwgNDI2IDIxMSBMIDQzMyAyMTEgTCA0MzUgMjEwIEwgNDM5IDIwNSBMIDQzOSAxOTggTCA0MzEgMTg5IEwgNDIzIDE3MSBMIDQxOCAxNTYgTCA0MTUgMTQxIEwgNDE0IDE0MCBMIDQxNCAxMzYgTCA0MTEgMTI3IEwgNDA5IDExMSBMIDQwOCAxMTAgTCA0MDggMTA1IEwgNDEyIDEwMyBMIDQxNiA5OCBMIDQxNyA5MyBMIDQxNSA4OCBMIDQwOSA4MiBMIDQwMyA3OCBMIDM5NSA3NCBMIDM4NSA3MiBMIDM4NCA3MSBMIDM2NiA3MSBMIDM2NSA3MiBMIDM2MSA3MiBMIDM1MiA3NSBaIE0gMzg3IDkyIEwgMzg5IDk1IEwgMzg2IDk5IEwgMzg0IDExMCBMIDM3OCAxMjcgTCAzNzcgMTMzIEwgMzc1IDEzNiBMIDM2OSAxNTQgTCAzNTkgMTc1IEwgMzUzIDE4NCBMIDM0MyAxOTQgTCAzMzggMTk2IEwgMzMzIDE5NSBMIDMyNyAxODkgTCAzMjIgMTc0IEwgMzIyIDE1MSBMIDMyMyAxNTAgTCAzMjQgMTQxIEwgMzI3IDEzMiBMIDMzMyAxMjAgTCAzNDQgMTA1IEwgMzYwIDkzIEwgMzY2IDkyIEwgMzY3IDkxIEwgMzgzIDkxIEwgMzg0IDkyIFogTSA5MDcgNDQgTCA5MDEgNDAgTCA4OTYgNDAgTCA4OTAgNDMgTCA4NjcgNjAgTCA4NTggNjkgTCA4NTEgNzggTCA4NDcgODYgTCA4NDYgOTIgTCA4NDUgOTMgTCA4NDUgMTA0IEwgODQ3IDExMCBMIDg1MCAxMTUgTCA4NTAgMTE3IEwgODYwIDEzMiBMIDg1OSAxMzMgTCA4NTcgMTMzIEwgODMzIDEyMSBMIDgzMSAxMjEgTCA4MjYgMTE4IEwgODI0IDExOCBMIDgxMiAxMTIgTCA4MTAgMTEyIEwgODA1IDEwOSBMIDgwMiAxMDkgTCA4MDEgMTA4IEwgNzk2IDEwOSBMIDc5MiAxMTIgTCA3OTAgMTE2IEwgNzkwIDEyMiBMIDc5MSAxMjQgTCA3OTcgMTI5IEwgODAyIDEzMCBMIDgwNyAxMzMgTCA4MDkgMTMzIEwgODE0IDEzNiBMIDgxNiAxMzYgTCA4MjEgMTM5IEwgODMwIDE0MiBMIDg0NyAxNTEgTCA4NDkgMTUxIEwgODg4IDE3MCBMIDg5NCAxNzEgTCA4OTkgMTY5IEwgOTAzIDE2NCBMIDkwMyAxNjEgTCA5MDQgMTYwIEwgOTAzIDE1NCBMIDg5MSAxNDAgTCA4NzAgMTExIEwgODY1IDEwMSBMIDg2NSA5NSBMIDg2NiA5MiBMIDg3MSA4NSBMIDg4NCA3MiBMIDg4OSA2OSBMIDg5NyA2MiBMIDkwMiA2MCBMIDkwNyA1NiBMIDkwOSA1MSBaIE0gNDY0IDIwIEwgNDU5IDI0IEwgNDU4IDI3IEwgNDU5IDY5IEwgNDYwIDcwIEwgNDYwIDg1IEwgNDYxIDg2IEwgNDYxIDEwMCBMIDQ2MiAxMDEgTCA0NjMgMTE5IEwgNDU4IDEyMiBMIDQ0OSAxMjUgTCA0NDYgMTI4IEwgNDQ0IDEzNSBMIDQ0NSAxMzYgTCA0NDUgMTM5IEwgNDQ4IDE0MiBMIDQ1MyAxNDQgTCA0NjEgMTQyIEwgNDY0IDE0MCBMIDQ2NSAxNDEgTCA0NjYgMTU0IEwgNDY3IDE1NSBMIDQ2NyAxNjIgTCA0NjggMTYzIEwgNDY4IDE2OSBMIDQ2OSAxNzAgTCA0NjkgMTc2IEwgNDcwIDE3NyBMIDQ3MCAxODMgTCA0NzEgMTg0IEwgNDcxIDE4OCBMIDQ3MyAxOTQgTCA0NzQgMjA0IEwgNDc1IDIwNSBMIDQ3NyAyMTYgTCA0NzkgMjIwIEwgNDc5IDIyMyBMIDQ4MSAyMjcgTCA0ODEgMjMyIEwgNDgwIDIzMyBMIDQ3OSAyNDEgTCA0NzggMjQyIEwgNDc4IDI0NyBMIDQ3NyAyNDggTCA0NzYgMjY1IEwgNDc1IDI2NiBMIDQ3NiAyOTEgTCA0NzcgMjkyIEwgNDc3IDI5OCBMIDQ3OCAyOTkgTCA0NzggMzAyIEwgNDc5IDMwMyBMIDQ3OSAzMDYgTCA0ODEgMzEyIEwgNDg0IDMxOCBMIDQ4OCAzMjIgTCA0OTMgMzI1IEwgNTAxIDMyNSBMIDUwNyAzMjIgTCA1MTQgMzE1IEwgNTIyIDMwMCBMIDUyMiAyOTggTCA1MjcgMjg4IEwgNTI4IDI4MyBMIDUzMCAyODAgTCA1MzcgMjU5IEwgNTM3IDI1NiBMIDU0MCAyNDkgTCA1NDAgMjQ2IEwgNTQyIDI0MyBMIDU0NSAyNDkgTCA1NDUgMjUyIEwgNTQ4IDI1OSBMIDU0OCAyNjIgTCA1NTUgMjgzIEwgNTY1IDMwNiBMIDU3MCAzMTQgTCA1NzYgMzIwIEwgNTc4IDMyMSBMIDU4NiAzMjEgTCA1OTAgMzE4IEwgNTkyIDMxMyBMIDU5MiAzMTAgTCA1OTAgMzA1IEwgNTgzIDI5NyBMIDU3MCAyNjcgTCA1NzAgMjY0IEwgNTY1IDI1MSBMIDU2NSAyNDggTCA1NjEgMjM2IEwgNTYwIDIyOSBMIDU1OCAyMjUgTCA1NTggMjIyIEwgNTU2IDIxOCBMIDU1NiAyMTUgTCA1NTIgMjA2IEwgNTQ5IDIwMyBMIDU0NSAyMDEgTCA1NDEgMjAxIEwgNTM5IDIwMiBMIDUzNyAyMDAgTCA1MjkgMTk2IEwgNTIzIDE5NSBMIDUyMiAxOTQgTCA1MDggMTk1IEwgNTA1IDE5NyBMIDUwMSAxOTggTCA0OTUgMjAzIEwgNDkzIDIwMCBMIDQ5MyAxOTYgTCA0OTIgMTk1IEwgNDkyIDE5MCBMIDQ5MSAxODkgTCA0OTEgMTg0IEwgNDkwIDE4MyBMIDQ5MCAxNzggTCA0ODkgMTc3IEwgNDg5IDE3MSBMIDQ4OCAxNzAgTCA0ODggMTYzIEwgNDg3IDE2MiBMIDQ4NyAxNTUgTCA0ODYgMTU0IEwgNDg2IDE0NyBMIDQ4NSAxNDYgTCA0ODQgMTMzIEwgNDkwIDEyOSBMIDQ5MiAxMjkgTCA0OTkgMTI1IEwgNTAxIDEyNSBMIDUyMCAxMTYgTCA1MjIgMTE2IEwgNTMzIDExMCBMIDU0MiAxMDcgTCA1NDYgMTAzIEwgNTQ2IDk0IEwgNTQwIDg5IEwgNTMzIDg5IEwgNTA5IDEwMCBMIDUwMiAxMDIgTCA0ODggMTA5IEwgNDgzIDExMCBMIDQ4MiAxMDkgTCA0ODEgODUgTCA0ODAgODQgTCA0NzkgNDkgTCA0NzggNDggTCA0NzggMjYgTCA0NzcgMjQgTCA0NzIgMjAgTCA0NjkgMTkgWiBNIDUyMiAyMTUgTCA1MjggMjE5IEwgNTI3IDIyNCBMIDUyNSAyMjggTCA1MjUgMjMxIEwgNTIyIDIzOCBMIDUyMiAyNDEgTCA1MDkgMjgwIEwgNTA2IDI4NSBMIDUwNiAyODcgTCA1MDIgMjk0IEwgNTAxIDI5OCBMIDQ5OCAzMDAgTCA0OTcgMjk5IEwgNDk2IDI4OCBMIDQ5NSAyODcgTCA0OTUgMjYwIEwgNDk2IDI1OSBMIDQ5NiAyNTUgTCA0OTggMjUzIEwgNTAzIDI1MyBMIDUwOCAyNDcgTCA1MDggMjQwIEwgNTA0IDIzNCBMIDUwMiAyMjggTCA1MDUgMjIyIEwgNTEwIDIxNyBMIDUxNCAyMTUgWiBNIDgwMCAxMiBMIDc5MyA2IEwgNzgxIDIgTCA3NzAgMiBMIDc2OSAzIEwgNzYxIDQgTCA3NTggNiBMIDc1NiA2IEwgNzQ3IDEyIEwgNzMzIDI3IEwgNzMyIDMwIEwgNzIzIDQzIEwgNzA5IDc0IEwgNjk4IDEwNyBMIDY5NiAxMDYgTCA2OTMgOTIgTCA2OTIgOTEgTCA2OTIgODcgTCA2OTEgODYgTCA2OTEgODIgTCA2OTAgODEgTCA2OTAgNzcgTCA2ODggNzEgTCA2ODggNjUgTCA2ODcgNjQgTCA2ODYgNTMgTCA2ODQgNDkgTCA2ODAgNDYgTCA2NzcgNDUgTCA2NzAgNDYgTCA2NjYgNTAgTCA2NjUgNTMgTCA2NjUgNTcgTCA2NjQgNTggTCA2NjMgNjcgTCA2NjIgNjggTCA2NjEgNzYgTCA2NTkgODEgTCA2NTkgODUgTCA2NTYgOTMgTCA2NTUgMTAwIEwgNjUyIDEwNyBMIDY1MiAxMTAgTCA2NDggMTIyIEwgNjQ2IDEyNSBMIDY0NSAxMzAgTCA2MzUgMTUxIEwgNjMzIDE1MyBMIDYyNyAxNjQgTCA2MTUgMTc4IEwgNjA0IDE4NiBMIDU5NSAxODkgTCA1OTEgMTg5IEwgNTg0IDE4NiBMIDU4MCAxODEgTCA1ODEgMTgwIEwgNTg1IDE4MCBMIDU4NyAxNzkgTCA1OTQgMTcyIEwgNTk1IDE2OSBMIDU5NyAxNjcgTCA2MDIgMTUyIEwgNjA0IDE0OSBMIDYwNCAxNDYgTCA2MDUgMTQ1IEwgNjA1IDE0MiBMIDYwNyAxMzggTCA2MDggMTMwIEwgNjEwIDEyNSBMIDYxMCAxMTkgTCA2MTEgMTE4IEwgNjEyIDg5IEwgNjExIDg4IEwgNjExIDgxIEwgNjA4IDcyIEwgNjAyIDY1IEwgNTk4IDYzIEwgNTg5IDYzIEwgNTgyIDY3IEwgNTc1IDc1IEwgNTY3IDg5IEwgNTY2IDk0IEwgNTY0IDk3IEwgNTU5IDExMiBMIDU1OSAxMTUgTCA1NTcgMTIwIEwgNTU3IDEyNCBMIDU1NiAxMjUgTCA1NTYgMTMxIEwgNTU1IDEzMiBMIDU1NSAxMzkgTCA1NTQgMTQwIEwgNTU0IDE2MSBMIDU1NSAxNjIgTCA1NTUgMTcwIEwgNTU2IDE3MSBMIDU1NiAxNzQgTCA1NjAgMTg2IEwgNTY0IDE5NCBMIDU3NCAyMDMgTCA1ODAgMjA2IEwgNTg3IDIwNyBMIDU4OCAyMDggTCA1OTggMjA4IEwgNTk5IDIwNyBMIDYwMyAyMDcgTCA2MDkgMjA1IEwgNjEyIDIwMyBMIDYxNCAyMDMgTCA2MjYgMTk1IEwgNjM5IDE4MSBMIDY1MiAxNjEgTCA2NjMgMTM4IEwgNjc0IDEwNSBMIDY3NiAxMDYgTCA2NzYgMTA5IEwgNjgxIDEyNCBMIDY4MyAxMjcgTCA2ODQgMTMyIEwgNjg4IDEzOSBMIDY5MiAxNDMgTCA2OTUgMTQ0IEwgNzAyIDE0NCBMIDcwNiAxNDIgTCA3MTEgMTM1IEwgNzEzIDEyOSBMIDcxMyAxMjYgTCA3MTUgMTIyIEwgNzE1IDExOSBMIDcxOCAxMTIgTCA3MTggMTA5IEwgNzI1IDg4IEwgNzMwIDc3IEwgNzMwIDc1IEwgNzQxIDUyIEwgNzQ4IDQxIEwgNzYxIDI3IEwgNzY5IDIzIEwgNzc3IDIyIEwgNzc4IDIzIEwgNzgxIDIzIEwgNzg4IDI3IEwgNzk0IDI3IEwgNzk3IDI2IEwgODAwIDIzIEwgODAxIDIwIEwgODAxIDE0IFogTSA1OTEgODkgTCA1OTIgOTAgTCA1OTIgOTYgTCA1OTMgOTcgTCA1OTMgMTA0IEwgNTkyIDEwNSBMIDU5MiAxMTQgTCA1OTEgMTE1IEwgNTkwIDEyNiBMIDU4OSAxMjcgTCA1ODYgMTQyIEwgNTg0IDE0NSBMIDU4MyAxNTAgTCA1NzkgMTU4IEwgNTc1IDE2MiBMIDU3NCAxNjEgTCA1NzQgMTM2IEwgNTc1IDEzNSBMIDU3NSAxMzAgTCA1NzYgMTI5IEwgNTc3IDEyMCBMIDU3OCAxMTkgTCA1NzggMTE2IEwgNTgyIDEwNCBMIDU4NSA5OSBMIDU4NSA5NyBMIDU4OSA5MCBaIiBmaWxsPSIjZmZmZmZmIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz4KPC9zdmc+Cg==" alt="Watermark Pro"></div>
+      <nav class="desktop-nav">
+        <button type="button" data-go="home" class="active"><span class="icon"><svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></span>Utama</button>
+        <button type="button" data-go="profile"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c.8-3 3-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/></svg></span>Profile</button>
+        <button type="button" data-go="support"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H12l-4 3v-3H6.5A2.5 2.5 0 0 1 4 14.5z"/></svg></span>Support</button>
+        <button type="button" data-go="settings"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg></span>Setting</button>
+      </nav>
+      <div class="desktop-user"><span class="desktop-user-avatar" id="desktop-user-avatar">?</span><span class="desktop-user-copy"><strong id="desktop-username">Pelawat</strong><small id="desktop-plan">Belum log masuk</small></span></div>
+    </aside>
+    <section class="screen active" id="screen-welcome" aria-label="Selamat datang">
+      <img class="welcome-logo" data-brand-logo alt="Watermark Pro">
+      <div class="welcome-copy">
+        <h1>Watermark Pro</h1>
+        <p>Tera air dengan mudah<br>untuk foto dan video.</p>
+      </div>
+      <div class="welcome-actions">
+        <button class="primary-btn" type="button" data-go="home">Mulakan <span class="arrow">→</span></button>
+        <button class="text-btn" type="button" data-auth="login">Log masuk</button>
+      </div>
+      <p class="welcome-tagline">watermark dulu.<br>baru post.</p>
+    </section>
+
+    <section class="screen" id="screen-auth" aria-label="Log masuk atau daftar">
+      <div class="auth-top safe-top">
+        <button class="icon-btn" type="button" data-go="welcome" aria-label="Kembali">
+          <span class="icon"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span>
+        </button>
+        <img class="welcome-logo" data-brand-logo alt="Watermark Pro">
+      </div>
+      <div class="auth-panel">
+        <h1 id="auth-title">Selamat kembali.</h1>
+        <p id="auth-subtitle">Log masuk untuk simpan gaya tera air anda.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Jenis akaun">
+          <button class="auth-tab active" type="button" data-auth-tab="login">Log masuk</button>
+          <button class="auth-tab" type="button" data-auth-tab="register">Daftar</button>
+        </div>
+        <form id="auth-form">
+          <div class="field">
+            <label for="username">Nama pengguna</label>
+            <input id="username" name="username" autocomplete="username" placeholder="contoh: namaanda" required>
+          </div>
+          <div class="field">
+            <label for="password">Kata laluan</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata laluan" required>
+          </div>
+          <button class="primary-btn auth-submit" type="submit"><span id="auth-submit-label">Log masuk</span> <span class="arrow">→</span></button>
+          <p class="auth-note" id="auth-note" aria-live="polite"></p>
+        </form>
+      </div>
+      <p class="auth-bottom">Dengan meneruskan, anda bersetuju dengan terma penggunaan Watermark Pro.</p>
+    </section>
+
+    <section class="screen" id="screen-home" aria-label="Utama">
+      <div class="topbar safe-top">
+        <img class="small-logo" data-brand-logo alt="Watermark Pro">
+        <button class="avatar-btn" type="button" data-go="profile" aria-label="Buka profile">
+          <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c.8-3 3-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/></svg></span>
+        </button>
+      </div>
+      <div class="home-heading">
+        <h1>Selamat <span id="greeting-time">malam</span>.</h1>
+        <p>Tera air. Simpan gaya anda.</p>
+        <span class="sync-status" id="sync-status" aria-live="polite">Menyambung ke akaun utama…</span>
+      </div>
+      <label class="upload-card" id="upload-card">
+        <input id="file-input" type="file" accept="image/*,video/*" multiple>
+        <span class="upload-plus">+</span>
+        <span><strong>Pilih fail</strong><small>Muat naik foto atau video</small></span>
+      </label>
+      <div class="section-head"><h2>Tambah tera air</h2></div>
+      <div class="type-grid">
+        <button class="type-card" type="button" data-editor="text"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 5h10M9 5v14M6 19h6M16 8h4M18 8v11M15 19h6"/></svg></span><span>Teks</span></button>
+        <button class="type-card" type="button" data-editor="signature"><span class="icon"><svg viewBox="0 0 24 24"><path d="M3 16c2-5 3-7 5-7 2.7 0-1.4 8 1.2 8 2.5 0 4-8 6-8 2.1 0-.9 6.1 1.7 6.1 1.4 0 2.9-1.5 4.1-3.2"/><path d="M3 20h18"/></svg></span><span>Tandatangan</span></button>
+        <button class="type-card" type="button" data-editor="logo"><span class="icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.4"/><path d="m4 17 4.5-4 3 2.5 2.3-2 6.2 5.5"/></svg></span><span>Logo</span></button>
+      </div>
+      <nav class="mobile-nav" aria-label="Navigasi utama">
+        <button class="nav-btn active" type="button" data-go="home"><span class="icon"><svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></span><span>Utama</span></button>
+        <button class="nav-btn" type="button" data-go="profile"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c.8-3 3-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/></svg></span><span>Profile</span></button>
+        <button class="nav-btn" type="button" data-go="support"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H12l-4 3v-3H6.5A2.5 2.5 0 0 1 4 14.5z"/></svg></span><span>Support</span></button>
+        <button class="nav-btn" type="button" data-go="settings"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg></span><span>Setting</span></button>
+      </nav>
+    </section>
+
+    <section class="screen" id="screen-editor" aria-label="Editor tera air">
+      <div class="editor-top safe-top">
+        <button class="icon-btn back-btn" type="button" data-go="home" aria-label="Kembali"><span class="icon"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span></button>
+        <div class="editor-heading"><h1 id="editor-title">Tera Air Teks</h1><p id="editor-subtitle">Tambah teks mengikut gaya anda.</p></div>
+      </div>
+      <div class="preview-card">
+        <div class="sample-image" id="sample-image">
+          <div class="watermark-layer" id="watermark-layer"></div>
+        </div>
+        <span class="preview-badge">Pratonton</span>
+      </div>
+      <div class="control-card">
+        <div class="control-input"><input id="watermark-text" value="watermark pro" aria-label="Teks tera air"><button type="button" id="clear-watermark" aria-label="Padam teks">×</button></div>
+        <canvas class="signature-pad" id="signature-pad" width="640" height="180" aria-label="Pad tandatangan"></canvas>
+        <div class="control-tabs" role="tablist">
+          <button class="control-tab active" type="button">Fon</button><button class="control-tab" type="button">Warna</button><button class="control-tab" type="button">Saiz</button><button class="control-tab" type="button">Opasiti</button><button class="control-tab" type="button">Posisi</button><button class="control-tab" type="button">Jarak</button>
+        </div>
+        <div class="font-picks" id="font-picks" style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px">
+          <button class="position-btn active" type="button" data-font="Arial">Aa</button><button class="position-btn" type="button" data-font="Georgia" style="font-family:Georgia,serif">Aa</button><button class="position-btn" type="button" data-font="Trebuchet MS" style="font-family:'Trebuchet MS',sans-serif">Aa</button><button class="position-btn" type="button" data-font="cursive" style="font-family:cursive">Aa</button>
+        </div>
+        <div class="slider-row"><span>Saiz</span><input id="size-range" type="range" min="10" max="28" value="15"><span class="slider-value" id="size-value">80%</span></div>
+        <div class="slider-row"><span>Opasiti</span><input id="opacity-range" type="range" min="25" max="100" value="70"><span class="slider-value" id="opacity-value">70%</span></div>
+        <div class="slider-row"><span>Jarak</span><input id="gap-range" type="range" min="0" max="100" value="50"><span class="slider-value" id="gap-value">100%</span></div>
+        <div class="position-grid" aria-label="Posisi tera air">
+          <button class="position-btn" type="button" data-position="tl">↖</button><button class="position-btn" type="button" data-position="tc">↑</button><button class="position-btn" type="button" data-position="tr">↗</button><button class="position-btn" type="button" data-position="cl">←</button><button class="position-btn active" type="button" data-position="c">•</button><button class="position-btn" type="button" data-position="cr">→</button><button class="position-btn" type="button" data-position="bl">↙</button><button class="position-btn" type="button" data-position="bc">↓</button><button class="position-btn" type="button" data-position="br">↘</button>
+        </div>
+        <div class="tool-option"><div class="tool-option-head"><span>Warna</span><small>Ikut pilihan main</small></div><select id="watermark-color" aria-label="Warna tera air"><option value="#ffffff">Putih</option><option value="#000000">Hitam</option></select></div>
+        <div class="tool-option" id="logo-option"><label class="checkline"><input id="logo-toggle" type="checkbox"> Logo watermark <small>PRO</small></label><input id="logo-file" type="file" accept="image/*"><div class="mini-grid"><select id="logo-position" aria-label="Posisi logo"><option value="tl">Atas kiri</option><option value="tc">Atas tengah</option><option value="tr">Atas kanan</option><option value="c" selected>Tengah</option><option value="bl">Bawah kiri</option><option value="bc">Bawah tengah</option><option value="br">Bawah kanan</option></select><input id="logo-opacity" type="range" min="10" max="100" value="70" aria-label="Opasiti logo"></div></div>
+        <div class="tool-option"><label class="checkline"><input id="repeat-toggle" type="checkbox"> Repeat watermark <small>PRO</small></label><div class="mini-grid"><select id="repeat-type" aria-label="Jenis repeat"><option value="text">Teks</option><option value="signature">Tandatangan</option><option value="logo">Logo</option></select><select id="repeat-style" aria-label="Gaya repeat"><option value="normal">Grid</option><option value="staggered">Staggered</option><option value="diagonal">Diagonal</option></select></div><div class="slider-row"><span>Jarak X</span><input id="repeat-gap-x" type="range" min="0" max="300" value="80"><span class="slider-value" id="repeat-gap-x-value">80</span></div><div class="slider-row"><span>Jarak Y</span><input id="repeat-gap-y" type="range" min="0" max="300" value="80"><span class="slider-value" id="repeat-gap-y-value">80</span></div><div class="slider-row"><span>Putaran</span><input id="repeat-rotation" type="range" min="-45" max="45" value="-17"><span class="slider-value" id="repeat-rotation-value">-17°</span></div></div>
+        <div class="action-grid"><button class="ghost-btn" type="button" id="reset-tools">Reset</button><button class="primary-btn use-btn" type="button" id="use-watermark">Process files <span class="arrow">→</span></button></div>
+        <div class="process-message" id="process-message" aria-live="polite"></div>
+        <div class="standalone-results" id="standalone-results"><div class="results-head"><strong>Processed files</strong><button class="ghost-btn" type="button" id="download-all">Download all</button></div><div class="result-list" id="standalone-result-list"></div></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-profile" aria-label="Profile">
+      <div class="topbar safe-top"><img class="small-logo" data-brand-logo alt="Watermark Pro"><button class="icon-btn" type="button" data-go="home" aria-label="Kembali"><span class="icon"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span></button></div>
+      <div class="page-title"><span class="eyebrow">Profile</span><h1>Your profile.</h1><p>Identiti, aktiviti dan kad sokongan akaun utama anda.</p></div>
+      <div class="page-card">
+        <div class="profile-identity"><div class="profile-avatar" id="profile-avatar">?</div><div><div class="profile-name" id="profile-name">Belum log masuk</div><div class="profile-plan" id="profile-plan">Percuma</div></div></div>
+        <div class="meta-grid"><div class="meta-cell"><span>Account created</span><strong id="profile-created">-</strong></div><div class="meta-cell"><span>Profile visibility</span><strong id="profile-visibility">-</strong></div><div class="meta-cell"><span>Top Users</span><strong id="profile-rank">-</strong></div></div>
+      </div>
+      <div class="page-card">
+        <div class="card-heading"><div><h2>Berjaya muat turun</h2><p>Your watermark download activity.</p></div><div class="progress-total"><strong id="profile-total">0</strong><span>Total</span></div></div>
+        <div class="progress-stats"><div class="progress-stat"><span>Images</span><strong id="profile-images">0</strong></div><div class="progress-stat"><span>Videos</span><strong id="profile-videos">0</strong></div><div class="progress-stat"><span>Next unlock</span><strong id="profile-next">1</strong></div></div>
+        <div class="progress-track-row"><div class="progress-track"><div class="progress-track-fill" id="profile-progress-fill"></div></div><strong class="progress-percent" id="profile-progress-percent">0%</strong></div>
+        <div class="milestones"><span>1</span><span>10</span><span>50</span><span>100</span><span>250</span><span>500</span><span>1K</span><span>2.5K</span><span>5K</span><span>10K</span></div>
+        <button class="ghost-btn card-action" type="button" id="download-progress">Berjaya muat turun</button>
+      </div>
+      <div class="page-card"><div class="card-heading"><div><h2>Supporter Card <small>PRO</small></h2><p>Your downloadable Pro Supporter identity card.</p></div></div><div class="supporter-preview"><strong id="supporter-card-name">Belum log masuk</strong><small id="supporter-card-plan">Penyokong Pro</small></div><button class="ghost-btn card-action" type="button" id="download-supporter">Download Supporter Card</button></div>
+      <nav class="mobile-nav" aria-label="Navigasi utama">
+        <button class="nav-btn" type="button" data-go="home"><span class="icon"><svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></span><span>Utama</span></button>
+        <button class="nav-btn active" type="button" data-go="profile"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c.8-3 3-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/></svg></span><span>Profile</span></button>
+        <button class="nav-btn" type="button" data-go="support"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H12l-4 3v-3H6.5A2.5 2.5 0 0 1 4 14.5z"/></svg></span><span>Support</span></button>
+        <button class="nav-btn" type="button" data-go="settings"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg></span><span>Setting</span></button>
+      </nav>
+    </section>
+
+    <section class="screen" id="screen-support" aria-label="Support">
+      <div class="topbar safe-top"><img class="small-logo" data-brand-logo alt="Watermark Pro"><button class="icon-btn" type="button" data-go="home" aria-label="Kembali"><span class="icon"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span></button></div>
+      <div class="page-title"><span class="eyebrow">Support</span><h1>Support Watermark Pro.</h1><p>Sokong pembangun dan buka ciri Pro daripada akaun utama.</p></div>
+      <div class="page-card"><div class="card-heading"><div><h2 id="current-plan-name">Percuma</h2><p id="current-plan-meta">Akses percuma</p></div><span id="current-plan-status" class="profile-plan">AKTIF</span></div><div class="meta-cell"><span id="current-plan-copy">Plan access is active</span><strong id="current-plan-days">-</strong></div></div>
+      <div class="plan-list" id="plan-list"></div>
+      <div class="page-card"><div class="card-heading"><div><h2>Support history</h2><p>Your recent billing records.</p></div></div><div class="history-list" id="subscription-history"><div class="empty-state">Log masuk untuk melihat sejarah langganan.</div></div></div>
+      <nav class="mobile-nav" aria-label="Navigasi utama">
+        <button class="nav-btn" type="button" data-go="home"><span class="icon"><svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1-1H5a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></span><span>Utama</span></button>
+        <button class="nav-btn" type="button" data-go="profile"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c.8-3 3-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/></svg></span><span>Profile</span></button>
+        <button class="nav-btn active" type="button" data-go="support"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H12l-4 3v-3H6.5A2.5 2.5 0 0 1 4 14.5z"/></svg></span><span>Support</span></button>
+        <button class="nav-btn" type="button" data-go="settings"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg></span><span>Setting</span></button>
+      </nav>
+    </section>
+
+    <section class="screen" id="screen-settings" aria-label="Setting">
+      <div class="topbar safe-top"><img class="small-logo" data-brand-logo alt="Watermark Pro"><button class="icon-btn" type="button" data-go="home" aria-label="Kembali"><span class="icon"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></span></button></div>
+      <div class="page-title"><span class="eyebrow">Settings</span><h1>Account settings.</h1><p>Maklumat akaun dan pilihan sebenar Watermark Pro.</p></div>
+      <div class="settings-list">
+        <div class="settings-card"><h2>Profile information</h2><p>Update the basic information attached to your account.</p><div class="settings-grid"><div class="settings-field"><label for="settings-username">Username</label><input id="settings-username" maxlength="20" placeholder="nama_pengguna"></div><div class="settings-field"><label for="settings-email">Email</label><input id="settings-email" type="email" placeholder="email anda"></div><div class="settings-field"><label for="settings-avatar">Profile avatar URL</label><input id="settings-avatar" placeholder="https://..."></div></div><div class="settings-actions"><button class="ghost-btn" id="cancel-profile" type="button">Cancel</button><button class="primary-btn" id="save-profile" type="button">Save changes</button></div><p id="profile-status" aria-live="polite"></p></div>
+        <div class="settings-card"><h2>Preferences</h2><p>Customize your account experience.</p><div class="settings-row"><div class="settings-label"><strong>Public profile</strong><small>Allow your profile to appear in public areas such as Top Users.</small></div><button class="toggle on" id="public-profile" type="button" aria-label="Toggle public profile"></button></div></div>
+        <div class="settings-card"><h2>Legal</h2><p><button class="settings-link" type="button" data-legal="terms"><span>Terms &amp; Conditions</span><span>›</span></button><button class="settings-link" type="button" data-legal="privacy"><span>Privacy Policy</span><span>›</span></button></p></div>
+        <div class="settings-card"><h2>WhatsApp support <small>PRO</small></h2><p>Contact Watermark Pro support with your account username included automatically.</p><button class="ghost-btn card-action" id="whatsapp-support" type="button">Open WhatsApp</button></div>
+        <div class="settings-card danger-card"><h2>Danger zone</h2><p>Permanent account actions are kept separate.</p><button class="danger-btn card-action" id="delete-account" type="button">Delete account</button></div>
+        <div class="settings-card"><div class="card-heading"><div><h2>Log out</h2><p>Return to the login and registration screen.</p></div><button class="ghost-btn" id="logout" type="button">Log out</button></div></div>
+      </div>
+      <nav class="mobile-nav" aria-label="Navigasi utama">
+        <button class="nav-btn" type="button" data-go="home"><span class="icon"><svg viewBox="0 0 24 24"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><path d="M9 20v-6h6v6"/></svg></span><span>Utama</span></button>
+        <button class="nav-btn" type="button" data-go="profile"><span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 19c.8-3 3-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/></svg></span><span>Profile</span></button>
+        <button class="nav-btn" type="button" data-go="support"><span class="icon"><svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v8a2.5 2.5 0 0 1-2.5 2.5H12l-4 3v-3H6.5A2.5 2.5 0 0 1 4 14.5z"/></svg></span><span>Support</span></button>
+        <button class="nav-btn active" type="button" data-go="settings"><span class="icon"><svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4"/><circle cx="12" cy="12" r="4"/></svg></span><span>Setting</span></button>
+      </nav>
+    </section>
+  </main>
+  <div class="modal" id="payment-modal" aria-hidden="true"><div class="modal-panel"><div class="card-heading"><div><h2>Pro Supporter</h2><p id="payment-price">Pelan sokongan</p></div><button class="icon-btn" type="button" id="close-payment" aria-label="Tutup">×</button></div><div class="payment-qr"><img id="payment-qr" alt="QR pembayaran"><span id="payment-qr-empty">QR pembayaran belum tersedia.</span></div><div class="payment-reference">Reference: <strong id="payment-reference"></strong></div><div class="settings-field" style="margin-top:14px"><label for="payment-time">Masa pembayaran (HH:MM)</label><input id="payment-time" placeholder="14:30" inputmode="numeric"></div><label class="checkline" style="margin-top:14px"><input id="payment-confirmed" type="checkbox"> Saya telah membuat pembayaran melalui QR.</label><button class="primary-btn card-action" type="button" id="submit-payment">Hantar untuk semakan</button><p class="process-message" id="payment-status" aria-live="polite"></p></div></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const screens = [...document.querySelectorAll('.screen')];
+      const app = document.getElementById('app');
+      const toastEl = document.getElementById('toast');
+      const fileInput = document.getElementById('file-input');
+      const uploadCard = document.getElementById('upload-card');
+      const fileList = document.getElementById('file-list') || document.createElement('div');
+      const sampleImage = document.getElementById('sample-image');
+      const layer = document.getElementById('watermark-layer');
+      const watermarkText = document.getElementById('watermark-text');
+      const signaturePad = document.getElementById('signature-pad');
+      const BRAND_LOGO = document.querySelector('.desktop-brand img').src;
+      document.querySelectorAll('[data-brand-logo]').forEach((image) => { image.src = BRAND_LOGO; });
+      const mainBridge = null;
+      const API_BASE = (window.WATERMARK_API_BASE || 'https://watermark-pro-api.socmegy.workers.dev').replace(/\/$/, '');
+      const TOKEN_KEY = 'watermarkProUserApiToken';
+      const CACHE_KEY = 'watermarkProUserLiveCacheV125';
+      let currentEditor = 'text';
+      let authMode = 'login';
+      let selectedFiles = [];
+      let accountState = null;
+      let publicState = null;
+      let toastTimer;
+
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const token = () => localStorage.getItem(TOKEN_KEY) || '';
+      async function api(path, options = {}) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+        const response = await fetch(API_BASE + path, {
+          ...options,
+          signal: options.signal || controller.signal,
+          credentials: 'omit',
+          headers: { 'Content-Type': 'application/json', ...(token() ? { Authorization: `Bearer ${token()}` } : {}), ...(options.headers || {}) }
+        });
+        clearTimeout(timeout);
+        let data = null;
+        try { data = await response.json(); } catch {}
+        if (!response.ok) throw new Error(data?.error || `HTTP ${response.status}`);
+        return data;
+      }
+
+      function bridgeDocument() { return mainBridge?.contentDocument || null; }
+      async function waitForBridge() {
+        if (bridgeDocument()?.getElementById('watermarkFiles')) return bridgeDocument();
+        await Promise.race([new Promise((resolve) => mainBridge?.addEventListener('load', resolve, { once: true })), sleep(9000)]);
+        return bridgeDocument();
+      }
+      function bridgeSet(id, value, eventName = 'change') {
+        const node = bridgeDocument()?.getElementById(id);
+        if (!node) return;
+        if (node.type === 'checkbox') node.checked = Boolean(value); else node.value = value;
+        node.dispatchEvent(new Event(eventName, { bubbles: true }));
+      }
+      function bridgeFiles(files) {
+        const input = bridgeDocument()?.getElementById('watermarkFiles');
+        if (!input || !files.length || typeof DataTransfer === 'undefined') return;
+        const transfer = new DataTransfer();
+        files.forEach((file) => transfer.items.add(file));
+        input.files = transfer.files;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      function bridgeFile(id, file) {
+        const input = bridgeDocument()?.getElementById(id);
+        if (!input || !file || typeof DataTransfer === 'undefined') return;
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        input.files = transfer.files;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      async function bridgeLogo() {
+        const doc = bridgeDocument();
+        const input = doc?.getElementById('logoFile');
+        if (!input || typeof DataTransfer === 'undefined') return;
+        try {
+          const response = await fetch(BRAND_LOGO);
+          const blob = await response.blob();
+          const transfer = new DataTransfer();
+          transfer.items.add(new File([blob], 'watermark-pro-logo.svg', { type: 'image/svg+xml' }));
+          input.files = transfer.files;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        } catch {}
+      }
+      function syncSignatureCanvas() {
+        const target = bridgeDocument()?.getElementById('signatureCanvas');
+        if (!target || !signaturePad || currentEditor !== 'signature') return;
+        const image = new Image();
+        image.onload = () => { target.width = signaturePad.width; target.height = signaturePad.height; const context = target.getContext('2d'); context.clearRect(0, 0, target.width, target.height); context.drawImage(image, 0, 0); target.dispatchEvent(new Event('input', { bubbles: true })); };
+        image.src = signaturePad.toDataURL('image/png');
+      }
+      function syncBridgeControls() {
+        const type = currentEditor === 'signature' ? 'signature' : 'text';
+        bridgeSet('watermarkType', type);
+        bridgeSet('watermarkText', watermarkText.value || 'watermark pro', 'input');
+        bridgeSet('watermarkPosition', document.querySelector('[data-position].active')?.dataset.position || 'c');
+        bridgeSet('watermarkColor', document.getElementById('watermark-color').value);
+        bridgeSet('opacityRange', document.getElementById('opacity-range').value, 'input');
+        bridgeSet('sizeRange', Math.min(70, Number(document.getElementById('size-range').value) + 9), 'input');
+        bridgeSet('paddingRange', '3', 'input');
+        const logoEnabled = currentEditor === 'logo' || document.getElementById('logo-toggle').checked;
+        bridgeSet('logoWatermarkToggle', logoEnabled, 'change');
+        bridgeSet('logoPositionV103', document.getElementById('logo-position').value);
+        bridgeSet('logoOpacityV103', document.getElementById('logo-opacity').value, 'input');
+        if (logoEnabled) bridgeFile('logoFile', document.getElementById('logo-file').files?.[0]);
+        bridgeSet('repeatWatermark', document.getElementById('repeat-toggle').checked, 'change');
+        bridgeSet('repeatWatermarkType', document.getElementById('repeat-type').value);
+        bridgeSet('repeatStyle', document.getElementById('repeat-style').value);
+        bridgeSet('repeatGapX', Math.max(10, Math.min(100, Number(document.getElementById('repeat-gap-x').value) / 3)), 'input');
+        bridgeSet('repeatGapY', Math.max(10, Math.min(100, Number(document.getElementById('repeat-gap-y').value) / 3)), 'input');
+        bridgeSet('repeatRotation', document.getElementById('repeat-rotation').value, 'input');
+      }
+      function setSyncStatus(message, isError = false) {
+        const node = document.getElementById('sync-status');
+        if (!node) return;
+        node.textContent = message;
+        node.classList.toggle('error', isError);
+      }
+      function applyAccountData(data, source = 'live') {
+        accountState = data || null;
+        const user = accountState?.user || null;
+        const username = user?.username ? `@${String(user.username).replace(/^@+/, '')}` : 'Pelawat';
+        const plan = user?.role === 'admin' ? 'Pentadbir' : user?.plan === 'pro' ? 'Penyokong Pro' : user ? 'Akaun Percuma' : 'Belum log masuk';
+        const initial = username.replace('@', '').charAt(0).toUpperCase() || '?';
+        document.getElementById('desktop-username').textContent = username;
+        document.getElementById('desktop-plan').textContent = plan;
+        document.getElementById('desktop-user-avatar').textContent = initial;
+        const downloads = user?.downloads || {};
+        const images = Number(downloads.images || 0);
+        const videos = Number(downloads.videos || 0);
+        document.getElementById('profile-name').textContent = username;
+        document.getElementById('profile-plan').textContent = plan;
+        document.getElementById('profile-total').textContent = images + videos;
+        document.getElementById('profile-images').textContent = images;
+        document.getElementById('profile-videos').textContent = videos;
+        document.getElementById('profile-created').textContent = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ms-MY') : '-';
+        document.getElementById('profile-visibility').textContent = user ? (user.publicProfile === false ? 'Private' : 'Public') : '-';
+        const rank = user && user.publicProfile !== false ? (publicState?.topUsers || []).findIndex((item) => item.id === user.id) : -1;
+        document.getElementById('profile-rank').textContent = rank >= 0 ? `#${rank + 1}` : '-';
+        const avatar = document.getElementById('profile-avatar');
+        avatar.textContent = initial;
+        avatar.innerHTML = user?.photo ? `<img src="${String(user.photo).replace(/[<>&\"']/g, '')}" alt="">` : initial;
+        document.getElementById('supporter-card-name').textContent = username;
+        document.getElementById('supporter-card-plan').textContent = plan;
+        const next = [1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000].find((threshold) => images + videos < threshold) || 10000;
+        document.getElementById('profile-next').textContent = next >= 1000 ? `${next / 1000}K` : next;
+        const previous = [1, 10, 50, 100, 250, 500, 1000, 2500, 5000, 10000].filter((threshold) => threshold <= images + videos).pop() || 0;
+        const percent = previous === next ? 100 : Math.max(0, Math.min(100, Math.round(((images + videos - previous) / Math.max(1, next - previous)) * 100)));
+        document.getElementById('profile-progress-fill').style.width = `${percent}%`;
+        document.getElementById('profile-progress-percent').textContent = `${percent}%`;
+        document.getElementById('settings-username').value = user?.username ? String(user.username).replace(/^@+/, '') : '';
+        document.getElementById('settings-email').value = user?.email || '';
+        document.getElementById('settings-avatar').value = user?.photo || '';
+        document.getElementById('public-profile').classList.toggle('on', user?.publicProfile !== false);
+        renderSupportPage();
+        if (user) {
+          setSyncStatus(source === 'cache' ? 'Data akaun utama · cache terakhir' : 'Diselaraskan dengan akaun utama');
+        } else {
+          setSyncStatus('Log masuk untuk selaraskan data akaun utama');
+        }
+      }
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'\"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+      }
+      function renderSupportPage() {
+        const plans = Array.isArray(publicState?.plans) ? publicState.plans.filter((plan) => plan.active !== false) : [];
+        const user = accountState?.user;
+        const isPro = user?.plan === 'pro' && (!user.proUntil || new Date(user.proUntil) > new Date());
+        document.getElementById('current-plan-name').textContent = isPro ? 'Penyokong Pro' : 'Percuma';
+        document.getElementById('current-plan-meta').textContent = isPro && user.proUntil ? `Aktif hingga ${new Date(user.proUntil).toLocaleDateString('ms-MY')}` : 'Akses percuma';
+        document.getElementById('current-plan-status').textContent = isPro ? 'AKTIF' : 'AKTIF';
+        document.getElementById('current-plan-days').textContent = isPro && user.proUntil ? `${Math.max(0, Math.ceil((new Date(user.proUntil) - new Date()) / 86400000))} hari` : '-';
+        document.getElementById('plan-list').innerHTML = plans.length ? plans.map((plan) => {
+          const amount = Number(plan.discountPrice || plan.normalPrice || 0);
+          const price = amount === 0 ? 'RM0' : `RM${amount.toFixed(2)}`;
+          const featureList = Array.isArray(plan.features) ? plan.features.slice(0, 8).map((feature) => `<li>${escapeHtml(feature)}</li>`).join('') : '';
+          return `<article class="plan-card ${plan.slug === 'pro' ? 'pro' : ''}"><h2>${escapeHtml(plan.name)}</h2><div class="plan-price">${price} <span>${escapeHtml(plan.billingLabel || (amount ? '/ month' : 'forever'))}</span></div><p class="plan-copy">${escapeHtml(plan.description)}</p><ul class="plan-features">${featureList}</ul><button class="primary-btn card-action" type="button" data-support-plan="${escapeHtml(plan.slug)}">${plan.slug === 'pro' ? 'Support Pro' : 'Free access'}</button></article>`;
+        }).join('') : '<div class="empty-state">Pelan belum tersedia.</div>';
+        const entries = [...(accountState?.subscriptions || []), ...(accountState?.submissions || [])].sort((a, b) => new Date(b.createdAt || b.submittedAt || 0) - new Date(a.createdAt || a.submittedAt || 0)).slice(0, 8);
+        document.getElementById('subscription-history').innerHTML = entries.length ? entries.map((entry) => `<div class="history-row"><strong>${escapeHtml(entry.planName || 'Support')}</strong><strong>${escapeHtml(entry.status || 'PENDING')}</strong><small>${escapeHtml(new Date(entry.createdAt || entry.submittedAt || Date.now()).toLocaleDateString('ms-MY'))}</small><small>${escapeHtml(entry.reference || entry.receiptNo || '-')} · RM${Number(entry.amount || 0).toFixed(2)}</small></div>`).join('') : '<div class="empty-state">Log masuk untuk melihat sejarah langganan.</div>';
+      }
+      async function syncMainData() {
+        const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+        if (cached?.user) applyAccountData(cached, 'cache');
+        try {
+          publicState = await api('/api/public/state');
+          if (token()) {
+            accountState = await api('/api/account/state');
+            localStorage.setItem(CACHE_KEY, JSON.stringify({ ...cached, ...accountState }));
+            applyAccountData(accountState, 'live');
+            if (screens.find((screen) => screen.classList.contains('active'))?.id === 'screen-welcome') go('home');
+          } else if (cached?.user) {
+            applyAccountData(cached, 'cache');
+          } else {
+            applyAccountData(null);
+          }
+        } catch (error) {
+          const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+          if (cached?.user) applyAccountData(cached, 'cache');
+          else setSyncStatus('Sambungan akaun utama tidak tersedia', true);
+        }
+      }
+
+      function showToast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2300);
+      }
+
+      function go(name) {
+        screens.forEach((screen) => screen.classList.toggle('active', screen.id === `screen-${name}`));
+        document.querySelectorAll('.nav-btn, .desktop-nav button').forEach((button) => button.classList.toggle('active', button.dataset.go === name));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      function setAuth(mode) {
+        authMode = mode;
+        go('auth');
+        const register = mode === 'register';
+        document.getElementById('auth-title').textContent = register ? 'Buat akaun baharu.' : 'Selamat kembali.';
+        document.getElementById('auth-subtitle').textContent = register ? 'Simpan gaya tera air anda dalam satu ruang.' : 'Log masuk untuk simpan gaya tera air anda.';
+        document.getElementById('auth-submit-label').textContent = register ? 'Daftar sekarang' : 'Log masuk';
+        document.getElementById('password').autocomplete = register ? 'new-password' : 'current-password';
+        document.querySelectorAll('[data-auth-tab]').forEach((button) => button.classList.toggle('active', button.dataset.authTab === mode));
+        document.getElementById('auth-note').textContent = '';
+      }
+
+      function openEditor(mode) {
+        currentEditor = mode;
+        document.getElementById('logo-toggle').checked = mode === 'logo';
+        const title = document.getElementById('editor-title');
+        const subtitle = document.getElementById('editor-subtitle');
+        const textInput = document.querySelector('.control-input');
+        const fontPicks = document.getElementById('font-picks');
+        if (mode === 'logo') {
+          title.textContent = 'Tera Air Logo';
+          subtitle.textContent = 'Tambah logo anda dengan mudah.';
+          textInput.style.display = 'none';
+          fontPicks.style.display = 'none';
+          signaturePad.classList.remove('show');
+        } else if (mode === 'signature') {
+          title.textContent = 'Tera Air Tandatangan';
+          subtitle.textContent = 'Jadikan kandungan anda lebih peribadi.';
+          textInput.style.display = 'flex';
+          fontPicks.style.display = 'grid';
+          watermarkText.value = 'nama anda';
+          signaturePad.classList.add('show');
+        } else {
+          title.textContent = 'Tera Air Teks';
+          subtitle.textContent = 'Tambah teks mengikut gaya anda.';
+          textInput.style.display = 'flex';
+          fontPicks.style.display = 'grid';
+          watermarkText.value = 'watermark pro';
+          signaturePad.classList.remove('show');
+        }
+        renderWatermark();
+        go('editor');
+        syncBridgeControls();
+        syncSignatureCanvas();
+      }
+
+      function renderWatermark() {
+        layer.innerHTML = '';
+        layer.classList.toggle('logo-mode', currentEditor === 'logo');
+        if (currentEditor === 'logo') {
+          for (let index = 0; index < 8; index += 1) {
+            const image = document.createElement('img');
+            image.src = BRAND_LOGO;
+            image.alt = '';
+            layer.appendChild(image);
+          }
+          return;
+        }
+        for (let index = 0; index < 9; index += 1) {
+          const span = document.createElement('span');
+          span.textContent = watermarkText.value || 'watermark pro';
+          layer.appendChild(span);
+        }
+        layer.style.fontFamily = document.querySelector('[data-font].active')?.dataset.font || 'Arial';
+      }
+
+      function addFiles(files) {
+        const selected = [...files];
+        if (!selected.length) return;
+        selectedFiles = selected;
+        fileList.innerHTML = '';
+        document.getElementById('file-empty')?.remove();
+        selected.forEach((file) => {
+          const row = document.createElement('div');
+          row.className = 'file-row';
+          const thumb = document.createElement('div');
+          thumb.className = 'file-thumb';
+          if (file.type.startsWith('image/')) {
+            const image = document.createElement('img');
+            image.src = URL.createObjectURL(file);
+            image.alt = '';
+            thumb.appendChild(image);
+            sampleImage.style.backgroundImage = `url("${image.src}")`;
+            sampleImage.classList.add('has-image');
+          } else {
+            thumb.textContent = '▶';
+          }
+          const copy = document.createElement('div');
+          copy.className = 'file-copy';
+          copy.innerHTML = `<strong>${file.name.replace(/[<>&"']/g, '')}</strong><small>${file.type.startsWith('video/') ? 'Video' : 'Imej'} · Baru dimuat naik</small>`;
+          const status = document.createElement('span');
+          status.className = 'status-dot';
+          row.append(thumb, copy, status);
+          fileList.appendChild(row);
+        });
+        bridgeFiles(selected);
+        showToast(`${selected.length} fail berjaya dimuat naik.`);
+      }
+
+      let processedResults = [];
+      let uploadedLogo = null;
+      const resultBox = document.getElementById('standalone-results');
+      const resultList = document.getElementById('standalone-result-list');
+      const processMessage = document.getElementById('process-message');
+      const loadBitmap = async (file) => file ? createImageBitmap(file) : null;
+      function pointFor(position, width, height, itemWidth, itemHeight, padding) {
+        const map = { tl:[padding,padding], tc:[(width-itemWidth)/2,padding], tr:[width-itemWidth-padding,padding], cl:[padding,(height-itemHeight)/2], c:[(width-itemWidth)/2,(height-itemHeight)/2], cr:[width-itemWidth-padding,(height-itemHeight)/2], bl:[padding,height-itemHeight-padding], bc:[(width-itemWidth)/2,height-itemHeight-padding], br:[width-itemWidth-padding,height-itemHeight-padding] };
+        return map[position] || map.c;
+      }
+      function activeWatermarkKind() {
+        if (document.getElementById('logo-toggle').checked || currentEditor === 'logo') return 'logo';
+        return currentEditor === 'signature' ? 'signature' : 'text';
+      }
+      function drawMark(context, canvasWidth, canvasHeight, kind, x, y, rotation = 0) {
+        const opacity = Number(document.getElementById(kind === 'logo' ? 'logo-opacity' : 'opacity-range').value) / 100;
+        const sizePct = Number(document.getElementById('size-range').value) / 100;
+        context.save(); context.globalAlpha = opacity; context.translate(x, y); context.rotate(rotation * Math.PI / 180);
+        if (kind === 'logo') {
+          if (!uploadedLogo) { context.restore(); return { width:0, height:0 }; }
+          const width = Math.max(60, canvasWidth * Math.max(.08, sizePct)); const height = width * uploadedLogo.height / uploadedLogo.width;
+          context.drawImage(uploadedLogo, -width/2, -height/2, width, height); context.restore(); return { width, height };
+        }
+        if (kind === 'signature') {
+          const width = Math.max(90, canvasWidth * Math.max(.12, sizePct)); const height = width * signaturePad.height / signaturePad.width;
+          context.drawImage(signaturePad, -width/2, -height/2, width, height); context.restore(); return { width, height };
+        }
+        const fontSize = Math.max(18, Math.round(canvasWidth * Math.max(.025, sizePct * .18)));
+        context.fillStyle = document.getElementById('watermark-color').value; context.font = `700 ${fontSize}px ${document.querySelector('[data-font].active')?.dataset.font || 'Arial'}`; context.textAlign='center'; context.textBaseline='middle';
+        const text = watermarkText.value || 'watermark pro'; context.fillText(text, 0, 0); const width = context.measureText(text).width; context.restore(); return { width, height:fontSize };
+      }
+      function drawWatermark(context, width, height) {
+        const repeated = document.getElementById('repeat-toggle').checked;
+        const kind = repeated ? document.getElementById('repeat-type').value : activeWatermarkKind();
+        const rotation = repeated ? Number(document.getElementById('repeat-rotation').value) : 0;
+        if (repeated) {
+          const gapX = Math.max(80, width * Number(document.getElementById('repeat-gap-x').value) / 300);
+          const gapY = Math.max(60, height * Number(document.getElementById('repeat-gap-y').value) / 300);
+          const staggered = document.getElementById('repeat-style').value === 'staggered'; const diagonal = document.getElementById('repeat-style').value === 'diagonal';
+          let row = 0; for (let y = -gapY; y < height + gapY; y += gapY, row += 1) for (let x = -gapX; x < width + gapX; x += gapX) drawMark(context, width, height, kind, x + (staggered && row % 2 ? gapX/2 : 0), y + (diagonal ? x * .18 : 0), rotation);
+          return;
+        }
+        let itemWidth = width * .22, itemHeight = itemWidth * .3;
+        if (kind === 'logo' && uploadedLogo) itemHeight = itemWidth * uploadedLogo.height / uploadedLogo.width;
+        if (kind === 'signature') itemHeight = itemWidth * signaturePad.height / signaturePad.width;
+        const padding = width * Number(document.getElementById('gap-range').value) / 1000;
+        const position = kind === 'logo' ? document.getElementById('logo-position').value : (document.querySelector('[data-position].active')?.dataset.position || 'c');
+        const [left, top] = pointFor(position, width, height, itemWidth, itemHeight, padding);
+        drawMark(context, width, height, kind, left + itemWidth/2, top + itemHeight/2);
+      }
+      function addResult(fileName, blob, type) {
+        const url = URL.createObjectURL(blob); const ext = type === 'video' ? (blob.type.includes('mp4') ? 'mp4' : 'webm') : 'png'; const name = `${fileName.replace(/\.[^.]+$/, '')}-watermarked.${ext}`;
+        processedResults.push({ url, name, type }); const row=document.createElement('div'); row.className='result-row'; row.innerHTML=`<span>${escapeHtml(name)}</span><a href="${url}" download="${escapeHtml(name)}">Muat turun</a>`; resultList.appendChild(row); resultBox.classList.add('show');
+      }
+      async function processImageStandalone(file) {
+        const bitmap=await loadBitmap(file); const canvas=document.createElement('canvas'); canvas.width=bitmap.width; canvas.height=bitmap.height; const context=canvas.getContext('2d'); context.drawImage(bitmap,0,0); drawWatermark(context,canvas.width,canvas.height); bitmap.close?.();
+        return new Promise((resolve,reject)=>canvas.toBlob((blob)=>blob?resolve(blob):reject(new Error('Imej tidak dapat dieksport.')),'image/png',.94));
+      }
+      async function processVideoStandalone(file) {
+        if (!window.MediaRecorder) throw new Error('Pelayar ini tidak menyokong eksport video.');
+        const source=URL.createObjectURL(file); const video=document.createElement('video'); video.src=source; video.muted=false; video.playsInline=true; await new Promise((resolve,reject)=>{video.onloadedmetadata=resolve;video.onerror=()=>reject(new Error('Video tidak dapat dibaca.'));});
+        const canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight; const context=canvas.getContext('2d'); const stream=canvas.captureStream(30); const original=video.captureStream?.() || video.mozCaptureStream?.(); if(original?.getAudioTracks) original.getAudioTracks().forEach((track)=>stream.addTrack(track));
+        const mime=['video/mp4;codecs=avc1,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find((value)=>MediaRecorder.isTypeSupported?.(value)) || ''; const chunks=[]; const recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined); recorder.ondataavailable=(event)=>{if(event.data.size)chunks.push(event.data);};
+        const finished=new Promise((resolve,reject)=>{recorder.onstop=()=>resolve(new Blob(chunks,{type:recorder.mimeType||mime||'video/webm'}));recorder.onerror=()=>reject(recorder.error||new Error('Video gagal dieksport.'));}); recorder.start(500);
+        const draw=()=>{if(video.ended||video.paused)return;context.drawImage(video,0,0,canvas.width,canvas.height);drawWatermark(context,canvas.width,canvas.height);requestAnimationFrame(draw);}; await video.play(); draw(); await new Promise((resolve)=>{video.onended=resolve;}); recorder.stop(); const blob=await finished; stream.getTracks().forEach((track)=>track.stop()); URL.revokeObjectURL(source); return blob;
+      }
+      async function processLocally() {
+        if (!selectedFiles.length) { showToast('Pilih fail dahulu.'); go('home'); return; }
+        const wantsLogo = activeWatermarkKind()==='logo' || (document.getElementById('repeat-toggle').checked && document.getElementById('repeat-type').value==='logo');
+        if (wantsLogo && !uploadedLogo) { showToast('Pilih fail logo dahulu.'); return; }
+        processedResults.forEach((item)=>URL.revokeObjectURL(item.url)); processedResults=[]; resultList.innerHTML=''; resultBox.classList.remove('show'); let images=0,videos=0;
+        for (let index=0; index<selectedFiles.length; index+=1) { const file=selectedFiles[index]; processMessage.textContent=`Memproses ${index+1}/${selectedFiles.length}: ${file.name}`; try { const isVideo=file.type.startsWith('video/'); const blob=isVideo?await processVideoStandalone(file):await processImageStandalone(file); addResult(file.name,blob,isVideo?'video':'image'); if(isVideo)videos+=1;else images+=1; } catch(error) { processMessage.textContent=error.message; } }
+        processMessage.textContent=`Selesai: ${images+videos} fail.`; if(token()&&(images||videos)) api('/api/account/downloads',{method:'POST',body:JSON.stringify({images,videos})}).then(syncMainData).catch(()=>{}); showToast(`${images+videos} fail siap diproses.`);
+      }
+
+      async function saveProfile() {
+        const username = document.getElementById('settings-username').value.trim().replace(/^@+/, '').toLowerCase();
+        const email = document.getElementById('settings-email').value.trim();
+        const photo = document.getElementById('settings-avatar').value.trim();
+        const publicProfile = document.getElementById('public-profile').classList.contains('on');
+        const status = document.getElementById('profile-status');
+        if (!token()) { status.textContent = 'Log masuk dahulu untuk simpan perubahan.'; return; }
+        try {
+          const data = await api('/api/account/profile', { method: 'PATCH', body: JSON.stringify({ username: `@${username}`, email, photo, publicProfile }) });
+          status.textContent = 'Profile changes saved.';
+          accountState = { ...accountState, user: data.user };
+          applyAccountData(accountState, 'live');
+          showToast('Profile berjaya disimpan.');
+        } catch (error) { status.textContent = error.message || 'Tidak dapat simpan perubahan.'; }
+      }
+      async function logout() {
+        try { await api('/api/auth/logout', { method: 'POST', body: '{}' }); } catch {}
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(CACHE_KEY);
+        accountState = null;
+        applyAccountData(null);
+        setAuth('login');
+        showToast('Anda telah log keluar.');
+      }
+      document.addEventListener('click', async (event) => {
+        const goButton = event.target.closest('[data-go]');
+        if (goButton) go(goButton.dataset.go);
+        const authButton = event.target.closest('[data-auth]');
+        if (authButton) setAuth(authButton.dataset.auth);
+        const editorButton = event.target.closest('[data-editor]');
+        if (editorButton) openEditor(editorButton.dataset.editor);
+        const toastButton = event.target.closest('[data-toast]');
+        if (toastButton) showToast(toastButton.dataset.toast);
+        const authTab = event.target.closest('[data-auth-tab]');
+        if (authTab) setAuth(authTab.dataset.authTab);
+        const supportPlan = event.target.closest('[data-support-plan]');
+        if (supportPlan) {
+          if (supportPlan.dataset.supportPlan !== 'pro') { showToast('Akses percuma sudah aktif.'); return; }
+          const proButton = bridgeDocument()?.getElementById('proPaymentBtn');
+          if (proButton) { proButton.click(); showToast('Membuka pembayaran Pro…'); } else showToast('Log masuk untuk menyokong Pro.');
+        }
+        const legalButton = event.target.closest('[data-legal]');
+        if (legalButton) {
+          const bridgeButton = bridgeDocument()?.getElementById(legalButton.dataset.legal === 'terms' ? 'openTermsSettings' : 'openPrivacySettings');
+          if (bridgeButton) bridgeButton.click(); else showToast(legalButton.dataset.legal === 'terms' ? 'Terma & Syarat' : 'Dasar Privasi');
+        }
+        const positionButton = event.target.closest('[data-position]');
+        if (positionButton) {
+          document.querySelectorAll('[data-position]').forEach((button) => button.classList.remove('active'));
+          positionButton.classList.add('active');
+          const position = positionButton.dataset.position;
+          const offsets = { tl: 'translate(-28%, -28%)', tc: 'translate(0, -28%)', tr: 'translate(28%, -28%)', cl: 'translate(-28%, 0)', c: 'translate(0, 0)', cr: 'translate(28%, 0)', bl: 'translate(-28%, 28%)', bc: 'translate(0, 28%)', br: 'translate(28%, 28%)' };
+          layer.style.transform = `rotate(-17deg) scale(1.18) ${offsets[position] || offsets.c}`;
+          bridgeSet('watermarkPosition', position);
+        }
+        const fontButton = event.target.closest('[data-font]');
+        if (fontButton) {
+          document.querySelectorAll('[data-font]').forEach((button) => button.classList.remove('active'));
+          fontButton.classList.add('active');
+          layer.style.fontFamily = fontButton.dataset.font;
+        }
+        const toggle = event.target.closest('.toggle');
+        if (toggle) toggle.classList.toggle('on');
+      });
+
+      document.getElementById('save-profile').addEventListener('click', saveProfile);
+      document.getElementById('cancel-profile').addEventListener('click', () => { applyAccountData(accountState, 'live'); document.getElementById('profile-status').textContent = ''; });
+      document.getElementById('logout').addEventListener('click', logout);
+      document.getElementById('delete-account').addEventListener('click', async () => {
+        if (!token() || !window.confirm('Padam akaun ini secara kekal?')) return;
+        try { await api('/api/account', { method: 'DELETE' }); await logout(); } catch (error) { showToast(error.message || 'Akaun tidak dapat dipadam.'); }
+      });
+      document.getElementById('whatsapp-support').addEventListener('click', () => {
+        const number = String(publicState?.settings?.whatsapp || '').replace(/\D/g, '') || '60108043004';
+        const username = accountState?.user?.username || '';
+        window.open(`https://wa.me/${number}?text=${encodeURIComponent(`Hi Watermark Pro, saya ${username}`)}`, '_blank', 'noopener');
+      });
+      document.getElementById('download-progress').addEventListener('click', () => { const button = bridgeDocument()?.getElementById('downloadProgressImage'); if (button) button.click(); else showToast('Log masuk untuk muat turun progress.'); });
+      document.getElementById('download-supporter').addEventListener('click', () => { const button = bridgeDocument()?.getElementById('downloadSupporterCard'); if (button) button.click(); else showToast('Log masuk untuk muat turun kad.'); });
+
+      document.getElementById('auth-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const username = document.getElementById('username').value.trim().replace(/^@+/, '').toLowerCase();
+        const password = document.getElementById('password').value;
+        const note = document.getElementById('auth-note');
+        const submit = form.querySelector('button[type="submit"]');
+        if (!username || !password) return;
+        submit.disabled = true;
+        submit.querySelector('#auth-submit-label').textContent = authMode === 'register' ? 'Mendaftar…' : 'Log masuk…';
+        note.textContent = '';
+        try {
+          const path = authMode === 'register' ? '/api/auth/register' : '/api/auth/login';
+          const data = await api(path, { method: 'POST', body: JSON.stringify({ username, password }) });
+          localStorage.setItem(TOKEN_KEY, data.token || '');
+          await syncMainData();
+          note.textContent = authMode === 'register' ? 'Akaun berjaya dibuat.' : 'Log masuk berjaya.';
+          go('home');
+          showToast(`Selamat datang, @${username}.`);
+        } catch (error) {
+          note.textContent = error.message || 'Tindakan tidak berjaya.';
+          note.style.color = '#ffd0c9';
+        } finally {
+          submit.disabled = false;
+          submit.querySelector('#auth-submit-label').textContent = authMode === 'register' ? 'Daftar sekarang' : 'Log masuk';
+        }
+      });
+
+      document.getElementById('clear-watermark').addEventListener('click', () => { watermarkText.value = ''; renderWatermark(); watermarkText.focus(); });
+      watermarkText.addEventListener('input', renderWatermark);
+      fileInput.addEventListener('change', (event) => addFiles(event.target.files));
+      ['dragenter', 'dragover'].forEach((name) => uploadCard.addEventListener(name, (event) => { event.preventDefault(); uploadCard.classList.add('dragging'); }));
+      ['dragleave', 'drop'].forEach((name) => uploadCard.addEventListener(name, (event) => { event.preventDefault(); uploadCard.classList.remove('dragging'); }));
+      uploadCard.addEventListener('drop', (event) => addFiles(event.dataTransfer.files));
+      document.getElementById('use-watermark').addEventListener('click', processLocally);
+      document.getElementById('download-all').addEventListener('click', () => { processedResults.forEach((item,index)=>setTimeout(()=>{const link=document.createElement('a');link.href=item.url;link.download=item.name;link.click();},index*180)); });
+      document.getElementById('reset-tools').addEventListener('click', () => {
+        currentEditor='text'; watermarkText.value='watermark pro'; document.getElementById('size-range').value=15; document.getElementById('opacity-range').value=70; document.getElementById('gap-range').value=50; document.getElementById('watermark-color').value='#ffffff'; document.getElementById('logo-toggle').checked=false; document.getElementById('repeat-toggle').checked=false; document.getElementById('logo-file').value=''; uploadedLogo?.close?.(); uploadedLogo=null; signatureContext.clearRect(0,0,signaturePad.width,signaturePad.height); processedResults.forEach((item)=>URL.revokeObjectURL(item.url)); processedResults=[]; resultList.innerHTML=''; resultBox.classList.remove('show'); processMessage.textContent=''; renderWatermark(); showToast('Tetapan tera air direset.');
+      });
+
+      document.getElementById('size-range').addEventListener('input', (event) => {
+        layer.querySelectorAll('span').forEach((span) => { span.style.fontSize = `${event.target.value}px`; });
+        document.getElementById('size-value').textContent = `${Math.round(Number(event.target.value) / 28 * 100)}%`;
+      });
+      document.getElementById('opacity-range').addEventListener('input', (event) => { layer.style.opacity = Number(event.target.value) / 100; document.getElementById('opacity-value').textContent = `${event.target.value}%`; });
+      document.getElementById('gap-range').addEventListener('input', (event) => { layer.style.gap = `${Math.round(Number(event.target.value) / 5)}px`; document.getElementById('gap-value').textContent = `${Math.round(Number(event.target.value) + 50)}%`; });
+      document.getElementById('watermark-color').addEventListener('change', syncBridgeControls);
+      document.getElementById('logo-toggle').addEventListener('change', () => { currentEditor = document.getElementById('logo-toggle').checked ? 'logo' : 'text'; syncBridgeControls(); renderWatermark(); });
+      document.getElementById('logo-file').addEventListener('change', async (event) => { uploadedLogo?.close?.(); uploadedLogo = await loadBitmap(event.target.files?.[0]); currentEditor='logo'; document.getElementById('logo-toggle').checked=Boolean(uploadedLogo); renderWatermark(); });
+      document.getElementById('logo-position').addEventListener('change', syncBridgeControls);
+      document.getElementById('logo-opacity').addEventListener('input', syncBridgeControls);
+      document.getElementById('repeat-toggle').addEventListener('change', syncBridgeControls);
+      document.getElementById('repeat-type').addEventListener('change', syncBridgeControls);
+      document.getElementById('repeat-style').addEventListener('change', syncBridgeControls);
+      document.getElementById('repeat-gap-x').addEventListener('input', (event) => { document.getElementById('repeat-gap-x-value').textContent = event.target.value; syncBridgeControls(); });
+      document.getElementById('repeat-gap-y').addEventListener('input', (event) => { document.getElementById('repeat-gap-y-value').textContent = event.target.value; syncBridgeControls(); });
+      document.getElementById('repeat-rotation').addEventListener('input', (event) => { document.getElementById('repeat-rotation-value').textContent = `${event.target.value}°`; syncBridgeControls(); });
+      const signatureContext = signaturePad.getContext('2d');
+      signatureContext.strokeStyle = '#12395d';
+      signatureContext.lineWidth = 5;
+      signatureContext.lineCap = 'round';
+      let drawingSignature = false;
+      signaturePad.addEventListener('pointerdown', (event) => { drawingSignature = true; signaturePad.setPointerCapture(event.pointerId); signatureContext.beginPath(); signatureContext.moveTo(event.offsetX * (signaturePad.width / signaturePad.clientWidth), event.offsetY * (signaturePad.height / signaturePad.clientHeight)); });
+      signaturePad.addEventListener('pointermove', (event) => { if (!drawingSignature) return; signatureContext.lineTo(event.offsetX * (signaturePad.width / signaturePad.clientWidth), event.offsetY * (signaturePad.height / signaturePad.clientHeight)); signatureContext.stroke(); });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach((name) => signaturePad.addEventListener(name, () => { if (drawingSignature) { drawingSignature = false; syncSignatureCanvas(); } }));
+
+      const hour = new Date().getHours();
+      document.getElementById('greeting-time').textContent = hour < 12 ? 'pagi' : hour < 18 ? 'petang' : 'malam';
+      renderWatermark();
+      mainBridge?.addEventListener('load', () => { if (selectedFiles.length) bridgeFiles(selectedFiles); });
+      syncMainData();
+      window.watermarkProNewUi = { go, openEditor, addFiles, syncMainData };
+    })();
+  </script>
+</body>
+</html>

@@ -70,10 +70,13 @@ html body .version-section,html body .legacy-version-section{display:none!import
    area and navigation bar use a separate light surface. */
 @media screen and (display-mode:standalone){
  html:root{background:#fff!important;color-scheme:only light}
- html:root body{background:#f7f9fb!important}
+ html:root body{background:#f7f9fb!important;min-height:100svh;overscroll-behavior-y:none}
  html:root body{padding-bottom:env(safe-area-max-inset-bottom,36px)}
  html:root body::after{content:'';display:block;position:fixed;left:0;right:0;bottom:0;height:max(env(safe-area-inset-bottom,0px),24px);background:#fff;pointer-events:none;z-index:2147483647}
  html:root body .mobile-nav{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
+ /* The white surface belongs to the app's bottom navigation itself. Extend
+    it through the safe-area instead of leaving a dark strip beneath it. */
+ html:root body .mobile-nav{bottom:0!important;background:#fff!important;border-radius:18px 18px 0 0!important;padding-bottom:max(7px,env(safe-area-inset-bottom,0px))!important}
 }
 body>.wp-print-root{display:none}
 @media print{

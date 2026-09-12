@@ -70,7 +70,7 @@ html body .version-section,html body .legacy-version-section{display:none!import
    area and navigation bar use a separate light surface. */
 @media screen and (display-mode:standalone){
  html:root{background:#fff!important;color-scheme:only light}
- html:root body{background:#f7f9fb!important}
+ html:root body{background:#f7f9fb!important;min-height:100svh;overscroll-behavior-y:none}
  html:root body{padding-bottom:env(safe-area-max-inset-bottom,36px)}
  html:root body::after{content:'';display:block;position:fixed;left:0;right:0;bottom:0;height:max(env(safe-area-inset-bottom,0px),24px);background:#fff;pointer-events:none;z-index:2147483647}
  html:root body .mobile-nav{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}

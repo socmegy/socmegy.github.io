@@ -13,6 +13,7 @@
   "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#143d68",
+  "navigation_bar_color": "#ffffff",
   "categories": [
     "photo",
     "video",
