@@ -18319,16 +18319,38 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   const getToken=()=>localStorage.getItem(TOKEN_KEY)||'';
   const setToken=value=>{if(value)localStorage.setItem(TOKEN_KEY,value);else localStorage.removeItem(TOKEN_KEY)};
 
+  const API_TIMEOUT_MS=12000;
   async function api(path,options={}){
-    const response=await fetch(API_BASE+path,{
-      ...options,
-      credentials:'omit',
-      headers:{'Content-Type':'application/json',...(getToken()?{'Authorization':'Bearer '+getToken()}:{}),...(options.headers||{})}
-    });
-    let data=null;
-    try{data=await response.json()}catch{}
-    if(!response.ok){const err=new Error(data?.error||`HTTP ${response.status}`);err.status=response.status;throw err}
-    return data;
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),API_TIMEOUT_MS);
+    const upstreamSignal=options.signal;
+    const abortUpstream=()=>controller.abort(upstreamSignal?.reason);
+    if(upstreamSignal){
+      if(upstreamSignal.aborted)abortUpstream();
+      else upstreamSignal.addEventListener('abort',abortUpstream,{once:true});
+    }
+    try{
+      const response=await fetch(API_BASE+path,{
+        ...options,
+        signal:controller.signal,
+        credentials:'omit',
+        headers:{'Content-Type':'application/json',...(getToken()?{'Authorization':'Bearer '+getToken()}:{}),...(options.headers||{})}
+      });
+      let data=null;
+      try{data=await response.json()}catch{}
+      if(!response.ok){const err=new Error(data?.error||`HTTP ${response.status}`);err.status=response.status;throw err}
+      return data;
+    }catch(error){
+      if(controller.signal.aborted&&!upstreamSignal?.aborted){
+        const timeout=new Error('Sambungan Worker mengambil masa terlalu lama.');
+        timeout.code='API_TIMEOUT';
+        throw timeout;
+      }
+      throw error;
+    }finally{
+      clearTimeout(timer);
+      upstreamSignal?.removeEventListener?.('abort',abortUpstream);
+    }
   }
   function broadcast(){}
   function mergeState(publicState,accountState){
@@ -18513,19 +18535,35 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   }
 
   window.WPCloudflare={apiBase:API_BASE,api,sync:syncAll,recordDownloads,get user(){return sessionUser}};
-  const finishBoot=()=>window.WPFinishBoot();
+  const finishBoot=()=>{
+    try{
+      const done=window.WPFinishBoot?.();
+      if(done?.catch)done.catch(()=>document.getElementById('wpSessionBoot')?.remove());
+      return done;
+    }catch{document.getElementById('wpSessionBoot')?.remove()}
+  };
+  const revealLoginAfterSyncFailure=error=>{
+    console.error('Watermark Pro Cloudflare sync:',error);
+    sessionUser=null;
+    document.documentElement.classList.remove('account-authenticated');
+    try{window.WPLogoutRoute?.()}catch{}
+    try{showAuthScreen?.('login')}catch{
+      document.body.classList.add('auth-mode');
+      document.getElementById('authPage')?.classList.add('active');
+      document.getElementById('authPage')?.setAttribute('aria-hidden','false');
+    }
+    const boot=document.getElementById('wpSessionBoot');
+    if(boot){boot.hidden=true;boot.remove()}
+    const status=document.getElementById('loginStatus');
+    if(status){status.textContent='Sambungan tidak tersedia. Sila cuba lagi.';status.classList.add('show')}
+  };
   const startLive=async()=>{
     try{
       await syncAll({showLoginOn401:true});
       finishBoot();
     }catch(error){
-      console.error('Watermark Pro Cloudflare sync:',error);
-      const boot=document.getElementById('wpSessionBoot');
-      const text=document.getElementById('wpSessionBootText');
-      if(text) text.textContent='Sambungan tidak tersedia. Sila cuba lagi.';
-      if(boot) boot.hidden=false;
-      if(boot&&!boot.querySelector('[data-boot-retry]')){const retry=document.createElement('button');retry.type='button';retry.className='btn';retry.dataset.bootRetry='';retry.textContent='Cuba lagi';retry.onclick=()=>location.reload();boot.append(retry)}
-      /* IMPORTANT: keep the loader covering stale/demo markup until a real state succeeds. */
+      /* A failed Worker must never strand the app behind an endless loader. */
+      revealLoginAfterSyncFailure(error);
     }
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startLive,{once:true});else startLive();
@@ -18965,7 +19003,7 @@ body.pro-account .header-profile-avatar{border:0!important;padding:2px!important
 </style>
 <script id="v129-final-consistency-script">
 (()=>{
-  const USER_TOKEN_KEY="watermarkProUserToken";
+  const USER_TOKEN_KEY="watermarkProUserApiToken";
   const bootText=document.getElementById("wpSessionBootText");
   if(bootText)bootText.textContent=localStorage.getItem(USER_TOKEN_KEY)?"Memuatkan akaun…":"Menyediakan halaman log masuk…";
 
@@ -19043,7 +19081,7 @@ body.pro-account .user-avatar>.wp-avatar-letter,.topuser-row.is-pro .topuser-ava
 <script id="v130-authoritative-script" type="text/plain">
 (()=>{
   document.title="Watermark Pro - Watermark dulu. Baru post.";
-  const USER_TOKEN_KEY="watermarkProUserToken",PAGE_KEY="watermarkProCurrentPageV130";
+  const USER_TOKEN_KEY="watermarkProUserApiToken",PAGE_KEY="watermarkProCurrentPageV130";
   const boot=document.getElementById("wpSessionBoot"),bootText=document.getElementById("wpSessionBootText");if(bootText)bootText.textContent="Memuatkan...";
 
   /* Footer legal links on the selected auth layout. */
@@ -19170,8 +19208,7 @@ body.pro-account .user-avatar>.wp-avatar-letter,.user-avatar.is-pro-avatar>.wp-a
 <script id="v132-final-authority-script">
 (()=>{
   const finalStyle=document.getElementById("v132-final-authority");if(finalStyle&&finalStyle.parentElement!==document.head)document.head.appendChild(finalStyle);
-  localStorage.removeItem("watermarkProUserToken");
-  document.title="Watermark Pro - Watermark dulu. Baru post.";
+   document.title="Watermark Pro - Watermark dulu. Baru post.";
   const PAGE_KEY="watermarkProCurrentPageV132";
   const boot=document.getElementById("wpSessionBoot");
   const bootText=document.getElementById("wpSessionBootText");

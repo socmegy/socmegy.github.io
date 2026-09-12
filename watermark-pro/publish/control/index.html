@@ -1190,13 +1190,22 @@ function printControlReceipt(){
        previously caused the generated PDF to be completely blank. */
     const css=['v14-control-final-style','v15-control-authoritative-fix']
       .map(id=>document.getElementById(id)?.textContent||'').join('');
-    const printCss='@page{size:A4 portrait;margin:12mm}html,body{margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important}.control-live-receipt{box-sizing:border-box!important;display:block!important;visibility:visible!important;width:184mm!important;max-width:184mm!important;margin:0!important;padding:0 2mm 0 0!important;border:0!important;box-shadow:none!important;overflow:visible!important}.control-live-receipt *{box-sizing:border-box!important}.cr-head{grid-template-columns:minmax(0,1fr) minmax(0,40%)!important}.cr-title{padding-right:1mm!important}.cr-title h3,.cr-title span{white-space:normal!important;overflow:visible!important}.cr-item{grid-template-columns:minmax(0,1fr) max-content!important}.cr-item-price{padding-right:1mm!important;font-size:11px!important}.cr-total{display:grid!important;grid-template-columns:minmax(0,1fr) 22mm max-content!important;column-gap:3mm!important;overflow:visible!important}.cr-stamp{position:relative!important;inset:auto!important;right:auto!important;top:auto!important;width:18mm!important;height:18mm!important;transform:rotate(-16deg)!important;justify-self:center!important}.cr-total>strong{padding-right:1mm!important;white-space:nowrap!important}@media print{body>*{display:none!important}body>.control-live-receipt{display:block!important;visibility:visible!important}}';
+    const printCss='@page{size:A4 portrait;margin:12mm}html,body{margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important}.control-live-receipt{box-sizing:border-box!important;display:block!important;visibility:visible!important;width:182mm!important;max-width:182mm!important;margin:0 auto!important;padding:0!important;border:0!important;box-shadow:none!important;overflow:visible!important}.control-live-receipt *{box-sizing:border-box!important}.cr-head{grid-template-columns:minmax(0,1fr) minmax(0,40%)!important}.cr-title{padding-right:0!important}.cr-title h3,.cr-title span{white-space:normal!important;overflow:visible!important}.cr-item{grid-template-columns:minmax(0,1fr) max-content!important}.cr-item-price{padding-right:0!important;font-size:11px!important}.cr-total{display:grid!important;grid-template-columns:minmax(0,1fr) 22mm max-content!important;column-gap:3mm!important;overflow:visible!important}.cr-stamp{position:relative!important;inset:auto!important;right:auto!important;top:auto!important;width:18mm!important;height:18mm!important;transform:rotate(-16deg)!important;justify-self:center!important}.cr-total>strong{padding-right:0!important;white-space:nowrap!important}@media print{body>*{display:none!important}body>.control-live-receipt{display:block!important;visibility:visible!important}}';
     popup.document.open();popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Resit Watermark Pro</title><style>'+css+printCss+'</style></head><body>'+clone.outerHTML+'</body></html>');popup.document.close();
     let fired=false;const go=async()=>{if(fired)return;fired=true;const images=[...popup.document.images];await Promise.race([Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=img.onerror=resolve}))),new Promise(resolve=>setTimeout(resolve,1800))]);popup.focus();popup.print()};
     popup.onload=()=>setTimeout(go,100);setTimeout(go,900);
   };
 })();
 </script>
+<style id="v24-control-symmetric-gutters">
+/* Keep the Control workspace and its receipt preview centred on one shared axis. */
+.workspace{min-width:0!important;overflow-x:clip!important}
+.workspace>main{width:min(1280px,calc(100% - 40px))!important;max-width:1280px!important;margin-inline:auto!important;padding-inline:0!important;box-sizing:border-box!important}
+#receiptModal .modal-shell.wide{margin-inline:auto!important}
+#receiptContent .control-live-receipt{box-sizing:border-box!important;width:100%!important;max-width:100%!important;margin-inline:0!important;padding-inline:12px!important}
+@media(max-width:900px){.workspace>main{width:calc(100% - 24px)!important;margin-inline:auto!important}}
+@media(max-width:700px){.workspace>main{width:calc(100% - 20px)!important;margin-inline:auto!important}#receiptContent .control-live-receipt{padding-inline:12px!important}}
+</style>
 </body>
 <link rel="stylesheet" href="request-layout.css">
 </html>

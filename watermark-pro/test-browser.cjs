@@ -26,8 +26,12 @@ module.exports=async({worker,env,db,req,admin})=>{
   await context.addInitScript(base=>window.WATERMARK_API_BASE=base,origin);
   await context.addInitScript(()=>{window.__titleWrites=[];const d=Object.getOwnPropertyDescriptor(Document.prototype,'title');Object.defineProperty(document,'title',{get(){return d.get.call(this)},set(value){window.__titleWrites.push(value);d.set.call(this,value)}})});
   const page=await context.newPage(),errors=[],dialogs=[];
+  page.setDefaultTimeout(120000);
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',async d=>{dialogs.push(d.message());await d.dismiss()});
-  await page.goto(origin+'/watermark-pro/index.html');
+  /* External banner/font requests are intentionally best-effort; don't make
+     the browser regression suite wait for a remote resource's load event. */
+  await page.goto(origin+'/watermark-pro/index.html',{waitUntil:'commit'});
+  await page.waitForSelector('#wpSessionBoot',{state:'attached',timeout:30000});
   const titleWrites=await page.evaluate(()=>window.__titleWrites);assert(titleWrites.every(t=>t==='Watermark Pro - Watermark dulu. Baru post.'),JSON.stringify(titleWrites));
   assert.equal(await page.locator('body').innerText().then(t=>t.includes('popup.document.open()')),false,'no leaked receipt source');
   for(const width of [390,1366]){
@@ -185,6 +189,12 @@ module.exports=async({worker,env,db,req,admin})=>{
   await control.addInitScript(token=>localStorage.setItem('watermarkProControlApiToken',token),admin);
   await control.goto(origin+'/watermark-pro/control.html');
   await control.waitForFunction(()=>window.WPControl?.state?.users?.length>0);
+  const controlGutter=await control.evaluate(()=>{
+   const workspace=document.querySelector('.workspace')?.getBoundingClientRect();
+   const main=document.querySelector('.workspace>main')?.getBoundingClientRect();
+   return workspace&&main?{left:main.left-workspace.left,right:workspace.right-main.right}:null;
+  });
+  assert(controlGutter&&Math.abs(controlGutter.left-controlGutter.right)<=1,'Control content gutters must match '+JSON.stringify(controlGutter));
   /* Control receipt printing must not inherit the page-wide rule that hides
      every body child in print media. Keep this regression test close to the
      real print serializer that previously produced a blank PDF. */
