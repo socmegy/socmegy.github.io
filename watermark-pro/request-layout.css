@@ -66,11 +66,13 @@ html body .version-section,html body .legacy-version-section{display:none!import
  html body .wp-wmark-name.wp-wmark-normal>.wp-wmark img{display:block!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;aspect-ratio:3660/3418!important;object-fit:contain!important;margin:0!important;transform:none!important}
  html body .wp-wmark-name.wp-wmark-normal>.lab-uname,html body .wp-wmark-name.wp-wmark-normal>strong{padding:1px 0 2px!important;margin:-1px 0 -2px!important;letter-spacing:0!important}
 }
-/* The bottom gesture area takes the page background; theme-color owns the top status bar. */
+/* Keep the Android status bar navy via theme-color, while the bottom gesture
+   area and navigation bar use a separate light surface. */
 @media screen and (display-mode:standalone){
- html:root,html:root body{background:#f7f9fb!important;color-scheme:only light}
+ html:root{background:#fff!important;color-scheme:only light}
+ html:root body{background:#f7f9fb!important}
  html:root body{padding-bottom:env(safe-area-max-inset-bottom,36px)}
- html:root body::after{content:'';display:block;position:fixed;left:0;right:0;bottom:0;height:env(safe-area-inset-bottom,0px);background:#f7f9fb;pointer-events:none;z-index:2147483647}
+ html:root body::after{content:'';display:block;position:fixed;left:0;right:0;bottom:0;height:max(env(safe-area-inset-bottom,0px),24px);background:#fff;pointer-events:none;z-index:2147483647}
  html:root body .mobile-nav{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
 }
 body>.wp-print-root{display:none}

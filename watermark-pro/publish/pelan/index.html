@@ -81,6 +81,7 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="application-name" content="Watermark Pro">
 <meta name="theme-color" content="#143d68">
+<meta name="navigation-bar-color" content="#ffffff">
 <meta name="color-scheme" content="light">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
@@ -11196,15 +11197,23 @@ function setForYouSlide(index){
   if(!forYouBanner){stopForYouAuto();return}
   const slide=forYouSlides[forYouIndex];
   clearTimeout(forYouTransition);
-  forYouBanner.classList.add("is-changing");
-  forYouTransition=setTimeout(()=>{
-    forYouBanner.src=slide.src;
-    forYouBanner.alt=slide.alt;
-    const reveal=()=>forYouBanner.classList.remove("is-changing");
-    if(forYouBanner.complete) reveal(); else forYouBanner.addEventListener("load",reveal,{once:true});
-  },140);
+  /* Decode off-DOM before touching the visible banner. Swapping src while the
+     fade is running caused a decode/layout hitch on slower devices. */
+  const request=++setForYouSlide.requestId;
+  const nextImage=new Image();nextImage.decoding="async";nextImage.src=slide.src;
+  const commit=()=>{
+    if(request!==setForYouSlide.requestId)return;
+    forYouBanner.classList.add("is-changing");
+    forYouTransition=setTimeout(()=>{
+      if(request!==setForYouSlide.requestId)return;
+      forYouBanner.src=slide.src;forYouBanner.alt=slide.alt;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>forYouBanner.classList.remove("is-changing")));
+    },70);
+  };
+  if(nextImage.complete&&nextImage.naturalWidth)commit();else nextImage.decode?.().then(commit).catch(()=>{nextImage.onload=commit});
   scheduleForYouAuto();
 }
+setForYouSlide.requestId=0;
 
 forYouSlides.slice(1).forEach(slide=>{const image=new Image();image.src=slide.src});
 forYouPrev?.addEventListener("click",()=>setForYouSlide(forYouIndex-1));
@@ -19650,6 +19659,21 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 @media (min-width:761px){
   .sidebar-user .wp-wmark{transform:translateY(1px)!important}
 }
+/* Banner viewer is one exact 16:9 rectangle—no intrinsic-ratio letterbox or
+   shadow block extending past its left/right edges. */
+#mediaLightbox[data-viewer-kind="banner"] #mediaLightboxImage,
+#mediaLightbox[data-viewer-kind="photo-banner"] #mediaLightboxImage{
+  width:min(92vw,152.888vh,1100px)!important;
+  height:min(51.75vw,86vh,618.75px)!important;
+  min-width:0!important;min-height:0!important;
+  max-width:none!important;max-height:none!important;
+  aspect-ratio:16/9!important;object-fit:cover!important;
+  border:0!important;border-radius:0!important;padding:0!important;
+  background:transparent!important;box-shadow:none!important;filter:none!important;
+}
+.for-you-carousel{contain:layout paint!important;transform:translateZ(0)}
+.for-you-carousel .for-you-banner{will-change:opacity;transform:translateZ(0);backface-visibility:hidden;transition:opacity .14s ease-out!important}
+@media(prefers-reduced-motion:reduce){.for-you-carousel .for-you-banner{transition:none!important}}
 </style>
 <script id="v143-request-fixes-script">
 (()=>{
