@@ -80,6 +80,10 @@ module.exports=async({worker,env,db,req,admin})=>{
   assert.equal(new URL(page.url()).pathname,'/watermark-pro/profil');
   await page.locator('[data-page="subscriptions"]').first().click();
   await page.locator('.admin-history-receipt').first().click();
+  await page.setViewportSize({width:390,height:844});await page.emulateMedia({media:'screen'});
+  const mobileReceipt=await page.evaluate(()=>{const modal=document.querySelector('#receiptModal'),sheet=document.querySelector('#receiptSheet'),r=sheet?.getBoundingClientRect();return {modalOverflow:(modal?.scrollWidth||0)-(modal?.clientWidth||0),sheetOverflow:(sheet?.scrollWidth||0)-(sheet?.clientWidth||0),right:r?.right||0,viewport:innerWidth}});
+  assert(mobileReceipt.modalOverflow<=1&&mobileReceipt.sheetOverflow<=1&&mobileReceipt.right<=mobileReceipt.viewport+1,'mobile website receipt is clipped '+JSON.stringify(mobileReceipt));
+  await page.setViewportSize({width:1366,height:900});
   await page.evaluate(()=>{window.__printCalls=0;window.print=()=>window.__printCalls++});
   await page.locator('#printReceipt').click();await page.waitForFunction(()=>window.__printCalls===1);
   await page.evaluate(()=>window.printReceiptIsolated());assert.equal(await page.evaluate(()=>window.__printCalls),1);

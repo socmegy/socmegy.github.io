@@ -13712,7 +13712,7 @@ html,body,button,input,textarea,select,option,.receipt-sheet,.receipt-sheet *{fo
   preview?.addEventListener("click",()=>{
     if(preview.hidden) return;
     try{
-      lightbox.dataset.viewerKind="banner";lightbox.dataset.proAvatar="0";
+      lightbox.dataset.viewerKind="preview-media";lightbox.dataset.proAvatar="0";
       showLarge(preview.toDataURL("image/png"),"Watermark preview");
     }catch{}
   });
@@ -13790,7 +13790,7 @@ html,body,button,input,textarea,select,option,.receipt-sheet,.receipt-sheet *{fo
   }
 
   function defaultAvatarDataUrl(letter){
-    const safe=escapeXml(letter || "?");
+    const safe=escapeXml(String(letter || "?").toLowerCase());
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">
       <rect width="900" height="900" rx="450" fill="#e9eef4"/>
       <text x="450" y="485" text-anchor="middle" dominant-baseline="middle"
@@ -18579,7 +18579,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
     try{return new URL(value,document.baseURI).href}catch{return value}
   }
   function avatarHTML(user,cls=""){
-    const name=String(user?.username||"@?").replace(/^@/,"");const letter=(name.charAt(0)||"?").toUpperCase();const photo=resolveAsset(user?.photo);const pro=user?.plan==="pro"?" is-pro-avatar":"";
+    const name=String(user?.username||"@?").replace(/^@/,"");const letter=(name.charAt(0)||"?").toLowerCase();const photo=resolveAsset(user?.photo);const pro=user?.plan==="pro"?" is-pro-avatar":"";
     if(photo)return '<button class="topuser-avatar topuser-avatar-action '+cls+pro+'" type="button" data-avatar-src="'+esc(photo)+'" data-avatar-name="'+esc(name)+'" aria-label="Buka avatar @'+esc(name)+'"><img class="wp-topuser-photo" alt="@'+esc(name)+'" src="'+esc(photo)+'" referrerpolicy="no-referrer" onload="this.hidden=false;this.classList.add(\'wp-avatar-ready\');this.nextElementSibling.hidden=true" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="wp-avatar-letter wp-topuser-fallback">'+esc(letter)+'</span></button>';
     return '<button class="topuser-avatar topuser-avatar-action '+cls+pro+'" type="button" data-avatar-letter="'+esc(letter)+'" data-avatar-name="'+esc(name)+'" aria-label="Buka avatar @'+esc(name)+'"><span class="wp-avatar-letter">'+esc(letter)+'</span></button>';
   }
@@ -19675,6 +19675,31 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 .for-you-carousel .for-you-banner{will-change:opacity;transform:translateZ(0);backface-visibility:hidden;transition:opacity .14s ease-out!important}
 @media(prefers-reduced-motion:reduce){.for-you-carousel .for-you-banner{transition:none!important}}
 </style>
+<style id="v144-preview-avatar-fixes">
+/* Preview media keeps its own intrinsic ratio. Only actual banners use the
+   16:9 viewer contract. */
+#mediaLightbox[data-viewer-kind="preview-media"] #mediaLightboxImage{
+  width:auto!important;height:auto!important;max-width:92vw!important;max-height:86vh!important;
+  min-width:0!important;min-height:0!important;aspect-ratio:auto!important;
+  object-fit:contain!important;border:0!important;border-radius:0!important;
+  padding:0!important;background:transparent!important;box-shadow:none!important;
+}
+.wp-avatar-letter{ text-transform:lowercase!important }
+</style>
+<script id="v144-preview-avatar-fixes-script">
+(()=>{
+  /* Bubble listeners from older viewer revisions classified the canvas as a
+     banner. Capture-phase correction keeps image/video previews intrinsic. */
+  document.addEventListener('click',event=>{
+    const canvas=event.target.closest?.('#previewCanvas');
+    if(canvas){const box=document.getElementById('mediaLightbox');if(box)box.dataset.viewerKind='preview-media'}
+  },true);
+  const lower=()=>document.querySelectorAll('.wp-avatar-letter,.admin-notification-avatar').forEach(node=>{
+    const text=node.textContent.trim();if(text)node.textContent=text.toLowerCase();
+  });
+  lower();new MutationObserver(lower).observe(document.body,{subtree:true,childList:true,characterData:true});
+})();
+</script>
 <script id="v143-request-fixes-script">
 (()=>{
   /* A receipt printed inside about:blank cannot resolve logo.jpg reliably.
@@ -19698,5 +19723,28 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   };
 })();
 </script>
+<style id="v145-mobile-receipt-overflow-fix">
+@media (max-width:760px){
+  #receiptModal,#receiptModal .modal-shell,#receiptModal .receipt-wrap,
+  #receiptModal #receiptSheet{min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+  #receiptModal .receipt-wrap{overflow-x:hidden!important}
+  #receiptModal #receiptSheet{width:100%!important;overflow:visible!important}
+  #receiptModal #receiptSheet *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important}
+  #receiptModal #receiptSheet .lr-head{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
+  #receiptModal #receiptSheet .lr-title{text-align:left!important}
+  #receiptModal #receiptSheet .lr-meta{grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+  #receiptModal #receiptSheet .lr-meta>div:last-child{text-align:left!important}
+  #receiptModal #receiptSheet .lr-item{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}
+  #receiptModal #receiptSheet .lr-item-price{justify-self:start!important;white-space:normal!important;font-size:14px!important}
+  #receiptModal #receiptSheet .lr-row{grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important}
+  #receiptModal #receiptSheet .lr-total{display:grid!important;grid-template-columns:minmax(0,1fr) 52px auto!important;column-gap:4px!important;min-height:62px!important;overflow:visible!important}
+  #receiptModal #receiptSheet .lr-total>span{grid-column:1!important}
+  #receiptModal #receiptSheet .lr-stamp{position:relative!important;inset:auto!important;right:auto!important;top:auto!important;justify-self:center!important;width:50px!important;height:50px!important;min-width:50px!important;margin:0!important;transform:rotate(-16deg)!important}
+  #receiptModal #receiptSheet .lr-stamp img{width:16px!important;height:16px!important}
+  #receiptModal #receiptSheet .lr-stamp b{width:42px!important;font-size:6.5px!important}
+  #receiptModal #receiptSheet .lr-total-price{grid-column:3!important;white-space:nowrap!important;font-size:15px!important;justify-self:end!important}
+  #receiptModal #receiptSheet .lr-foot{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:4px!important}
+}
+</style>
 <link rel="stylesheet" href="request-layout.css">
 </html>
