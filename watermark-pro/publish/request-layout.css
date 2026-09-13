@@ -81,7 +81,8 @@ html body .version-section,html body .legacy-version-section{display:none!import
  html body .wp-wmark-name.wp-wmark-normal>.wp-wmark img{display:block!important;width:13px!important;min-width:13px!important;max-width:13px!important;height:auto!important;aspect-ratio:3660/3418!important;object-fit:contain!important;margin:0!important;transform:none!important}
  html body .wp-wmark-name.wp-wmark-normal>.lab-uname,html body .wp-wmark-name.wp-wmark-normal>strong{padding:1px 0 2px!important;margin:-1px 0 -2px!important;letter-spacing:0!important}
 }
-/* White browser/PWA chrome and the safe area behind the OS gesture handle. */
+/* White safe area behind the gesture handle; status-bar theme stays navy.
+   This paints only inside the web viewport, not an opaque OS-owned bar. */
 @media screen and (max-width:980px), screen and (display-mode:standalone){
  html:root{background:#fff!important;color-scheme:only light}
  html:root body::after{content:''!important;display:block!important;position:fixed!important;left:0!important;right:0!important;bottom:0!important;height:env(safe-area-inset-bottom,0px)!important;background:#fff!important;pointer-events:none!important;z-index:2147483647!important}
@@ -94,8 +95,10 @@ html body .version-section,html body .legacy-version-section{display:none!import
 html:root body #mediaLightbox[data-viewer-kind="banner"] #mediaLightboxImage,
 html:root body #mediaLightbox[data-viewer-kind="photo-banner"] #mediaLightboxImage{border-radius:18px!important}
 @media(min-width:981px){
+ html:root body .sidebar-user .wp-wmark-name{display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;min-width:0!important}
+ html:root body .sidebar-user .wp-wmark-name>strong{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
  html:root body .sidebar-user .wp-wmark-name.wp-wmark-normal>.wp-wmark,
- html:root body .sidebar-user .wp-wmark{transform:translateY(2px)!important}
+ html:root body .sidebar-user .wp-wmark{flex-shrink:0!important;align-self:center!important;transform:translateY(1px)!important}
 }
 /* Match the modal receipt's stamp/RM overlap to the isolated final receipt. */
 @media(max-width:760px){

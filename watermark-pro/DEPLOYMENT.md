@@ -4,7 +4,10 @@ PWA v162: rebuild with `node build-publish.cjs` and upload the resulting content
 to `/watermark-pro/`. Keep the manifest URL stable (without a version query),
 with its existing `/watermark-pro/` identity and scope. Do not replace the root
 manifest or unregister the service worker used by `/admintest`.
-The manifest omits orientation so the platform can follow device preferences.
+The v165 manifest requests portrait orientation for the installed app, with a
+runtime portrait lock where supported. Browser tabs retain device behaviour.
+The status-bar theme is navy. The white CSS safe area only paints within the web
+viewport; an opaque Android navigation bar is controlled by the browser/OS.
 Installed applications may apply manifest changes later than website updates.
 Native install controls appear when the browser supplies `beforeinstallprompt`;
 iOS retains manual installation guidance. Directory-based legacy install flags

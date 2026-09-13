@@ -1,4 +1,4 @@
-const CACHE='watermark-pro-shell-v162-'+new URL('./',self.location.href).pathname;
+const CACHE='watermark-pro-shell-v165-'+new URL('./',self.location.href).pathname;
 const BASE=new URL('./',self.location.href).pathname;
 const SHELL=['','index.html','control.html','manifest.webmanifest','favicon-rounded.png','app-icon-rounded-192.png','app-icon-rounded-512.png','logo.jpg','bg.jpg','pwa.js','avatar-render.js','wmark-shared.js','release-ui.js','control-release.js','request-layout.css','export-assets.js'].map(p=>BASE+p);
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url)))).then(()=>self.skipWaiting())));

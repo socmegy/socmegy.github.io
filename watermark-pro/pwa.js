@@ -8,6 +8,12 @@
   const inScope=()=>location.pathname.startsWith('/watermark-pro/');
   if(inScope()&&standalone()&&new URLSearchParams(location.search).get('app')==='watermark-pro')write(sessionStorage,launchKey,'1');
   const ownStandalone=()=>inScope()&&standalone()&&read(sessionStorage,launchKey)==='1';
+  // Apply the current portrait policy while installed manifests update.
+  // Browser tabs retain the device's normal orientation behaviour.
+  const keepPortrait=()=>{if(!inScope()||!standalone()||!screen.orientation?.lock)return;try{Promise.resolve(screen.orientation.lock('portrait')).catch(()=>{})}catch{}};
+  keepPortrait();
+  window.addEventListener('pageshow',keepPortrait);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)keepPortrait()});
   let revision=0;
   const state={prompt:null,installed:ownStandalone()||read(localStorage,installedKey)==='1'};
   const recordInstalled=()=>{revision++;state.installed=true;write(localStorage,installedKey,'1');state.prompt=null;notify()};
@@ -28,9 +34,9 @@
   if(ownStandalone())write(localStorage,installedKey,'1');
   window.addEventListener('storage',event=>{if(event.key===installedKey){revision++;state.installed=event.newValue==='1'||ownStandalone();if(state.installed)state.prompt=null;notify()}});
   if('serviceWorker' in navigator&&['http:','https:'].includes(location.protocol)){
-    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v162';
+    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v165';
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||sessionStorage.getItem(reloadKey))return;sessionStorage.setItem(reloadKey,'1');location.reload()});
-    window.addEventListener('load',async()=>{if(!inScope())return;try{const registration=await navigator.serviceWorker.register('/watermark-pro/sw.js?v=162',{scope:'/watermark-pro/',updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
+    window.addEventListener('load',async()=>{if(!inScope())return;try{const registration=await navigator.serviceWorker.register('/watermark-pro/sw.js?v=165',{scope:'/watermark-pro/',updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
   }
   async function checkInstalled(){
     if(ownStandalone()){recordInstalled();return;}

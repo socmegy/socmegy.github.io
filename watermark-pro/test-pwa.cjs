@@ -50,7 +50,7 @@ const script=fs.readFileSync(path.join(__dirname,'pwa.js'),'utf8');
   assert.equal(await page.locator('#wpInstallApp').count(),1);
   await context.close();
   const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,'manifest.webmanifest'),'utf8'));
-  assert.equal('orientation' in manifest,false,'system orientation preference is not overridden');
+  assert.equal(manifest.orientation,'portrait','installed app uses portrait');
   assert.equal(manifest.id,'/watermark-pro/');
   assert.equal(manifest.scope,'/watermark-pro/');
   console.log('PASS: app identity isolation, native prompt, dismissal, install race, persistence, reinstall, system orientation manifest');

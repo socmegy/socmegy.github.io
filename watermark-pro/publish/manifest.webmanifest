@@ -7,12 +7,12 @@
   "start_url": "/watermark-pro/?app=watermark-pro",
   "scope": "/watermark-pro/",
   "display": "standalone",
+  "orientation": "portrait",
   "display_override": [
     "standalone"
   ],
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "navigation_bar_color": "#ffffff",
+  "theme_color": "#143d68",
   "categories": [
     "photo",
     "video",

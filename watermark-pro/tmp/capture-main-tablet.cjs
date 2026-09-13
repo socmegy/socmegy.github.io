@@ -43,6 +43,15 @@ const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':
     await page.waitForFunction(() => window.WPCloudflare && !document.body.classList.contains('auth-mode'));
     await page.locator('#page-home').waitFor({state:'visible'});
     await page.evaluate(() => document.fonts.ready);
+    for(const zoom of [1,0.9]){
+      console.log(await page.evaluate(zoom=>{
+        document.documentElement.style.zoom=String(zoom);
+        const mark=document.querySelector('.sidebar-user .wp-wmark'),name=document.querySelector('.sidebar-user strong');
+        const a=mark.getBoundingClientRect(),b=name.getBoundingClientRect();
+        return {zoom,offset:getComputedStyle(mark).transform,centerDifference:(a.top+a.height/2-b.top-b.height/2)/zoom,sameRow:a.top<b.bottom&&a.bottom>b.top};
+      },zoom));
+    }
+    await page.evaluate(()=>document.documentElement.style.removeProperty('zoom'));
     console.log(await page.evaluate(() => ({
       theme:document.querySelector('meta[name="theme-color"]').content,
       wmarkCopy:document.querySelector('#wpWMarkDialog p')?.textContent,
