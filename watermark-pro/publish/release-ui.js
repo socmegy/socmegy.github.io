@@ -1,6 +1,67 @@
 (()=>{
 'use strict';
 const q=s=>document.querySelector(s);
+/* Download feedback is deliberately in-app.  Browsers do not expose a
+   reliable "file reached disk" event for an <a download>, especially inside
+   an installed Android PWA, so report the user-action boundary instead. */
+const downloadToastStyle=document.createElement('style');
+downloadToastStyle.textContent=`
+html body #wpDownloadToast{
+  position:fixed!important;left:50%!important;bottom:24px!important;z-index:1000000!important;
+  max-width:min(420px,calc(100vw - 32px));padding:12px 16px!important;
+  border:1px solid rgba(255,255,255,.12)!important;border-radius:14px!important;
+  background:#101827!important;color:#fff!important;box-shadow:0 12px 32px rgba(16,24,39,.24)!important;
+  font:650 13px/1.35 "DM Sans",Arial,sans-serif!important;text-align:center!important;
+  opacity:0!important;transform:translate(-50%,12px)!important;pointer-events:none!important;
+  transition:opacity .18s ease,transform .18s ease!important;
+}
+html body #wpDownloadToast.is-visible{opacity:1!important;transform:translate(-50%,0)!important}
+@media(max-width:700px){html body #wpDownloadToast{bottom:calc(92px + env(safe-area-inset-bottom,0px))!important;max-width:calc(100vw - 28px)}}
+@media(prefers-reduced-motion:reduce){html body #wpDownloadToast{transition:none!important}}
+`;
+document.head.append(downloadToastStyle);
+const downloadToast=document.createElement('div');
+downloadToast.id='wpDownloadToast';downloadToast.setAttribute('role','status');
+downloadToast.setAttribute('aria-live','polite');downloadToast.setAttribute('aria-atomic','true');
+document.body.append(downloadToast);
+let downloadToastTimer=0;
+const showDownloadToast=message=>{
+  downloadToast.textContent=message||'Muat turun dimulakan.';
+  downloadToast.classList.add('is-visible');
+  window.clearTimeout(downloadToastTimer);
+  downloadToastTimer=window.setTimeout(()=>downloadToast.classList.remove('is-visible'),2800);
+};
+window.WPShowDownloadToast=showDownloadToast;
+/* Capture both the visible action and the synthetic anchor click used by the
+   canvas exporters.  The latter is what confirms that the browser accepted
+   the download request, while the former gives immediate feedback on slow
+   canvas/font generation. */
+window.addEventListener('click',event=>{
+  const target=event.target?.closest?.('a[download],#downloadAll,#downloadProgressImage,#downloadSupporterCard');
+  if(!target||target.disabled)return;
+  if(target.matches('a[download]'))showDownloadToast('Muat turun dimulakan.');
+  else showDownloadToast('Menyediakan muat turun…');
+},true);
+/* Keep exact cumulative values readable without allowing a long value to
+   push a card or its neighbours wider than the viewport.  The CSS ellipsis
+   remains a final guard for values longer than the minimum readable size. */
+const fitProgressNumbers=()=>{
+  document.querySelectorAll('#totalDownloads,#imageDownloads,#videoDownloads,#nextMilestoneText').forEach(el=>{
+    const base=Number(el.dataset.wpBaseSize||parseFloat(getComputedStyle(el).fontSize)||15);
+    el.dataset.wpBaseSize=String(base);
+    el.style.setProperty('font-size',base+'px','important');
+    const min=el.id==='totalDownloads'?16:11;
+    let size=base;
+    while(size>min&&el.scrollWidth>el.clientWidth+1){size-=1;el.style.setProperty('font-size',size+'px','important')}
+  });
+};
+const progressShell=q('.progress-shell');
+if(progressShell){
+  new MutationObserver(()=>requestAnimationFrame(fitProgressNumbers)).observe(progressShell,{childList:true,subtree:true,characterData:true});
+  if(typeof ResizeObserver==='function')new ResizeObserver(fitProgressNumbers).observe(progressShell);
+  window.addEventListener('resize',fitProgressNumbers,{passive:true});
+  requestAnimationFrame(fitProgressNumbers);
+}
 const style=document.createElement('style');
 style.textContent=`
 html body #proPaymentModal.open{display:flex!important;align-items:center!important;justify-content:center!important;position:fixed!important;inset:0!important;padding:16px!important}
@@ -124,7 +185,7 @@ window.addEventListener('click',async e=>{
  const accountId=user.id;
  let status=q('#supporterExportStatus');if(!status){status=document.createElement('p');status.id='supporterExportStatus';status.setAttribute('role','status');button.after(status)}
  button.disabled=true;status.dataset.state='loading';status.textContent='Menyediakan Kad Penyokong...';
- try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));if(window.WPCloudflare?.user?.id!==accountId)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.dataset.state='success';status.textContent='Kad Penyokong berjaya dimuat turun.';setTimeout(()=>{if(status.dataset.state==='success')status.textContent=''},5000)}catch(error){console.error('Supporter PNG export:',error);status.dataset.state='error';status.textContent='Kad belum dapat dimuat turun. Cuba sekali lagi. Jika masih gagal, buka Watermark Pro melalui laman web dan cuba semula.'}finally{const u=window.WPCloudflare?.user;button.disabled=!u||(u.plan!=='pro'&&u.role!=='admin');if(window.WPCloudflare?.user?.id!==accountId)status.textContent='';}
+  try{await window.WPWMarkReady;const canvas=await window.drawSupporterCard();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG gagal disediakan.')),'image/png'));if(window.WPCloudflare?.user?.id!==accountId)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='watermark-pro-kad-penyokong.png';window.WPShowDownloadToast?.('Muat turun dimulakan.');a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);status.dataset.state='success';status.textContent='Kad Penyokong berjaya dimuat turun.';setTimeout(()=>{if(status.dataset.state==='success')status.textContent=''},5000)}catch(error){console.error('Supporter PNG export:',error);status.dataset.state='error';status.textContent='Kad belum dapat dimuat turun. Cuba sekali lagi. Jika masih gagal, buka Watermark Pro melalui laman web dan cuba semula.'}finally{const u=window.WPCloudflare?.user;button.disabled=!u||(u.plan!=='pro'&&u.role!=='admin');if(window.WPCloudflare?.user?.id!==accountId)status.textContent='';}
 },true);
 let receiptPrinting=false;
 let restoreReceipt=null;

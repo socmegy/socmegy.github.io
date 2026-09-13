@@ -2,7 +2,8 @@
 
 The account entry point is `index.html`; Control is `control.html`. Publish both
 alongside `avatar-render.js`, `release-ui.js`, `control-release.js`, `wmark-shared.js`, `pwa.js`,
-`sw.js`, `manifest.webmanifest`, `logo.jpg`, `bg.jpg`, and `qr.jpg`. Keep these files in
+`sw.js`, `manifest.webmanifest`, `favicon-rounded.png`, both `app-icon-rounded-*.png`
+files, `logo.jpg`, `bg.jpg`, and `qr.jpg`. Keep these files in
 one directory. Do not publish the workspace wholesale: it contains historical
 previews, ZIP backups, backend source, and test files.
 

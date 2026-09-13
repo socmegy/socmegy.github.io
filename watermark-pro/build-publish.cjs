@@ -8,7 +8,7 @@ for(const file of files)if(!fs.existsSync(path.join(__dirname,file)))throw new E
 fs.mkdirSync(out,{recursive:true});
 for(const file of files)fs.copyFileSync(path.join(__dirname,file),path.join(out,file));
 fs.copyFileSync(path.join(__dirname,'export-assets.js'),path.join(out,'export-assets.js'));
-for(const name of ['app-icon-192.png','app-icon-512.png']){const source=path.join(__dirname,name);fs.copyFileSync(source,path.join(out,name));}
+for(const name of ['app-icon-192.png','app-icon-512.png','app-icon-rounded-192.png','app-icon-rounded-512.png']){const source=path.join(__dirname,name);fs.copyFileSync(source,path.join(out,name));}
 const controlDir=path.join(out,'control');fs.mkdirSync(controlDir,{recursive:true});fs.writeFileSync(path.join(controlDir,'index.html'),fs.readFileSync(path.join(__dirname,'control.html'),'utf8').replace('<head>','<head><base href="../">'));
 for(const route of ['profil','pelan','tetapan','sokongan']){
  for(const root of [out,__dirname]){const dir=path.join(root,route);fs.mkdirSync(dir,{recursive:true});fs.copyFileSync(path.join(__dirname,'index.html'),path.join(dir,'index.html'));}

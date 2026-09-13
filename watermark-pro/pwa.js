@@ -19,7 +19,11 @@
   matchMedia('(display-mode: standalone)').addEventListener('change',()=>{state.installed=ownStandalone()||localStorage.getItem(installedKey)==='1';if(state.installed)state.prompt=null;notify()});
   if(ownStandalone())localStorage.setItem(installedKey,'1');
   window.addEventListener('storage',event=>{if(event.key===installedKey){state.installed=event.newValue==='1'||ownStandalone();notify()}});
-  if('serviceWorker' in navigator&&['http:','https:'].includes(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register(new URL('sw.js',document.baseURI),{scope:new URL('./',document.baseURI).pathname}).catch(error=>console.warn('Watermark Pro service worker:',error)));
+  if('serviceWorker' in navigator&&['http:','https:'].includes(location.protocol)){
+    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v160';
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||sessionStorage.getItem(reloadKey))return;sessionStorage.setItem(reloadKey,'1');location.reload()});
+    window.addEventListener('load',async()=>{try{const registration=await navigator.serviceWorker.register(new URL('sw.js?v=160',document.baseURI),{scope:new URL('./',document.baseURI).pathname,updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
+  }
   async function checkInstalled(){
     if(ownStandalone()){recordInstalled();return;}
     if(location.protocol==='file:'||typeof navigator.getInstalledRelatedApps!=='function')return;

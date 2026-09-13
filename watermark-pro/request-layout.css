@@ -92,6 +92,13 @@ html body .version-section,html body .legacy-version-section{display:none!import
  html:root body::after{display:none!important;content:none!important}
  html:root body .mobile-nav{bottom:calc(12px + env(safe-area-inset-bottom,0px))!important}
 }
+/* Match the modal receipt's stamp/RM overlap to the isolated final receipt. */
+@media(max-width:760px){
+ html body #receiptModal #receiptSheet .lr-total{grid-template-columns:minmax(0,1fr) 66px auto!important;column-gap:0!important;min-height:76px!important}
+ html body #receiptModal #receiptSheet .lr-stamp{width:66px!important;height:66px!important;min-width:66px!important;transform:translateX(18px) rotate(-16deg)!important}
+ html body #receiptModal #receiptSheet .lr-stamp img{width:20px!important;height:20px!important}
+ html body #receiptModal #receiptSheet .lr-stamp b{width:50px!important;font-size:7px!important}
+}
 body>.wp-print-root{display:none}
 @media print{
  @page{size:A4 portrait;margin:12mm!important}

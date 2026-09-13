@@ -1,8 +1,8 @@
-const CACHE='watermark-pro-shell-v159-'+new URL('./',self.location.href).pathname;
+const CACHE='watermark-pro-shell-v160-'+new URL('./',self.location.href).pathname;
 const BASE=new URL('./',self.location.href).pathname;
-const SHELL=['','index.html','control.html','manifest.webmanifest','favicon-rounded.png','logo.jpg','bg.jpg','pwa.js','avatar-render.js','wmark-shared.js','release-ui.js','control-release.js','request-layout.css','export-assets.js'].map(p=>BASE+p);
-self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url))))));
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.endsWith('-'+BASE)&&k!==CACHE).map(k=>caches.delete(k))))));
+const SHELL=['','index.html','control.html','manifest.webmanifest','favicon-rounded.png','app-icon-rounded-192.png','app-icon-rounded-512.png','logo.jpg','bg.jpg','pwa.js','avatar-render.js','wmark-shared.js','release-ui.js','control-release.js','request-layout.css','export-assets.js'].map(p=>BASE+p);
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>Promise.allSettled(SHELL.map(url=>cache.add(url)))).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.endsWith('-'+BASE)&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 // Only shell files: API, uploads, blobs and processed media bypass the worker.
 self.addEventListener('fetch',event=>{
  const req=event.request,url=new URL(req.url);
