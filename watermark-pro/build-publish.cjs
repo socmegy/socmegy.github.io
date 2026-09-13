@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const out=path.join(__dirname,'publish');
 fs.writeFileSync(path.join(__dirname,'export-assets.js'),'window.WPExportAssets='+JSON.stringify(Object.fromEntries(['bg.jpg','logo.jpg'].map(name=>[name,'data:image/jpeg;base64,'+fs.readFileSync(path.join(__dirname,name)).toString('base64')])))+';');
-const files=['request-layout.css','index.html','control.html','avatar-render.js','release-ui.js','control-release.js','wmark-shared.js','pwa.js','sw.js','manifest.webmanifest','logo.jpg','bg.jpg','qr.jpg','threads.svg'];
+const files=['request-layout.css','index.html','control.html','avatar-render.js','release-ui.js','control-release.js','wmark-shared.js','pwa.js','sw.js','manifest.webmanifest','favicon-rounded.png','logo.jpg','bg.jpg','qr.jpg','threads.svg'];
 for(const file of files)if(!fs.existsSync(path.join(__dirname,file)))throw new Error('Missing publish asset: '+file);
 fs.mkdirSync(out,{recursive:true});
 for(const file of files)fs.copyFileSync(path.join(__dirname,file),path.join(out,file));

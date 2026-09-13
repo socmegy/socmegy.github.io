@@ -36,6 +36,21 @@ html body .admin-username::after{content:'';flex:0 0 13px;width:13px;height:13.1
  html body #receiptModal .receipt-wrap{padding:4px!important}
  html body #receiptModal #receiptSheet{padding:8px!important;width:100%!important;margin:0!important}
 }
+/* Long cumulative totals must stay inside their cards at every viewport. */
+html body .progress-head>div:first-child{min-width:0!important;flex:1 1 auto!important}
+html body .progress-total{min-width:0!important;max-width:52%!important;flex:0 1 52%!important}
+html body .progress-total strong,
+html body .progress-stats strong{
+ min-width:0!important;max-width:100%!important;overflow:hidden!important;
+ text-overflow:ellipsis!important;white-space:nowrap!important;
+ font-variant-numeric:tabular-nums!important;
+}
+@media(max-width:520px){
+ html body .progress-head{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+ html body .progress-total{max-width:100%!important;flex:none!important;text-align:left!important}
+ html body .progress-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html body .progress-stats>div:last-child{grid-column:1/-1!important}
+}
 /* A single physical border and a full content-box photo at every avatar size. */
 html:root{--wp-pro-ring:2.5px!important}
 html body.pro-account :is(#page-home,#page-profile,#page-settings,.sidebar,.topbar) .user-avatar,

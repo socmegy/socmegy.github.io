@@ -338,6 +338,7 @@ body{font-size:14px!important}
 (()=>{
   const API_BASE=(window.WATERMARK_API_BASE||'https://watermark-pro-api.socmegy.workers.dev').replace(/\/$/,'');
   let control=null;
+  let refreshInFlight=null;
   const TOKEN_KEY='watermarkProControlApiToken';
   const getToken=()=>sessionStorage.getItem(TOKEN_KEY)||localStorage.getItem(TOKEN_KEY)||'';
   const setToken=value=>{localStorage.removeItem(TOKEN_KEY);sessionStorage.removeItem(TOKEN_KEY);if(value)(document.getElementById('controlRememberMe')?.checked?localStorage:sessionStorage).setItem(TOKEN_KEY,value)};
@@ -360,10 +361,14 @@ body{font-size:14px!important}
 
   async function refresh(){
     if(window.wpControlDirty)return;
-    const data=await api('/api/control/state');
-    if(window.wpControlDirty)return data;
-    control?.apply(data);
-    return data;
+    if(refreshInFlight)return refreshInFlight;
+    refreshInFlight=(async()=>{
+      const data=await api('/api/control/state');
+      if(window.wpControlDirty)return data;
+      control?.apply(data);
+      return data;
+    })();
+    try{return await refreshInFlight}finally{refreshInFlight=null}
   }
 
   async function action(path,options={}){
@@ -968,7 +973,7 @@ function printControlReceipt(){
 (()=>{
   const api=window.WPControlCloudflare;
   const refresh=()=>api?.refresh?.().catch(error=>{if(error?.status!==401&&error?.status!==403)console.warn("Pusat Kawalan refresh:",error?.message||error)});
-  setInterval(()=>{if(!document.hidden)refresh()},10000);
+  setInterval(()=>{if(!document.hidden)refresh()},60000);
   document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});window.addEventListener("focus",refresh);
 })();
 </script>

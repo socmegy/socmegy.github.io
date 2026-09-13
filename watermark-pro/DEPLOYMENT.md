@@ -60,6 +60,10 @@ Check `PRAGMA table_info(users)` in the production D1 database. If
 The existing banner and community migrations are also prerequisites for their
 respective settings. The profile endpoint now fails rather than pretending to
 save visibility when the schema is missing.
+Apply `migrations-add-query-indexes.sql` once after the base tables exist. It
+indexes the hot authentication, history, notification and Control queries so
+they scan fewer D1 rows. The pages poll live state every 60 seconds and still
+refresh immediately when the tab regains focus.
 
 Set the Worker `ALLOWED_ORIGINS` variable to an explicit comma-separated list
 of website origins, including any preview/custom domain and development ports

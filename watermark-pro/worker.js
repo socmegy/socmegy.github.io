@@ -1,6 +1,7 @@
 const SESSION_COOKIE = 'wp_session';
 const SESSION_DAYS = 30;
 const encoder = new TextEncoder();
+let notificationReadsReady = false;
 
 export default {
   async fetch(request, env) {
@@ -376,6 +377,12 @@ async function requireAdmin(request, env) {
 async function cleanupExpiredSessions(env) {
   if (Math.random() < 0.03) await env.DB.prepare('DELETE FROM sessions WHERE expires_at <= ?').bind(nowIso()).run();
 }
+
+async function ensureNotificationReads(env) {
+  if (notificationReadsReady) return;
+  await env.DB.prepare('CREATE TABLE IF NOT EXISTS notification_reads (user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, notification_id TEXT NOT NULL REFERENCES notifications(id) ON DELETE CASCADE, read_at TEXT NOT NULL, PRIMARY KEY(user_id,notification_id))').run();
+  notificationReadsReady = true;
+}
 function publicUser(row) {
   return {
     id: row.id,
@@ -590,7 +597,7 @@ async function getPublicState(env) {
 }
 
 async function getAccountState(env, user) {
-  await env.DB.prepare('CREATE TABLE IF NOT EXISTS notification_reads (user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, notification_id TEXT NOT NULL REFERENCES notifications(id) ON DELETE CASCADE, read_at TEXT NOT NULL, PRIMARY KEY(user_id,notification_id))').run();
+  await ensureNotificationReads(env);
   const [submissionsRes, subsRes, noticesRes] = await env.DB.batch([
     env.DB.prepare('SELECT * FROM submissions WHERE user_id=? ORDER BY submitted_at DESC LIMIT 25').bind(user.id),
     env.DB.prepare('SELECT * FROM subscriptions WHERE user_id=? ORDER BY created_at DESC LIMIT 50').bind(user.id),

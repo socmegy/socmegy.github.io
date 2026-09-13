@@ -73,8 +73,8 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 }
 </style>
 <meta charset="utf-8"/>
-<link rel="icon" type="image/jpeg" href="logo.jpg?v=2">
-<link rel="shortcut icon" type="image/jpeg" href="logo.jpg?v=2">
+<link rel="icon" type="image/png" href="favicon-rounded.png">
+<link rel="shortcut icon" type="image/png" href="favicon-rounded.png">
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- V132 SEO START -->
 <meta name="description" content="Watermark Pro memudahkan anda meletakkan tera air pada banyak imej dan video sebelum disiarkan, dengan teks, tandatangan sendiri, logo dan tetapan tambahan.">
@@ -88,7 +88,6 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <link rel="canonical" href="https://socmegy.com/watermark-pro/">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="pwa.js" defer></script>
-<link rel="icon" type="image/jpeg" href="logo.jpg">
 <link rel="apple-touch-icon" href="logo.jpg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12158,6 +12157,7 @@ processBtn.addEventListener("click",async()=>{
 downloadAllBtn.addEventListener("click",()=>{
   const images=processedResults.filter(r=>r.mediaType!=="video").length;
   const videos=processedResults.filter(r=>r.mediaType==="video").length;
+  if(!processedResults.length){window.WPShowDownloadToast?.("Tiada fail untuk dimuat turun.");return}
   if(images||videos) window.WPCloudflare?.recordDownloads?.(images,videos).catch?.(()=>{});
   processedResults.forEach((r,i)=>setTimeout(()=>{
     const a=document.createElement("a");a.href=r.url;a.download=r.name;document.body.appendChild(a);a.click();a.remove();
@@ -16198,7 +16198,7 @@ select#watermarkType option[value="logo"]{display:none!important}
         if(!blob) return;
         const u=URL.createObjectURL(blob),a=document.createElement('a');
         a.href=u;a.download='watermark-pro-download-progress.png';
-        document.body.appendChild(a);a.click();a.remove();
+       document.body.appendChild(a);window.WPShowDownloadToast?.('Muat turun dimulakan.');a.click();a.remove();
         setTimeout(()=>URL.revokeObjectURL(u),1000);
       },'image/png');
     });
@@ -16527,6 +16527,7 @@ select.browser-native-select,
     const btn=oldProgress.cloneNode(true);
     oldProgress.replaceWith(btn);
     btn.addEventListener('click',async()=>{
+      try{
       await window.WPWMarkReady;
       await document.fonts.load('500 60px "DM Sans"');
       const c=document.createElement('canvas');
@@ -16560,14 +16561,24 @@ select.browser-native-select,
       x.fillText(username,L,318);
       window.WPDrawLoadedWMark(x,username,L,318,60,'top');
 
-      const columns=[L,610,1120];
+      /* Give every metric a real cell.  The old fixed starts left only about
+         384px for the final value, so billion-sized strings overlapped their
+         neighbours and were clipped at the canvas edge. */
+      const cellGap=30,cellWidth=(R-L-cellGap*2)/3;
+      const columns=[L,L+cellWidth+cellGap,L+2*(cellWidth+cellGap)];
       const values=[Number(stats.total||0).toLocaleString(),Number(stats.images||0).toLocaleString(),Number(stats.videos||0).toLocaleString()];
       const labels=['JUMLAH MUAT TURUN','IMEJ','VIDEO'];
       const metricY=groupTop+174;
       for(let i=0;i<3;i++){
         x.fillStyle=i===0?blue:navy;
-        x.font='800 116px "DM Sans",Arial,sans-serif';
-        x.fillText(values[i],columns[i],metricY);
+        const maxFont=116,minFont=38;
+        let fontSize=maxFont;
+        x.font='800 '+fontSize+'px "DM Sans",Arial,sans-serif';
+        const measured=x.measureText(values[i]).width;
+        if(measured>cellWidth)fontSize=Math.max(minFont,Math.floor(maxFont*cellWidth/measured));
+        x.font='800 '+fontSize+'px "DM Sans",Arial,sans-serif';
+        /* maxWidth is a final guard for unusually long cumulative values. */
+        x.fillText(values[i],columns[i],metricY,cellWidth);
         x.fillStyle=muted;
         x.font='700 21px "DM Sans",Arial,sans-serif';
         x.fillText(labels[i],columns[i]+3,metricY+136);
@@ -16579,14 +16590,16 @@ select.browser-native-select,
       x.fillText('Terus gunakan Watermark Pro - setiap fail yang diproses menambah kemajuan anda.',L,796);
       x.textAlign='right';x.fillText('socmegy.com/watermark-pro',R,796);
 
-      c.toBlob(blob=>{
-        if(!blob)return;
-        const u=URL.createObjectURL(blob),a=document.createElement('a');
-        a.href=u;a.download='watermark-pro-download-progress.png';
-        document.body.appendChild(a);a.click();a.remove();
-        setTimeout(()=>URL.revokeObjectURL(u),1000);
-      },'image/png');
-    });
+      const blob=await new Promise(resolve=>c.toBlob(resolve,'image/png'));
+      if(!blob)throw new Error('PNG gagal disediakan.');
+       const u=URL.createObjectURL(blob),a=document.createElement('a');
+       a.href=u;a.download='watermark-pro-download-progress.png';
+       document.body.appendChild(a);window.WPShowDownloadToast?.('Muat turun dimulakan.');a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(u),1000);
+    }catch(error){
+      console.error('Download progress export:',error);
+      window.WPShowDownloadToast?.('Muat turun gagal. Cuba lagi.');
+    }});
   }
 })();
 </script>
@@ -18402,28 +18415,33 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       deleteButton.setAttribute('aria-hidden',owner?'true':'false');
     }
   }
-  async function syncAll({showLoginOn401=true}={}){
-    if(window.wpProfileDirty||window.wpVisibilitySaving)return null;
-    const syncToken=getToken();
-    const publicState=await api('/api/public/state');
-    latestPublicState=publicState;
-    let accountState=null;
-    try{accountState=await api('/api/account/state')}catch(error){
+  let syncInFlight=null;
+  function syncAll({showLoginOn401=true}={}){
+    if(syncInFlight)return syncInFlight;
+    syncInFlight=(async()=>{
+      if(window.wpProfileDirty||window.wpVisibilitySaving)return null;
+      const syncToken=getToken();
+      const publicState=await api('/api/public/state');
+      latestPublicState=publicState;
+      let accountState=null;
+      try{accountState=await api('/api/account/state')}catch(error){
+        if(syncToken!==getToken())return null;
+        if(error.status!==401)throw error;
+        sessionUser=null;
+        document.documentElement.classList.remove('account-authenticated');
+        localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,null)));broadcast();
+        window.WPApplyLiveState?.(publicState,null);
+        if(showLoginOn401&&typeof showAuthScreen==='function')showAuthScreen('login');
+        return null;
+      }
       if(syncToken!==getToken())return null;
-      if(error.status!==401)throw error;
-      sessionUser=null;
-      document.documentElement.classList.remove('account-authenticated');
-      localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,null)));broadcast();
-      window.WPApplyLiveState?.(publicState,null);
-      if(showLoginOn401&&typeof showAuthScreen==='function')showAuthScreen('login');
-      return null;
-    }
-    if(syncToken!==getToken())return null;
-    if(window.wpProfileDirty||window.wpVisibilitySaving)return accountState;
-    localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,accountState)));broadcast();
-    applySession(accountState);
-    window.WPApplyLiveState?.(publicState,accountState);
-    return accountState;
+      if(window.wpProfileDirty||window.wpVisibilitySaving)return accountState;
+      localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,accountState)));broadcast();
+      applySession(accountState);
+      window.WPApplyLiveState?.(publicState,accountState);
+      return accountState;
+    })().finally(()=>{syncInFlight=null});
+    return syncInFlight;
   }
   function setStatus(id,message,isError=true){const node=document.getElementById(id);if(!node)return;node.textContent=message;node.classList.add('show');if(isError)node.style.color='#ad3333'}
   function busy(form,on,label){const b=form?.querySelector('button[type="submit"]');if(!b)return;if(on){b.dataset.oldText=b.textContent;b.disabled=true;b.textContent=label}else{b.disabled=false;b.textContent=b.dataset.oldText||b.textContent}}
@@ -18710,7 +18728,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   // Proper local-relative logo fallback: if logo.jpg is beside this HTML it resolves in local and GitHub deployments.
   document.querySelectorAll('img[src="logo.jpg"]').forEach(img=>{img.addEventListener("error",()=>{if(img.dataset.wpLogoFallback!=="1"){img.dataset.wpLogoFallback="1";img.hidden=false;img.src="https://socmegy.com/watermark-pro/logo.jpg"}else img.hidden=true})});
   if("serviceWorker" in navigator && location.protocol==="https:")navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(console.warn);
-  setInterval(()=>{if(!document.hidden)window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{})},10000);
+  setInterval(()=>{if(!document.hidden)window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{})},60000);
   window.addEventListener("focus",()=>window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{}));
 })();
 </script>

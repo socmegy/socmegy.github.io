@@ -18402,28 +18402,33 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       deleteButton.setAttribute('aria-hidden',owner?'true':'false');
     }
   }
-  async function syncAll({showLoginOn401=true}={}){
-    if(window.wpProfileDirty||window.wpVisibilitySaving)return null;
-    const syncToken=getToken();
-    const publicState=await api('/api/public/state');
-    latestPublicState=publicState;
-    let accountState=null;
-    try{accountState=await api('/api/account/state')}catch(error){
+  let syncInFlight=null;
+  function syncAll({showLoginOn401=true}={}){
+    if(syncInFlight)return syncInFlight;
+    syncInFlight=(async()=>{
+      if(window.wpProfileDirty||window.wpVisibilitySaving)return null;
+      const syncToken=getToken();
+      const publicState=await api('/api/public/state');
+      latestPublicState=publicState;
+      let accountState=null;
+      try{accountState=await api('/api/account/state')}catch(error){
+        if(syncToken!==getToken())return null;
+        if(error.status!==401)throw error;
+        sessionUser=null;
+        document.documentElement.classList.remove('account-authenticated');
+        localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,null)));broadcast();
+        window.WPApplyLiveState?.(publicState,null);
+        if(showLoginOn401&&typeof showAuthScreen==='function')showAuthScreen('login');
+        return null;
+      }
       if(syncToken!==getToken())return null;
-      if(error.status!==401)throw error;
-      sessionUser=null;
-      document.documentElement.classList.remove('account-authenticated');
-      localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,null)));broadcast();
-      window.WPApplyLiveState?.(publicState,null);
-      if(showLoginOn401&&typeof showAuthScreen==='function')showAuthScreen('login');
-      return null;
-    }
-    if(syncToken!==getToken())return null;
-    if(window.wpProfileDirty||window.wpVisibilitySaving)return accountState;
-    localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,accountState)));broadcast();
-    applySession(accountState);
-    window.WPApplyLiveState?.(publicState,accountState);
-    return accountState;
+      if(window.wpProfileDirty||window.wpVisibilitySaving)return accountState;
+      localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,accountState)));broadcast();
+      applySession(accountState);
+      window.WPApplyLiveState?.(publicState,accountState);
+      return accountState;
+    })().finally(()=>{syncInFlight=null});
+    return syncInFlight;
   }
   function setStatus(id,message,isError=true){const node=document.getElementById(id);if(!node)return;node.textContent=message;node.classList.add('show');if(isError)node.style.color='#ad3333'}
   function busy(form,on,label){const b=form?.querySelector('button[type="submit"]');if(!b)return;if(on){b.dataset.oldText=b.textContent;b.disabled=true;b.textContent=label}else{b.disabled=false;b.textContent=b.dataset.oldText||b.textContent}}
@@ -18710,7 +18715,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   // Proper local-relative logo fallback: if logo.jpg is beside this HTML it resolves in local and GitHub deployments.
   document.querySelectorAll('img[src="logo.jpg"]').forEach(img=>{img.addEventListener("error",()=>{if(img.dataset.wpLogoFallback!=="1"){img.dataset.wpLogoFallback="1";img.hidden=false;img.src="https://socmegy.com/watermark-pro/logo.jpg"}else img.hidden=true})});
   if("serviceWorker" in navigator && location.protocol==="https:")navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(console.warn);
-  setInterval(()=>{if(!document.hidden)window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{})},10000);
+  setInterval(()=>{if(!document.hidden)window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{})},60000);
   window.addEventListener("focus",()=>window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{}));
 })();
 </script>
@@ -19732,7 +19737,9 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
     if(canvas){const box=document.getElementById('mediaLightbox');if(box)box.dataset.viewerKind='preview-media'}
   },true);
   const lower=()=>document.querySelectorAll('.wp-avatar-letter,.admin-notification-avatar').forEach(node=>{
-    const text=node.textContent.trim();if(text)node.textContent=text.toLowerCase();
+    if(node.children.length)return;
+    const text=node.textContent,lowercase=text.toLowerCase();
+    if(text!==lowercase)node.textContent=lowercase;
   });
   lower();new MutationObserver(lower).observe(document.body,{subtree:true,childList:true,characterData:true});
 })();
