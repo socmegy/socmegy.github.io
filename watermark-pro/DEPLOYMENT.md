@@ -6,8 +6,13 @@ with its existing `/watermark-pro/` identity and scope. Do not replace the root
 manifest or unregister the service worker used by `/admintest`.
 The v165 manifest requests portrait orientation for the installed app, with a
 runtime portrait lock where supported. Browser tabs retain device behaviour.
-The status-bar theme is navy. The white CSS safe area only paints within the web
-viewport; an opaque Android navigation bar is controlled by the browser/OS.
+The page theme-color remains navy (#143d68), while the installed manifest theme
+is white (#ffffff). Keep these separate: Chromium's installed-app navigation
+bar theme support reads the manifest color. Availability depends on browser
+version (Chromium change 0a6ab4f0e2ce17e572b05400ae6eacd7fc5389f0).
+The CSS safe area paints white behind the gesture handle in edge-to-edge mode.
+Desktop CSS checks do not validate Android system bars; verify on the target
+phone after deployment and installed-manifest refresh before declaring success.
 Installed applications may apply manifest changes later than website updates.
 Native install controls appear when the browser supplies `beforeinstallprompt`;
 iOS retains manual installation guidance. Directory-based legacy install flags
