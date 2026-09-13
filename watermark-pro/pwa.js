@@ -1,35 +1,47 @@
 (()=>{
-  const scope=new URL('./',document.baseURI).pathname,launchKey='wp-app-launch:'+scope;
-  if(new URLSearchParams(location.search).get('app')==='watermark-pro')sessionStorage.setItem(launchKey,'watermark-pro');
-  const ownStandalone=()=>(sessionStorage.getItem(launchKey)==='watermark-pro'||location.pathname.startsWith('/watermark-pro/'))&&(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true);
-  const installedKey='wp-installed:'+scope;
-  const state={prompt:null,installed:ownStandalone()||localStorage.getItem(installedKey)==='1'};
-  const recordInstalled=()=>{state.installed=true;localStorage.setItem(installedKey,'1');state.prompt=null;notify()};
+  const ownId=new URL('/watermark-pro/',location.origin).href;
+  const manifest=new URL('/watermark-pro/manifest.webmanifest',location.origin).href;
+  const installedKey='wp-installed-v2:'+ownId,launchKey='wp-app-launch-v2:'+ownId;
+  const read=(storage,key)=>{try{return storage.getItem(key)}catch{return null}};
+  const write=(storage,key,value)=>{try{value===null?storage.removeItem(key):storage.setItem(key,value)}catch{}};
+  const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  const inScope=()=>location.pathname.startsWith('/watermark-pro/');
+  if(inScope()&&standalone()&&new URLSearchParams(location.search).get('app')==='watermark-pro')write(sessionStorage,launchKey,'1');
+  const ownStandalone=()=>inScope()&&standalone()&&read(sessionStorage,launchKey)==='1';
+  let revision=0;
+  const state={prompt:null,installed:ownStandalone()||read(localStorage,installedKey)==='1'};
+  const recordInstalled=()=>{revision++;state.installed=true;write(localStorage,installedKey,'1');state.prompt=null;notify()};
   const notify=()=>window.dispatchEvent(new CustomEvent('watermarkproinstallchange',{detail:{available:Boolean(state.prompt),installed:state.installed}}));
   window.WatermarkProInstall={
     get available(){return Boolean(state.prompt)},
     get installed(){return state.installed},
     async prompt(){
       if(!state.prompt)return {outcome:'unavailable'};
-      const event=state.prompt;state.prompt=null;notify();await event.prompt();const choice=await event.userChoice;notify();return choice;
+      const event=state.prompt;state.prompt=null;revision++;notify();
+      try{await event.prompt();const choice=await event.userChoice;notify();return choice}
+      catch(error){notify();return {outcome:'unavailable',error:String(error)}}
     }
   };
-  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();localStorage.removeItem(installedKey);state.installed=false;state.prompt=event;notify()});
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();revision++;write(localStorage,installedKey,null);state.installed=false;state.prompt=event;notify()});
   window.addEventListener('appinstalled',recordInstalled);
-  matchMedia('(display-mode: standalone)').addEventListener('change',()=>{state.installed=ownStandalone()||localStorage.getItem(installedKey)==='1';if(state.installed)state.prompt=null;notify()});
-  if(ownStandalone())localStorage.setItem(installedKey,'1');
-  window.addEventListener('storage',event=>{if(event.key===installedKey){state.installed=event.newValue==='1'||ownStandalone();notify()}});
+  matchMedia('(display-mode: standalone)').addEventListener('change',()=>{revision++;state.installed=ownStandalone()||read(localStorage,installedKey)==='1';if(state.installed)state.prompt=null;notify()});
+  if(ownStandalone())write(localStorage,installedKey,'1');
+  window.addEventListener('storage',event=>{if(event.key===installedKey){revision++;state.installed=event.newValue==='1'||ownStandalone();if(state.installed)state.prompt=null;notify()}});
   if('serviceWorker' in navigator&&['http:','https:'].includes(location.protocol)){
-    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v161';
+    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v162';
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||sessionStorage.getItem(reloadKey))return;sessionStorage.setItem(reloadKey,'1');location.reload()});
-    window.addEventListener('load',async()=>{try{const registration=await navigator.serviceWorker.register(new URL('sw.js?v=161',document.baseURI),{scope:new URL('./',document.baseURI).pathname,updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
+    window.addEventListener('load',async()=>{if(!inScope())return;try{const registration=await navigator.serviceWorker.register('/watermark-pro/sw.js?v=162',{scope:'/watermark-pro/',updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
   }
   async function checkInstalled(){
     if(ownStandalone()){recordInstalled();return;}
     if(location.protocol==='file:'||typeof navigator.getInstalledRelatedApps!=='function')return;
-    try{const apps=await navigator.getInstalledRelatedApps();const ownId=new URL('/watermark-pro/',location.origin).href,manifest=new URL('manifest.webmanifest',document.baseURI).href;
-      const installed=apps.some(app=>app.platform==='webapp'&&(app.id===ownId||(!app.id&&app.url===manifest)));
-      state.installed=installed;if(installed)localStorage.setItem(installedKey,'1');else localStorage.removeItem(installedKey);notify();
+    const started=revision;
+    try{const apps=await navigator.getInstalledRelatedApps();
+      if(started!==revision||state.prompt)return;
+      const absolute=value=>{try{return new URL(value,location.origin).href}catch{return ''}};
+      const installed=apps.some(app=>app.platform==='webapp'&&(app.id?absolute(app.id)===ownId:absolute(app.url)===manifest));
+      // An empty result is not proof of uninstall; support varies by browser.
+      if(installed)recordInstalled();
     }catch{}
   }
   window.addEventListener('pageshow',checkInstalled);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkInstalled()});checkInstalled();
@@ -37,7 +49,7 @@
     let d=document.getElementById('wpInstallHelp');
     if(!d){
       d=document.createElement('dialog');d.id='wpInstallHelp';d.setAttribute('aria-labelledby','wpInstallTitle');
-      const local=location.protocol==='file:',ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+      const local=location.protocol==='file:',ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
       const copy=local?'Pemasangan tersedia melalui laman web Watermark Pro. Buka laman web untuk memasang aplikasi pada peranti ini.':ios?'Tekan butang Kongsi dalam Safari, kemudian pilih Tambah ke Skrin Utama.':'Buka menu pelayar, pilih Pasang Watermark Pro, kemudian sahkan pemasangan.';
       d.innerHTML='<div class="wp-install-heading"><img src="logo.jpg" alt=""><div><h2 id="wpInstallTitle">Pasang Watermark Pro</h2><span>Akses terus daripada peranti anda</span></div><button type="button" class="wp-install-close" aria-label="Tutup">×</button></div><p>'+copy+'</p><div class="wp-install-actions">'+(local?'<a href="https://socmegy.com/watermark-pro/" target="_blank" rel="noopener" class="wp-install-primary">Buka laman web</a>':'')+'<button type="button" class="wp-install-done">'+(local?'Tutup':'Faham')+'</button></div>';
       d.querySelectorAll('button').forEach(b=>b.onclick=()=>d.close());d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()}});document.body.append(d);
@@ -49,7 +61,8 @@
     if(dialog&&state.prompt&&!dialog.querySelector('#wpInstallNative')){const b=document.createElement('button');b.id='wpInstallNative';b.type='button';b.className='wp-install-primary';b.textContent='Pasang aplikasi';b.onclick=async()=>{dialog.close();await window.WatermarkProInstall.prompt()};dialog.querySelector('.wp-install-actions').prepend(b)}
 
     let button=document.getElementById('wpInstallApp');
-    if(state.installed){button?.remove();document.getElementById('wpInstallHelp')?.close();return;}
+    const manualInstall=location.protocol==='file:'||/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(state.installed||(!state.prompt&&!manualInstall)){button?.remove();if(state.installed)document.getElementById('wpInstallHelp')?.close();return;}
     if(!button){button=document.createElement('button');button.id='wpInstallApp';button.type='button';button.className='pwa-install-button';button.setAttribute('aria-label','Pasang aplikasi Watermark Pro');button.title='Pasang aplikasi Watermark Pro';button.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>';button.onclick=async()=>{if(state.prompt)await window.WatermarkProInstall.prompt();else showInstallHelp()};document.body.append(button);}
   }
   const style=document.createElement('style');style.textContent='body #wpInstallApp{position:fixed!important;left:var(--wp-install-left,12px)!important;right:auto!important;bottom:max(20px,env(safe-area-inset-bottom))!important;width:48px;height:48px;display:none;place-items:center;border:1px solid #d6dde6;border-radius:14px;background:#fff;color:#143d68;box-shadow:0 5px 18px #102b4920;z-index:90;cursor:pointer}body.auth-mode #wpInstallApp{display:grid;z-index:100001}';document.head.append(style);

@@ -10,7 +10,6 @@
   "display_override": [
     "standalone"
   ],
-  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "navigation_bar_color": "#ffffff",

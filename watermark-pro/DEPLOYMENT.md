@@ -1,5 +1,18 @@
 # Publishing Watermark Pro
 
+PWA v162: rebuild with `node build-publish.cjs` and upload the resulting contents
+to `/watermark-pro/`. Keep the manifest URL stable (without a version query),
+with its existing `/watermark-pro/` identity and scope. Do not replace the root
+manifest or unregister the service worker used by `/admintest`.
+The manifest omits orientation so the platform can follow device preferences.
+Installed applications may apply manifest changes later than website updates.
+Native install controls appear when the browser supplies `beforeinstallprompt`;
+iOS retains manual installation guidance. Directory-based legacy install flags
+are ignored. New flags identify only this app; fresh install eligibility clears
+them after uninstall. Browsers without installation detection cannot reliably
+report installations made elsewhere or uninstalls until eligibility is emitted.
+Run `node test-pwa.cjs` for the focused installation regression checks.
+
 The account entry point is `index.html`; Control is `control.html`. Publish both
 alongside `avatar-render.js`, `release-ui.js`, `control-release.js`, `wmark-shared.js`, `pwa.js`,
 `sw.js`, `manifest.webmanifest`, `favicon-rounded.png`, both `app-icon-rounded-*.png`
