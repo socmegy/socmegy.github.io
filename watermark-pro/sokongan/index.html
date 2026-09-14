@@ -87,7 +87,7 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="canonical" href="https://socmegy.com/watermark-pro/">
 <link rel="manifest" href="manifest.webmanifest">
-<script src="pwa.js?v=166" defer></script>
+<script src="pwa.js?v=167" defer></script>
 <link rel="apple-touch-icon" href="app-icon-rounded-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -19792,7 +19792,7 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 }
 .sidebar-user-name-row.wp-wmark-name>.wp-wmark>img{
   display:block!important;width:13px!important;height:13px!important;margin:0!important;
-  transform:translateY(2px)!important;
+  transform:translateY(1px)!important;
 }
 /* The large Settings avatar needs a correspondingly balanced fallback glyph. */
 #page-settings #avatarPreview>.wp-avatar-letter,
@@ -19807,7 +19807,7 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 <script id="v145-sidebar-wmark-optical-fix">
 (()=>{
   const align=()=>document.querySelectorAll('.sidebar-user-name-row>.wp-wmark>img').forEach(img=>{
-    img.style.setProperty('transform','translateY(2px)','important');
+    img.style.setProperty('transform','translateY(1px)','important');
   });
   align();
   new MutationObserver(align).observe(document.querySelector('.sidebar-user')||document.body,{subtree:true,childList:true});
@@ -19859,5 +19859,5 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   #receiptModal #receiptSheet .lr-foot{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:4px!important}
 }
 </style>
-<link rel="stylesheet" href="request-layout.css?v=165">
+<link rel="stylesheet" href="request-layout.css?v=166">
 </html>
