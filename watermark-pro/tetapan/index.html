@@ -19786,7 +19786,10 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 .sidebar-user-name-row.wp-wmark-name>.wp-wmark{
   width:13px!important;height:13px!important;min-width:13px!important;
   flex:0 0 13px!important;align-self:center!important;
-  margin:0!important;transform:none!important;
+  margin:0!important;
+  /* Optical correction expressed in em so it remains proportional and does
+     not jump above/below the username at different browser zoom levels. */
+  transform:translateY(.0625em)!important;
 }
 .sidebar-user-name-row.wp-wmark-name>.wp-wmark>img{
   display:block!important;width:13px!important;height:13px!important;margin:0!important;
