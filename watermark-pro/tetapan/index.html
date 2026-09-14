@@ -19787,12 +19787,12 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   width:13px!important;height:13px!important;min-width:13px!important;
   flex:0 0 13px!important;align-self:center!important;
   margin:0!important;
-  /* Optical correction expressed in em so it remains proportional and does
-     not jump above/below the username at different browser zoom levels. */
-  transform:translateY(.0625em)!important;
+  position:static!important;top:auto!important;
+  transform:none!important;
 }
 .sidebar-user-name-row.wp-wmark-name>.wp-wmark>img{
   display:block!important;width:13px!important;height:13px!important;margin:0!important;
+  transform:translateY(2px)!important;
 }
 /* The large Settings avatar needs a correspondingly balanced fallback glyph. */
 #page-settings #avatarPreview>.wp-avatar-letter,
@@ -19804,6 +19804,15 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   display:grid!important;place-items:center!important;
 }
 </style>
+<script id="v145-sidebar-wmark-optical-fix">
+(()=>{
+  const align=()=>document.querySelectorAll('.sidebar-user-name-row>.wp-wmark>img').forEach(img=>{
+    img.style.setProperty('transform','translateY(2px)','important');
+  });
+  align();
+  new MutationObserver(align).observe(document.querySelector('.sidebar-user')||document.body,{subtree:true,childList:true});
+})();
+</script>
 <script id="v143-request-fixes-script">
 (()=>{
   /* A receipt printed inside about:blank cannot resolve logo.jpg reliably.
