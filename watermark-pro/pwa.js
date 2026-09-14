@@ -10,9 +10,25 @@
   const ownStandalone=()=>inScope()&&standalone()&&read(sessionStorage,launchKey)==='1';
   // Apply the current portrait policy while installed manifests update.
   // Browser tabs retain the device's normal orientation behaviour.
-  const keepPortrait=()=>{if(!inScope()||!standalone()||!screen.orientation?.lock)return;try{Promise.resolve(screen.orientation.lock('portrait')).catch(()=>{})}catch{}};
+  let portraitRetry=0;
+  const keepPortrait=()=>{
+    if(!inScope()||!standalone()||!screen.orientation?.lock)return;
+    try{
+      Promise.resolve(screen.orientation.lock('portrait-primary')).then(()=>{portraitRetry=0}).catch(()=>{
+        /* Some Android WebViews only accept the broader portrait keyword. */
+        return Promise.resolve(screen.orientation.lock('portrait')).then(()=>{portraitRetry=0}).catch(()=>{});
+      });
+    }catch{}
+  };
   keepPortrait();
   window.addEventListener('pageshow',keepPortrait);
+  window.addEventListener('focus',keepPortrait);
+  window.addEventListener('resize',keepPortrait,{passive:true});
+  screen.orientation?.addEventListener?.('change',()=>{
+    keepPortrait();
+    clearTimeout(portraitRetry);
+    portraitRetry=setTimeout(keepPortrait,250);
+  });
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)keepPortrait()});
   let revision=0;
   const state={prompt:null,installed:ownStandalone()||read(localStorage,installedKey)==='1'};
@@ -34,9 +50,9 @@
   if(ownStandalone())write(localStorage,installedKey,'1');
   window.addEventListener('storage',event=>{if(event.key===installedKey){revision++;state.installed=event.newValue==='1'||ownStandalone();if(state.installed)state.prompt=null;notify()}});
   if('serviceWorker' in navigator&&['http:','https:'].includes(location.protocol)){
-    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v165';
+    const hadController=Boolean(navigator.serviceWorker.controller),reloadKey='wp-sw-reload-v166';
     navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadController||sessionStorage.getItem(reloadKey))return;sessionStorage.setItem(reloadKey,'1');location.reload()});
-    window.addEventListener('load',async()=>{if(!inScope())return;try{const registration=await navigator.serviceWorker.register('/watermark-pro/sw.js?v=165',{scope:'/watermark-pro/',updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
+    window.addEventListener('load',async()=>{if(!inScope())return;try{const registration=await navigator.serviceWorker.register('/watermark-pro/sw.js?v=166',{scope:'/watermark-pro/',updateViaCache:'none'});await registration.update()}catch(error){console.warn('Watermark Pro service worker:',error)}});
   }
   async function checkInstalled(){
     if(ownStandalone()){recordInstalled();return;}

@@ -43,7 +43,7 @@ const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':
     await page.waitForFunction(() => window.WPCloudflare && !document.body.classList.contains('auth-mode'));
     await page.locator('#page-home').waitFor({state:'visible'});
     await page.evaluate(() => document.fonts.ready);
-    for(const zoom of [1,0.9]){
+    for(const zoom of [1,0.9,0.8,0.75,0.67,0.5]){
       console.log(await page.evaluate(zoom=>{
         document.documentElement.style.zoom=String(zoom);
         const mark=document.querySelector('.sidebar-user .wp-wmark'),name=document.querySelector('.sidebar-user strong');

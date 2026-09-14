@@ -95,10 +95,10 @@ html body .version-section,html body .legacy-version-section{display:none!import
 html:root body #mediaLightbox[data-viewer-kind="banner"] #mediaLightboxImage,
 html:root body #mediaLightbox[data-viewer-kind="photo-banner"] #mediaLightboxImage{border-radius:18px!important}
 @media(min-width:981px){
- html:root body .sidebar-user .wp-wmark-name{display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;min-width:0!important}
- html:root body .sidebar-user .wp-wmark-name>strong{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ html:root body .sidebar-user .wp-wmark-name{display:inline-flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;min-width:0!important;line-height:1.22!important}
+ html:root body .sidebar-user .wp-wmark-name>strong{min-width:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;padding:0!important;margin:0!important;line-height:1.22!important}
  html:root body .sidebar-user .wp-wmark-name.wp-wmark-normal>.wp-wmark,
- html:root body .sidebar-user .wp-wmark{flex-shrink:0!important;align-self:center!important;transform:translateY(1px)!important}
+ html:root body .sidebar-user .wp-wmark{flex-shrink:0!important;align-self:center!important;transform:none!important;vertical-align:middle!important}
 }
 /* Match the modal receipt's stamp/RM overlap to the isolated final receipt. */
 @media(max-width:760px){

@@ -87,7 +87,7 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="canonical" href="https://socmegy.com/watermark-pro/">
 <link rel="manifest" href="manifest.webmanifest">
-<script src="pwa.js?v=165" defer></script>
+<script src="pwa.js?v=166" defer></script>
 <link rel="apple-touch-icon" href="app-icon-rounded-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18421,7 +18421,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       deleteButton.setAttribute('aria-hidden',owner?'true':'false');
     }
   }
-  let syncInFlight=null;
+  let syncInFlight=null,lastLiveSyncAt=0;
   function syncAll({showLoginOn401=true}={}){
     if(syncInFlight)return syncInFlight;
     syncInFlight=(async()=>{
@@ -18429,6 +18429,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       const syncToken=getToken();
       const publicState=await api('/api/public/state');
       latestPublicState=publicState;
+      lastLiveSyncAt=Date.now();
       let accountState=null;
       try{accountState=await api('/api/account/state')}catch(error){
         if(syncToken!==getToken())return null;
@@ -18445,6 +18446,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       localStorage.setItem(STATE_KEY,JSON.stringify(mergeState(publicState,accountState)));broadcast();
       applySession(accountState);
       window.WPApplyLiveState?.(publicState,accountState);
+      lastLiveSyncAt=Date.now();
       return accountState;
     })().finally(()=>{syncInFlight=null});
     return syncInFlight;
@@ -18591,7 +18593,9 @@ body.payment-modal-open>.mobile-nav{display:none!important}
     }
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startLive,{once:true});else startLive();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncAll({showLoginOn401:false}).catch(()=>{})});
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden&&Date.now()-lastLiveSyncAt>60000)syncAll({showLoginOn401:false}).catch(()=>{});
+  });
 })();
 
 </script>
@@ -18734,7 +18738,9 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   // Proper local-relative logo fallback: if logo.jpg is beside this HTML it resolves in local and GitHub deployments.
   document.querySelectorAll('img[src="logo.jpg"]').forEach(img=>{img.addEventListener("error",()=>{if(img.dataset.wpLogoFallback!=="1"){img.dataset.wpLogoFallback="1";img.hidden=false;img.src="https://socmegy.com/watermark-pro/logo.jpg"}else img.hidden=true})});
   if("serviceWorker" in navigator && location.protocol==="https:")navigator.serviceWorker.register("./sw.js",{scope:"./"}).catch(console.warn);
-  setInterval(()=>{if(!document.hidden)window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{})},60000);
+  /* A five-minute safety refresh keeps long-open sessions current. Mutations,
+     login and returning after a minute still refresh immediately. */
+  setInterval(()=>{if(!document.hidden)window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{})},300000);
   window.addEventListener("focus",()=>window.WPCloudflare?.sync?.({showLoginOn401:false}).catch(()=>{}));
 })();
 </script>
@@ -19763,6 +19769,38 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   lower();new MutationObserver(lower).observe(document.body,{subtree:true,childList:true,characterData:true});
 })();
 </script>
+<style id="v145-request-fixes">
+/* Keep the sidebar username and W Mark on one shared, zoom-stable line box. */
+.sidebar-user-name-row.wp-wmark-name{
+  display:inline-flex!important;
+  align-items:center!important;
+  align-self:flex-start!important;
+  min-height:16px!important;
+  line-height:16px!important;
+  gap:3px!important;
+}
+.sidebar-user-name-row.wp-wmark-name>strong{
+  font-size:16px!important;
+  line-height:16px!important;
+}
+.sidebar-user-name-row.wp-wmark-name>.wp-wmark{
+  width:13px!important;height:13px!important;min-width:13px!important;
+  flex:0 0 13px!important;align-self:center!important;
+  margin:0!important;transform:none!important;
+}
+.sidebar-user-name-row.wp-wmark-name>.wp-wmark>img{
+  display:block!important;width:13px!important;height:13px!important;margin:0!important;
+}
+/* The large Settings avatar needs a correspondingly balanced fallback glyph. */
+#page-settings #avatarPreview>.wp-avatar-letter,
+#page-settings .avatar-setting-preview>.wp-avatar-letter{
+  box-sizing:border-box!important;
+  inset:0!important;width:100%!important;height:100%!important;
+  padding:10px!important;
+  font-size:28px!important;line-height:1!important;
+  display:grid!important;place-items:center!important;
+}
+</style>
 <script id="v143-request-fixes-script">
 (()=>{
   /* A receipt printed inside about:blank cannot resolve logo.jpg reliably.
