@@ -1,1 +1,0 @@
-This folder contains the built output assets for the worker "watermark-pro-api" generated at 2026-09-10T09:51:13.965Z.
