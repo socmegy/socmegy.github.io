@@ -136,6 +136,8 @@ button,input,textarea,select{font-family:inherit}
 .notification-row>div:nth-child(3){display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:5px!important}
 .notification-row>div:nth-child(3) .cell-value{display:block!important;margin:0!important}
 .notification-row>div:nth-child(3) .cell-value.muted{margin-top:1px!important}
+.notification-row .notification-sender{display:inline-flex!important;align-items:center!important;gap:3px!important;min-width:0!important;font-size:13px!important;line-height:1.45!important}
+.notification-row .notification-sender .control-wmark{display:block!important;width:13px!important;height:13px!important;min-width:13px!important;flex:0 0 13px!important;margin:0!important;object-fit:contain!important}
 /* History status (including GRANTED/Diluluskan) centered in its grid cell. */
 .history-row>div:nth-child(4){display:flex!important;align-items:center!important;justify-content:center!important;align-self:stretch!important;text-align:center!important}
 @media(max-width:700px){
@@ -649,7 +651,7 @@ function renderPlans(){
 
 function renderNotifications(){
   const items=[...state.notifications].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-  document.getElementById("notificationList").innerHTML=items.length?items.map(item=>'<div class="data-row notification-row"><div><strong class="cell-value">'+esc(item.title)+'</strong><div class="legal-copy">'+esc(item.text)+'</div></div><div><span class="cell-label">Penerima</span><span class="cell-value">'+esc(item.audience==="ALL"?"Semua pengguna":item.audience)+'</span></div><div><span class="cell-label">Dihantar oleh</span><span class="cell-value">'+esc(item.senderUsername)+'</span><span class="cell-value muted">'+esc(formatDateTime(item.createdAt))+'</span></div><div class="row-actions"><button class="btn small" data-edit-notice="'+esc(item.id)+'">Edit</button><button class="btn small danger" data-delete-notice="'+esc(item.id)+'">Padam</button></div></div>').join(""):'<div class="empty">Belum ada notis.</div>';
+  document.getElementById("notificationList").innerHTML=items.length?items.map(item=>'<div class="data-row notification-row"><div><strong class="cell-value">'+esc(item.title)+'</strong><div class="legal-copy">'+esc(item.text)+'</div></div><div><span class="cell-label">Penerima</span><span class="cell-value">'+esc(item.audience==="ALL"?"Semua pengguna":item.audience)+'</span></div><div><span class="cell-label">Dihantar oleh</span><span class="cell-value notification-sender">'+esc(item.senderUsername)+'<img class="control-wmark" alt="W Mark" src="'+esc(window.WPWMarkAsset||"")+'"></span><span class="cell-value muted">'+esc(formatDateTime(item.createdAt))+'</span></div><div class="row-actions"><button class="btn small" data-edit-notice="'+esc(item.id)+'">Edit</button><button class="btn small danger" data-delete-notice="'+esc(item.id)+'">Padam</button></div></div>').join(""):'<div class="empty">Belum ada notis.</div>';
 }
 
 function renderLegalList(type){
