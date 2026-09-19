@@ -97,12 +97,12 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta property="og:title" content="Watermark Pro — Tera Air Sebelum Post">
 <meta property="og:description" content="Tera air banyak fail dengan lebih cepat menggunakan teks, tandatangan sendiri dan ciri Penyokong Pro.">
 <meta property="og:url" content="https://socmegy.com/watermark-pro/">
-<meta property="og:image" content="https://socmegy.com/watermark-pro/ogmage.jpg">
+<meta property="og:image" content="https://socmegy.com/watermark-pro/og-image.jpg">
 <meta property="og:image:alt" content="Watermark Pro">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Watermark Pro — Tera Air Sebelum Post">
 <meta name="twitter:description" content="Tera air banyak fail dengan lebih cepat menggunakan teks, tandatangan sendiri dan ciri Penyokong Pro.">
-<meta name="twitter:image" content="https://socmegy.com/watermark-pro/ogmage.jpg">
+<meta name="twitter:image" content="https://socmegy.com/watermark-pro/og-image.jpg">
 <meta name="twitter:image:alt" content="Watermark Pro">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Watermark Pro","url":"https://socmegy.com/watermark-pro/","applicationCategory":"MultimediaApplication","operatingSystem":"Any","description":"Alat tera air berasaskan web untuk imej dan video.","offers":[{"@type":"Offer","name":"Percuma","price":"0","priceCurrency":"MYR"},{"@type":"Offer","name":"Penyokong Pro","priceCurrency":"MYR"}]}</script>
 <!-- V132 SEO END -->
@@ -10208,6 +10208,7 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
  #wpWMarkDialog .wp-wmark-title{margin:0 0 17px;color:#111827;font-size:18px;font-weight:750;line-height:1.25;letter-spacing:-.01em}
  #wpWMarkDialog .wp-wmark-info{display:grid;gap:13px}
  #wpWMarkDialog .wp-wmark-info-row{display:grid;grid-template-columns:16px minmax(0,1fr);align-items:center;gap:10px;color:#667085;font-size:14px;font-weight:400;line-height:1.45}
+ #wpWMarkDialog .wp-wmark-info-row[hidden]{display:none!important}
  #wpWMarkDialog .wp-wmark-info-row img,#wpWMarkDialog .wp-wmark-info-row svg{display:block;width:16px;height:16px;object-fit:contain}
  @media(min-width:701px){#wpWMarkDialog{inset:auto auto 0 50%;width:min(420px,calc(100vw - 40px));border-radius:22px 22px 0 0;transform:translate(-50%,105%)}#wpWMarkDialog[open]{transform:translate(-50%,0)}}
 `;
@@ -10215,10 +10216,10 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
    const dialog=document.createElement('dialog');dialog.id='wpWMarkDialog';dialog.setAttribute('aria-label','Maklumat Penyokong Pro');
    dialog.innerHTML='<div class="sheet-handle" aria-hidden="true"></div><h3 class="wp-wmark-title">W Mark</h3><div class="wp-wmark-info"><div class="wp-wmark-info-row"><img alt="" aria-hidden="true" src="'+asset+'"><span>Pengguna merupakan penyokong pro.</span></div><div class="wp-wmark-info-row"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="2"></rect><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"></path></svg><span class="wp-wmark-since"></span></div></div>';
    document.body.append(dialog);
-   dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
-   const dateText=value=>{const date=value?new Date(value):null;if(!date||Number.isNaN(date.getTime()))return '';return [String(date.getDate()).padStart(2,'0'),String(date.getMonth()+1).padStart(2,'0'),date.getFullYear()].join('/')};
-   const syncDialogDate=trigger=>{let start=trigger?.closest('.topuser-row')?.dataset.proSince||document.body.dataset.proSince||'';if(!start){try{const cached=JSON.parse(localStorage.getItem('watermarkProUserLiveCacheV125')||'{}');const entries=[...(cached.subscriptions||[])].filter(item=>['PAID','GRANTED'].includes(String(item.status||'').toUpperCase())).sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));start=entries[0]?.startsAt||entries[0]?.approvedAt||entries[0]?.createdAt||''}catch{}}const formatted=dateText(start);const node=dialog.querySelector('.wp-wmark-since');if(node)node.textContent='Penyokong pro sejak '+formatted+'.'};
-   document.addEventListener('click',e=>{const trigger=e.target.closest('.wp-wmark');if(trigger){e.preventDefault();e.stopPropagation();syncDialogDate(trigger);dialog.showModal()}});
+   dialog.addEventListener('click',e=>{e.stopPropagation();if(e.target===dialog)dialog.close()});
+   const dateText=value=>{const raw=String(value||'').trim();if(!raw)return '';if(/^\d{4}-\d{2}-\d{2}$/.test(raw))return raw.slice(8,10)+'/'+raw.slice(5,7)+'/'+raw.slice(0,4);const date=new Date(raw);if(Number.isNaN(date.getTime()))return '';return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kuala_Lumpur',day:'2-digit',month:'2-digit',year:'numeric'}).format(date)};
+   const syncDialogDate=trigger=>{const row=trigger?.closest('.topuser-row');const sender=trigger?.closest('.notification-sender');const start=row?row.dataset.wmarkProSince||'':sender?sender.dataset.wmarkProSince||window.WPAdminProSince||'':document.body.dataset.wmarkProSince||'';const formatted=dateText(start);const node=dialog.querySelector('.wp-wmark-since');if(node){node.textContent=formatted?'Penyokong Pro sejak '+formatted+'.':'';node.parentElement.hidden=!formatted}};
+   document.addEventListener('click',e=>{const trigger=e.target.closest('.wp-wmark');if(trigger){if(trigger.closest('#page-subscriptions .wp-wmark-feature,#authPricingModal .wp-wmark-feature'))return;e.preventDefault();e.stopPropagation();syncDialogDate(trigger);dialog.showModal()}});
   const mark=()=>{const b=document.createElement('button');b.type='button';b.className='wp-wmark';b.setAttribute('aria-label','Tentang W Mark');b.innerHTML='<img alt="W Mark" src="'+asset+'">';return b};
   const observer=new MutationObserver(update);
   function update(){
@@ -10234,7 +10235,7 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
       });
       document.querySelectorAll('#page-subscriptions .plan.pro .features,#authPricingModal .plan.pro .features').forEach(list=>{
         if(!list.querySelector('.wp-wmark-feature')){
-          const li=document.createElement('li');li.className='wp-wmark-feature';li.append(mark(),document.createTextNode('w mark di sebelah nama pengguna'));list.prepend(li);
+          const li=document.createElement('li');li.className='wp-wmark-feature';const icon=document.createElement('span');icon.className='wp-wmark';icon.setAttribute('aria-hidden','true');icon.innerHTML='<img alt="" src="'+asset+'">';li.append(icon,document.createTextNode('w mark di sebelah nama pengguna'));list.prepend(li);
         }
       });
       document.querySelectorAll('#notificationPanel .notification-item').forEach(row=>{
@@ -18020,12 +18021,12 @@ body.payment-modal-open>.mobile-nav{display:none!important}
     const username=normalize(admin?.username||"@admin");
     const photo=admin?.photo||"";
     const visual=photo?'<img alt="" src="'+escapeHtml(photo)+'">':escapeHtml(username.replace("@","").charAt(0).toUpperCase()||"A");
-    return '<span class="admin-sender-avatar" aria-hidden="true">'+visual+'</span><strong>'+escapeHtml(username)+'</strong>';
+    return '<span class="admin-sender-avatar" aria-hidden="true">'+visual+'</span><strong>'+escapeHtml(username)+'</strong>'+(window.WPWMarkAsset?'<span class="wp-wmark" aria-label="Maklumat W Mark"><img alt="" src="'+window.WPWMarkAsset+'"></span>':'');
   }
 
   function setNotificationSender(admin){
     const sender=document.querySelector("#notificationDetailModal .notification-sender");
-    if(sender) sender.innerHTML=senderMarkup(admin);
+    if(sender){sender.innerHTML=senderMarkup(admin);sender.dataset.wmarkProSince=admin?.proSince||'';sender.dataset.wmarkOwner='1'}
   }
 
   function openAdminNotification(notification,state){
@@ -18036,7 +18037,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
     if(title) title.textContent=notification.title;
     if(message) message.textContent=notification.text;
     if(time) time.textContent=formatDate(notification.createdAt);
-    setNotificationSender({username:notification.senderUsername||state.admin?.username,photo:notification.senderPhoto||state.admin?.photo});
+    setNotificationSender({username:notification.senderUsername||state.admin?.username,photo:notification.senderPhoto||state.admin?.photo,proSince:state.admin?.proSince});
     modal?.classList.add("open");
     modal?.setAttribute("aria-hidden","false");
   }
@@ -18056,7 +18057,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
       const photo=notification.senderPhoto||state.admin?.photo||"";
       const avatar=photo?'<img alt="" src="'+escapeHtml(photo)+'">':escapeHtml(sender.replace("@","").charAt(0).toUpperCase()||"A");
       const mark=window.WPWMarkAsset?'<span class="wp-wmark" aria-hidden="true"><img alt="" src="'+window.WPWMarkAsset+'"></span>':'';
-      item.innerHTML='<div class="notification-item-icon admin-notification-avatar">'+avatar+'</div><div class="notification-body"><strong>'+escapeHtml(notification.title)+'</strong><p>'+escapeHtml(notification.text)+'</p><div class="notification-meta notification-meta-panel"><span class="notification-sender"><strong>'+escapeHtml(sender)+'</strong>'+mark+'</span><time>'+escapeHtml(formatDate(notification.createdAt))+'</time></div></div>';
+      item.innerHTML='<div class="notification-item-icon admin-notification-avatar">'+avatar+'</div><div class="notification-body"><strong>'+escapeHtml(notification.title)+'</strong><p>'+escapeHtml(notification.text)+'</p><div class="notification-meta notification-meta-panel"><span class="notification-sender" data-wmark-pro-since="'+escapeHtml(state.admin?.proSince||'')+'" data-wmark-owner="1"><strong>'+escapeHtml(sender)+'</strong>'+mark+'</span><time>'+escapeHtml(formatDate(notification.createdAt))+'</time></div></div>';
       item.addEventListener("click",()=>openAdminNotification(notification,state));
       head?.insertAdjacentElement("afterend",item);
     });
@@ -18711,9 +18712,9 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   }
   function renderTopUsers(publicState,accountState){
     const me=accountState?.user;
-    const users=(Array.isArray(publicState?.topUsers)?publicState.topUsers:[]).map(u=>me&&u.id===me.id?{...u,photo:me.photo||u.photo||"",plan:me.plan||u.plan,proUntil:me.proUntil||u.proUntil,publicProfile:me.publicProfile,downloads:me.downloads||u.downloads}:u);
+    const users=(Array.isArray(publicState?.topUsers)?publicState.topUsers:[]).map(u=>me&&u.id===me.id?{...u,photo:me.photo||u.photo||"",plan:me.plan||u.plan,proUntil:me.proUntil||u.proUntil,proSince:me.proSince||u.proSince,publicProfile:me.publicProfile,downloads:me.downloads||u.downloads}:u);
     const compactTotal=value=>{const n=Number(value||0);if(n<1000)return String(n);const units=[[1e9,'B'],[1e6,'M'],[1e3,'K']];const [div,suffix]=units.find(([d])=>n>=d)||[1,''];if(!suffix)return String(n);const scaled=n/div;return (scaled>=100?scaled.toFixed(0):scaled>=10?scaled.toFixed(1):scaled.toFixed(1)).replace(/\.0$/,'')+suffix};
-    const row=(u,i,logged)=>{const total=Number(u.downloads?.images||0)+Number(u.downloads?.videos||0);const isYou=Boolean(me&&u.id===me.id);const plan=u.plan==="pro"?"Penyokong Pro":"Percuma";const rank=i+1;const podium=rank<=3?' podium-'+rank:'';const trophy=rank===1?'<svg class="topuser-trophy" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M8 4h8v3a4 4 0 0 1-8 0V4Z"></path><path d="M8 6H5v1a4 4 0 0 0 4 4"></path><path d="M16 6h3v1a4 4 0 0 1-4 4"></path><path d="M12 11v5"></path><path d="M8.5 20h7"></path><path d="M10 16h4v4h-4z"></path></svg>':'#'+rank;return '<div class="topuser-row'+podium+(isYou?' is-you':'')+(u.plan==="pro"?' is-pro':'')+'" data-pro-since="'+esc(u.proSince||'')+'"><div class="topuser-rank">'+trophy+'</div>'+avatarHTML(u)+'<div class="topuser-copy"><div class="lab-inline-name lab-topuser-name"><span class="lab-uname lab-topuser-uname">'+esc(norm(u.username))+'</span></div><small>'+(logged&&isYou?'Anda · ':'')+esc(plan)+'</small></div><div class="topuser-count" title="'+total+'">'+compactTotal(total)+'</div></div>'};
+    const row=(u,i,logged)=>{const total=Number(u.downloads?.images||0)+Number(u.downloads?.videos||0);const isYou=Boolean(me&&u.id===me.id);const plan=u.plan==="pro"?"Penyokong Pro":"Percuma";const rank=i+1;const podium=rank<=3?' podium-'+rank:'';const trophy=rank===1?'<span class="topuser-trophy" aria-label="Tempat pertama"></span>':'#'+rank;return '<div class="topuser-row'+podium+(isYou?' is-you':'')+(u.plan==="pro"?' is-pro':'')+'" data-wmark-pro-since="'+esc(u.proSince||'')+'"><div class="topuser-rank">'+trophy+'</div>'+avatarHTML(u)+'<div class="topuser-copy"><div class="lab-inline-name lab-topuser-name"><span class="lab-uname lab-topuser-uname">'+esc(norm(u.username))+'</span></div><small>'+(logged&&isYou?'Anda · ':'')+esc(plan)+'</small></div><div class="topuser-count" title="'+total+'">'+compactTotal(total)+'</div></div>'};
     const mount=(parent,logged)=>{if(!parent)return;parent.querySelectorAll(":scope > .topuser-row,:scope > .topuser-list-v70,:scope > .wp-live-empty").forEach(n=>n.remove());const list=document.createElement("div");list.className="topuser-list-v70";list.innerHTML=users.length?users.map((u,i)=>row(u,i,logged)).join(""):'<div class="wp-live-empty" style="padding:28px 16px;text-align:center;color:#7a8490">Belum ada profil awam dalam Top Users.</div>';parent.appendChild(list)};
     mount(document.getElementById("topUsersPanel"),true);mount(document.querySelector("#authTopUsersModal .auth-modal-body"),false);
     if(me){const rank=users.findIndex(u=>u.id===me.id);const el=document.getElementById("profileRank");if(el)el.textContent=me.publicProfile===false?"-":(rank>=0?"#"+(rank+1):"-")}
@@ -18735,13 +18736,13 @@ body.payment-modal-open>.mobile-nav{display:none!important}
     const open=settings.paymentsOpen!==false;const title=document.getElementById("paymentAvailabilityTitle"),copy=document.getElementById("paymentAvailabilityText");if(title)title.textContent=open?"Pembayaran dibuka":"Pembayaran ditutup";if(copy)copy.textContent=open?"Pembayaran tersedia. Selepas membuat bayaran melalui QR, masukkan masa pembayaran dan hantar maklumat pembayaran untuk semakan Watermark Pro.":"Penghantaran pembayaran baharu sedang ditutup buat masa ini.";
   }
   function renderNotifications(publicState,accountState){
-    const panel=document.getElementById("notificationPanel");if(!panel)return;const items=Array.isArray(accountState?.notifications)?accountState.notifications:[];panel.innerHTML='<div class="notification-head"><strong>Notifications</strong><span>'+items.length+' terkini</span></div>'+(items.length?items.map(n=>{const sender=norm(n.senderUsername||publicState?.admin?.username||"@watermarkpro"),photo=resolveAsset(n.senderPhoto||publicState?.admin?.photo),letter=(sender.replace("@","").charAt(0)||"W").toUpperCase();return '<button type="button" class="notification-item admin-notification-item wp-live-notice" data-id="'+esc(n.id)+'"><div class="notification-item-icon admin-notification-avatar">'+(photo?'<img alt="" src="'+esc(photo)+'" onerror="this.remove();this.parentElement.textContent=\''+esc(letter)+'\'">':esc(letter))+'</div><div><strong>'+esc(n.title)+'</strong><p>'+esc(n.text)+'</p><time>'+esc(fmtDate(n.createdAt,true))+'</time></div></button>'}).join(""):'<div style="padding:20px;color:#7a8490;text-align:center">Tiada notis.</div>');panel.querySelectorAll(".wp-live-notice").forEach(b=>b.onclick=()=>{const n=items.find(x=>x.id===b.dataset.id);if(!n)return;document.getElementById("notificationDetailTitle").textContent=n.title;document.getElementById("notificationDetailMessage").textContent=n.text;document.getElementById("notificationDetailTime").textContent=fmtDate(n.createdAt,true);const sender=document.querySelector("#notificationDetailModal .notification-sender");if(sender)sender.innerHTML='<strong>'+esc(norm(n.senderUsername||publicState?.admin?.username||"@watermarkpro"))+'</strong>'+(window.WPWMarkAsset?'<span class="wp-wmark" aria-hidden="true"><img alt="" src="'+window.WPWMarkAsset+'"></span>':'');const modal=document.getElementById("notificationDetailModal");modal?.classList.add("open");modal?.setAttribute("aria-hidden","false")});
+    const panel=document.getElementById("notificationPanel");if(!panel)return;const items=Array.isArray(accountState?.notifications)?accountState.notifications:[];panel.innerHTML='<div class="notification-head"><strong>Notifications</strong><span>'+items.length+' terkini</span></div>'+(items.length?items.map(n=>{const sender=norm(n.senderUsername||publicState?.admin?.username||"@watermarkpro"),photo=resolveAsset(n.senderPhoto||publicState?.admin?.photo),letter=(sender.replace("@","").charAt(0)||"W").toUpperCase();return '<button type="button" class="notification-item admin-notification-item wp-live-notice" data-id="'+esc(n.id)+'"><div class="notification-item-icon admin-notification-avatar">'+(photo?'<img alt="" src="'+esc(photo)+'" onerror="this.remove();this.parentElement.textContent=\''+esc(letter)+'\'">':esc(letter))+'</div><div><strong>'+esc(n.title)+'</strong><p>'+esc(n.text)+'</p><time>'+esc(fmtDate(n.createdAt,true))+'</time></div></button>'}).join(""):'<div style="padding:20px;color:#7a8490;text-align:center">Tiada notis.</div>');panel.querySelectorAll(".wp-live-notice").forEach(b=>b.onclick=()=>{const n=items.find(x=>x.id===b.dataset.id);if(!n)return;document.getElementById("notificationDetailTitle").textContent=n.title;document.getElementById("notificationDetailMessage").textContent=n.text;document.getElementById("notificationDetailTime").textContent=fmtDate(n.createdAt,true);const sender=document.querySelector("#notificationDetailModal .notification-sender");if(sender){sender.dataset.wmarkProSince=publicState?.admin?.proSince||'';sender.dataset.wmarkOwner='1';sender.innerHTML='<strong>'+esc(norm(n.senderUsername||publicState?.admin?.username||"@watermarkpro"))+'</strong>'+(window.WPWMarkAsset?'<span class="wp-wmark" aria-hidden="true"><img alt="" src="'+window.WPWMarkAsset+'"></span>':'')}const modal=document.getElementById("notificationDetailModal");modal?.classList.add("open");modal?.setAttribute("aria-hidden","false")});
   }
   function renderAccount(publicState,accountState){
-    const user=accountState?.user;if(!user)return;const images=Number(user.downloads?.images||0),videos=Number(user.downloads?.videos||0),top=publicState?.topUsers||[],rank=top.findIndex(u=>u.id===user.id);try{downloadStats={total:images+videos,images,videos,rank:user.publicProfile===false?"-":(rank>=0?"#"+(rank+1):"-"),created:fmtDate(user.createdAt)};refreshProfileProgress?.()}catch{}
+    const user=accountState?.user;if(!user)return;document.body.dataset.wmarkProSince=user.proSince||'';const images=Number(user.downloads?.images||0),videos=Number(user.downloads?.videos||0),top=publicState?.topUsers||[],rank=top.findIndex(u=>u.id===user.id);try{downloadStats={total:images+videos,images,videos,rank:user.publicProfile===false?"-":(rank>=0?"#"+(rank+1):"-"),created:fmtDate(user.createdAt)};refreshProfileProgress?.()}catch{}
     document.getElementById("profileCreated")&&(document.getElementById("profileCreated").textContent=fmtDate(user.createdAt));document.getElementById("profileVisibility")&&(document.getElementById("profileVisibility").textContent=user.publicProfile===false?"Private":"Public");document.getElementById("profileRank")&&(document.getElementById("profileRank").textContent=user.publicProfile===false?"-":(rank>=0?"#"+(rank+1):"-"));if(profileSwitch)profileSwitch.classList.toggle("on",user.publicProfile!==false);document.getElementById("email")&&(document.getElementById("email").value=user.email||"");document.getElementById("username")&&(document.getElementById("username").value=String(user.username||"").replace(/^@/,""));applyAvatar(user);
     const subs=[...(accountState.subscriptions||[])].filter(x=>["PAID","GRANTED"].includes(x.status)).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));const latest=subs[0];const isPro=user.plan==="pro"&&user.proUntil&&new Date(user.proUntil)>new Date();const planName=document.getElementById("currentPlanName"),meta=document.getElementById("currentPlanMeta"),count=document.getElementById("currentPlanCountdown"),days=document.getElementById("daysLeft"),status=document.getElementById("currentPlanStatus"),stateText=document.getElementById("cpStateText"),supporter=document.querySelectorAll(".supporterline,.sidebar-user small"),supporterCard=document.getElementById("supporterCardPlan");
-    if(isPro){const start=latest?.startsAt||latest?.createdAt||user.createdAt,end=user.proUntil,remaining=Math.max(0,Math.ceil((new Date(end)-new Date())/86400000));document.body.dataset.proSince=start||"";if(planName)planName.textContent="Penyokong Pro";if(meta)meta.textContent="Sejak "+fmtDate(start)+" · Tamat "+fmtDate(end);if(count)count.style.display="";if(days)days.textContent=String(remaining);if(status){status.textContent="AKTIF";status.className="cp-status cp-current"}if(stateText)stateText.textContent=remaining<=7?"Tempoh akses anda hampir tamat.":"Akses Penyokong Pro sedang aktif.";supporter.forEach(el=>el.textContent="Penyokong Pro · Sejak "+fmtDate(start));if(supporterCard)supporterCard.textContent="Penyokong Pro · Sejak "+fmtDate(start)}else{delete document.body.dataset.proSince;if(planName)planName.textContent="Percuma";if(meta)meta.textContent="Akses percuma";if(count)count.style.display="none";if(status){status.textContent="AKTIF";status.className="cp-status"}supporter.forEach(el=>el.textContent="Percuma")}
+    if(isPro){const start=user.proSince||latest?.startsAt||latest?.createdAt||user.createdAt,end=user.proUntil,remaining=Math.max(0,Math.ceil((new Date(end)-new Date())/86400000));document.body.dataset.proSince=start||"";if(planName)planName.textContent="Penyokong Pro";if(meta)meta.textContent="Sejak "+fmtDate(start)+" · Tamat "+fmtDate(end);if(count)count.style.display="";if(days)days.textContent=String(remaining);if(status){status.textContent="AKTIF";status.className="cp-status cp-current"}if(stateText)stateText.textContent=remaining<=7?"Tempoh akses anda hampir tamat.":"Akses Penyokong Pro sedang aktif.";supporter.forEach(el=>el.textContent="Penyokong Pro · Sejak "+fmtDate(start));if(supporterCard)supporterCard.textContent="Penyokong Pro · Sejak "+fmtDate(start)}else{delete document.body.dataset.proSince;if(planName)planName.textContent="Percuma";if(meta)meta.textContent="Akses percuma";if(count)count.style.display="none";if(status){status.textContent="AKTIF";status.className="cp-status"}supporter.forEach(el=>el.textContent="Percuma")}
   }
   function renderHistory(accountState){
     const tbody=document.getElementById("subscriptionHistoryBody");if(!tbody)return;
@@ -18775,7 +18776,7 @@ body.payment-modal-open>.mobile-nav{display:none!important}
   }
   window.printReceiptIsolated=function(){const sheet=document.getElementById("receiptSheet");if(!sheet)return;const popup=window.open("","_blank","width=900,height=1100");if(!popup){window.print();return}const css=document.getElementById("v124-live-final-style")?.textContent||"";popup.document.open();popup.document.write('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resit Watermark Pro</title><style>'+css+'@page{size:A4;margin:10mm}html,body{margin:0;background:#fff}#receiptSheet{width:100%!important;margin:0!important;border:0!important;box-shadow:none!important}</style></head><body>'+sheet.outerHTML+'</body></html>');popup.document.close();const go=()=>{popup.focus();popup.print()};popup.onload=()=>setTimeout(go,150);setTimeout(()=>{if(!popup.closed)go()},600)};
   document.addEventListener("click",event=>{const b=event.target.closest(".admin-history-receipt");if(b){const all=[...(liveAccount?.subscriptions||[]),...(liveAccount?.submissions||[])];const entry=all.find(x=>(x.id||x.reference)===b.dataset.entry);if(entry)setTimeout(()=>renderReceipt(entry),0)}},false);
-  window.WPApplyLiveState=(publicState,accountState)=>{livePublic=publicState||{};liveAccount=accountState;renderPlans(livePublic,liveAccount);renderSettings(livePublic);renderLegal(livePublic);renderTopUsers(livePublic,liveAccount);renderNotifications(livePublic,liveAccount);renderAccount(livePublic,liveAccount);renderHistory(liveAccount);renderLiveActivity(liveAccount)};
+  window.WPApplyLiveState=(publicState,accountState)=>{livePublic=publicState||{};liveAccount=accountState;renderPlans(livePublic,liveAccount);renderSettings(livePublic);renderLegal(livePublic);renderTopUsers(livePublic,liveAccount);renderNotifications(livePublic,liveAccount);renderAccount(livePublic,liveAccount);renderHistory(liveAccount);renderLiveActivity(liveAccount);const adminSince=livePublic?.admin?.proSince||'';window.WPAdminProSince=adminSince;document.querySelectorAll('#notificationPanel .notification-sender,#notificationDetailModal .notification-sender').forEach(sender=>{sender.dataset.wmarkProSince=adminSince;sender.dataset.wmarkOwner='1'})};
   profileSwitch?.addEventListener("click",()=>queueMicrotask(saveProfileVisibility));
   // No verified-badge feature: remove any legacy badge artifacts left by older versions.
   document.querySelectorAll(".verified-badge,.verified-button,.lab-badge,.feature-verified-img,.topuser-verified-action").forEach(node=>node.remove());
@@ -18927,11 +18928,14 @@ body.owner-account .supporter-card-section{display:block!important}body.owner-ac
     const user=accountState?.user,owner=user?.role==="admin";document.body.classList.toggle("owner-account",Boolean(owner));if(!user)return;
     if(owner){
       document.body.classList.add("pro-account");document.body.classList.remove("free-account");try{currentAccountPlan="Pro Supporter"}catch{}
-      document.querySelectorAll(".supporterline,.sidebar-user small").forEach(el=>el.textContent="Pemilik Watermark Pro");
-      const homeSub=document.querySelector("#page-home .lab-home-subline");if(homeSub)homeSub.textContent="Pemilik Watermark Pro";
-      const profileSub=document.querySelector("#page-profile .profile-supporter");if(profileSub)profileSub.textContent="Pemilik Watermark Pro";
+      const ownerSince=user.createdAt||publicState?.admin?.createdAt||"";document.body.dataset.proSince=ownerSince;document.body.dataset.wmarkProSince=user.proSince||publicState?.admin?.proSince||'';
+      const ownerLabel="Pemilik Watermark Pro"+(ownerSince?" · Sejak "+new Intl.DateTimeFormat("ms-MY",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(ownerSince)):"");
+      document.querySelectorAll(".supporterline,.sidebar-user small").forEach(el=>el.textContent=ownerLabel);
+      const homeSub=document.querySelector("#page-home .lab-home-subline");if(homeSub)homeSub.textContent=ownerLabel;
+      const profileSub=document.querySelector("#page-profile .profile-supporter");if(profileSub)profileSub.textContent=ownerLabel;
       const currentName=document.getElementById("currentPlanName");if(currentName)currentName.textContent="Akses Pemilik";
-      const currentMeta=document.getElementById("currentPlanMeta");if(currentMeta)currentMeta.textContent="Akses penuh Watermark Pro";
+      const currentMeta=document.getElementById("currentPlanMeta");if(currentMeta)currentMeta.textContent="Akses penuh Watermark Pro"+(ownerSince?" · Sejak "+new Intl.DateTimeFormat("ms-MY",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(ownerSince)):"");
+      const supporterCard=document.getElementById("supporterCardPlan");if(supporterCard)supporterCard.textContent=ownerLabel;
       const currentStatus=document.getElementById("currentPlanStatus");if(currentStatus){currentStatus.textContent="PEMILIK";currentStatus.className="cp-status cp-current"}
       const countdown=document.getElementById("currentPlanCountdown");if(countdown)countdown.style.display="none";
       const rank=document.getElementById("profileRank");if(rank)rank.textContent="-";
@@ -19894,7 +19898,7 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
   #receiptModal #receiptSheet .lr-foot{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:4px!important}
 }
 </style>
-<link rel="stylesheet" href="request-layout.css?v=166">
+<link rel="stylesheet" href="request-layout.css?v=167">
 <style id="v146-user-request-fixes">
 /* Only truncated Top Users names need the tighter W Mark join. */
 #topUsersPanel .lab-topuser-name.wp-wmark-truncated,
@@ -19904,13 +19908,22 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 /* Top Users W Mark sits one pixel lower without changing its size or gap. */
 #topUsersPanel .lab-topuser-name>.wp-wmark,
 #authTopUsersModal .lab-topuser-name>.wp-wmark{transform:translateY(.5px)!important}
-/* Podium rows: only the first three get rank colors; later rows stay normal. */
-#topUsersPanel .topuser-row.podium-1,#authTopUsersModal .topuser-row.podium-1{background:#fff8dc!important;border-color:#e8c45b!important;color:#8b6500!important}
-#topUsersPanel .topuser-row.podium-2,#authTopUsersModal .topuser-row.podium-2{background:#f1f3f5!important;border-color:#c7ccd2!important;color:#68717b!important}
-#topUsersPanel .topuser-row.podium-3,#authTopUsersModal .topuser-row.podium-3{background:#fff0e5!important;border-color:#d89a68!important;color:#93572c!important}
+/* Keep the first three rows in the same neutral style as the rest. */
+#topUsersPanel .topuser-row.podium-1,#topUsersPanel .topuser-row.podium-2,#topUsersPanel .topuser-row.podium-3,
+#authTopUsersModal .topuser-row.podium-1,#authTopUsersModal .topuser-row.podium-2,#authTopUsersModal .topuser-row.podium-3{background:#fff!important;border-color:var(--line,#e5e7eb)!important;color:#111827!important}
+#topUsersPanel .topuser-row.podium-1 .topuser-count,
+#authTopUsersModal .topuser-row.podium-1 .topuser-count{
+  background-image:url("bg.jpg")!important;
+  background-position:center!important;
+  background-size:cover!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
 #topUsersPanel .topuser-row.podium-1 .topuser-copy small,#topUsersPanel .topuser-row.podium-2 .topuser-copy small,#topUsersPanel .topuser-row.podium-3 .topuser-copy small,
 #authTopUsersModal .topuser-row.podium-1 .topuser-copy small,#authTopUsersModal .topuser-row.podium-2 .topuser-copy small,#authTopUsersModal .topuser-row.podium-3 .topuser-copy small{color:currentColor!important;opacity:.82}
-.topuser-trophy{display:block!important;width:19px!important;height:19px!important;margin:auto!important}
+.topuser-trophy{display:block!important;width:19px!important;height:19px!important;margin:auto!important;background:url("bg.jpg") center/cover no-repeat!important;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7 3h10v4h3a1 1 0 0 1 1 1c0 3.8-2.4 6.3-6.1 6.8A5.8 5.8 0 0 1 13 16.5V19h3a1 1 0 0 1 0 2H8a1 1 0 0 1 0-2h3v-2.5a5.8 5.8 0 0 1-1.9-1.7C5.4 14.3 3 11.8 3 8a1 1 0 0 1 1-1h3V3Zm0 6H5.1c.3 1.6 1.2 2.6 2.8 3.2A7 7 0 0 1 7 9Zm10 0a7 7 0 0 1-.9 3.2c1.6-.6 2.5-1.6 2.8-3.2H17Z'/%3E%3C/svg%3E") center/contain no-repeat!important;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M7 3h10v4h3a1 1 0 0 1 1 1c0 3.8-2.4 6.3-6.1 6.8A5.8 5.8 0 0 1 13 16.5V19h3a1 1 0 0 1 0 2H8a1 1 0 0 1 0-2h3v-2.5a5.8 5.8 0 0 1-1.9-1.7C5.4 14.3 3 11.8 3 8a1 1 0 0 1 1-1h3V3Zm0 6H5.1c.3 1.6 1.2 2.6 2.8 3.2A7 7 0 0 1 7 9Zm10 0a7 7 0 0 1-.9 3.2c1.6-.6 2.5-1.6 2.8-3.2H17Z'/%3E%3C/svg%3E") center/contain no-repeat!important}
 /* Keep every rank centered in the same 28px column as the trophy. */
 #topUsersPanel .topuser-rank,#authTopUsersModal .topuser-rank{width:28px!important;min-width:28px!important;display:grid!important;place-items:center!important;text-align:center!important;line-height:1!important}
 /* Podium color belongs to the row accents, not the avatar fallback glyph. */
@@ -19957,24 +19970,13 @@ body.auth-mode #authPage #openAuthTopUsers span{order:1!important}
 <style id="v147-notification-settings-fixes">
 /* Closing notification detail must not bubble into the notification panel toggle. */
 #notificationDetailModal{z-index:2147483001!important}
-/* Settings Pro avatar uses the branded image ring, not the plain-avatar override. */
-body.pro-account #page-settings #avatarPreview,
-body.pro-account #page-settings .avatar-setting-preview{
-  border:2px solid transparent!important;
-  padding:0!important;
-  background-image:url("bg.jpg"),url("https://socmegy.com/watermark-pro/bg.jpg")!important;
-  background-size:cover,cover!important;
-  background-position:center,center!important;
-  background-repeat:no-repeat!important;
-}
-body.pro-account #page-settings #avatarPreview>img,
-body.pro-account #page-settings .avatar-setting-preview>img,
-body.pro-account #page-settings #avatarPreview>.wp-avatar-letter,
-body.pro-account #page-settings .avatar-setting-preview>.wp-avatar-letter{
-  inset:2px!important;
-  width:calc(100% - 4px)!important;
-  height:calc(100% - 4px)!important;
-  border-radius:50%!important;
-}
+/* Notification detail sender uses regular weight and a smaller centered W Mark. */
+#notificationDetailModal .notification-detail-meta .notification-sender{gap:1.5px!important}
+#notificationDetailModal .notification-detail-meta .notification-sender strong{font-weight:400!important}
+#notificationDetailModal .notification-detail-meta .notification-sender .wp-wmark{width:13px!important;height:13px!important;min-width:13px!important;flex:0 0 13px!important;display:inline-grid!important;place-items:center!important;margin:0!important;vertical-align:middle!important}
+#notificationDetailModal .notification-detail-meta .notification-sender .wp-wmark img{width:10px!important;height:10px!important;max-width:10px!important;object-fit:contain!important}
+/* Settings avatar has no Pro ring. */
+body.pro-account #page-settings #avatarPreview,body.pro-account #page-settings .avatar-setting-preview{border:0!important;padding:0!important;background:#e9eef4!important;background-image:none!important}
+body.pro-account #page-settings #avatarPreview>img,body.pro-account #page-settings .avatar-setting-preview>img,body.pro-account #page-settings #avatarPreview>.wp-avatar-letter,body.pro-account #page-settings .avatar-setting-preview>.wp-avatar-letter{inset:0!important;width:100%!important;height:100%!important;border-radius:50%!important}
 </style>
 </html>

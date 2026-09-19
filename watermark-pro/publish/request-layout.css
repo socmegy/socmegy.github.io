@@ -116,3 +116,8 @@ body>.wp-print-root{display:none}
  html:root body #receiptSheet{position:static!important;display:block!important;visibility:visible!important;transform:none!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important;break-after:auto!important;page-break-after:auto!important}
  html:root body #wpInstallApp,html:root body #wpInstallHelp,html:root body .mobile-nav{display:none!important}
 }
+
+/* Settings preview is a plain, full-size avatar, including on Pro accounts. */
+html body.pro-account #page-settings #avatarPreview{border:0!important;border-width:0!important;padding:0!important;outline:0!important;box-shadow:none!important;background:#e9eef4!important;background-image:none!important}
+html body.pro-account #page-settings #avatarPreview::before,html body.pro-account #page-settings #avatarPreview::after{content:none!important;display:none!important}
+html body.pro-account #page-settings #avatarPreview>img,html body.pro-account #page-settings #avatarPreview>.wp-avatar-letter{inset:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important}
