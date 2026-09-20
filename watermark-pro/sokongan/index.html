@@ -77,7 +77,7 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <link rel="shortcut icon" type="image/png" href="favicon-rounded.png?v=160">
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- V132 SEO START -->
-<meta name="description" content="Watermark Pro memudahkan anda meletakkan tera air pada banyak imej dan video sebelum disiarkan, dengan teks, tandatangan sendiri, logo dan tetapan tambahan.">
+<meta name="description" content="Muat naik banyak fail dalam satu masa, tambah watermark teks, tandatangan atau logo, dan muat turun semua sekaligus.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="application-name" content="Watermark Pro">
 <meta name="theme-color" content="#143d68">
@@ -94,14 +94,14 @@ html.v112-ready body{visibility:visible!important;opacity:1!important}
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ms_MY">
 <meta property="og:site_name" content="Watermark Pro">
-<meta property="og:title" content="Watermark Pro — Tera Air Sebelum Post">
-<meta property="og:description" content="Tera air banyak fail dengan lebih cepat menggunakan teks, tandatangan sendiri dan ciri Penyokong Pro.">
+<meta property="og:title" content="Watermark Pro - Watermark dulu. Baru post.">
+<meta property="og:description" content="Muat naik banyak fail dalam satu masa, tambah watermark teks, tandatangan atau logo, dan muat turun semua sekaligus.">
 <meta property="og:url" content="https://socmegy.com/watermark-pro/">
 <meta property="og:image" content="https://socmegy.com/watermark-pro/og-image.jpg">
 <meta property="og:image:alt" content="Watermark Pro">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Watermark Pro — Tera Air Sebelum Post">
-<meta name="twitter:description" content="Tera air banyak fail dengan lebih cepat menggunakan teks, tandatangan sendiri dan ciri Penyokong Pro.">
+<meta name="twitter:title" content="Watermark Pro - Watermark dulu. Baru post.">
+<meta name="twitter:description" content="Muat naik banyak fail dalam satu masa, tambah watermark teks, tandatangan atau logo, dan muat turun semua sekaligus.">
 <meta name="twitter:image" content="https://socmegy.com/watermark-pro/og-image.jpg">
 <meta name="twitter:image:alt" content="Watermark Pro">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Watermark Pro","url":"https://socmegy.com/watermark-pro/","applicationCategory":"MultimediaApplication","operatingSystem":"Any","description":"Alat tera air berasaskan web untuk imej dan video.","offers":[{"@type":"Offer","name":"Percuma","price":"0","priceCurrency":"MYR"},{"@type":"Offer","name":"Penyokong Pro","priceCurrency":"MYR"}]}</script>
@@ -10214,12 +10214,12 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
 `;
   document.head.append(style);
    const dialog=document.createElement('dialog');dialog.id='wpWMarkDialog';dialog.setAttribute('aria-label','Maklumat Penyokong Pro');
-   dialog.innerHTML='<div class="sheet-handle" aria-hidden="true"></div><h3 class="wp-wmark-title">W Mark</h3><div class="wp-wmark-info"><div class="wp-wmark-info-row"><img alt="" aria-hidden="true" src="'+asset+'"><span>Pengguna merupakan penyokong pro.</span></div><div class="wp-wmark-info-row"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="2"></rect><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"></path></svg><span class="wp-wmark-since"></span></div></div>';
+   dialog.innerHTML='<div class="sheet-handle" aria-hidden="true"></div><h3 class="wp-wmark-title">W Mark</h3><div class="wp-wmark-info"><div class="wp-wmark-info-row"><img alt="" aria-hidden="true" src="'+asset+'"><span class="wp-wmark-user"></span></div><div class="wp-wmark-info-row"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="2"></rect><path d="M7.5 3.5v4M16.5 3.5v4M3.5 9.5h17"></path></svg><span class="wp-wmark-since"></span></div></div>';
    document.body.append(dialog);
    dialog.addEventListener('click',e=>{e.stopPropagation();if(e.target===dialog)dialog.close()});
    const dateText=value=>{const raw=String(value||'').trim();if(!raw)return '';if(/^\d{4}-\d{2}-\d{2}$/.test(raw))return raw.slice(8,10)+'/'+raw.slice(5,7)+'/'+raw.slice(0,4);const date=new Date(raw);if(Number.isNaN(date.getTime()))return '';return new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kuala_Lumpur',day:'2-digit',month:'2-digit',year:'numeric'}).format(date)};
    const syncDialogDate=trigger=>{const row=trigger?.closest('.topuser-row');const sender=trigger?.closest('.notification-sender');const start=row?row.dataset.wmarkProSince||'':sender?sender.dataset.wmarkProSince||window.WPAdminProSince||'':document.body.dataset.wmarkProSince||'';const formatted=dateText(start);const node=dialog.querySelector('.wp-wmark-since');if(node){node.textContent=formatted?'Penyokong Pro sejak '+formatted+'.':'';node.parentElement.hidden=!formatted}};
-   document.addEventListener('click',e=>{const trigger=e.target.closest('.wp-wmark');if(trigger){if(trigger.closest('#page-subscriptions .wp-wmark-feature,#authPricingModal .wp-wmark-feature'))return;e.preventDefault();e.stopPropagation();syncDialogDate(trigger);dialog.showModal()}});
+   document.addEventListener('click',e=>{const trigger=e.target.closest('.wp-wmark');if(trigger){if(trigger.closest('#page-subscriptions .wp-wmark-feature,#authPricingModal .wp-wmark-feature'))return;e.preventDefault();e.stopPropagation();const owner=Boolean(trigger.closest('[data-wmark-owner="1"]'));const name=trigger.parentElement?.querySelector('.lab-home-uname,.lab-profile-uname,.lab-topuser-uname,#supporterCardUsername,.sidebar-user strong')?.textContent.trim()||trigger.closest('.notification-sender')?.querySelector('strong')?.textContent.trim()||document.querySelector('.sidebar-user strong')?.textContent.trim()||'Pengguna';dialog.querySelector('.wp-wmark-user').textContent=owner?name+' ialah pemilik rasmi Watermark Pro.':name+' merupakan penyokong pro.';syncDialogDate(trigger);if(owner)dialog.querySelector('.wp-wmark-since').parentElement.hidden=true;dialog.showModal()}});
   const mark=()=>{const b=document.createElement('button');b.type='button';b.className='wp-wmark';b.setAttribute('aria-label','Tentang W Mark');b.innerHTML='<img alt="W Mark" src="'+asset+'">';return b};
   const observer=new MutationObserver(update);
   function update(){
@@ -10240,7 +10240,7 @@ html body .plan.pro .wp-wmark{background:transparent!important;background-image:
       });
       document.querySelectorAll('#notificationPanel .notification-item').forEach(row=>{
         const title=row.querySelector('strong,.notification-message-title')?.textContent.trim();
-        const type=title==='Akaun dicipta'?'profile':title==='Pembayaran Pro dihantar'?'subscriptions':title==='Akaun Sokongan Pro diaktifkan'?'verified':null;
+        const type=title==='Akaun dicipta'?'profile':['Pembayaran Pro dihantar','Pembayaran pembaharuan Pro dihantar'].includes(title)?'subscriptions':['Akaun Sokongan Pro diaktifkan','Pembaharuan Akaun Sokongan Pro diluluskan','Akaun Sokongan Pro hampir tamat','Akaun Sokongan Pro tamat'].includes(title)?'verified':null;
         const box=row.querySelector('.notification-item-icon,.notification-brand-avatar');
         if(!type||!box||box.dataset.wmarkIcon===type)return;
         const source=document.querySelector('.nav [data-page="'+type+'"] svg')||document.querySelector('.mobile-nav [data-page="'+type+'"] svg');
@@ -11302,7 +11302,7 @@ notificationBtn.addEventListener("click",(e)=>{
   if(isOpen) notificationDot.style.display="none";
 });
 document.addEventListener("click",(e)=>{
-  if(!notificationPanel.contains(e.target)&&e.target!==notificationBtn){
+  if(!notificationPanel.contains(e.target)&&e.target!==notificationBtn&&!e.target.closest("#notificationDetailModal .wp-wmark,#wpWMarkDialog")){
     notificationPanel.classList.remove("open");
     notificationBtn.setAttribute("aria-expanded","false");
   }
